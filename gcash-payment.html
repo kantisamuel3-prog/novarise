@@ -45,7 +45,13 @@ body{padding-bottom:28px}
   border-radius:16px;
   box-shadow:0 6px 18px rgba(23,59,109,.08);
   overflow:hidden;
+
+  /* HIDE QR HOVER / TOOLTIP */
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-select:none;
 }
+
 #qrCodeContainer img,
 #qrCodeContainer canvas{
   display:block!important;
@@ -57,7 +63,13 @@ body{padding-bottom:28px}
   max-height:100%!important;
   object-fit:contain;
   image-rendering:pixelated;
+
+  /* HIDE HOVER / CLICK */
+  pointer-events:none!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
 }
+
 #qrCodeContainer table{
   width:100%!important;
   height:100%!important;
@@ -66,7 +78,11 @@ body{padding-bottom:28px}
   margin:0!important;
   border-collapse:collapse!important;
 }
-#qrCodeContainer td{padding:0!important;margin:0!important}
+
+#qrCodeContainer td{
+  padding:0!important;
+  margin:0!important;
+}
 
 .open-gcash-btn{width:100%;max-width:330px;height:50px;margin:0 auto 10px;border:0;border-radius:25px;background:#0969ed;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 9px 20px rgba(9,105,237,.20)}
 .open-gcash-icon{width:23px;height:23px;border:2px solid rgba(255,255,255,.9);border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:900}
@@ -212,11 +228,20 @@ async function displayPaymentQR(qrCode){
     if(!decoded||!decoded.data) throw new Error("QR decoder could not read the PayMongo QR.");
 
     new window.QRCode(container,{
-      text:decoded.data,
-      width:220,
-      height:220,
-      correctLevel:window.QRCode.CorrectLevel.M
-    });
+  text:decoded.data,
+  width:220,
+  height:220,
+  correctLevel:window.QRCode.CorrectLevel.M
+});
+
+/* REMOVE QR TOOLTIP / ALT / TITLE */
+container.removeAttribute("title");
+container.removeAttribute("alt");
+
+container.querySelectorAll("[title],[alt]").forEach(element=>{
+  element.removeAttribute("title");
+  element.removeAttribute("alt");
+});
 
     /* Keep exactly ONE rendered QR element.
        Some mobile browsers can display multiple QR render layers
@@ -250,7 +275,8 @@ async function displayPaymentQR(qrCode){
     container.innerHTML="";
     const fallback=document.createElement("img");
     fallback.src=String(qrCode);
-    fallback.alt="GCash payment QR";
+    fallback.alt="";
+    fallback.removeAttribute("title");
     fallback.width=220;
     fallback.height=220;
     fallback.style.display="block";
