@@ -6,13 +6,13 @@
   <meta charset="UTF-8">
 
   <meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, User-scalable=no"
->
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
 
-  <meta name="theme-color" content="#168ff0">
+  <meta name="theme-color" content="#0b0f19">
 
-  <title>Nexora - Register</title>
+  <title>Nexora - Trading Register</title>
 
   <style>
 
@@ -20,22 +20,26 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     }
 
     :root {
-      --blue: #168ff0;
-      --blue-dark: #155fd6;
-      --green: #a8d92d;
-      --text: #12365d;
-      --muted: #7890aa;
-      --border: #dcecff;
+      --bg-dark: #0b0f19;
+      --card-bg: rgba(18, 26, 43, 0.75);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --accent-green: #00e676;
+      --accent-blue: #00b0ff;
+      --accent-purple: #7c4dff;
+      --text-main: #ffffff;
+      --text-muted: #8e9bb0;
+      --input-bg: rgba(10, 15, 26, 0.6);
     }
 
     html,
     body {
       width: 100%;
       min-height: 100%;
+      background-color: var(--bg-dark);
     }
 
     body {
@@ -47,136 +51,82 @@
       overflow-x: hidden;
       overflow-y: auto;
       position: relative;
+      color: var(--text-main);
 
+      /* Trading Tech Background Gradients */
       background:
-        radial-gradient(
-          circle at 8% 8%,
-          rgba(39,154,245,.11),
-          transparent 25%
-        ),
-        radial-gradient(
-          circle at 92% 88%,
-          rgba(168,217,45,.10),
-          transparent 22%
-        ),
-        linear-gradient(
-          135deg,
-          #f9fcff 0%,
-          #edf7ff 52%,
-          #f8fbff 100%
-        );
-
-      color: var(--text);
+        radial-gradient(circle at 10% 10%, rgba(0, 230, 118, 0.08), transparent 35%),
+        radial-gradient(circle at 90% 90%, rgba(0, 176, 255, 0.1), transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(124, 77, 255, 0.05), transparent 50%),
+        linear-gradient(180deg, #070a12 0%, #0b0f19 100%);
     }
 
-    body::before,
-    body::after {
+    /* Trading Grid Effect */
+    body::before {
       content: "";
       position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 30px 30px;
       pointer-events: none;
       z-index: 0;
     }
 
-    body::before {
-      width: 410px;
-      height: 410px;
-      left: -230px;
-      top: -220px;
-      border-radius: 50%;
-
-      background:
-        linear-gradient(
-          145deg,
-          rgba(22,143,240,.68),
-          rgba(22,143,240,.05)
-        );
-
-      opacity: .72;
-    }
-
-    body::after {
-      width: 480px;
-      height: 190px;
-      right: -175px;
-      bottom: -95px;
-      border-radius: 50% 50% 0 0;
-
-      background:
-        linear-gradient(
-          160deg,
-          rgba(22,143,240,.65),
-          rgba(22,143,240,.04)
-        );
-    }
-
-    .bg-dots {
+    /* Glowing Ambient Lights */
+    .glow-light-1 {
       position: fixed;
-      right: 5%;
-      top: 8%;
-      width: 70px;
-      height: 70px;
-      opacity: .30;
-
-      background-image:
-        radial-gradient(
-          #68b9f4 1.8px,
-          transparent 1.8px
-        );
-
-      background-size: 16px 16px;
-      z-index: 0;
+      top: 15%;
+      left: 15%;
+      width: 250px;
+      height: 250px;
+      background: rgba(0, 230, 118, 0.15);
+      filter: blur(90px);
+      border-radius: 50%;
       pointer-events: none;
+      z-index: 0;
     }
 
+    .glow-light-2 {
+      position: fixed;
+      bottom: 15%;
+      right: 15%;
+      width: 300px;
+      height: 300px;
+      background: rgba(0, 176, 255, 0.15);
+      filter: blur(100px);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Glassmorphism Card */
     .card {
-      width: min(455px, 100%);
-      background: rgba(255,255,255,.97);
-      border: 1px solid rgba(210,232,250,.95);
+      width: min(440px, 100%);
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
       border-radius: 24px;
-      padding: 24px 34px 23px;
+      padding: 30px 28px 26px;
       position: relative;
       overflow: hidden;
       z-index: 1;
-
-      box-shadow:
-        0 24px 55px rgba(37,105,157,.13),
-        0 7px 20px rgba(37,105,157,.06);
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
+    /* Top Accent Line */
     .card::before {
       content: "";
       position: absolute;
-      width: 135px;
-      height: 135px;
-      right: -76px;
-      bottom: -76px;
-      border-radius: 50%;
-      border: 10px solid rgba(22,143,240,.10);
-
-      box-shadow:
-        0 0 0 10px rgba(168,217,45,.08),
-        0 0 0 20px rgba(22,143,240,.05);
-
-      pointer-events: none;
-    }
-
-    .card::after {
-      content: "";
-      position: absolute;
-      left: -55px;
-      top: -75px;
-      width: 135px;
-      height: 135px;
-      border-radius: 50%;
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(22,143,240,.11),
-          rgba(168,217,45,.08)
-        );
-
-      pointer-events: none;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-blue), var(--accent-purple));
     }
 
     .content {
@@ -186,72 +136,65 @@
 
     .logo {
       text-align: center;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .logo img {
-      width: 175px;
-      max-width: 72%;
+      width: 160px;
+      max-width: 70%;
       height: auto;
       display: block;
-      margin: 0 auto 5px;
+      margin: 0 auto 6px;
+      filter: drop-shadow(0 0 12px rgba(0, 176, 255, 0.3));
     }
 
     .brand-tagline {
       text-align: center;
-      color: #6f8ca8;
+      color: var(--text-muted);
       font-size: 10px;
       letter-spacing: 2px;
       font-weight: 700;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
-    .brand-tagline .blue {
-      color: var(--blue);
-    }
-
-    .brand-tagline .green {
-      color: var(--green);
-    }
+    .brand-tagline .green { color: var(--accent-green); }
+    .brand-tagline .blue { color: var(--accent-blue); }
 
     .divider-accent {
-      width: 84px;
-      height: 4px;
-      margin: 0 auto 13px;
+      width: 60px;
+      height: 2px;
+      margin: 0 auto 16px;
       border-radius: 99px;
-
-      background:
-        linear-gradient(
-          90deg,
-          var(--blue),
-          var(--green)
-        );
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+      opacity: 0.8;
     }
 
     h1 {
       text-align: center;
-      color: #123f70;
-      font-size: 23px;
+      color: #ffffff;
+      font-size: 22px;
+      font-weight: 700;
       margin-bottom: 6px;
+      letter-spacing: 0.5px;
     }
 
     .subtitle {
       text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.48;
-      margin-bottom: 16px;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      line-height: 1.5;
+      margin-bottom: 20px;
     }
 
     .subtitle strong {
-      color: #4d7295;
+      color: #d1dbe8;
     }
 
     .message {
       display: none;
-      margin-bottom: 13px;
-      padding: 10px 12px;
+      margin-bottom: 16px;
+      padding: 12px;
       border-radius: 10px;
       text-align: center;
       font-size: 12.5px;
@@ -260,27 +203,27 @@
 
     .message.error {
       display: block;
-      background: #fff0f0;
-      border: 1px solid #ffd6d6;
-      color: #a33333;
+      background: rgba(255, 82, 82, 0.12);
+      border: 1px solid rgba(255, 82, 82, 0.3);
+      color: #ff5252;
     }
 
     .message.success {
       display: block;
-      background: #effcf3;
-      border: 1px solid #d3f4dc;
-      color: #28733e;
+      background: rgba(0, 230, 118, 0.12);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+      color: var(--accent-green);
     }
 
     .input-group {
-      margin-bottom: 13px;
+      margin-bottom: 15px;
     }
 
     label {
       display: block;
-      color: #164e80;
-      font-size: 13px;
-      font-weight: 700;
+      color: #c0cedf;
+      font-size: 12.5px;
+      font-weight: 600;
       margin-bottom: 6px;
     }
 
@@ -293,48 +236,48 @@
       height: 48px;
       display: flex;
       align-items: center;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-color);
       border-radius: 12px;
-      background: #fbfdff;
-      transition: .2s ease;
+      background: var(--input-bg);
+      transition: all 0.25s ease;
     }
 
     .phone-input:focus-within {
-      border-color: #65b8f5;
-      background: #fff;
-      box-shadow: 0 0 0 4px rgba(22,143,240,.08);
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 15px rgba(0, 176, 255, 0.2);
+      background: rgba(15, 23, 42, 0.8);
     }
 
     .phone-icon,
     .lock-icon,
     .referral-icon {
-      color: #2293e9;
+      color: var(--accent-blue);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .phone-icon {
-      margin-left: 13px;
+      margin-left: 14px;
     }
 
     .phone-icon svg,
     .lock-icon svg,
     .referral-icon svg {
-      width: 17px;
-      height: 17px;
+      width: 18px;
+      height: 18px;
     }
 
     .country-code {
-      height: 26px;
+      height: 24px;
       display: flex;
       align-items: center;
-      color: #164a78;
-      font-size: 14px;
+      color: #ffffff;
+      font-size: 13.5px;
       font-weight: 700;
       padding: 0 10px;
-      margin-left: 5px;
-      border-right: 1px solid #dce8f2;
+      margin-left: 6px;
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
       white-space: nowrap;
     }
 
@@ -346,146 +289,110 @@
       padding: 0 12px;
       border: 0;
       outline: none;
-      box-shadow: none;
-      border-radius: 0;
       font-size: 14px;
       background: transparent;
-      color: #173e61;
+      color: #ffffff;
     }
 
-    .phone-input input:focus {
-      border: 0;
-      outline: none;
-      box-shadow: none;
+    .phone-input input::placeholder {
+      color: #586980;
     }
 
-    .normal-input {
+    .normal-input,
+    .password-input {
       width: 100%;
       height: 48px;
-      padding: 0 13px 0 42px;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-color);
       border-radius: 12px;
       outline: none;
       font-size: 14px;
-      background: #fbfdff;
-      color: #173e61;
-      transition: .2s ease;
+      background: var(--input-bg);
+      color: #ffffff;
+      transition: all 0.25s ease;
     }
 
-    .normal-input:focus {
-      border-color: #65b8f5;
-      background: #fff;
-      box-shadow: 0 0 0 4px rgba(22,143,240,.08);
+    .normal-input {
+      padding: 0 14px 0 44px;
     }
 
-    .normal-input::placeholder {
-      color: #9aadc0;
+    .password-input {
+      padding: 0 44px 0 44px;
     }
 
-    .referral-icon {
+    .normal-input:focus,
+    .password-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 15px rgba(0, 176, 255, 0.2);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .normal-input::placeholder,
+    .password-input::placeholder {
+      color: #586980;
+    }
+
+    .referral-icon,
+    .lock-icon {
       position: absolute;
-      left: 13px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
       pointer-events: none;
     }
 
     .referral-hint {
-      color: #8ba2b7;
-      font-size: 10.5px;
+      color: var(--text-muted);
+      font-size: 11px;
       margin-top: 5px;
       line-height: 1.35;
     }
 
-    .password-input {
-      width: 100%;
-      height: 48px;
-      padding: 0 44px 0 42px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      outline: none;
-      font-size: 14px;
-      background: #fbfdff;
-      color: #173e61;
-      transition: .2s ease;
-    }
-
-    .password-input:focus {
-      border-color: #65b8f5;
-      background: #fff;
-      box-shadow: 0 0 0 4px rgba(22,143,240,.08);
-    }
-
-    .password-input::placeholder {
-      color: #9aadc0;
-    }
-
-    .lock-icon {
-      position: absolute;
-      left: 13px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-    }
-
     .eye-button {
       position: absolute;
-      right: 9px;
+      right: 8px;
       top: 50%;
       transform: translateY(-50%);
       width: 32px;
       height: 32px;
       border: 0;
       background: transparent;
-      color: #7d94aa;
+      color: #586980;
       cursor: pointer;
       border-radius: 50%;
       display: grid;
       place-items: center;
+      transition: color 0.2s ease;
     }
 
     .eye-button:hover {
-      background: #edf7ff;
-      color: var(--blue);
+      color: var(--accent-blue);
     }
 
     .eye-button svg {
-      width: 19px;
-      height: 19px;
+      width: 18px;
+      height: 18px;
     }
 
+    /* Trading Primary Button */
     .register-btn {
       width: 100%;
-      height: 49px;
-      margin-top: 2px;
+      height: 48px;
+      margin-top: 6px;
       border: 0;
       border-radius: 12px;
-
-      background:
-        linear-gradient(
-          100deg,
-          #19a8ee 0%,
-          #1673e7 58%,
-          #1d5ddd 100%
-        );
-
-      color: #fff;
+      background: linear-gradient(135deg, #00b0ff 0%, #00e676 100%);
+      color: #050d1a;
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-
-      box-shadow:
-        0 10px 20px rgba(25,122,226,.19);
-
-      transition:
-        transform .18s ease,
-        box-shadow .18s ease,
-        opacity .18s ease;
+      letter-spacing: 0.5px;
+      box-shadow: 0 8px 20px rgba(0, 230, 118, 0.25);
+      transition: all 0.25s ease;
     }
 
     .register-btn:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 13px 23px rgba(25,122,226,.23);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(0, 230, 118, 0.35);
     }
 
     .register-btn:active:not(:disabled) {
@@ -493,23 +400,24 @@
     }
 
     .register-btn:disabled {
-      opacity: .62;
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
     .button-arrow {
-      margin-left: 7px;
-      font-size: 18px;
-      vertical-align: -1px;
+      margin-left: 6px;
+      font-size: 16px;
     }
 
     .or-line {
       display: flex;
       align-items: center;
-      gap: 9px;
-      margin: 13px 0 11px;
-      color: #9ab0c5;
+      gap: 10px;
+      margin: 16px 0 14px;
+      color: #586980;
       font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .or-line::before,
@@ -517,7 +425,7 @@
       content: "";
       height: 1px;
       flex: 1;
-      background: #e4eef7;
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .login a {
@@ -525,62 +433,63 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid #9fd2fb;
-      border-radius: 11px;
-      color: #1578d8;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: #ffffff;
       text-decoration: none;
-      font-weight: 700;
-      font-size: 14px;
-      background: #fbfdff;
-      transition: .18s ease;
+      font-weight: 600;
+      font-size: 13.5px;
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.25s ease;
     }
 
     .login a:hover {
-      background: #eff8ff;
-      border-color: #72bdf4;
-      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--accent-blue);
     }
 
     .card-note {
       text-align: center;
-      color: #9aafc2;
+      color: #586980;
       font-size: 10.5px;
-      margin-top: 11px;
-      letter-spacing: .15px;
+      margin-top: 14px;
+      letter-spacing: 0.5px;
     }
 
+    /* Success Screen Trading Style */
     .success-screen {
       display: none;
       text-align: center;
-      padding: 8px 0 3px;
+      padding: 10px 0;
     }
 
     .success-icon {
       width: 72px;
       height: 72px;
-      margin: 0 auto 15px;
+      margin: 0 auto 16px;
       border-radius: 50%;
-      background: #eafaf0;
-      color: #16a34a;
-      border: 1px solid #cfeeda;
+      background: rgba(0, 230, 118, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 230, 118, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 38px;
-      font-weight: 700;
+      font-size: 34px;
+      box-shadow: 0 0 20px rgba(0, 230, 118, 0.2);
     }
 
     .success-screen h2 {
-      color: #166534;
-      font-size: 23px;
+      color: #ffffff;
+      font-size: 22px;
       margin-bottom: 8px;
     }
 
     .success-screen p {
-      color: #64748b;
-      line-height: 1.55;
+      color: var(--text-muted);
+      line-height: 1.5;
       font-size: 13px;
-      margin-bottom: 18px;
+      margin-bottom: 22px;
     }
 
     .continue-login-btn {
@@ -590,101 +499,28 @@
       align-items: center;
       justify-content: center;
       border-radius: 12px;
-
-      background:
-        linear-gradient(
-          100deg,
-          #19a8ee 0%,
-          #1673e7 58%,
-          #1d5ddd 100%
-        );
-
-      color: #fff;
+      background: linear-gradient(135deg, #00b0ff 0%, #00e676 100%);
+      color: #050d1a;
       text-decoration: none;
-      font-size: 15px;
+      font-size: 14.5px;
       font-weight: 700;
-
-      box-shadow:
-        0 10px 20px rgba(25,122,226,.18);
+      box-shadow: 0 8px 20px rgba(0, 230, 118, 0.25);
+      transition: all 0.25s ease;
     }
 
     .continue-login-btn:hover {
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(0, 230, 118, 0.35);
     }
 
-    @media (max-width: 520px) {
-
+    @media (max-width: 480px) {
       body {
         padding: 12px;
       }
-
       .card {
-        padding: 21px 20px 22px;
+        padding: 24px 20px;
         border-radius: 20px;
       }
-
-      .logo img {
-        width: 160px;
-      }
-
-      h1 {
-        font-size: 21px;
-      }
-
-      .subtitle {
-        font-size: 12.5px;
-      }
-
-    }
-
-    @media (max-height: 820px) and (min-width: 521px) {
-
-      body {
-        padding-top: 10px;
-        padding-bottom: 10px;
-      }
-
-      .card {
-        padding-top: 17px;
-        padding-bottom: 17px;
-      }
-
-      .logo img {
-        width: 150px;
-      }
-
-      .brand-tagline {
-        margin-bottom: 5px;
-      }
-
-      .divider-accent {
-        margin-bottom: 9px;
-      }
-
-      .subtitle {
-        margin-bottom: 10px;
-      }
-
-      .input-group {
-        margin-bottom: 9px;
-      }
-
-      .referral-hint {
-        margin-top: 3px;
-      }
-
-      .or-line {
-        margin: 9px 0 8px;
-      }
-
-      .login a {
-        height: 40px;
-      }
-
-      .card-note {
-        margin-top: 8px;
-      }
-
     }
 
   </style>
@@ -694,7 +530,8 @@
 
 <body>
 
-  <div class="bg-dots"></div>
+  <div class="glow-light-1"></div>
+  <div class="glow-light-2"></div>
 
 
   <div class="card">
@@ -721,15 +558,15 @@
 
         <div class="brand-tagline">
 
-          <span class="blue">BUILD</span>
+          <span class="blue">TRADE</span>
 
           &nbsp;•&nbsp;
 
-          <span class="blue">INVEST</span>
+          <span class="green">INVEST</span>
 
           &nbsp;•&nbsp;
 
-          <span class="green">GROW</span>
+          <span class="blue">GROW</span>
 
         </div>
 
@@ -738,18 +575,18 @@
 
 
         <h1>
-          Create Account
+          Create Trading Account
         </h1>
 
 
         <div class="subtitle">
 
-          Create your Nexora account<br>
+          Start your trading journey with Nexora.<br>
 
-          Join today and start
+          Join now and access
 
           <strong>
-            building, investing, and growing together.
+            real-time growth.
           </strong>
 
         </div>
@@ -771,7 +608,7 @@
           <div class="input-group">
 
             <label for="phone">
-              Phone Number
+              Mobile Number
             </label>
 
 
@@ -807,7 +644,7 @@
               <input
                 type="tel"
                 id="phone"
-                placeholder="Enter your phone number"
+                placeholder="9XXXXXXXXX"
                 autocomplete="tel"
                 maxlength="10"
                 inputmode="numeric"
@@ -825,7 +662,7 @@
           <div class="input-group">
 
             <label for="referralCode">
-              Referral Code
+              Referral / Invite Code
             </label>
 
 
@@ -870,7 +707,7 @@
                 type="text"
                 id="referralCode"
                 class="normal-input"
-                placeholder="Type your referral code"
+                placeholder="Enter code (Optional)"
                 autocomplete="off"
                 autocapitalize="characters"
                 spellcheck="false"
@@ -884,7 +721,7 @@
               class="referral-hint"
               id="referralHint"
             >
-              Optional — enter the invitation code of the person who invited you.
+              Optional — enter referral code if you have one.
             </div>
 
           </div>
@@ -935,7 +772,7 @@
                 type="password"
                 id="password"
                 class="password-input"
-                placeholder="Create your password"
+                placeholder="Create password"
                 minlength="6"
                 autocomplete="new-password"
                 required
@@ -1020,7 +857,7 @@
                 type="password"
                 id="confirmPassword"
                 class="password-input"
-                placeholder="Confirm your password"
+                placeholder="Confirm password"
                 minlength="6"
                 autocomplete="new-password"
                 required
@@ -1068,7 +905,7 @@
             class="register-btn"
           >
 
-            Create Account
+            Register Account
 
             <span class="button-arrow">
               →
@@ -1088,7 +925,7 @@
         <div class="login">
 
           <a href="login.html">
-            Already have an account? &nbsp;Login
+            Already registered? Login Here
           </a>
 
         </div>
@@ -1096,9 +933,7 @@
 
         <div class="card-note">
 
-          Secure registration •
-          Simple experience •
-          Built for growth
+          Encrypted Connection • Secure Platform
 
         </div>
 
@@ -1121,13 +956,12 @@
 
 
         <h2>
-          Account Registered!
+          Registration Successful!
         </h2>
 
 
         <p>
-          Your Nexora account has been
-          created successfully.
+          Your Nexora trading account has been created.
         </p>
 
 
@@ -1135,7 +969,7 @@
           href="login.html"
           class="continue-login-btn"
         >
-          Continue to Login
+          Proceed to Login
         </a>
 
       </div>
@@ -1162,8 +996,7 @@
     import {
       getAuth,
       createUserWithEmailAndPassword,
-      updateProfile,
-      deleteUser
+      updateProfile
     }
     from
       "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
@@ -1172,7 +1005,6 @@
     import {
       getFirestore,
       doc,
-      setDoc,
       collection,
       query,
       where,
@@ -1319,7 +1151,7 @@
 
 
       referralHint.style.color =
-        "#168ff0";
+        "#00e676";
 
     }
 
@@ -1494,7 +1326,7 @@
 
 
       registerButton.innerHTML =
-        'Create Account <span class="button-arrow">→</span>';
+        'Register Account <span class="button-arrow">→</span>';
 
     }
 
@@ -1573,11 +1405,11 @@
 
 
         referralHint.textContent =
-          "Optional — enter the invitation code of the person who invited you.";
+          "Optional — enter referral code if you have one.";
 
 
         referralHint.style.color =
-          "#8ba2b7";
+          "#8e9bb0";
 
 
         clearMessage();
