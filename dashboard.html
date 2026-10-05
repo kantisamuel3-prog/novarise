@@ -1,16 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full select-none">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXORA - Custom Interface</title>
+    <title>NEXORA - Investment & Trading Portal</title>
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -29,7 +33,27 @@
                             cyan: '#00f2fe',
                             blue: '#1890ff',
                             gold: '#dfb248',
+                            goldGlow: '#ffd700',
                             accent: '#00e676'
+                        }
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                        'pulse-cyan': 'pulseCyan 3s ease-in-out infinite',
+                        'orbit': 'orbit 10s linear infinite'
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' }
+                        },
+                        pulseCyan: {
+                            '0%, 100%': { filter: 'drop-shadow(0 0 15px rgba(0,242,254,0.4))' },
+                            '50%': { filter: 'drop-shadow(0 0 35px rgba(0,242,254,0.9))' }
+                        },
+                        orbit: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
                         }
                     }
                 }
@@ -42,7 +66,18 @@
             background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
             color: #f1f5f9;
             font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
             min-height: 100vh;
+        }
+
+        .brushed-metal-overlay {
+            background: repeating-radial-gradient(
+                circle at 50% 40%,
+                rgba(255, 255, 255, 0.015) 0px,
+                rgba(255, 255, 255, 0.015) 1px,
+                transparent 1px,
+                transparent 3px
+            );
         }
 
         .text-chrome-3d {
@@ -52,43 +87,184 @@
             filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.9));
         }
 
+        .gold-ring-accent {
+            background: radial-gradient(circle, #ffe380 0%, #d4af37 60%, #996515 100%);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.8), inset 0 0 4px rgba(255, 255, 255, 0.8);
+        }
+
         .metallic-pill-input {
             background: linear-gradient(180deg, rgba(8, 18, 36, 0.9) 0%, rgba(4, 10, 22, 0.95) 100%);
             border: 1.5px solid rgba(0, 242, 254, 0.25);
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.8), 0 0 10px rgba(0,242,254,0.05);
             border-radius: 9999px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .metallic-pill-input:focus-within {
+            border-color: #00f2fe;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,242,254,0.5);
         }
 
-        .btn-metallic {
+        .btn-metallic-enter {
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 60%, #090d16 100%);
             border: 2px solid #00f2fe;
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.4);
             border-radius: 9999px;
             transition: all 0.25s ease;
         }
-        .btn-metallic:hover {
+        .btn-metallic-enter:hover {
             background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 60%, #0f172a 100%);
-            box-shadow: 0 0 35px rgba(0, 242, 254, 0.8);
+            border-color: #38bdf8;
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.8), inset 0 1px 4px rgba(255, 255, 255, 0.8);
+            transform: scale(1.02);
+        }
+
+        .fingerprint-btn {
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.15) 0%, rgba(8, 20, 42, 0.8) 70%);
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            transition: all 0.3s ease;
+        }
+        .fingerprint-btn:hover {
+            border-color: #00f2fe;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.6);
+            transform: scale(1.08);
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center p-4">
+<body class="flex flex-col justify-between relative overflow-x-hidden selection:bg-nexora-cyan selection:text-black min-h-screen">
 
-    <!-- Card Container -->
-    <div class="w-full max-w-md bg-nexora-card/80 border border-nexora-cyan/30 rounded-3xl p-6 backdrop-blur-md shadow-2xl">
-        <h1 class="text-chrome-3d text-3xl font-brand font-black text-center mb-4">NEXORA UI</h1>
-        
-        <!-- Pill Input Sample -->
-        <div class="metallic-pill-input flex items-center px-4 py-3 mb-4">
-            <i class="fa-solid fa-user text-nexora-cyan mr-3"></i>
-            <input type="text" placeholder="USERNAME" class="bg-transparent text-white font-mono focus:outline-none w-full">
+    <!-- Background Elements -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+        <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
+
+        <div class="absolute inset-0 flex items-center justify-center opacity-25">
+            <div class="w-[500px] h-[500px] border border-nexora-cyan/30 rotate-45 rounded-sm"></div>
+            <div class="absolute w-[420px] h-[420px] border border-nexora-cyan/20 rotate-45 rounded-sm"></div>
         </div>
-
-        <!-- Button Sample -->
-        <button class="btn-metallic w-full py-3 text-white font-mono font-bold tracking-widest uppercase">
-            SUBMIT
-        </button>
     </div>
 
+    <!-- Ticker Header -->
+    <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-2">
+        <div class="flex items-center text-xs font-mono">
+            <div class="px-4 py-1 bg-nexora-cyan/10 border-r border-nexora-cyan/30 text-nexora-cyan font-bold flex items-center shrink-0 z-10">
+                <span class="w-2 h-2 rounded-full bg-nexora-accent animate-ping mr-2"></span>
+                <span>NEXORA TAPE</span>
+            </div>
+            <div class="overflow-hidden whitespace-nowrap flex w-full">
+                <div class="inline-flex animate-marquee space-x-10 items-center pl-6">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-400">BTC/USD</span>
+                        <span class="text-white font-semibold">$94,850.20</span>
+                        <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +4.12%</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-400">ETH/USD</span>
+                        <span class="text-white font-semibold">$3,520.80</span>
+                        <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +2.45%</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-400">NEX/USD</span>
+                        <span class="text-nexora-cyan font-bold">$18.95</span>
+                        <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +18.40%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Box -->
+    <main class="relative z-10 my-auto py-8 px-4 flex flex-col items-center justify-center w-full max-w-xl mx-auto text-center">
+        
+        <!-- Animated 3D Logo -->
+        <div class="relative w-36 h-36 mb-2 flex items-center justify-center animate-pulse-cyan">
+            <div class="absolute inset-0 rounded-full border-2 border-dashed border-nexora-cyan/50 animate-orbit"></div>
+            <svg class="w-28 h-28 drop-shadow-[0_0_20px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none">
+                <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+                <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+                <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
+            </svg>
+        </div>
+
+        <!-- Title / Brand -->
+        <div class="flex items-center justify-center space-x-1 tracking-wider text-4xl sm:text-5xl font-black font-brand mt-1 mb-1">
+            <span class="text-chrome-3d">NEX</span>
+            <span class="relative inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 mx-1 border-2 border-nexora-gold rounded-full gold-ring-accent">
+                <span class="w-3 h-3 rounded-full bg-slate-900 border border-nexora-gold"></span>
+            </span>
+            <span class="text-chrome-3d">RA</span>
+        </div>
+
+        <p class="text-xs sm:text-sm font-bold tracking-[0.3em] text-nexora-gold flex items-center justify-center uppercase font-mono mb-8">
+            <span>INVEST. GROW. TOGETHER</span>
+            <i class="fa-solid fa-arrow-trend-up ml-2 text-nexora-accent"></i>
+        </p>
+
+        <!-- Form Interface -->
+        <form class="w-full max-w-sm space-y-4" onsubmit="return false;">
+            <div class="metallic-pill-input flex items-center px-4 py-3">
+                <i class="fa-solid fa-mobile-screen-button text-nexora-cyan pr-3 border-r border-nexora-cyan/30 text-lg"></i>
+                <div class="flex items-center w-full pl-3 font-mono text-sm">
+                    <span class="text-nexora-cyan font-bold mr-2">+63</span>
+                    <input type="tel" placeholder="PHONE" class="w-full bg-transparent text-white font-semibold tracking-wider placeholder-gray-500 uppercase focus:outline-none">
+                </div>
+            </div>
+
+            <div class="metallic-pill-input flex items-center px-4 py-3">
+                <i class="fa-solid fa-lock text-nexora-cyan pr-3 border-r border-nexora-cyan/30 text-lg"></i>
+                <input type="password" placeholder="PASSWORD" class="w-full pl-3 bg-transparent text-white font-semibold tracking-widest placeholder-gray-500 uppercase focus:outline-none">
+            </div>
+
+            <div class="pt-2 flex flex-col items-center">
+                <button type="button" class="fingerprint-btn w-14 h-14 rounded-full flex items-center justify-center text-nexora-cyan cursor-pointer">
+                    <i class="fa-solid fa-fingerprint text-2xl drop-shadow-[0_0_8px_rgba(0,242,254,0.8)]"></i>
+                </button>
+                <span class="text-[10px] text-nexora-cyan/70 font-mono mt-1 tracking-wider uppercase">TOUCH ID / BIOMETRIC</span>
+            </div>
+
+            <button type="submit" class="btn-metallic-enter w-full py-3.5 text-base font-black font-mono tracking-widest text-white uppercase cursor-pointer">
+                ENTER
+            </button>
+        </form>
+
+        <!-- Trust Badges -->
+        <div class="flex items-center justify-center space-x-6 mt-8 text-[11px] text-gray-400 font-mono border-t border-nexora-cyan/10 pt-4 w-full">
+            <span class="flex items-center"><i class="fa-solid fa-shield-halved text-nexora-cyan mr-1.5"></i> SSL 256-BIT</span>
+            <span class="flex items-center"><i class="fa-solid fa-vault text-nexora-gold mr-1.5"></i> MULTI-SIG</span>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-20 w-full bg-[#020610] border-t border-nexora-cyan/20 py-3 px-4 text-center text-[11px] text-gray-400 font-mono flex items-center justify-between">
+        <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-nexora-accent animate-ping mr-1.5"></span> TERMINAL ONLINE</span>
+        <span>&copy; 2026 NEXORA INVESTMENT TERMINAL</span>
+    </footer>
+
+    <!-- Background Chart Animation JS -->
+    <script>
+        const canvas = document.getElementById('chartCanvas');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let candles = [];
+        for (let i = 0; i < Math.ceil(canvas.width / 22) + 5; i++) {
+            candles.push({ open: 300, close: 320, high: 340, low: 290, x: i * 22 });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            candles.forEach(c => {
+                ctx.strokeStyle = c.close <= c.open ? '#00e676' : '#ff5252';
+                ctx.beginPath();
+                ctx.moveTo(c.x + 7, c.high);
+                ctx.lineTo(c.x + 7, c.low);
+                ctx.stroke();
+                c.x -= 0.4;
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
 </body>
 </html>
