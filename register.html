@@ -12,7 +12,7 @@
 
   <meta name="theme-color" content="#168ff0">
 
-  <title>Novarise - Register</title>
+  <title>Nexora - Register</title>
 
   <style>
 
@@ -712,8 +712,8 @@
         <div class="logo">
 
           <img
-            src="novarise-logo.png.avif"
-            alt="Novarise Logo"
+            src="nexora-logo.png"
+            alt="Nexora Logo"
           >
 
         </div>
@@ -744,7 +744,7 @@
 
         <div class="subtitle">
 
-          Create your Novarise account<br>
+          Create your Nexora account<br>
 
           Join today and start
 
@@ -1042,8 +1042,9 @@
                 >
 
                   <path
-  d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"
-/>
+                    d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"
+                  />
+
                   <circle
                     cx="12"
                     cy="12"
@@ -1125,7 +1126,7 @@
 
 
         <p>
-          Your Novarise account has been
+          Your Nexora account has been
           created successfully.
         </p>
 
@@ -1171,6 +1172,7 @@
     import {
       getFirestore,
       doc,
+      setDoc,
       collection,
       query,
       where,
@@ -1423,7 +1425,7 @@
 
       return (
         normalizedPhone +
-        "@novarise.local"
+        "@nexora.local"
       );
 
     }
@@ -1438,7 +1440,7 @@
     ) {
 
       return (
-        "NOVA-" +
+        "NEXORA-" +
         uid
           .substring(
             0,
@@ -1755,7 +1757,7 @@
 
 
     /* =========================================
-       REGISTER
+       REGISTER SUBMIT
        ========================================= */
 
     document
@@ -1805,10 +1807,6 @@
               "error"
             );
 
-
-            phoneInput.focus();
-
-
             return;
 
           }
@@ -1818,18 +1816,24 @@
              VALIDATE PASSWORD
              =================================== */
 
-          if (
-            password.length < 6
-          ) {
+          if (password.length < 6) {
 
             showMessage(
-              "Password must be at least 6 characters.",
+              "Password must be at least 6 characters long.",
               "error"
             );
 
+            return;
 
-            passwordInput.focus();
+          }
 
+
+          if (password !== confirmPassword) {
+
+            showMessage(
+              "Passwords do not match.",
+              "error"
+            );
 
             return;
 
@@ -1837,216 +1841,34 @@
 
 
           /* ===================================
-             CONFIRM PASSWORD
+             UI LOADING
              =================================== */
 
-          if (
-            password !==
-            confirmPassword
-          ) {
+          registerButton.disabled = true;
 
-            showMessage(
-              "Passwords do not match.",
-              "error"
-            );
-
-
-            confirmPasswordInput.focus();
-
-
-            return;
-
-          }
-
-
-          const normalizedPhone =
-            normalizePhone(
-              phone
-            );
-
-
-          const firebaseEmail =
-            phoneToFirebaseEmail(
-              phone
-            );
-
-
-          if (
-            !normalizedPhone ||
-            !firebaseEmail
-          ) {
-
-            showMessage(
-              "Invalid phone number.",
-              "error"
-            );
-
-
-            return;
-
-          }
-
-
-          registerButton.disabled =
-            true;
-
-
-          let User =
-            null;
-
-
-          let authCreated =
-            false;
+          registerButton.textContent = "Creating Account...";
 
 
           try {
 
+            /* ---------------------------------
+               CHECK REFERRER IF PROVIDED
+               --------------------------------- */
 
-            /* =================================
-               CREATE AUTH USER
-               ================================= */
+            let referrer = null;
 
-            registerButton.innerHTML =
-              "Creating account...";
+            if (referralCode) {
 
-
-            const UserCredential =
-              await createUserWithEmailAndPassword(
-                auth,
-                firebaseEmail,
-                password
-              );
-
-
-            /*
-             * IMPORTANT:
-             * Firebase property is .User
-             */
-
-            User =
-              UserCredential.user;
-
-
-            authCreated =
-              true;
-
-
-            /* =================================
-               FIND REFERRER
-               ================================= */
-
-            let referrer =
-              null;
-
-
-            if (
-              referralCode
-            ) {
-
-              registerButton.innerHTML =
-                "Checking referral...";
-
-
-              referrer =
-                await findUserByReferralCode(
-                  referralCode
-                );
-
-
-              /* --------------------------------
-                 INVALID REFERRAL
-                 -------------------------------- */
+              referrer = await findUserByReferralCode(referralCode);
 
               if (!referrer) {
 
-                /*
-                 * Since the account has just been
-                 * created and no Firestore data has
-                 * been committed yet, it is safe
-                 * to remove this Auth account.
-                 */
-
-                try {
-
-                  await deleteUser(
-                    User
-                  );
-
-                } catch (
-                  cleanupError
-                ) {
-
-                  console.error(
-                    "Invalid referral cleanup error:",
-                    cleanupError
-                  );
-
-                }
-
-
-                authCreated =
-                  false;
-
-
                 showMessage(
-                  "Referral code not found. Please check the code and try again.",
+                  "Invalid referral code. Please check and try again.",
                   "error"
                 );
 
-
                 resetRegisterButton();
-
-
-                referralCodeInput.focus();
-
-
-                return;
-
-              }
-
-
-              /* --------------------------------
-                 PREVENT SELF REFERRAL
-                 -------------------------------- */
-
-              if (
-                referrer.uid ===
-                User.uid
-              ) {
-
-                try {
-
-                  await deleteUser(
-                    User
-                  );
-
-                } catch (
-                  cleanupError
-                ) {
-
-                  console.error(
-                    "Self referral cleanup error:",
-                    cleanupError
-                  );
-
-                }
-
-
-                authCreated =
-                  false;
-
-
-                showMessage(
-                  "You cannot use your own referral code.",
-                  "error"
-                );
-
-
-                resetRegisterButton();
-
-
-                referralCodeInput.focus();
-
 
                 return;
 
@@ -2055,342 +1877,133 @@
             }
 
 
-            /* =================================
-               UPDATE FIREBASE AUTH PROFILE
-               ================================= */
+            /* ---------------------------------
+               CREATE AUTH USER
+               --------------------------------- */
 
-            await updateProfile(
-              User,
-              {
-                displayName:
-                  normalizedPhone
-              }
+            const formattedEmail = phoneToFirebaseEmail(phone);
+
+            const userCredential = await createUserWithEmailAndPassword(
+              auth,
+              formattedEmail,
+              password
             );
 
+            const user = userCredential.user;
 
-            /* =================================
-               CREATE MY REFERRAL CODE
-               ================================= */
-
-            const myReferralCode =
-              createReferralCode(
-                User.uid
-              );
+            const myReferralCode = createReferralCode(user.uid);
 
 
-            /* =================================
-               REFERRAL DATA
-               ================================= */
-
-            let referredBy =
-              null;
+            await updateProfile(user, {
+              displayName: "User " + phone.slice(-4)
+            });
 
 
-            let referredByCode =
-              null;
+            /* ---------------------------------
+               SAVE USER DATA TO FIRESTORE
+               --------------------------------- */
+
+            const batch = writeBatch(db);
+
+            const userDocRef = doc(db, "Users", user.uid);
 
 
-            if (
-              referrer &&
-              referrer.uid !==
-              User.uid
-            ) {
+            const userData = {
 
-              referredBy =
-                referrer.uid;
+              uid: user.uid,
 
+              phone: "0" + phone,
 
-              referredByCode =
-                referralCode;
+              rawPhone: phone,
 
-            }
+              normalizedPhone: "63" + phone,
 
+              email: formattedEmail,
 
-            /* =================================
-               NEW USER DATA
-               ================================= */
+              referralCode: myReferralCode,
 
-            const UserData = {
+              invitationCode: myReferralCode,
 
-              uid:
-                User.uid,
+              inviteCode: myReferralCode,
 
-              phone:
-                normalizedPhone,
+              referredBy: referrer ? referrer.uid : null,
 
-              balance:
-                50,
+              referredByCode: referralCode || null,
 
-              teamSize:
-                0,
+              balance: 0,
 
-              referralCode:
-                myReferralCode,
+              totalEarnings: 0,
 
-              invitationCode:
-                myReferralCode,
+              totalRecharge: 0,
 
-              inviteCode:
-                myReferralCode,
+              totalWithdrawal: 0,
 
-              referredBy:
-                referredBy,
+              createdAt: serverTimestamp(),
 
-              referredByCode:
-                referredByCode,
-
-              totalCommission:
-                0,
-
-              commission:
-                0,
-
-              createdAt:
-                serverTimestamp()
+              updatedAt: serverTimestamp()
 
             };
 
 
-            /* =================================
-               FIRESTORE BATCH
-               ================================= */
-
-            registerButton.innerHTML =
-              "Saving account...";
+            batch.set(userDocRef, userData);
 
 
-            const batch =
-              writeBatch(
-                db
-              );
+            /* ---------------------------------
+               UPDATE REFERRER TEAM STATS
+               --------------------------------- */
 
+            if (referrer) {
 
-            /* --------------------------------
-               CREATE USER DOCUMENT
-               -------------------------------- */
+              const referrerDocRef = doc(db, "Users", referrer.uid);
 
-            const newUserRef =
-              doc(
-                db,
-                "Users",
-                User.uid
-              );
+              batch.update(referrerDocRef, {
 
+                teamCount: increment(1),
 
-            batch.set(
-              newUserRef,
-              UserData
-            );
+                directReferralsCount: increment(1),
 
+                updatedAt: serverTimestamp()
 
-            /* --------------------------------
-               UPDATE REFERRER
-               -------------------------------- */
-
-            if (
-              referrer &&
-              referrer.uid !==
-              User.uid
-            ) {
-
-              registerButton.innerHTML =
-                "Joining referral team...";
-
-
-              const referrerRef =
-                doc(
-                  db,
-                  "Users",
-                  referrer.uid
-                );
-
-
-              batch.update(
-                referrerRef,
-                {
-                  teamSize:
-                    increment(1)
-                }
-              );
+              });
 
             }
-
-
-            /* =================================
-               COMMIT
-               ================================= */
-
-            registerButton.innerHTML =
-              "Finishing registration...";
 
 
             await batch.commit();
 
 
-            /*
-             * Firestore registration is complete.
-             *
-             * DO NOT call deleteUser() after this
-             * point if a later UI action fails.
-             */
-
-            authCreated =
-              false;
-
-
-            /* =================================
+            /* ---------------------------------
                SUCCESS
-               ================================= */
+               --------------------------------- */
 
-            document
-              .getElementById(
-                "registerSection"
-              )
-              .style.display =
-              "none";
+            document.getElementById("registerSection").style.display = "none";
 
-
-            document
-              .getElementById(
-                "successScreen"
-              )
-              .style.display =
-              "block";
+            document.getElementById("successScreen").style.display = "block";
 
 
           } catch (error) {
 
-            console.error(
-              "Registration error:",
-              error
-            );
+            console.error("Registration error:", error);
+
+            let errorMsg = "Failed to create account. Please try again.";
 
 
-            /*
-             * Only clean up Auth when we know
-             * Firestore registration has NOT
-             * been committed.
-             *
-             * This prevents deleting a valid
-             * Auth account after a successful
-             * Firestore write.
-             */
+            if (error.code === "auth/email-already-in-use") {
 
-            if (
-              authCreated &&
-              User
-            ) {
+              errorMsg = "This phone number is already registered.";
 
-              try {
+            } else if (error.code === "auth/weak-password") {
 
-                await deleteUser(
-                  User
-                );
+              errorMsg = "Password is too weak. Please use a stronger password.";
 
-              } catch (
-                cleanupError
-              ) {
+            } else if (error.code === "auth/network-request-failed") {
 
-                console.error(
-                  "Auth cleanup error:",
-                  cleanupError
-                );
-
-              }
+              errorMsg = "Network error. Please check your connection.";
 
             }
 
 
-            /* =================================
-               ERROR MESSAGE
-               ================================= */
-
-            let errorMessage =
-              "Registration failed. Please try again.";
-
-
-            if (
-              error.code ===
-              "auth/email-already-in-use"
-            ) {
-
-              errorMessage =
-                "This phone number is already registered.";
-
-            }
-
-            else if (
-              error.code ===
-              "auth/weak-password"
-            ) {
-
-              errorMessage =
-                "Password must be at least 6 characters.";
-
-            }
-
-            else if (
-              error.code ===
-              "auth/invalid-email"
-            ) {
-
-              errorMessage =
-                "Invalid phone number.";
-
-            }
-
-            else if (
-              error.code ===
-              "auth/operation-not-allowed"
-            ) {
-
-              errorMessage =
-                "Email/Password sign-in is not enabled in Firebase Authentication.";
-
-            }
-
-            else if (
-              error.code ===
-              "permission-denied" ||
-              error.code ===
-              "firestore/permission-denied"
-            ) {
-
-              errorMessage =
-                "Firestore permission denied. Please check your Firestore Rules.";
-
-            }
-
-            else if (
-              error.code ===
-              "failed-precondition"
-            ) {
-
-              errorMessage =
-                "Firestore needs an index for this query. Please check the Firebase console.";
-
-            }
-
-            else if (
-              error.message &&
-              error.message
-                .toLowerCase()
-                .includes(
-                  "permission"
-                )
-            ) {
-
-              errorMessage =
-                "Firestore permission denied. Please check your Firestore Rules.";
-
-            }
-
-
-            showMessage(
-              errorMessage,
-              "error"
-            );
-
+            showMessage(errorMsg, "error");
 
             resetRegisterButton();
 
