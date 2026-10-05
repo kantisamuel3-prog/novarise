@@ -1,1403 +1,578 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full select-none">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Novarise - Login</title>
-<link rel="preload" as="image" href="novarise-logo.png.avif" fetchpriority="high">
-
-<style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-:root {
-  --blue: #168ff0;
-  --blue-dark: #155fd6;
-  --green: #a8d92d;
-  --text: #12365d;
-  --muted: #7890aa;
-  --border: #dcecff;
-}
-
-html, body {
-  width: 100%;
-  min-height: 100%;
-}
-
-body {
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at 8% 8%, rgba(39,154,245,.11), transparent 25%),
-    radial-gradient(circle at 92% 88%, rgba(168,217,45,.10), transparent 22%),
-    linear-gradient(135deg, #f9fcff 0%, #edf7ff 52%, #f8fbff 100%);
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 28px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
-}
-
-/* Background decorations */
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  pointer-events: none;
-  z-index: 0;
-}
-
-body::before {
-  width: 430px;
-  height: 430px;
-  left: -235px;
-  top: -225px;
-  border-radius: 50%;
-  background: linear-gradient(
-    145deg,
-    rgba(22,143,240,.80),
-    rgba(22,143,240,.08)
-  );
-  opacity: .78;
-}
-
-body::after {
-  width: 500px;
-  height: 210px;
-  right: -180px;
-  bottom: -105px;
-  border-radius: 50% 50% 0 0;
-  background: linear-gradient(
-    160deg,
-    rgba(22,143,240,.78),
-    rgba(22,143,240,.04)
-  );
-}
-
-.bg-dots {
-  position: fixed;
-  right: 5.5%;
-  top: 9%;
-  width: 72px;
-  height: 72px;
-  opacity: .34;
-  background-image: radial-gradient(
-    #68b9f4 1.8px,
-    transparent 1.8px
-  );
-  background-size: 16px 16px;
-  z-index: 0;
-}
-
-/* Main layout */
-.page {
-  width: min(1120px, 100%);
-  display: grid;
-  grid-template-columns:
-    minmax(220px, .75fr)
-    minmax(420px, 1fr)
-    minmax(220px, .75fr);
-  align-items: center;
-  gap: 26px;
-  position: relative;
-  z-index: 1;
-}
-
-/* Side sections */
-.side {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-
-.side-left {
-  padding: 14px 0 14px 8px;
-}
-
-.side-right {
-  padding: 14px 8px 14px 0;
-}
-
-.side-title {
-  font-size: clamp(30px, 3vw, 42px);
-  line-height: 1.03;
-  font-weight: 700;
-  letter-spacing: -1.4px;
-  color: #168ff0;
-}
-
-.side-title span {
-  color: #8dbf20;
-}
-
-.side-copy {
-  max-width: 255px;
-  color: #6d87a1;
-  line-height: 1.55;
-  font-size: 14px;
-}
-
-.wave-line {
-  width: 115px;
-  height: 4px;
-  border-radius: 99px;
-  background: linear-gradient(
-    90deg,
-    var(--blue),
-    var(--green)
-  );
-}
-
-/* Feature items */
-.feature {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.feature-icon {
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  color: var(--blue);
-  background: rgba(232,245,255,.92);
-  border: 1px solid #d8edff;
-  box-shadow: 0 7px 18px rgba(39,125,198,.08);
-}
-
-.feature-icon svg {
-  width: 20px;
-  height: 20px;
-}
-
-.feature h3 {
-  color: #1765b6;
-  font-size: 15px;
-  margin-bottom: 4px;
-}
-
-.feature p {
-  color: #7b93aa;
-  font-size: 12.5px;
-  line-height: 1.4;
-}
-
-/* Login card */
-.login-box {
-  width: 100%;
-  max-width: 440px;
-  justify-self: center;
-  background: rgba(255,255,255,.97);
-  border: 1px solid rgba(210,232,250,.95);
-  border-radius: 24px;
-  padding: 24px 34px 25px;
-  box-shadow:
-    0 24px 55px rgba(37,105,157,.13),
-    0 7px 20px rgba(37,105,157,.06);
-  position: relative;
-  overflow: hidden;
-}
-
-.login-box::before {
-  content: "";
-  position: absolute;
-  width: 135px;
-  height: 135px;
-  right: -76px;
-  bottom: -76px;
-  border-radius: 50%;
-  border: 10px solid rgba(22,143,240,.10);
-  box-shadow:
-    0 0 0 10px rgba(168,217,45,.08),
-    0 0 0 20px rgba(22,143,240,.05);
-}
-
-.login-box::after {
-  content: "";
-  position: absolute;
-  left: -55px;
-  top: -75px;
-  width: 135px;
-  height: 135px;
-  border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    rgba(22,143,240,.11),
-    rgba(168,217,45,.08)
-  );
-}
-
-/* Logo */
-.logo {
-  text-align: center;
-  position: relative;
-  z-index: 1;
-}
-
-.logo img {
-  width: 178px;
-  max-width: 72%;
-  height: auto;
-  display: block;
-  margin: 0 auto 5px;
-}
-
-.brand-tagline {
-  color: #6f8ca8;
-  font-size: 10px;
-  letter-spacing: 2px;
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-.brand-tagline b {
-  color: #168ff0;
-}
-
-.brand-tagline em {
-  color: #a4d52c;
-  font-style: normal;
-}
-
-.divider-accent {
-  width: 84px;
-  height: 4px;
-  margin: 0 auto 13px;
-  border-radius: 99px;
-  background: linear-gradient(
-    90deg,
-    var(--blue),
-    var(--green)
-  );
-}
-
-/* Welcome */
-.welcome {
-  text-align: center;
-  margin-bottom: 16px;
-  position: relative;
-  z-index: 1;
-}
-
-.welcome h1 {
-  color: #123f70;
-  font-size: 22px;
-  margin-bottom: 5px;
-}
-
-.subtitle {
-  color: #7890aa;
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-/* Form */
-.form-area {
-  position: relative;
-  z-index: 1;
-}
-
-label {
-  display: block;
-  margin: 0 0 6px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #164e80;
-}
-
-.field-wrap {
-  position: relative;
-}
-
-/* Phone */
-.phone-input {
-  width: 100%;
-  height: 49px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #fbfdff;
-  display: flex;
-  align-items: center;
-  margin-bottom: 14px;
-  transition: .2s ease;
-}
-
-.phone-input:focus-within {
-  border-color: #65b8f5;
-  background: #fff;
-  box-shadow:
-    0 0 0 4px rgba(22,143,240,.08);
-}
-
-.field-icon {
-  color: #2293e9;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.phone-input .field-icon {
-  margin-left: 13px;
-}
-
-.field-icon svg {
-  width: 17px;
-  height: 17px;
-}
-
-.country-code {
-  height: 26px;
-  display: flex;
-  align-items: center;
-  color: #164a78;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 0 10px;
-  margin-left: 5px;
-  border-right: 1px solid #dce8f2;
-  white-space: nowrap;
-}
-
-.phone-input input {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  padding: 0 12px;
-  border: 0;
-  outline: none;
-  font-size: 14px;
-  background: transparent;
-  color: #173e61;
-}
-
-.phone-input input::placeholder,
-.password-input::placeholder {
-  color: #9aadc0;
-}
-
-/* Password */
-.password-input {
-  width: 100%;
-  height: 49px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #fbfdff;
-  padding: 0 44px 0 42px;
-  outline: none;
-  font-size: 14px;
-  color: #173e61;
-  margin-bottom: 15px;
-  transition: .2s ease;
-}
-
-.field-wrap:focus-within .password-input {
-  border-color: #65b8f5;
-  background: #fff;
-  box-shadow:
-    0 0 0 4px rgba(22,143,240,.08);
-}
-
-/* Eye */
-.eye-button {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  border: 0;
-  background: transparent;
-  color: #7d94aa;
-  cursor: pointer;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-}
-
-.eye-button:hover {
-  background: #edf7ff;
-  color: #168ff0;
-}
-
-.eye-button svg {
-  width: 19px;
-  height: 19px;
-}
-
-/* Message */
-.message {
-  display: none;
-  margin-bottom: 12px;
-  padding: 9px 11px;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 12.5px;
-  line-height: 1.35;
-}
-
-.message.error {
-  display: block;
-  background: #fff0f0;
-  border: 1px solid #ffd6d6;
-  color: #a33333;
-}
-
-.message.success {
-  display: block;
-  background: #effcf3;
-  border: 1px solid #d3f4dc;
-  color: #28733e;
-}
-
-/* Login button */
-.login-btn {
-  width: 100%;
-  height: 49px;
-  border: 0;
-  border-radius: 12px;
-  background: linear-gradient(
-    100deg,
-    #19a8ee 0%,
-    #1673e7 58%,
-    #1d5ddd 100%
-  );
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow:
-    0 10px 20px rgba(25,122,226,.19);
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    opacity .18s ease;
-}
-
-.login-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow:
-    0 13px 23px rgba(25,122,226,.23);
-}
-
-.login-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.login-btn:disabled {
-  opacity: .62;
-  cursor: not-allowed;
-}
-
-.login-arrow {
-  margin-left: 7px;
-  font-size: 18px;
-  vertical-align: -1px;
-}
-
-/* Register */
-.or-line {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin: 13px 0 11px;
-  color: #9ab0c5;
-  font-size: 11px;
-}
-
-.or-line::before,
-.or-line::after {
-  content: "";
-  height: 1px;
-  flex: 1;
-  background: #e4eef7;
-}
-
-.register a {
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #9fd2fb;
-  border-radius: 11px;
-  color: #1578d8;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 14px;
-  background: #fbfdff;
-  transition: .18s ease;
-}
-
-.register a:hover {
-  background: #eff8ff;
-  border-color: #72bdf4;
-  transform: translateY(-1px);
-}
-
-.card-note {
-  text-align: center;
-  color: #9aafc2;
-  font-size: 10.5px;
-  margin-top: 12px;
-  letter-spacing: .15px;
-}
-
-/* Tablet / smaller desktop */
-@media (max-width: 980px) {
-  body {
-    padding: 18px;
-  }
-
-  .page {
-    grid-template-columns: 1fr;
-    max-width: 500px;
-  }
-
-  .side {
-    display: none;
-  }
-
-  .login-box {
-    max-width: 500px;
-  }
-}
-
-/* Phone */
-@media (max-width: 520px) {
-  body {
-    padding: 12px;
-  }
-
-  .login-box {
-    padding: 21px 20px 22px;
-    border-radius: 20px;
-  }
-
-  .logo img {
-    width: 160px;
-  }
-
-  .welcome h1 {
-    font-size: 21px;
-  }
-
-  .subtitle {
-    font-size: 12.5px;
-  }
-}
-
-/* Short screens */
-@media (max-height: 760px) and (min-width: 981px) {
-  body {
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-
-  .login-box {
-    padding-top: 18px;
-    padding-bottom: 18px;
-  }
-
-  .logo img {
-    width: 150px;
-  }
-
-  .brand-tagline {
-    margin-bottom: 5px;
-  }
-
-  .divider-accent {
-    margin-bottom: 9px;
-  }
-
-  .welcome {
-    margin-bottom: 11px;
-  }
-
-  .phone-input {
-    margin-bottom: 10px;
-  }
-
-  .password-input {
-    margin-bottom: 11px;
-  }
-
-  .or-line {
-    margin: 9px 0 8px;
-  }
-
-  .register a {
-    height: 40px;
-  }
-
-  .card-note {
-    margin-top: 9px;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Novarise - Login</title>
+    <link rel="preload" as="image" href="novarise-logo.png.avif" fetchpriority="high">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        brand: ['Montserrat', 'sans-serif']
+                    },
+                    colors: {
+                        nexora: {
+                            navy: '#0a1628',
+                            deep: '#040814',
+                            card: '#0d1d35',
+                            cyan: '#00f2fe',
+                            blue: '#1890ff',
+                            gold: '#dfb248',
+                            goldGlow: '#ffd700',
+                            accent: '#00e676'
+                        }
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                        'pulse-cyan': 'pulseCyan 3s ease-in-out infinite',
+                        'orbit': 'orbit 10s linear infinite'
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' }
+                        },
+                        pulseCyan: {
+                            '0%, 100%': { filter: 'drop-shadow(0 0 15px rgba(0,242,254,0.4))' },
+                            '50%': { filter: 'drop-shadow(0 0 35px rgba(0,242,254,0.9)) drop-shadow(0 0 60px rgba(0,242,254,0.4))' }
+                        },
+                        orbit: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .brushed-metal-overlay {
+            background: repeating-radial-gradient(
+                circle at 50% 40%,
+                rgba(255, 255, 255, 0.015) 0px,
+                rgba(255, 255, 255, 0.015) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+        }
+
+        .text-chrome-3d {
+            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 35%, #94a3b8 65%, #64748b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.9));
+        }
+
+        .gold-ring-accent {
+            background: radial-gradient(circle, #ffe380 0%, #d4af37 60%, #996515 100%);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.8), inset 0 0 4px rgba(255, 255, 255, 0.8);
+        }
+
+        .metallic-pill-input {
+            background: linear-gradient(180deg, rgba(8, 18, 36, 0.9) 0%, rgba(4, 10, 22, 0.95) 100%);
+            border: 1.5px solid rgba(0, 242, 254, 0.25);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.8), 0 0 10px rgba(0,242,254,0.05);
+            border-radius: 9999px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .metallic-pill-input:focus-within {
+            border-color: #00f2fe;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,242,254,0.5);
+        }
+
+        .btn-metallic-enter {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 60%, #090d16 100%);
+            border: 2px solid #00f2fe;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+            border-radius: 9999px;
+            transition: all 0.25s ease;
+        }
+        .btn-metallic-enter:hover {
+            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 60%, #0f172a 100%);
+            border-color: #38bdf8;
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.8), inset 0 1px 4px rgba(255, 255, 255, 0.8);
+            transform: scale(1.02);
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #020712; }
+        ::-webkit-scrollbar-thumb { background: #00f2fe; border-radius: 2px; }
+    </style>
 </head>
+<body class="flex flex-col justify-between relative overflow-x-hidden selection:bg-nexora-cyan selection:text-black">
 
-<body>
+    <!-- Background Animated Trading Canvas & Overlays -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+        <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
 
-<div class="bg-dots"></div>
-
-<main class="page">
-
-  <!-- LEFT SIDE -->
-  <section class="side side-left">
-
-    <div>
-      <div class="side-title">
-        Together<br>
-        <span>We Rise</span>
-      </div>
-
-      <div
-        class="wave-line"
-        style="margin:18px 0;"
-      ></div>
-
-      <p class="side-copy">
-        More opportunities. A brighter future.
-        With <strong>Novarise.</strong>
-      </p>
-    </div>
-
-    <div class="feature">
-
-      <div class="feature-icon">
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M12 3l7 3v5c0 4.6-3 8.7-7 10-4-1.3-7-5.4-7-10V6l7-3z"/>
-          <path d="M9.5 12l1.7 1.7 3.5-3.7"/>
-        </svg>
-
-      </div>
-
-      <div>
-        <h3>Secure Access</h3>
-        <p>Your information is protected.</p>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- LOGIN CARD -->
-  <section class="login-box">
-
-    <div class="logo">
-      <img
-        src="novarise-logo.png.avif"
-        alt="Novarise Logo"
-        width="178"
-        height="auto"
-        decoding="sync"
-        fetchpriority="high"
-      >
-    </div>
-
-    <div class="brand-tagline">
-      <b>BUILD</b>
-      &nbsp;•&nbsp;
-      <b>INVEST</b>
-      &nbsp;•&nbsp;
-      <em>GROW</em>
-    </div>
-
-    <div class="divider-accent"></div>
-
-
-    <div class="welcome">
-
-      <h1>Welcome Back!</h1>
-
-      <div class="subtitle">
-        Login to your account to continue<br>
-        your journey with Novarise.
-      </div>
-
-    </div>
-
-
-    <div
-      id="message"
-      class="message"
-    ></div>
-
-
-    <!-- LOGIN FORM -->
-    <form
-      id="loginForm"
-      class="form-area"
-    >
-
-      <!-- PHONE -->
-      <label for="phone">
-        Phone Number
-      </label>
-
-      <div class="field-wrap">
-
-        <div class="phone-input">
-
-          <span
-            class="field-icon"
-            aria-hidden="true"
-          >
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-
-              <path d="M6.6 3.5h2.2l1.1 4-1.8 1.5a15.5 15.5 0 0 0 6.9 6.9l1.5-1.8 4 1.1v2.2c0 1-.8 1.9-1.8 1.9C11.1 19.2 4.8 12.9 4.7 5.3c0-1 .8-1.8 1.9-1.8z"/>
-
-            </svg>
-
-          </span>
-
-
-          <span class="country-code">
-            +63
-          </span>
-
-
-          <input
-            id="phone"
-            type="tel"
-            placeholder="Enter your phone number"
-            autocomplete="tel"
-            inputmode="numeric"
-            maxlength="10"
-            pattern="9[0-9]{9}"
-            required
-          >
-
+        <div class="absolute inset-0 flex items-center justify-center opacity-25">
+            <div class="w-[500px] h-[500px] border border-nexora-cyan/30 rotate-45 rounded-sm"></div>
+            <div class="absolute w-[420px] h-[420px] border border-nexora-cyan/20 rotate-45 rounded-sm"></div>
+            <div class="absolute w-[340px] h-[340px] border border-nexora-blue/20 rotate-45 rounded-sm"></div>
+            <div class="absolute -left-20 top-1/4 w-64 h-64 border border-nexora-cyan/25 rotate-45"></div>
+            <div class="absolute -right-20 top-1/4 w-64 h-64 border border-nexora-cyan/25 rotate-45"></div>
         </div>
 
-      </div>
-
-
-      <!-- PASSWORD -->
-      <label for="password">
-        Password
-      </label>
-
-      <div class="field-wrap">
-
-        <span
-          class="field-icon"
-          aria-hidden="true"
-          style="position:absolute;left:13px;top:50%;transform:translateY(-50%);"
-        >
-
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-
-            <rect
-              x="5"
-              y="10"
-              width="14"
-              height="10"
-              rx="2"
-            />
-
-            <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
-
-          </svg>
-
-        </span>
-
-
-        <input
-          id="password"
-          class="password-input"
-          type="password"
-          placeholder="Enter your password"
-          autocomplete="current-password"
-          required
-        >
-
-
-        <button
-          type="button"
-          class="eye-button"
-          id="togglePassword"
-          aria-label="Show password"
-        >
-
-          <svg
-            id="eyeIcon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-
-            <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/>
-
-            <circle
-              cx="12"
-              cy="12"
-              r="2.5"
-            />
-
-          </svg>
-
-        </button>
-
-      </div>
-
-
-      <!-- LOGIN BUTTON -->
-      <button
-        id="loginBtn"
-        class="login-btn"
-        type="submit"
-      >
-
-        Login
-        <span class="login-arrow">
-          →
-        </span>
-
-      </button>
-
-    </form>
-
-
-    <!-- OR -->
-    <div class="or-line">
-      <span>or</span>
-    </div>
-
-
-    <!-- CREATE ACCOUNT -->
-    <div class="register">
-
-      <a href="register.html">
-        Create Account
-      </a>
-
-    </div>
-
-
-    <div class="card-note">
-      Secure access • Simple experience • Built for growth
-    </div>
-
-  </section>
-
-
-  <!-- RIGHT SIDE -->
-  <section class="side side-right">
-
-    <div class="feature">
-
-      <div class="feature-icon">
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-
-          <path d="M4 19V5"/>
-          <path d="M4 19h16"/>
-          <path d="M7 15l3-4 3 2 5-7"/>
-
+        <svg class="absolute inset-0 w-full h-full stroke-nexora-cyan/20 fill-none" xmlns="http://www.w3.org/2000/svg">
+            <g stroke-width="1">
+                <path d="M 50 150 H 220 L 280 210 V 350 H 150" stroke-dasharray="4 4" />
+                <path d="M 80 180 H 200 L 250 230 V 310" />
+                <circle cx="280" cy="210" r="3" class="fill-nexora-cyan/60" />
+                <path d="M 1200 150 H 1030 L 970 210 V 350 H 1100" stroke-dasharray="4 4" />
+                <circle cx="970" cy="210" r="3" class="fill-nexora-cyan/60" />
+            </g>
         </svg>
+    </div>
 
-      </div>
+    <!-- Ticker Tape Header -->
+    <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-2">
+        <div class="flex items-center text-xs font-mono">
+            <div class="px-4 py-1 bg-nexora-cyan/10 border-r border-nexora-cyan/30 text-nexora-cyan font-bold flex items-center shrink-0 z-10 shadow-lg">
+                <span class="w-2 h-2 rounded-full bg-nexora-accent animate-ping mr-2"></span>
+                <span>NOVARISE TAPE</span>
+            </div>
 
-      <div>
+            <div class="overflow-hidden whitespace-nowrap flex w-full">
+                <div class="inline-flex animate-marquee space-x-10 items-center pl-6">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-400">BTC/USD</span>
+                        <span class="text-white font-semibold">$94,850.20</span>
+                        <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +4.12%</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-400">ETH/USD</span>
+                        <span class="text-white font-semibold">$3,520.80</span>
+                        <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +2.45%</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-400">NOVA/USD</span>
+                        <span class="text-nexora-cyan font-bold">$18.95</span>
+                        <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +18.40%</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-400">GOLD/OUNCE</span>
+                        <span class="text-white font-semibold">$2,650.10</span>
+                        <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +0.85%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-        <h3>Grow Together</h3>
+    <!-- Main Container -->
+    <main class="relative z-10 my-auto py-8 px-4 flex flex-col items-center justify-center w-full max-w-xl mx-auto text-center">
+        
+        <!-- Logo Display -->
+        <div class="relative w-32 h-32 mb-2 flex items-center justify-center animate-pulse-cyan">
+            <div class="absolute inset-0 rounded-full border-2 border-dashed border-nexora-cyan/50 animate-orbit"></div>
+            <img src="novarise-logo.png.avif" alt="Novarise Logo" class="w-24 h-auto drop-shadow-[0_0_20px_rgba(0,242,254,0.8)] relative z-10">
+        </div>
 
-        <p>
-          More opportunities for a better tomorrow.
+        <!-- Brand Title -->
+        <div class="flex items-center justify-center space-x-1 tracking-wider text-4xl sm:text-5xl font-black font-brand mt-1 mb-1">
+            <span class="text-chrome-3d">NOVA</span>
+            <span class="relative inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 mx-1 border-2 border-nexora-gold rounded-full gold-ring-accent">
+                <span class="absolute w-full h-[2px] bg-nexora-goldGlow rotate-45"></span>
+                <span class="absolute w-full h-[2px] bg-nexora-goldGlow -rotate-45"></span>
+                <span class="w-3 h-3 rounded-full bg-slate-900 border border-nexora-gold"></span>
+            </span>
+            <span class="text-chrome-3d">RISE</span>
+        </div>
+
+        <p class="text-xs sm:text-sm font-bold tracking-[0.3em] text-nexora-gold flex items-center justify-center uppercase font-mono mb-6">
+            <span>BUILD • INVEST • GROW</span>
+            <i class="fa-solid fa-arrow-trend-up ml-2 text-nexora-accent"></i>
         </p>
 
-      </div>
+        <!-- Dynamic Message Box -->
+        <div id="message" class="hidden w-full max-w-sm mb-4 p-3 rounded-2xl text-xs font-mono border transition-all text-center"></div>
 
-    </div>
+        <!-- LOGIN FORM -->
+        <form id="loginForm" class="w-full max-w-sm space-y-4">
+            
+            <!-- PHONE INPUT -->
+            <div class="relative">
+                <div class="metallic-pill-input flex items-center px-4 py-3">
+                    <div class="text-gray-300 pr-3 border-r border-nexora-cyan/30 flex items-center text-lg">
+                        <i class="fa-solid fa-mobile-screen-button text-nexora-cyan"></i>
+                    </div>
+                    <div class="flex items-center w-full pl-3 font-mono text-sm">
+                        <span class="text-nexora-cyan font-bold mr-2">+63</span>
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            placeholder="ENTER PHONE NUMBER" 
+                            autocomplete="tel"
+                            inputmode="numeric"
+                            maxlength="10"
+                            pattern="9[0-9]{9}"
+                            required 
+                            class="w-full bg-transparent text-white font-semibold tracking-wider placeholder-gray-500 uppercase focus:outline-none"
+                        >
+                    </div>
+                </div>
+            </div>
 
+            <!-- PASSWORD INPUT -->
+            <div class="relative">
+                <div class="metallic-pill-input flex items-center px-4 py-3">
+                    <div class="text-gray-300 pr-3 border-r border-nexora-cyan/30 flex items-center text-lg">
+                        <i class="fa-solid fa-lock text-nexora-cyan"></i>
+                    </div>
+                    <div class="flex items-center w-full pl-3 font-mono text-sm relative">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="ENTER PASSWORD" 
+                            autocomplete="current-password"
+                            required 
+                            class="w-full bg-transparent text-white font-semibold tracking-widest placeholder-gray-500 uppercase focus:outline-none pr-8"
+                        >
+                        <button 
+                            type="button" 
+                            id="togglePassword" 
+                            class="absolute right-0 text-gray-400 hover:text-nexora-cyan focus:outline-none transition-colors p-1"
+                            aria-label="Show password"
+                        >
+                            <svg id="eyeIcon" class="w-5 h-5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/>
+                                <circle cx="12" cy="12" r="2.5"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-    <div class="feature">
+            <!-- SUBMIT BUTTON -->
+            <div class="pt-2">
+                <button 
+                    type="submit" 
+                    id="loginBtn" 
+                    class="btn-metallic-enter w-full py-3.5 text-base font-black font-mono tracking-widest text-white uppercase cursor-pointer flex items-center justify-center space-x-2"
+                >
+                    <span>LOGIN</span>
+                    <span class="login-arrow text-nexora-cyan">→</span>
+                </button>
+            </div>
+        </form>
 
-      <div class="feature-icon">
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-
-          <circle
-            cx="9"
-            cy="8"
-            r="3"
-          />
-
-          <circle
-            cx="17"
-            cy="9"
-            r="2.5"
-          />
-
-          <path
-            d="M3.5 19c.7-3 2.6-4.5 5.5-4.5S13.8 16 14.5 19"
-          />
-
-          <path
-            d="M14 15c2.7-.8 5.5.4 6.5 3"
-          />
-
-        </svg>
-
-      </div>
-
-      <div>
-
-        <h3>Stronger Community</h3>
-
-        <p>
-          We build progress, side by side.
+        <!-- REGISTER LINK -->
+        <p class="text-xs text-gray-400 font-sans mt-6">
+            Don't have an account? 
+            <a href="register.html" class="text-nexora-gold hover:text-nexora-goldGlow font-semibold underline font-mono ml-1">Create Account</a>
         </p>
 
-      </div>
+        <!-- Trust Badges -->
+        <div class="flex items-center justify-center space-x-6 mt-8 text-[11px] text-gray-400 font-mono border-t border-nexora-cyan/10 pt-4 w-full">
+            <span class="flex items-center"><i class="fa-solid fa-shield-halved text-nexora-cyan mr-1.5"></i> SECURE ACCESS</span>
+            <span class="flex items-center"><i class="fa-solid fa-vault text-nexora-gold mr-1.5"></i> SIMPLE EXPERIENCE</span>
+            <span class="flex items-center"><i class="fa-solid fa-chart-line text-nexora-accent mr-1.5"></i> BUILT FOR GROWTH</span>
+        </div>
+    </main>
 
-    </div>
+    <!-- Footer -->
+    <footer class="relative z-20 w-full bg-[#020610] border-t border-nexora-cyan/20 py-3 px-4 text-center text-[11px] text-gray-400 font-mono flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto">
+        <div class="flex items-center space-x-3">
+            <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-nexora-accent animate-ping mr-1.5"></span> SYSTEM ONLINE</span>
+            <span class="text-gray-600">|</span>
+            <span>NOVARISE V3.8</span>
+        </div>
+        <div class="mt-1 sm:mt-0">
+            <span>&copy; 2026 NOVARISE. ALL RIGHTS RESERVED.</span>
+        </div>
+    </footer>
 
-  </section>
+    <!-- Background Candlestick Chart Script -->
+    <script>
+        const canvas = document.getElementById('chartCanvas');
+        const ctx = canvas.getContext('2d');
 
-</main>
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
+        let candles = [];
+        const candleWidth = 14;
+        const spacing = 22;
 
-<!-- =========================
-     FIREBASE
-     ========================= -->
+        function initCandles() {
+            candles = [];
+            const count = Math.ceil(canvas.width / spacing) + 5;
+            let currentPrice = canvas.height * 0.55;
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+            for (let i = 0; i < count; i++) {
+                const open = currentPrice;
+                const close = open + (Math.random() - 0.48) * 35;
+                const high = Math.max(open, close) + Math.random() * 15;
+                const low = Math.min(open, close) - Math.random() * 15;
+                candles.push({ open, close, high, low, x: i * spacing });
+                currentPrice = close;
+            }
+        }
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+        function drawChart() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            for (let i = 0; i < candles.length; i++) {
+                const c = candles[i];
+                const isBullish = c.close <= c.open;
+                ctx.strokeStyle = isBullish ? '#00e676' : '#ff5252';
+                ctx.fillStyle = isBullish ? 'rgba(0, 230, 118, 0.5)' : 'rgba(255, 82, 82, 0.5)';
 
-<script>
+                ctx.beginPath();
+                ctx.moveTo(c.x + candleWidth / 2, c.high);
+                ctx.lineTo(c.x + candleWidth / 2, c.low);
+                ctx.stroke();
 
-/* =========================
-   FIREBASE CONFIG
-   ========================= */
+                const bodyY = Math.min(c.open, c.close);
+                const bodyHeight = Math.max(Math.abs(c.open - c.close), 2);
+                ctx.fillRect(c.x, bodyY, candleWidth, bodyHeight);
 
-const firebaseConfig = {
+                c.x -= 0.4;
+            }
 
-  apiKey:
-    "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+            if (candles.length > 0 && candles[0].x < -spacing) {
+                const last = candles[candles.length - 1];
+                const open = last.close;
+                const close = open + (Math.random() - 0.48) * 35;
+                const high = Math.max(open, close) + Math.random() * 15;
+                const low = Math.min(open, close) - Math.random() * 15;
+                candles.shift();
+                candles.push({ open, close, high, low, x: last.x + spacing });
+            }
 
-  authDomain:
-    "investpro-2dafb.firebaseapp.com",
+            requestAnimationFrame(drawChart);
+        }
 
-  projectId:
-    "investpro-2dafb",
+        initCandles();
+        drawChart();
+    </script>
 
-  storageBucket:
-    "investpro-2dafb.firebasestorage.app",
+    <!-- =========================
+         FIREBASE SDKs
+         ========================= -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-  messagingSenderId:
-    "135092039764",
+    <!-- =========================
+         YOUR EXACT FIREBASE LOGIC
+         ========================= -->
+    <script>
 
-  appId:
-    "1:135092039764:web:c4c71eef0c904346a77dc1",
+    /* =========================
+       FIREBASE CONFIG
+       ========================= */
 
-  measurementId:
-    "G-0L77SFTC4F"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+      authDomain: "investpro-2dafb.firebaseapp.com",
+      projectId: "investpro-2dafb",
+      storageBucket: "investpro-2dafb.firebasestorage.app",
+      messagingSenderId: "135092039764",
+      appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
+      measurementId: "G-0L77SFTC4F"
+    };
 
+    /* =========================
+       INITIALIZE FIREBASE
+       ========================= */
 
-/* =========================
-   INITIALIZE FIREBASE
-   ========================= */
+    firebase.initializeApp(firebaseConfig);
 
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-  
-auth.setPersistence(
-  firebase.auth.Auth.Persistence.LOCAL
-);
-
-/* =========================
-   ELEMENTS
-   ========================= */
-
-const phoneInput =
-  document.getElementById("phone");
-
-const passwordInput =
-  document.getElementById("password");
-
-const loginButton =
-  document.getElementById("loginBtn");
-
-const messageBox =
-  document.getElementById("message");
-
-const togglePassword =
-  document.getElementById("togglePassword");
-
-
-/* =========================
-   PASSWORD VISIBILITY
-   ========================= */
-
-togglePassword.addEventListener(
-  "click",
-  function () {
-
-    const showing =
-      passwordInput.type === "text";
-
-    passwordInput.type =
-      showing
-        ? "password"
-        : "text";
-
-    this.setAttribute(
-      "aria-label",
-      showing
-        ? "Show password"
-        : "Hide password"
+    const auth = firebase.auth();
+      
+    auth.setPersistence(
+      firebase.auth.Auth.Persistence.LOCAL
     );
 
-  }
-);
+    /* =========================
+       ELEMENTS
+       ========================= */
 
+    const phoneInput = document.getElementById("phone");
+    const passwordInput = document.getElementById("password");
+    const loginButton = document.getElementById("loginBtn");
+    const messageBox = document.getElementById("message");
+    const togglePassword = document.getElementById("togglePassword");
 
-/* =========================
-   NORMALIZE PHONE
-   ========================= */
+    /* =========================
+       PASSWORD VISIBILITY
+       ========================= */
 
-function normalizePhone(phone) {
+    togglePassword.addEventListener("click", function () {
+      const showing = passwordInput.type === "text";
+      passwordInput.type = showing ? "password" : "text";
 
-  phone =
-    phone.replace(/\D/g, "");
-
-  if (/^9\d{9}$/.test(phone)) {
-
-    return "63" + phone;
-
-  }
-
-  return "";
-
-}
-
-
-/* =========================
-   PHONE → FIREBASE EMAIL
-   ========================= */
-
-function phoneToFirebaseEmail(phone) {
-
-  const normalized =
-    normalizePhone(phone);
-
-  if (!normalized) {
-
-    return "";
-
-  }
-
-  return normalized +
-    "@novarise.local";
-
-}
-
-
-/* =========================
-   SHOW MESSAGE
-   ========================= */
-
-function showMessage(
-  message,
-  type
-) {
-
-  messageBox.textContent =
-    message;
-
-  messageBox.className =
-    "message " + type;
-
-}
-
-
-/* =========================
-   PHONE INPUT
-   ========================= */
-
-phoneInput.addEventListener(
-  "input",
-  function () {
-
-    this.value =
-      this.value.replace(
-        /\D/g,
-        ""
+      this.setAttribute(
+        "aria-label",
+        showing ? "Show password" : "Hide password"
       );
+    });
 
+    /* =========================
+       NORMALIZE PHONE
+       ========================= */
 
-    if (this.value.length > 10) {
-
-      this.value =
-        this.value.substring(
-          0,
-          10
-        );
-
+    function normalizePhone(phone) {
+      phone = phone.replace(/\D/g, "");
+      if (/^9\d{9}$/.test(phone)) {
+        return "63" + phone;
+      }
+      return "";
     }
 
+    /* =========================
+       PHONE → FIREBASE EMAIL
+       ========================= */
 
-    if (
-      this.value.length > 0 &&
-      this.value.charAt(0) !== "9"
-    ) {
-
-      this.value = "";
-
-      showMessage(
-        "Phone number must start with 9.",
-        "error"
-      );
-
-      return;
-
+    function phoneToFirebaseEmail(phone) {
+      const normalized = normalizePhone(phone);
+      if (!normalized) {
+        return "";
+      }
+      return normalized + "@novarise.local";
     }
 
+    /* =========================
+       SHOW MESSAGE
+       ========================= */
 
-    messageBox.className =
-      "message";
+    function showMessage(message, type) {
+      messageBox.textContent = message;
+      messageBox.classList.remove("hidden", "bg-red-500/20", "text-red-300", "border-red-500/40", "bg-emerald-500/20", "text-emerald-300", "border-emerald-500/40");
 
-    messageBox.textContent =
-      "";
+      if (type === "error") {
+        messageBox.classList.add("bg-red-500/20", "text-red-300", "border-red-500/40");
+      } else {
+        messageBox.classList.add("bg-emerald-500/20", "text-emerald-300", "border-emerald-500/40");
+      }
+    }
 
-  }
-);
+    /* =========================
+       PHONE INPUT
+       ========================= */
 
+    phoneInput.addEventListener("input", function () {
+      this.value = this.value.replace(/\D/g, "");
 
-/* =========================
-   LOGIN
-   ========================= */
+      if (this.value.length > 10) {
+        this.value = this.value.substring(0, 10);
+      }
 
-document
-  .getElementById("loginForm")
-  .addEventListener(
-    "submit",
-    function (event) {
+      if (this.value.length > 0 && this.value.charAt(0) !== "9") {
+        this.value = "";
+        showMessage("Phone number must start with 9.", "error");
+        return;
+      }
 
+      messageBox.classList.add("hidden");
+      messageBox.textContent = "";
+    });
+
+    /* =========================
+       LOGIN
+       ========================= */
+
+    document.getElementById("loginForm").addEventListener("submit", function (event) {
       event.preventDefault();
 
+      const phone = phoneInput.value.trim();
+      const password = passwordInput.value;
 
-      const phone =
-        phoneInput.value.trim();
-
-      const password =
-        passwordInput.value;
-
-
-      if (
-        !phone ||
-        !password
-      ) {
-
-        showMessage(
-          "Please enter your phone number and password.",
-          "error"
-        );
-
+      if (!phone || !password) {
+        showMessage("Please enter your phone number and password.", "error");
         return;
-
       }
 
-
-      if (
-        !/^9\d{9}$/.test(phone)
-      ) {
-
-        showMessage(
-          "Please enter a valid 10-digit Philippine mobile number starting with 9.",
-          "error"
-        );
-
+      if (!/^9\d{9}$/.test(phone)) {
+        showMessage("Please enter a valid 10-digit Philippine mobile number starting with 9.", "error");
         phoneInput.focus();
-
         return;
-
       }
 
-
-      const firebaseEmail =
-        phoneToFirebaseEmail(
-          phone
-        );
-
+      const firebaseEmail = phoneToFirebaseEmail(phone);
 
       if (!firebaseEmail) {
-
-        showMessage(
-          "Invalid phone number.",
-          "error"
-        );
-
+        showMessage("Invalid phone number.", "error");
         return;
-
       }
 
+      loginButton.disabled = true;
+      loginButton.innerHTML = "Logging in...";
 
-      loginButton.disabled =
-        true;
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+          return auth.signInWithEmailAndPassword(firebaseEmail, password);
+        })
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log("LOGIN SUCCESS:", user.email);
 
-      loginButton.innerHTML =
-        "Logging in...";
+          return auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => {
+              return user.getIdToken(true);
+            })
+            .then(() => {
+              console.log("SESSION SAVED:", auth.currentUser);
 
-
-      auth
-  .setPersistence(
-    firebase.auth.Auth.Persistence.LOCAL
-  )
-
-  .then(() => {
-
-    return auth.signInWithEmailAndPassword(
-      firebaseEmail,
-      password
-    );
-
-  })
-
-  .then((userCredential) => {
-
-  const user = userCredential.user;
-
-  console.log(
-    "LOGIN SUCCESS:",
-    user.email
-  );
-
-  return auth.setPersistence(
-    firebase.auth.Auth.Persistence.LOCAL
-  )
-  .then(() => {
-
-    return user.getIdToken(true);
-
-  })
-  .then(() => {
-
-    console.log(
-      "SESSION SAVED:",
-      auth.currentUser
-    );
-
-    if (
-      user.email ===
-      "639999999999@novarise.local"
-    ) {
-
-      window.location.href =
-        "admin-withdraw.html";
-
-    } else {
-
-      window.location.href =
-        "dashboard.html";
-
-    }
-
-  });
-
-})
+              if (user.email === "639999999999@novarise.local") {
+                window.location.href = "admin-withdraw.html";
+              } else {
+                window.location.href = "dashboard.html";
+              }
+            });
+        })
         .catch((error) => {
+          console.error("Firebase login error:", error);
 
-          console.error(
-            "Firebase login error:",
-            error
-          );
-
-
-          let message =
-            "Login failed. Please check your phone number and password.";
-
+          let message = "Login failed. Please check your phone number and password.";
 
           if (
-            error.code ===
-              "auth/invalid-credential" ||
-
-            error.code ===
-              "auth/wrong-password" ||
-
-            error.code ===
-              "auth/user-not-found"
+            error.code === "auth/invalid-credential" ||
+            error.code === "auth/wrong-password" ||
+            error.code === "auth/user-not-found"
           ) {
-
-            message =
-              "Incorrect phone number or password.";
-
+            message = "Incorrect phone number or password.";
+          } else if (error.code === "auth/too-many-requests") {
+            message = "Too many login attempts. Please try again later.";
           }
 
+          showMessage(message, "error");
 
-          else if (
-            error.code ===
-              "auth/too-many-requests"
-          ) {
-
-            message =
-              "Too many login attempts. Please try again later.";
-
-          }
-
-
-          showMessage(
-            message,
-            "error"
-          );
-
-
-          loginButton.disabled =
-            false;
-
-          loginButton.innerHTML =
-            'Login <span class="login-arrow">→</span>';
-
+          loginButton.disabled = false;
+          loginButton.innerHTML = 'Login <span class="login-arrow">→</span>';
         });
+    });
 
-    }
-  );
-
-</script>
-
+    </script>
 </body>
 </html>
