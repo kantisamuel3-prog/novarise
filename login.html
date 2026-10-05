@@ -189,14 +189,39 @@
     <main class="relative z-10 my-auto py-8 px-4 flex flex-col items-center justify-center w-full max-w-xl mx-auto text-center">
         
         <!-- Logo Display -->
-<div class="relative w-28 h-28 mb-2 flex items-center justify-center animate-pulse-cyan">
-    <div class="absolute inset-0 rounded-full border-2 border-dashed border-nexora-cyan/50 animate-orbit"></div>
-    
-    <!-- Styled "N" Logo Badge -->
-    <div class="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-nexora-card via-[#0a182e] to-nexora-deep border-2 border-nexora-cyan shadow-[0_0_25px_rgba(0,242,254,0.6)] flex items-center justify-center">
-        <span class="font-brand font-black text-4xl text-transparent bg-clip-text bg-gradient-to-b from-white via-nexora-cyan to-nexora-blue drop-shadow-[0_2px_8px_rgba(0,242,254,0.8)]">
-            N
-        </span>
+<div class="relative w-36 h-36 mb-1 flex items-center justify-center">
+    <!-- Glowing Outer Aura -->
+    <div class="absolute inset-0 rounded-full bg-nexora-cyan/20 blur-xl animate-pulse"></div>
+
+    <!-- Orbiting Dashed Ring -->
+    <div class="absolute inset-2 rounded-full border-2 border-dashed border-nexora-cyan/40 animate-orbit"></div>
+
+    <!-- Core Sphere Container -->
+    <div class="relative z-10 w-24 h-24 rounded-full bg-radial from-[#00f2fe]/30 via-[#0a1f3d] to-[#040914] border border-nexora-cyan/60 shadow-[0_0_35px_rgba(0,242,254,0.7)] flex items-center justify-center overflow-hidden backdrop-blur-sm">
+        
+        <!-- Glowing Grid Line Background Effect -->
+        <div class="absolute inset-0 opacity-30 bg-[linear-gradient(to_right,#00f2fe_1px,transparent_1px),linear-gradient(to_bottom,#00f2fe_1px,transparent_1px)] bg-[size:8px_8px]"></div>
+
+        <!-- Styled Custom 3D "N" Symbol -->
+        <svg class="w-14 h-14 relative z-10 drop-shadow-[0_0_12px_rgba(0,242,254,1)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="nLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="50%" stop-color="#00f2fe"/>
+                    <stop offset="100%" stop-color="#0284c7"/>
+                </linearGradient>
+                <linearGradient id="nRight" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00f2fe"/>
+                    <stop offset="100%" stop-color="#0369a1"/>
+                </linearGradient>
+            </defs>
+            <!-- Left Column -->
+            <path d="M 22 80 L 22 20 L 38 20 L 38 80 Z" fill="url(#nLeft)" />
+            <!-- Diagonal Ribbon -->
+            <path d="M 38 20 L 78 80 L 62 80 L 22 20 Z" fill="url(#nLeft)" opacity="0.9" />
+            <!-- Right Column -->
+            <path d="M 62 20 L 78 20 L 78 80 L 62 80 Z" fill="url(#nRight)" />
+        </svg>
     </div>
 </div>
 
