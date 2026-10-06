@@ -695,10 +695,17 @@ canvas#liveChart {
   </div>
 </div>
 
-<nav class="bottom-nav">
-  <a href="dashboard.html">Live Terminal</a>
-  <a href="account.html">Account</a>
-</nav>
+<!-- Bottom Navigation Bar (Tulad ng nasa ibaba ng larawan) -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#111827] border-t border-gray-800 py-3 px-6 flex justify-around items-center text-xs text-gray-400">
+    <a href="dashboard.html" class="flex flex-col items-center hover:text-white transition">
+      <i class="fa-solid fa-chart-line text-lg mb-1"></i>
+      <span>Live Terminal</span>
+    </a>
+    <a href="account.html" class="flex flex-col items-center text-blue-500 font-semibold">
+      <i class="fa-solid fa-user text-lg mb-1"></i>
+      <span>Account</span>
+    </a>
+  </nav>
 
 <script>
   // =====================================================
