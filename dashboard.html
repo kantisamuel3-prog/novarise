@@ -15,9 +15,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-/* =====================================================
-   GLOBAL & NEXORA DARK TRADING THEME (MOBILE OPTIMIZED)
-===================================================== */
 * {
   box-sizing: border-box;
 }
@@ -39,9 +36,6 @@ body {
   min-height: 100vh;
 }
 
-/* =====================================================
-   TRADING TICKER BAR (TOP)
-===================================================== */
 .ticker-bar {
   background: #03050a;
   border-bottom: 1px solid rgba(0, 212, 255, 0.15);
@@ -69,9 +63,6 @@ body {
 .up { color: #10b981; }
 .down { color: #ef4444; }
 
-/* =====================================================
-   HEADER
-===================================================== */
 header {
   background: rgba(10, 14, 26, 0.85);
   backdrop-filter: blur(12px);
@@ -131,9 +122,6 @@ header {
   font-size: 11px;
 }
 
-/* =====================================================
-   MAIN CONTAINER
-===================================================== */
 main {
   max-width: 1200px;
   margin: 12px auto;
@@ -162,9 +150,6 @@ main {
   word-break: break-all;
 }
 
-/* =====================================================
-   SIDE-BY-SIDE CONTAINER (WALLET & CONVERTER)
-===================================================== */
 .side-by-side-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -258,7 +243,7 @@ main {
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
   padding: 4px 1px;
-  font-size: 7px;
+  font-size: 6.5px;
   font-weight: 700;
   border-radius: 4px;
   cursor: pointer;
@@ -309,9 +294,6 @@ main {
   width: 100%;
 }
 
-/* =====================================================
-   MIDDLE SECTION: GRAPH ONLY
-===================================================== */
 .chart-card {
   background: rgba(8, 12, 22, 0.95);
   border: 1px solid rgba(0, 212, 255, 0.25);
@@ -343,9 +325,6 @@ canvas#liveChart {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* =====================================================
-   BOTTOM SECTION: MARKETS & TRADING CODE SIDE-BY-SIDE
-===================================================== */
 .bottom-side-by-side {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -424,7 +403,6 @@ canvas#liveChart {
 .log-entry .loss { color: #ef4444; font-weight: bold; }
 .log-entry .action { color: #00d4ff; }
 
-/* PROGRESS BAR */
 .progress-container {
   margin-top: 6px;
   display: none;
@@ -445,9 +423,6 @@ canvas#liveChart {
   transition: width 0.3s ease;
 }
 
-/* =====================================================
-   MODALS
-===================================================== */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -485,7 +460,6 @@ canvas#liveChart {
 
 <body>
 
-<!-- TRADING TICKER BAR -->
 <div class="ticker-bar">
   <div class="ticker-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up" id="tickNex">$18.95 (+18.4%)</span></div>
   <div class="ticker-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up" id="tickBtc">$96,420.00 (+3.2%)</span></div>
@@ -493,7 +467,6 @@ canvas#liveChart {
   <div class="ticker-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>
 </div>
 
-<!-- HEADER -->
 <header>
   <div class="logo">
     <div class="logo-icon">N</div>
@@ -514,7 +487,6 @@ canvas#liveChart {
     </div>
   </div>
 
-  <!-- SIDE-BY-SIDE CONTAINER (WALLET & CONVERTER) -->
   <div class="side-by-side-container">
     
     <!-- 1. ACCOUNT WALLET -->
@@ -540,39 +512,41 @@ canvas#liveChart {
       </button>
     </div>
 
-    <!-- 2. DUAL CONVERTER CARD -->
+    <!-- 2. DUAL CURRENCY CONVERTER CARD -->
     <div class="card converter-card">
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h4 style="margin: 0; color: #00d4ff; font-size: 9px;">💱 Converter</h4>
-          <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 7px; font-weight: 700; padding: 1px 3px; border-radius: 20px;">$1=₱60</span>
+          <h4 style="margin: 0; color: #00d4ff; font-size: 9px; display: flex; align-items: center; gap: 3px;"><i class="fa-solid fa-rotate"></i> Dual Currency Converter</h4>
+          <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 7px; font-weight: 700; padding: 1px 4px; border-radius: 20px;">$1 = ₱60.00</span>
         </div>
 
         <!-- CONVERTER TABS -->
         <div class="converter-tabs">
-          <button class="tab-btn active" onclick="switchConverterTab('phpToUsd', event)">PHP ➔ USD</button>
-          <button class="tab-btn" onclick="switchConverterTab('usdToPhp', event)">USD ➔ PHP</button>
+          <button class="tab-btn active" onclick="switchConverterTab('phpToUsd', event)">PHP → USD (Deposit)</button>
+          <button class="tab-btn" onclick="switchConverterTab('usdToPhp', event)">USD → PHP (Withdraw)</button>
         </div>
 
-        <!-- TAB 1: PHP TO USD -->
+        <!-- TAB 1: PHP TO USD (DEPOSIT) -->
         <div id="phpToUsdPane" class="converter-pane active">
           <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 5px;">
+            <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">CONVERT DEPOSITED PHP TO USD FOR TRADING</div>
             <div class="convert-input-group">
               <input type="number" id="phpInput" placeholder="Enter PHP (₱)" oninput="previewPhpToUsd()">
               <button class="btn-convert-action" onclick="convertPhpToUsd()">Convert</button>
             </div>
-            <div style="font-size: 7px; color: #10b981; margin-top: 2px; white-space: nowrap;" id="phpToUsdPreview">Rec: $0.00</div>
+            <div style="font-size: 7.5px; color: #10b981; margin-top: 3px; font-weight: 600;" id="phpToUsdPreview">You will receive: $0.00 USD</div>
           </div>
         </div>
 
-        <!-- TAB 2: USD TO PHP -->
+        <!-- TAB 2: USD TO PHP (WITHDRAW) -->
         <div id="usdToPhpPane" class="converter-pane">
           <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 5px;">
+            <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">CONVERT USD TO PHP FOR WITHDRAWAL</div>
             <div class="convert-input-group">
               <input type="number" id="usdInput" placeholder="Enter USD ($)" oninput="previewUsdToPhp()">
               <button class="btn-convert-action" onclick="handleUsdToPhpAction()">Convert</button>
             </div>
-            <div style="font-size: 7px; color: #64748b; margin-top: 2px; white-space: nowrap;" id="usdToPhpPreview">Rec: ₱0.00</div>
+            <div style="font-size: 7.5px; color: #10b981; margin-top: 3px; font-weight: 600;" id="usdToPhpPreview">You will receive: ₱0.00 PHP</div>
           </div>
         </div>
 
@@ -581,7 +555,6 @@ canvas#liveChart {
 
   </div>
 
-  <!-- MIDDLE SECTION: LIVE MARKET GRAPH ONLY (UNTOUCHED) -->
   <div class="chart-card">
     <div class="chart-header">
       <div>
@@ -596,10 +569,9 @@ canvas#liveChart {
     <canvas id="liveChart"></canvas>
   </div>
 
-  <!-- BOTTOM SECTION: MARKETS (LEFT) & TRADING EXECUTION (RIGHT) SIDE-BY-SIDE -->
   <div class="bottom-side-by-side">
     
-    <!-- LEFT: COMPACT LIVE MARKET ASSETS CARD -->
+    <!-- LEFT: MARKETS -->
     <div class="compact-markets-card">
       <div class="flex justify-between items-center text-[10px] font-medium text-gray-400 mb-1.5 pb-1 border-b border-gray-800">
         <span class="text-yellow-400 font-bold">Markets</span>
@@ -607,7 +579,6 @@ canvas#liveChart {
       </div>
 
       <div class="space-y-1.5 text-[9px]" id="liveTickerTable">
-        <!-- Row 1: BTC -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-1.5">
             <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=032" alt="BTC" class="w-4 h-4 object-contain">
@@ -620,7 +591,6 @@ canvas#liveChart {
           <span class="font-bold text-red-500 text-right asset-percent">-1.10%</span>
         </div>
 
-        <!-- Row 2: ETH -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-1.5">
             <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=032" alt="ETH" class="w-4 h-4 object-contain">
@@ -633,7 +603,6 @@ canvas#liveChart {
           <span class="font-bold text-red-500 text-right asset-percent">-1.01%</span>
         </div>
 
-        <!-- Row 3: BNB -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-1.5">
             <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png?v=032" alt="BNB" class="w-4 h-4 object-contain">
@@ -646,7 +615,6 @@ canvas#liveChart {
           <span class="font-bold text-red-500 text-right asset-percent">-1.83%</span>
         </div>
 
-        <!-- Row 4: SpaceX -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-1.5">
             <div class="w-4 h-4 rounded-full bg-gray-700 flex items-center justify-center font-bold text-[8px] text-white">X</div>
@@ -659,7 +627,6 @@ canvas#liveChart {
           <span class="font-bold text-green-500 text-right asset-percent">+7.22%</span>
         </div>
 
-        <!-- Row 5: NVIDIA -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-1.5">
             <div class="w-4 h-4 rounded-full bg-[#76b900] flex items-center justify-center shadow-md overflow-hidden p-0.5">
@@ -678,7 +645,7 @@ canvas#liveChart {
       </div>
     </div>
 
-    <!-- RIGHT: TRADING CODE EXECUTION -->
+    <!-- RIGHT: TRADING EXECUTION -->
     <div class="code-input-card">
       <div>
         <h3 style="margin: 0 0 2px; color: #ffffff; font-size: 11px;">Trading Code</h3>
@@ -709,7 +676,6 @@ canvas#liveChart {
 
 </main>
 
-<!-- MODALS -->
 <div class="modal-overlay" id="zeroBalanceModal">
   <div class="modal" style="border-color: rgba(239, 68, 68, 0.4); text-align: center;">
     <div style="width: 40px; height: 40px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 18px;">
@@ -766,7 +732,6 @@ canvas#liveChart {
   </div>
 </div>
 
-<!-- Bottom Navigation Bar -->
 <nav style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #111827; border-top: 1px solid #1f2937; padding: 10px 16px; display: flex; justify-content: space-around; align-items: center; font-size: 11px; color: #9ca3af; z-index: 9999;">
   <a href="dashboard.html" style="display: flex; flex-direction: column; align-items: center; color: #3b82f6; font-weight: 600; text-decoration: none;">
     <i class="fa-solid fa-chart-line" style="font-size: 16px; margin-bottom: 2px;"></i>
@@ -883,7 +848,7 @@ canvas#liveChart {
   function previewPhpToUsd() {
     const phpVal = parseFloat(document.getElementById('phpInput').value) || 0;
     const convertedUsd = phpVal / EXCHANGE_RATE;
-    document.getElementById('phpToUsdPreview').innerText = `Rec: $${convertedUsd.toFixed(2)}`;
+    document.getElementById('phpToUsdPreview').innerText = `You will receive: $${convertedUsd.toFixed(2)} USD`;
   }
 
   function convertPhpToUsd() {
@@ -909,9 +874,11 @@ canvas#liveChart {
     if (accountAgeDays < requiredDaysForNoFee) {
       const deduction = rawPhp * 0.25;
       finalPhp = rawPhp - deduction;
-      document.getElementById('usdToPhpPreview').innerText = `Rec: ₱${finalPhp.toFixed(2)} (w/ fee)`;
+      document.getElementById('usdToPhpPreview').innerText = `You will receive: ₱${finalPhp.toFixed(2)} PHP (w/ 25% fee)`;
     } else {
-      document.getElementById('usdToPhpPreview').innerText = `Rec: ₱${finalPhp.toFixed(2)}`;
+      const deduction = rawPhp * 0.01;
+      finalPhp = rawPhp - deduction;
+      document.getElementById('usdToPhpPreview').innerText = `You will receive: ₱${finalPhp.toFixed(2)} PHP (w/ 1% fee)`;
     }
   }
 
@@ -923,27 +890,17 @@ canvas#liveChart {
     }
 
     let rawPhp = usdAmount * EXCHANGE_RATE;
-
-    if (accountAgeDays >= requiredDaysForNoFee) {
-      usdBalance -= usdAmount;
-      phpBalance += rawPhp;
-      alert(`USD to PHP Conversion Successful!\n\nConverted: $${usdAmount.toFixed(2)} USD\nDeduction: ₱0.00 PHP (0% Fee Waived)\nNet Received: ₱${rawPhp.toFixed(2)} PHP`);
-      document.getElementById('usdInput').value = '';
-      previewUsdToPhp();
-      updateBalancesUI();
-      return;
-    }
-
-    let deduction = rawPhp * 0.25;
+    let feePercent = accountAgeDays < requiredDaysForNoFee ? 0.25 : 0.01;
+    let deduction = rawPhp * feePercent;
     let finalPhp = rawPhp - deduction;
-    pendingConversionData = { usdAmount, finalPhp, deduction };
+    pendingConversionData = { usdAmount, finalPhp, deduction, feePercent };
 
     let modalHtml = `
-      <div style="margin-bottom: 4px;"><strong style="color: #00d4ff;">Account Age:</strong> Day ${accountAgeDays} of ${requiredDaysForNoFee} (Under 31 Days)</div>
+      <div style="margin-bottom: 4px;"><strong style="color: #00d4ff;">Account Age:</strong> Day ${accountAgeDays} of ${requiredDaysForNoFee} (${accountAgeDays < requiredDaysForNoFee ? 'Under 31 Days' : '31+ Days'})</div>
       <div style="margin-bottom: 4px;"><strong style="color: #fff;">Converting Amount:</strong> $${usdAmount.toFixed(2)} USD</div>
-      <div style="margin-bottom: 4px;"><strong style="color: #fca5a5;">25% Deduction Fee:</strong> ₱${deduction.toFixed(2)} PHP</div>
+      <div style="margin-bottom: 4px;"><strong style="color: #fca5a5;">Deduction Fee (${feePercent * 100}%):</strong> ₱${deduction.toFixed(2)} PHP</div>
       <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 6px; padding-top: 6px;"><strong style="color: #10b981; font-size: 13px;">Net Total to Receive: ₱${finalPhp.toFixed(2)} PHP</strong></div>
-      <div style="font-size: 10px; color: #94a3b8; margin-top: 6px;">Notice: Accounts must exceed 31 days of age to waive the deduction fee.</div>
+      <div style="font-size: 10px; color: #94a3b8; margin-top: 6px;">Notice: Accounts under 31 days have a 25% fee, while 31+ days accounts have a 1% fee.</div>
     `;
 
     document.getElementById('conversionModalBody').innerHTML = modalHtml;
@@ -957,10 +914,10 @@ canvas#liveChart {
 
   function confirmUsdToPhpConversion() {
     if (!pendingConversionData) return;
-    const { usdAmount, finalPhp, deduction } = pendingConversionData;
+    const { usdAmount, finalPhp, deduction, feePercent } = pendingConversionData;
     usdBalance -= usdAmount;
     phpBalance += finalPhp;
-    alert(`USD to PHP Conversion Successful!\n\nConverted: $${usdAmount.toFixed(2)} USD\nDeduction: ₱${deduction.toFixed(2)} PHP\nNet Received: ₱${finalPhp.toFixed(2)} PHP`);
+    alert(`USD to PHP Conversion Successful!\n\nConverted: $${usdAmount.toFixed(2)} USD\nDeduction (${feePercent * 100}%): ₱${deduction.toFixed(2)} PHP\nNet Received: ₱${finalPhp.toFixed(2)} PHP`);
     closeConversionModal();
     document.getElementById('usdInput').value = '';
     previewUsdToPhp();
