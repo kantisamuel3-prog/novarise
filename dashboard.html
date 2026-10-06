@@ -765,7 +765,8 @@ canvas#liveChart {
   let usdBalance = 0.00;
   let phpBalance = 0.00;
   let isTradingRunning = false;
-  let accountAgeDays = 35;
+  let accountAgeDays = 0;
+  let usdBalanceStartAt = null;
   const requiredDaysForNoFee = 31;
   let pendingConversionData = null;
   let currentUser = null;
@@ -792,6 +793,39 @@ canvas#liveChart {
   function safeNumber(value, fallback = 0) {
     const n = Number(value);
     return Number.isFinite(n) ? n : fallback;
+  }
+
+  function timestampToMillis(value) {
+    if (!value) return null;
+    if (typeof value.toMillis === "function") return value.toMillis();
+    if (value instanceof Date) return value.getTime();
+    if (typeof value === "number") return value;
+    const parsed = Date.parse(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function calculateAccountAgeDays() {
+    if (!usdBalanceStartAt || usdBalance <= 0) {
+      accountAgeDays = 0;
+      return 0;
+    }
+
+    const startMs = timestampToMillis(usdBalanceStartAt);
+    if (!startMs) {
+      accountAgeDays = 0;
+      return 0;
+    }
+
+    const elapsedMs = Math.max(0, Date.now() - startMs);
+    accountAgeDays = Math.min(31, Math.floor(elapsedMs / 86400000));
+    return accountAgeDays;
+  }
+
+  function startUsdBalanceTimerIfNeeded(previousUsd, newUsd) {
+    if (safeNumber(previousUsd) <= 0 && safeNumber(newUsd) > 0) {
+      usdBalanceStartAt = firebase.firestore.Timestamp.now();
+    }
+    calculateAccountAgeDays();
   }
 
   function renderBalancesUI(colorMode = "normal") {
@@ -826,7 +860,20 @@ canvas#liveChart {
       const data = userDoc.data() || {};
       phpBalance = safeNumber(data.balance);
       usdBalance = safeNumber(data.usdBalance);
-      if (data.accountAgeDays !== undefined && data.accountAgeDays !== null) accountAgeDays = safeNumber(data.accountAgeDays, accountAgeDays);
+      usdBalanceStartAt = data.usdBalanceStartAt || null;
+
+      // The 31-day clock starts ONLY when USD balance first becomes greater than zero.
+      // Stored accountAgeDays is not trusted; it is calculated from usdBalanceStartAt.
+      if (usdBalance > 0) {
+        if (!usdBalanceStartAt) {
+          usdBalanceStartAt = firebase.firestore.Timestamp.now();
+        }
+        calculateAccountAgeDays();
+      } else {
+        usdBalanceStartAt = null;
+        accountAgeDays = 0;
+      }
+
       balanceDataLoaded = true;
       renderBalancesUI();
       console.log("NEXORA BALANCE LOADED:", {uid: uid, documentExists: true, balance: data.balance, phpBalance: phpBalance, usdBalance: usdBalance});
@@ -845,7 +892,9 @@ canvas#liveChart {
       const data = doc.data() || {};
       if (data.balance !== undefined && data.balance !== null) phpBalance = safeNumber(data.balance);
       if (data.usdBalance !== undefined && data.usdBalance !== null) usdBalance = safeNumber(data.usdBalance);
-      if (data.accountAgeDays !== undefined && data.accountAgeDays !== null) accountAgeDays = safeNumber(data.accountAgeDays, accountAgeDays);
+      usdBalanceStartAt = data.usdBalanceStartAt || usdBalanceStartAt;
+      if (usdBalance <= 0) usdBalanceStartAt = null;
+      calculateAccountAgeDays();
       renderBalancesUI();
       console.log("NEXORA FIRESTORE BALANCE UPDATED:", {phpBalance: phpBalance, usdBalance: usdBalance});
     }, (error) => console.error("Users balance listener error:", error));
@@ -854,10 +903,12 @@ canvas#liveChart {
   async function saveUserDataToFirestore() {
     if (!currentUser || !balanceDataLoaded) return;
     try {
+      calculateAccountAgeDays();
       await db.collection("Users").doc(currentUser.uid).set({
         balance: safeNumber(phpBalance),
         usdBalance: safeNumber(usdBalance),
         accountAgeDays: safeNumber(accountAgeDays),
+        usdBalanceStartAt: usdBalanceStartAt || null,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
       console.log("NEXORA BALANCE SAVED:", {uid: currentUser.uid, phpBalance: phpBalance, usdBalance: usdBalance});
@@ -871,6 +922,17 @@ canvas#liveChart {
       console.error("Logout error:", error);
     });
   }
+
+  setInterval(() => {
+    if (balanceDataLoaded && usdBalance > 0) {
+      const oldAge = accountAgeDays;
+      calculateAccountAgeDays();
+      if (accountAgeDays !== oldAge) {
+        renderBalancesUI();
+        saveUserDataToFirestore();
+      }
+    }
+  }, 60000);
 
   window.addEventListener("beforeunload", () => {
     if (legacyBalanceUnsubscribe) legacyBalanceUnsubscribe();
@@ -903,8 +965,10 @@ canvas#liveChart {
       return;
     }
     const convertedUsd = phpAmount / EXCHANGE_RATE;
+    const previousUsd = usdBalance;
     phpBalance -= phpAmount;
     usdBalance += convertedUsd;
+    startUsdBalanceTimerIfNeeded(previousUsd, usdBalance);
     alert(`Successfully converted ₱${phpAmount.toFixed(2)} PHP to $${convertedUsd.toFixed(2)} USD for trading.`);
     document.getElementById('phpInput').value = '';
     previewPhpToUsd();
@@ -912,6 +976,7 @@ canvas#liveChart {
   }
 
   function previewUsdToPhp() {
+    calculateAccountAgeDays();
     const usdVal = parseFloat(document.getElementById('usdInput').value) || 0;
     let rawPhp = usdVal * EXCHANGE_RATE;
     let finalPhp = rawPhp;
@@ -928,6 +993,7 @@ canvas#liveChart {
   }
 
   function handleUsdToPhpAction() {
+    calculateAccountAgeDays();
     const usdAmount = parseFloat(document.getElementById('usdInput').value) || 0;
     if (usdAmount <= 0 || usdAmount > usdBalance) {
       alert('Please enter a valid or sufficient USD amount.');
@@ -962,6 +1028,17 @@ canvas#liveChart {
     const { usdAmount, finalPhp, deduction, feePercent } = pendingConversionData;
     usdBalance -= usdAmount;
     phpBalance += finalPhp;
+
+    // If all USD was converted, the 31-day clock is reset.
+    // A future USD deposit starts a fresh 31-day period.
+    if (usdBalance <= 0) {
+      usdBalance = 0;
+      usdBalanceStartAt = null;
+      accountAgeDays = 0;
+    } else {
+      calculateAccountAgeDays();
+    }
+
     alert(`USD to PHP Conversion Successful!\n\nConverted: $${usdAmount.toFixed(2)} USD\nDeduction (${feePercent * 100}%): ₱${deduction.toFixed(2)} PHP\nNet Received: ₱${finalPhp.toFixed(2)} PHP`);
     closeConversionModal();
     document.getElementById('usdInput').value = '';
