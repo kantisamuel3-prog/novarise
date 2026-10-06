@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Nexora Algorithmic Live Trading Terminal</title>
 
-<!-- FIREBASE SDKs (Kinakailangan para sa Database at Authentication) -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<!-- FIREBASE SDKs (Compat v10) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
 /* =====================================================
@@ -687,17 +687,16 @@ canvas#liveChart {
   // =====================================================
   // FIREBASE INITIALIZATION CONFIGURATION
   // =====================================================
-  // Palitan ang mga value na ito ng tamang Firebase configuration credentials mula sa iyong Firebase Console
   const firebaseConfig = {
-    apiKey: "AIzaSyD-YOUR-FIREBASE-API-KEY-HERE",
-    authDomain: "novarise-app.firebaseapp.com",
-    projectId: "novarise-app",
-    storageBucket: "novarise-app.appspot.com",
-    messagingSenderId: "123456789012",
-    appId: "1:123456789012:web:abcdef123456789"
+    apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+    authDomain: "investpro-2dafb.firebaseapp.com",
+    projectId: "investpro-2dafb",
+    storageBucket: "investpro-2dafb.firebasestorage.app",
+    messagingSenderId: "135092039764",
+    appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
+    measurementId: "G-0L77SFTC4F"
   };
 
-  // I-initialize ang Firebase
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
@@ -720,8 +719,7 @@ canvas#liveChart {
       document.getElementById('userEmail').innerText = user.email || user.phoneNumber || "User Connected";
       loadUserDataFromFirestore(user.uid);
     } else {
-      // Kung walang naka-login, maaari kang mag-redirect sa login page o gumamit ng demo state
-      document.getElementById('userEmail').innerText = "639633750235@nexora.local (Demo Mode)";
+      window.location.href = "login.html";
     }
   });
 
@@ -753,8 +751,7 @@ canvas#liveChart {
 
   function handleLogout() {
     auth.signOut().then(() => {
-      alert("Successfully logged out.");
-      window.location.reload();
+      window.location.href = "login.html";
     }).catch((error) => {
       console.error("Logout error:", error);
     });
@@ -762,17 +759,22 @@ canvas#liveChart {
 
   function updateBalancesUI(colorMode = 'normal') {
     const usdElem = document.getElementById('usdBalance');
-    usdElem.innerText = '$' + usdBalance.toFixed(2);
-    
-    if (colorMode === 'up') {
-      usdElem.style.color = '#10b981';
-    } else if (colorMode === 'down') {
-      usdElem.style.color = '#ef4444';
-    } else {
-      usdElem.style.color = '#ffffff';
+    if (usdElem) {
+      usdElem.innerText = '$' + usdBalance.toFixed(2);
+      if (colorMode === 'up') {
+        usdElem.style.color = '#10b981';
+      } else if (colorMode === 'down') {
+        usdElem.style.color = '#ef4444';
+      } else {
+        usdElem.style.color = '#ffffff';
+      }
     }
 
-    document.getElementById('phpBalance').innerText = '₱' + phpBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const phpElem = document.getElementById('phpBalance');
+    if (phpElem) {
+      phpElem.innerText = '₱' + phpBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+    
     saveUserDataToFirestore();
   }
 
@@ -883,11 +885,11 @@ canvas#liveChart {
     updateBalancesUI();
   }
 
-  // REAL-TIME CANVAS CHART WITH NUMERICAL LABELS
+  // REAL-TIME CANVAS CHART
   const canvas = document.getElementById('liveChart');
   const ctx = canvas.getContext('2d');
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
+  canvas.width = canvas.offsetWidth || 500;
+  canvas.height = canvas.offsetHeight || 230;
 
   let pricePoints = Array(35).fill(96420);
   let currentPrice = 96420;
@@ -958,14 +960,17 @@ canvas#liveChart {
     pricePoints.push(currentPrice);
 
     const priceElem = document.getElementById('livePriceDisplay');
-    priceElem.innerText = `$${currentPrice.toFixed(2)}`;
-    priceElem.style.color = change >= 0 ? '#10b981' : '#ef4444';
+    if (priceElem) {
+      priceElem.innerText = `$${currentPrice.toFixed(2)}`;
+      priceElem.style.color = change >= 0 ? '#10b981' : '#ef4444';
+    }
 
     drawChart();
   }, 400);
 
   const terminalLogs = document.getElementById('terminalLogs');
   function addLog(text) {
+    if (!terminalLogs) return;
     const log = document.createElement('div');
     log.className = 'log-entry';
     const now = new Date().toLocaleTimeString();
@@ -975,7 +980,9 @@ canvas#liveChart {
   }
 
   function startTradingProcess() {
-    const codeInput = document.getElementById('tradingCodeInput').value.trim();
+    const codeInputElem = document.getElementById('tradingCodeInput');
+    if (!codeInputElem) return;
+    const codeInput = codeInputElem.value.trim();
     if (!codeInput) { alert('Please enter a trading code.'); return; }
     if (isTradingRunning) return;
 
@@ -987,7 +994,6 @@ canvas#liveChart {
     document.getElementById('pnlStatus').style.color = '#00d4ff';
 
     const initialBalance = usdBalance;
-    
     const randomProfitPercent = (Math.random() * (3.0 - 1.5) + 1.5) / 100;
     const targetProfitGain = parseFloat((initialBalance * randomProfitPercent).toFixed(2));
     const finalBalanceTarget = parseFloat((initialBalance + targetProfitGain).toFixed(2));
