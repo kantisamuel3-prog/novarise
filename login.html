@@ -523,7 +523,7 @@
         function phoneToEmail(phone) {
             const clean = phone.replace(/\D/g, "");
             if (/^9\d{9}$/.test(clean)) {
-                return "63" + clean + "@novarise.local";
+                return "63" + clean + "@nexora.local";
             }
             return "";
         }
@@ -563,7 +563,7 @@
                         const user = userCredential.user;
                         showMessage('Login Verified. Redirecting...', false);
 
-                        if (user.email === "639999999999@novarise.local") {
+                        if (user.email === "639999999999@nexora.local") {
                             window.location.href = "admin-withdraw.html";
                         } else {
                             window.location.href = "dashboard.html";
