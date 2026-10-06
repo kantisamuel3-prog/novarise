@@ -779,33 +779,243 @@ canvas#liveChart {
     }
   });
 
-  function loadUserDataFromFirestore(uid) {
-    db.collection("User").doc(uid).get().then((doc) => {
-      if (doc.exists) {
-        const data = doc.data();
-        if (data.usdBalance !== undefined) usdBalance = Number(data.usdBalance);
-        if (data.phpBalance !== undefined) phpBalance = Number(data.phpBalance);
-        if (data.accountAgeDays !== undefined) accountAgeDays = Number(data.accountAgeDays);
+
+  window.addEventListener("beforeunload", () => {
+    if (userSnapshotUnsubscribe) userSnapshotUnsubscribe();
+    if (legacyUserSnapshotUnsubscribe) legacyUserSnapshotUnsubscribe();
+  });
+
+  // =========================
+  // FIRESTORE BALANCE HANDLING
+  // Supports both the new dashboard schema:
+  //   User/{uid}.usdBalance
+  //   User/{uid}.phpBalance
+  //
+  // and the existing/legacy schema commonly used by the rest
+  // of the platform:
+  //   Users/{uid}.balance   (PHP balance)
+  //
+  // IMPORTANT:
+  // - Loading data NEVER writes $0/₱0 back to Firebase.
+  // - Legacy Users.balance is used as the PHP balance source when it exists.
+  // - Changes made by this dashboard are synced back to both schemas.
+  // =========================
+
+  let userSnapshotUnsubscribe = null;
+  let legacyUserSnapshotUnsubscribe = null;
+  let balanceDataLoaded = false;
+
+  function safeNumber(value, fallback = 0) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function hasNumericField(data, field) {
+    return data &&
+           Object.prototype.hasOwnProperty.call(data, field) &&
+           data[field] !== null &&
+           data[field] !== "" &&
+           Number.isFinite(Number(data[field]));
+  }
+
+  function renderBalancesUI() {
+    const usdEl = document.getElementById("usdBalance");
+    const phpEl = document.getElementById("phpBalance");
+
+    if (usdEl) {
+      usdEl.textContent = "$" + safeNumber(usdBalance).toFixed(2);
+    }
+
+    if (phpEl) {
+      phpEl.textContent = "₱" + safeNumber(phpBalance).toLocaleString("en-PH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+  }
+
+  // Kept as the public UI update function used throughout this page.
+  // It intentionally DOES NOT save to Firebase.
+  function updateBalancesUI() {
+    renderBalancesUI();
+  }
+
+  async function loadUserDataFromFirestore(uid) {
+    try {
+      const [newDoc, legacyDoc] = await Promise.all([
+        db.collection("User").doc(uid).get(),
+        db.collection("Users").doc(uid).get()
+      ]);
+
+      const newData = newDoc.exists ? (newDoc.data() || {}) : {};
+      const legacyData = legacyDoc.exists ? (legacyDoc.data() || {}) : {};
+
+      // USD:
+      // Prefer the new explicit usdBalance field.
+      if (hasNumericField(newData, "usdBalance")) {
+        usdBalance = safeNumber(newData.usdBalance);
+      } else if (hasNumericField(legacyData, "usdBalance")) {
+        usdBalance = safeNumber(legacyData.usdBalance);
       } else {
-        saveUserDataToFirestore();
+        usdBalance = 0;
       }
-      updateBalancesUI();
-    }).catch((error) => {
+
+      // PHP:
+      // The existing platform normally stores the wallet as Users/{uid}.balance.
+      // Therefore, when that field exists, it is the primary PHP balance source.
+      // Otherwise use the new User/{uid}.phpBalance, then User.balance.
+      if (hasNumericField(legacyData, "balance")) {
+        phpBalance = safeNumber(legacyData.balance);
+      } else if (hasNumericField(newData, "phpBalance")) {
+        phpBalance = safeNumber(newData.phpBalance);
+      } else if (hasNumericField(newData, "balance")) {
+        phpBalance = safeNumber(newData.balance);
+      } else {
+        phpBalance = 0;
+      }
+
+      if (hasNumericField(newData, "accountAgeDays")) {
+        accountAgeDays = safeNumber(newData.accountAgeDays, accountAgeDays);
+      } else if (hasNumericField(legacyData, "accountAgeDays")) {
+        accountAgeDays = safeNumber(legacyData.accountAgeDays, accountAgeDays);
+      }
+
+      balanceDataLoaded = true;
+      renderBalancesUI();
+
+      // Only create/sync the new document after we have successfully loaded
+      // existing values. This prevents an empty new document from becoming $0/₱0.
+      await saveUserDataToFirestore(false);
+
+      console.log("BALANCE LOADED:", {
+        uid,
+        usdBalance,
+        phpBalance,
+        source: hasNumericField(legacyData, "balance")
+          ? "Users.balance"
+          : "User.phpBalance"
+      });
+
+      // Listen for Firebase changes so manually adding money to Firestore
+      // is reflected on the dashboard without needing to rebuild the page.
+      startBalanceListeners(uid);
+
+    } catch (error) {
       console.error("Error loading user data:", error);
-      updateBalancesUI();
+      balanceDataLoaded = false;
+      renderBalancesUI();
+    }
+  }
+
+  function startBalanceListeners(uid) {
+    if (userSnapshotUnsubscribe) {
+      userSnapshotUnsubscribe();
+      userSnapshotUnsubscribe = null;
+    }
+
+    if (legacyUserSnapshotUnsubscribe) {
+      legacyUserSnapshotUnsubscribe();
+      legacyUserSnapshotUnsubscribe = null;
+    }
+
+    // New schema listener.
+    userSnapshotUnsubscribe = db.collection("User").doc(uid).onSnapshot((doc) => {
+      if (!doc.exists || !balanceDataLoaded || isTradingRunning) return;
+
+      const data = doc.data() || {};
+
+      if (hasNumericField(data, "usdBalance")) {
+        usdBalance = safeNumber(data.usdBalance);
+      }
+
+      // Only use User.phpBalance here if the legacy Users.balance field
+      // does not exist. The legacy listener below has priority for PHP.
+      if (hasNumericField(data, "phpBalance")) {
+        db.collection("Users").doc(uid).get().then((legacyDoc) => {
+          const legacyData = legacyDoc.exists ? (legacyDoc.data() || {}) : {};
+          if (!hasNumericField(legacyData, "balance")) {
+            phpBalance = safeNumber(data.phpBalance);
+          }
+          renderBalancesUI();
+        }).catch(() => {
+          phpBalance = safeNumber(data.phpBalance);
+          renderBalancesUI();
+        });
+      } else {
+        renderBalancesUI();
+      }
+
+      if (hasNumericField(data, "accountAgeDays")) {
+        accountAgeDays = safeNumber(data.accountAgeDays, accountAgeDays);
+      }
+    }, (error) => {
+      console.error("User balance listener error:", error);
+    });
+
+    // Legacy schema listener.
+    legacyUserSnapshotUnsubscribe = db.collection("Users").doc(uid).onSnapshot((doc) => {
+      if (!doc.exists || !balanceDataLoaded || isTradingRunning) return;
+
+      const data = doc.data() || {};
+
+      if (hasNumericField(data, "balance")) {
+        phpBalance = safeNumber(data.balance);
+      }
+
+      if (hasNumericField(data, "usdBalance")) {
+        usdBalance = safeNumber(data.usdBalance);
+      }
+
+      if (hasNumericField(data, "accountAgeDays")) {
+        accountAgeDays = safeNumber(data.accountAgeDays, accountAgeDays);
+      }
+
+      renderBalancesUI();
+
+      console.log("FIREBASE BALANCE UPDATED:", {
+        phpBalance,
+        usdBalance
+      });
+    }, (error) => {
+      console.error("Legacy balance listener error:", error);
     });
   }
 
-  function saveUserDataToFirestore() {
-    if (!currentUser) return;
-    db.collection("User").doc(currentUser.uid).set({
-      usdBalance: usdBalance,
-      phpBalance: phpBalance,
-      accountAgeDays: accountAgeDays,
+  async function saveUserDataToFirestore(showError = true) {
+    if (!currentUser || !balanceDataLoaded) return;
+
+    const uid = currentUser.uid;
+
+    const newData = {
+      usdBalance: safeNumber(usdBalance),
+      phpBalance: safeNumber(phpBalance),
+      accountAgeDays: safeNumber(accountAgeDays),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).catch((error) => {
+    };
+
+    const legacyData = {
+      balance: safeNumber(phpBalance),
+      usdBalance: safeNumber(usdBalance),
+      accountAgeDays: safeNumber(accountAgeDays),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+      await Promise.all([
+        db.collection("User").doc(uid).set(newData, { merge: true }),
+        db.collection("Users").doc(uid).set(legacyData, { merge: true })
+      ]);
+
+      console.log("BALANCE SAVED:", {
+        usdBalance: safeNumber(usdBalance),
+        phpBalance: safeNumber(phpBalance)
+      });
+    } catch (error) {
       console.error("Error saving user data:", error);
-    });
+      if (showError) {
+        console.error("Balance save failed:", error.message || error);
+      }
+    }
   }
 
   function handleLogout() {
