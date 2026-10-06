@@ -704,8 +704,9 @@ canvas#liveChart {
   const db = firebase.firestore();
 
   const EXCHANGE_RATE = 60;
-  let usdBalance = 103.68;
-  let phpBalance = 1500.00;
+  // Sinimulan sa 0 para matiyak na susundin ang Firestore data nang walang default dummy override
+  let usdBalance = 0.00;
+  let phpBalance = 0.00;
   let isTradingRunning = false;
   let accountAgeDays = 35; 
   const requiredDaysForNoFee = 31;
@@ -727,13 +728,18 @@ canvas#liveChart {
     db.collection("users").doc(uid).get().then((doc) => {
       if (doc.exists) {
         const data = doc.data();
-        if (data.usdBalance !== undefined) usdBalance = data.usdBalance;
-        if (data.phpBalance !== undefined) phpBalance = data.phpBalance;
-        if (data.accountAgeDays !== undefined) accountAgeDays = data.accountAgeDays;
-        updateBalancesUI();
+        // Kung may nakasulat na balanse sa database, i-load ito. Kung wala o 0, mananatiling 0.
+        if (data.usdBalance !== undefined) usdBalance = Number(data.usdBalance);
+        if (data.phpBalance !== undefined) phpBalance = Number(data.phpBalance);
+        if (data.accountAgeDays !== undefined) accountAgeDays = Number(data.accountAgeDays);
+      } else {
+        // Kung bagong user at walang document pa, i-save ang default na 0 balanse
+        saveUserDataToFirestore();
       }
+      updateBalancesUI();
     }).catch((error) => {
       console.error("Error loading user data:", error);
+      updateBalancesUI();
     });
   }
 
@@ -949,19 +955,17 @@ canvas#liveChart {
     ctx.fill();
   }
 
-  // DYNAMIC LIVE CHART LOOP (Mabagal kapag idle, Mabilis kapag nag-a-execute ng trade)
   let chartTimer = null;
 
   function runLiveChart() {
     if (chartTimer) clearInterval(chartTimer);
 
-    // 1200ms (1.2 seconds) kapag idle/mabagal, 350ms kapag nag-e-execute na ang trading
     const speedInterval = isTradingRunning ? 350 : 1200;
 
     chartTimer = setInterval(() => {
       let change = isTradingRunning 
-        ? (Math.random() - 0.45) * 40  // Malaki at mabilis na galaw kapag trading
-        : (Math.random() - 0.48) * 4;  // Mabagal, banayad, at mahina ang galaw kapag idle
+        ? (Math.random() - 0.45) * 40  
+        : (Math.random() - 0.48) * 4;  
 
       currentPrice += change;
       pricePoints.shift();
@@ -977,7 +981,6 @@ canvas#liveChart {
     }, speedInterval);
   }
 
-  // Simulan agad ang mabagal na takbo ng chart sa load
   runLiveChart();
 
   const terminalLogs = document.getElementById('terminalLogs');
@@ -996,10 +999,18 @@ canvas#liveChart {
     if (!codeInputElem) return;
     const codeInput = codeInputElem.value.trim();
     if (!codeInput) { alert('Please enter a trading code.'); return; }
+
+    // STRICT CHECK: Kapag 0 balance o mas mababa sa 0, hindi papayagang mag-trade
+    if (usdBalance <= 0) {
+      alert('You have a 0.00 balance! Please recharge or convert your PHP to USD before executing a trading code.');
+      addLog(`<span class="loss">[REJECTED]</span> Trading code failed: Insufficient balance ($0.00). Please recharge.`);
+      return;
+    }
+
     if (isTradingRunning) return;
 
     isTradingRunning = true;
-    runLiveChart(); // Pabilis ng chart kapag nag-a-execute
+    runLiveChart(); 
 
     document.getElementById('btnExecute').disabled = true;
     document.getElementById('btnExecute').style.opacity = '0.5';
@@ -1008,8 +1019,6 @@ canvas#liveChart {
     document.getElementById('pnlStatus').style.color = '#00d4ff';
 
     const initialBalance = usdBalance;
-    
-    // Kukuha ng random percentage sa pagitan ng 1.5% (0.015) at 3.0% (0.03) base sa kasalukuyang balance
     const randomProfitPercent = Math.random() * (0.03 - 0.015) + 0.015;
     const targetProfitGain = parseFloat((initialBalance * randomProfitPercent).toFixed(2));
     const finalBalanceTarget = parseFloat((initialBalance + targetProfitGain).toFixed(2));
@@ -1076,7 +1085,7 @@ canvas#liveChart {
         document.getElementById('pnlStatus').style.color = '#10b981';
 
         isTradingRunning = false;
-        runLiveChart(); // Balik sa mabagal na takbo pagkatapos ng 2 mins
+        runLiveChart(); 
 
         const actualPercentEarned = ((targetProfitGain / initialBalance) * 100).toFixed(2);
         addLog(`<span class="profit">[SESSION COMPLETED]</span> 2-Minute Session Finished! Yield: <b>+${actualPercentEarned}% (+$${targetProfitGain.toFixed(2)} USD)</b>`);
