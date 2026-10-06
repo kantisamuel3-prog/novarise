@@ -908,6 +908,7 @@ canvas#liveChart {
 
       console.log("NEXORA BALANCE LOADED:", {uid: uid, documentExists: true, balance: data.balance, phpBalance: phpBalance, usdBalance: usdBalance, accountAgeDays: accountAgeDays});
       startBalanceListeners(uid);
+      await resumeTradingFromFirestore(data);
     } catch (error) {
       console.error("Error loading user data:", error);
       balanceDataLoaded = false;
@@ -1218,7 +1219,207 @@ canvas#liveChart {
   function openZeroBalanceModal() { document.getElementById('zeroBalanceModal').style.display = 'flex'; }
   function closeZeroBalanceModal() { document.getElementById('zeroBalanceModal').style.display = 'none'; }
 
-  function startTradingProcess() {
+  // ============================================================
+  // PERSISTENT TRADING EXECUTION
+  // The execution state is stored in Firestore, so a page refresh
+  // does NOT cancel the running execution. The browser interval is
+  // only responsible for updating the UI; elapsed time comes from
+  // executionStartedAt stored in Firestore.
+  // ============================================================
+  let tradingTimer = null;
+  let tradingStateSaveCounter = 0;
+
+  function setTradingUIRunning(running) {
+    const btn = document.getElementById('btnExecute');
+    const progress = document.getElementById('progressContainer');
+    const status = document.getElementById('pnlStatus');
+
+    if (btn) {
+      btn.disabled = running;
+      btn.style.opacity = running ? '0.5' : '1';
+    }
+    if (progress) progress.style.display = running ? 'block' : 'none';
+    if (status) {
+      status.innerText = running ? '● EXECUTING...' : '● IDLE';
+      status.style.color = running ? '#00d4ff' : '#10b981';
+    }
+  }
+
+  function deterministicTradingNoise(step, initialBalance) {
+    // Deterministic noise means the same execution can resume after refresh
+    // without generating a different balance curve.
+    const wave = Math.sin(step * 12.9898) * 43758.5453;
+    const normalized = wave - Math.floor(wave);
+    return (normalized - 0.48) * (initialBalance * 0.015);
+  }
+
+  function getExecutionMillis(value) {
+    if (!value) return null;
+    if (typeof value.toMillis === 'function') return value.toMillis();
+    if (value instanceof Date) return value.getTime();
+    if (typeof value === 'number') return value;
+    const parsed = Date.parse(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  async function saveTradingExecutionState(extra = {}) {
+    if (!currentUser) return;
+    try {
+      await db.collection('Users').doc(currentUser.uid).set({
+        tradingExecution: {
+          ...extra
+        },
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    } catch (error) {
+      console.error('Error saving trading execution:', error);
+    }
+  }
+
+  function updateTradingProgressFromState(state, showLogs = true) {
+    if (!state) return false;
+
+    const startMs = getExecutionMillis(state.executionStartedAt);
+    if (!startMs) return false;
+
+    const durationMs = Number(state.durationMs) || 120000;
+    const initialBalance = safeNumber(state.initialBalance);
+    const targetProfitGain = safeNumber(state.targetProfitGain);
+    const finalBalanceTarget = safeNumber(state.finalBalanceTarget, initialBalance + targetProfitGain);
+
+    const elapsedMs = Math.max(0, Date.now() - startMs);
+    const progressRatio = Math.min(1, elapsedMs / durationMs);
+    const currentPercent = Math.min(100, Math.max(0, Math.floor(progressRatio * 100)));
+
+    let newBalance;
+    if (progressRatio >= 1) {
+      newBalance = finalBalanceTarget;
+    } else {
+      const idealBalance = initialBalance + (targetProfitGain * progressRatio);
+      const step = Math.floor(elapsedMs / 600);
+      const maxAllowedDrop = initialBalance * 0.01;
+      let tempBalance = idealBalance + deterministicTradingNoise(step, initialBalance);
+      if (tempBalance < initialBalance - maxAllowedDrop) {
+        tempBalance = initialBalance - maxAllowedDrop + 0.05;
+      }
+      newBalance = Math.max(0, tempBalance);
+    }
+
+    const previousBalance = usdBalance;
+    usdBalance = Number(newBalance.toFixed(2));
+
+    const bar = document.getElementById('progressBarFill');
+    const percent = document.getElementById('progressPercentText');
+    if (bar) bar.style.width = `${currentPercent}%`;
+    if (percent) percent.innerText = `${currentPercent}%`;
+
+    if (showLogs && currentPercent > 0 && currentPercent % 10 === 0 && currentPercent !== Number(state.lastLoggedPercent)) {
+      const delta = usdBalance - previousBalance;
+      if (delta >= 0) addLog(`<span class="profit">+ $${delta.toFixed(2)}</span> Order executed`);
+      else addLog(`<span class="loss">- $${Math.abs(delta).toFixed(2)}</span> Adjustment`);
+      state.lastLoggedPercent = currentPercent;
+    }
+
+    return progressRatio >= 1;
+  }
+
+  async function finishPersistentTrading(state) {
+    if (tradingTimer) {
+      clearInterval(tradingTimer);
+      tradingTimer = null;
+    }
+
+    const initialBalance = safeNumber(state.initialBalance);
+    const targetProfitGain = safeNumber(state.targetProfitGain);
+    const finalBalanceTarget = safeNumber(state.finalBalanceTarget, initialBalance + targetProfitGain);
+    usdBalance = Number(finalBalanceTarget.toFixed(2));
+
+    isTradingRunning = false;
+    setTradingUIRunning(false);
+    renderBalancesUI('normal');
+
+    await db.collection('Users').doc(currentUser.uid).set({
+      usdBalance: safeNumber(usdBalance),
+      accountAgeDays: safeNumber(accountAgeDays),
+      usdBalanceStartAt: usdBalanceStartAt || null,
+      tradingExecution: {
+        ...state,
+        status: 'COMPLETED',
+        completedAt: firebase.firestore.Timestamp.now(),
+        finalBalance: safeNumber(usdBalance)
+      },
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    const actualPercentEarned = initialBalance > 0
+      ? ((targetProfitGain / initialBalance) * 100).toFixed(2)
+      : '0.00';
+
+    addLog(`<span class="profit">[COMPLETED]</span> +$${targetProfitGain.toFixed(2)} USD (+${actualPercentEarned}%)`);
+
+    document.getElementById('tradingCodeInput').value = '';
+    document.getElementById('progressBarFill').style.width = '0%';
+    runLiveChart();
+
+    alert(`Trading Execution Complete!\n\nInitial Balance: $${initialBalance.toFixed(2)} USD\nNet Profit Earned: +$${targetProfitGain.toFixed(2)} USD\nTotal USD Balance: $${usdBalance.toFixed(2)} USD`);
+  }
+
+  function runPersistentTrading(state) {
+    if (!state || state.status !== 'RUNNING') return;
+    if (tradingTimer) clearInterval(tradingTimer);
+
+    isTradingRunning = true;
+    setTradingUIRunning(true);
+    runLiveChart();
+
+    const tick = async () => {
+      if (!isTradingRunning) return;
+
+      const finished = updateTradingProgressFromState(state, true);
+      renderBalancesUI('normal');
+
+      tradingStateSaveCounter++;
+      // Persist the current balance periodically, but do not write to Firestore
+      // every 600ms. The authoritative execution clock remains executionStartedAt.
+      if (tradingStateSaveCounter % 5 === 0) {
+        await db.collection('Users').doc(currentUser.uid).set({
+          usdBalance: safeNumber(usdBalance),
+          tradingExecution: {
+            ...state,
+            lastKnownPercent: Number(document.getElementById('progressPercentText')?.innerText?.replace('%','') || 0)
+          },
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      }
+
+      if (finished) {
+        await finishPersistentTrading(state);
+      }
+    };
+
+    tick();
+    tradingTimer = setInterval(tick, 600);
+  }
+
+  async function resumeTradingFromFirestore(data) {
+    const state = data && data.tradingExecution;
+    if (!state || state.status !== 'RUNNING') return;
+
+    const startMs = getExecutionMillis(state.executionStartedAt);
+    if (!startMs) return;
+
+    const durationMs = Number(state.durationMs) || 120000;
+    if (Date.now() - startMs >= durationMs) {
+      isTradingRunning = true;
+      await finishPersistentTrading(state);
+      return;
+    }
+
+    addLog(`<span class="action">[RESUMED]</span> Active trading execution restored after page refresh.`);
+    runPersistentTrading(state);
+  }
+
+  async function startTradingProcess() {
     const codeInputElem = document.getElementById('tradingCodeInput');
     if (!codeInputElem) return;
     const codeInput = codeInputElem.value.trim();
@@ -1232,92 +1433,35 @@ canvas#liveChart {
 
     if (isTradingRunning) return;
 
-    isTradingRunning = true;
-    runLiveChart(); 
-
-    document.getElementById('btnExecute').disabled = true;
-    document.getElementById('btnExecute').style.opacity = '0.5';
-    document.getElementById('progressContainer').style.display = 'block';
-    document.getElementById('pnlStatus').innerText = '● EXECUTING...';
-    document.getElementById('pnlStatus').style.color = '#00d4ff';
-
-    const initialBalance = usdBalance;
+    const durationMs = 120000;
+    const initialBalance = Number(usdBalance.toFixed(2));
     const randomProfitPercent = Math.random() * (0.03 - 0.015) + 0.015;
-    const targetProfitGain = parseFloat((initialBalance * randomProfitPercent).toFixed(2));
-    const finalBalanceTarget = parseFloat((initialBalance + targetProfitGain).toFixed(2));
+    const targetProfitGain = Number((initialBalance * randomProfitPercent).toFixed(2));
+    const finalBalanceTarget = Number((initialBalance + targetProfitGain).toFixed(2));
 
-    const durationInSeconds = 120;
-    const updateInterval = 600; 
-    const totalSteps = (durationInSeconds * 1000) / updateInterval;
-    
-    let elapsedSteps = 0;
-    let currentSessionBalance = initialBalance;
+    const state = {
+      status: 'RUNNING',
+      code: codeInput.toUpperCase(),
+      executionStartedAt: firebase.firestore.Timestamp.now(),
+      durationMs: durationMs,
+      initialBalance: initialBalance,
+      targetProfitGain: targetProfitGain,
+      finalBalanceTarget: finalBalanceTarget,
+      lastKnownPercent: 0
+    };
 
+    // Save BEFORE starting the local timer. This makes the execution recoverable
+    // even if the page is refreshed immediately after clicking Execute.
+    await db.collection('Users').doc(currentUser.uid).set({
+      tradingExecution: state,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    isTradingRunning = true;
+    setTradingUIRunning(true);
     addLog(`<span class="action">[ACCEPTED]</span> Code <b>${codeInput.toUpperCase()}</b> activated!`);
 
-    const timer = setInterval(() => {
-      elapsedSteps++;
-      let currentPercent = Math.floor((elapsedSteps / totalSteps) * 100);
-      if (currentPercent < 1) currentPercent = 1;
-      if (currentPercent > 100) currentPercent = 100;
-
-      if (elapsedSteps < totalSteps) {
-        const idealProgressRatio = elapsedSteps / totalSteps;
-        const idealBalanceSoFar = initialBalance + (targetProfitGain * idealProgressRatio);
-
-        const maxAllowedDrop = initialBalance * 0.01; 
-        const fluctuationNoise = (Math.random() - 0.48) * (initialBalance * 0.015);
-        let tempBalance = idealBalanceSoFar + fluctuationNoise;
-
-        if (tempBalance < initialBalance - maxAllowedDrop) {
-          tempBalance = initialBalance - maxAllowedDrop + 0.05;
-        }
-
-        const delta = tempBalance - currentSessionBalance;
-        currentSessionBalance = tempBalance;
-        usdBalance = currentSessionBalance;
-
-        if (Math.random() > 0.60) {
-          if (delta >= 0) {
-            addLog(`<span class="profit">+ $${Math.abs(delta).toFixed(2)}</span> Order executed`);
-            updateBalancesUI('up');
-          } else {
-            addLog(`<span class="loss">- $${Math.abs(delta).toFixed(2)}</span> Adjustment`);
-            updateBalancesUI('down');
-          }
-        } else {
-          updateBalancesUI('normal');
-        }
-      } else {
-        usdBalance = finalBalanceTarget;
-        updateBalancesUI('up');
-      }
-
-      document.getElementById('progressBarFill').style.width = `${currentPercent}%`;
-      document.getElementById('progressPercentText').innerText =`${currentPercent}%`;
-
-      if (elapsedSteps >= totalSteps) {
-        clearInterval(timer);
-        usdBalance = finalBalanceTarget;
-        updateBalancesUI('normal');
-
-        document.getElementById('pnlStatus').innerText = '● IDLE';
-        document.getElementById('pnlStatus').style.color = '#10b981';
-
-        isTradingRunning = false;
-        runLiveChart(); 
-
-        const actualPercentEarned = ((targetProfitGain / initialBalance) * 100).toFixed(2);
-        addLog(`<span class="profit">[COMPLETED]</span> +$${targetProfitGain.toFixed(2)} USD (+${actualPercentEarned}%)`);
-        alert(`Trading Execution Complete!\n\nInitial Balance: $${initialBalance.toFixed(2)} USD\nNet Profit Earned: +$${targetProfitGain.toFixed(2)} USD\nTotal USD Balance: $${usdBalance.toFixed(2)} USD`);
-
-        document.getElementById('tradingCodeInput').value = '';
-        document.getElementById('btnExecute').disabled = false;
-        document.getElementById('btnExecute').style.opacity = '1';
-        document.getElementById('progressContainer').style.display = 'none';
-        document.getElementById('progressBarFill').style.width = '0%';
-      }
-    }, updateInterval);
+    runPersistentTrading(state);
   }
 
   function openWithdrawModal() { document.getElementById('withdrawModal').style.display = 'flex'; }
