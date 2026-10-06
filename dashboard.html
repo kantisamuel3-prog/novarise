@@ -685,15 +685,15 @@ canvas#liveChart {
   </div>
 </div>
 
-<!-- Bottom Navigation Bar (Eksaktong sukat at disenyo mula sa account.html) -->
-<nav class="fixed bottom-0 left-0 right-0 bg-[#111827] border-t border-gray-800 py-3 px-6 flex justify-around items-center text-xs text-gray-400 z-50">
-  <a href="dashboard.html" class="flex flex-col items-center text-blue-500 font-semibold">
-    <i class="fa-solid fa-chart-line text-lg mb-1"></i>
-    <span>Live Terminal</span>
+<!-- Bottom Navigation Bar (Pure CSS para sigurado at pantay sa account.html) -->
+<nav style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #111827; border-top: 1px solid #1f2937; height: 60px; padding: 0 24px; display: flex; justify-content: space-around; align-items: center; font-size: 12px; color: #9ca3af; z-index: 9999; box-sizing: border-box;">
+  <a href="dashboard.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; color: #3b82f6; font-weight: 600; text-decoration: none; height: 100%;">
+    <i class="fa-solid fa-chart-line" style="font-size: 18px; margin-bottom: 2px;"></i>
+    <span style="line-height: 1;">Live Terminal</span>
   </a>
-  <a href="account.html" class="flex flex-col items-center hover:text-white transition">
-    <i class="fa-solid fa-user text-lg mb-1"></i>
-    <span>Account</span>
+  <a href="account.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9ca3af; text-decoration: none; height: 100%; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#9ca3af'">
+    <i class="fa-solid fa-user" style="font-size: 18px; margin-bottom: 2px;"></i>
+    <span style="line-height: 1;">Account</span>
   </a>
 </nav>
 
