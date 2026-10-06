@@ -999,7 +999,7 @@ canvas#liveChart {
     if (isTradingRunning) return;
 
     isTradingRunning = true;
-    runLiveChart(); // <--- I-trigger para bumilis agad ang graph pagka-execute ng code!
+    runLiveChart(); // Pabilis ng chart kapag nag-a-execute
 
     document.getElementById('btnExecute').disabled = true;
     document.getElementById('btnExecute').style.opacity = '0.5';
@@ -1008,18 +1008,20 @@ canvas#liveChart {
     document.getElementById('pnlStatus').style.color = '#00d4ff';
 
     const initialBalance = usdBalance;
-    const randomProfitPercent = (Math.random() * (3.0 - 1.5) + 1.5) / 100;
+    
+    // Kukuha ng random percentage sa pagitan ng 1.5% (0.015) at 3.0% (0.03) base sa kasalukuyang balance
+    const randomProfitPercent = Math.random() * (0.03 - 0.015) + 0.015;
     const targetProfitGain = parseFloat((initialBalance * randomProfitPercent).toFixed(2));
     const finalBalanceTarget = parseFloat((initialBalance + targetProfitGain).toFixed(2));
 
-    const durationInSeconds = 120; 
+    const durationInSeconds = 120; // 2 minutes
     const updateInterval = 600; 
     const totalSteps = (durationInSeconds * 1000) / updateInterval;
     
     let elapsedSteps = 0;
     let currentSessionBalance = initialBalance;
 
-    addLog(`<span class="action">[CODE ACCEPTED]</span> Code <b>${codeInput.toUpperCase()}</b> activated! Starting 2-Minute Arbitrage Session...`);
+    addLog(`<span class="action">[CODE ACCEPTED]</span> Code <b>${codeInput.toUpperCase()}</b> activated! Starting 2-Minute Session with Balance: $${initialBalance.toFixed(2)}`);
 
     const timer = setInterval(() => {
       elapsedSteps++;
@@ -1051,7 +1053,7 @@ canvas#liveChart {
             addLog(`<span class="profit">+ $${Math.abs(delta).toFixed(2)} USD</span> Order Executed on <b>${randomPair}</b>`);
             updateBalancesUI('up');
           } else {
-            addLog(`<span class="loss">- $${Math.abs(delta).toFixed(2)} USD</span> Market Drawback on <b>${randomPair}</b>`);
+            addLog(`<span class="loss">- $${Math.abs(delta).toFixed(2)} USD</span> Market Adjustment on <b>${randomPair}</b>`);
             updateBalancesUI('down');
           }
         } else {
@@ -1074,11 +1076,11 @@ canvas#liveChart {
         document.getElementById('pnlStatus').style.color = '#10b981';
 
         isTradingRunning = false;
-        runLiveChart(); // <--- I-balik sa mabagal at mahinang takbo ang graph pagkatapos ng 2 minutes!
+        runLiveChart(); // Balik sa mabagal na takbo pagkatapos ng 2 mins
 
         const actualPercentEarned = ((targetProfitGain / initialBalance) * 100).toFixed(2);
         addLog(`<span class="profit">[SESSION COMPLETED]</span> 2-Minute Session Finished! Yield: <b>+${actualPercentEarned}% (+$${targetProfitGain.toFixed(2)} USD)</b>`);
-        alert(`Trading Execution Complete!\n\nDuration: 2 Minutes (120s)\nNet Profit Earned: +$${targetProfitGain.toFixed(2)} USD (+${actualPercentEarned}%)\nUpdated Total USD Balance: $${usdBalance.toFixed(2)} USD`);
+        alert(`Trading Execution Complete!\n\nInitial Balance: $${initialBalance.toFixed(2)} USD\nNet Profit Earned (+${actualPercentEarned}%): +$${targetProfitGain.toFixed(2)} USD\nUpdated Total USD Balance: $${usdBalance.toFixed(2)} USD`);
 
         document.getElementById('tradingCodeInput').value = '';
         document.getElementById('btnExecute').disabled = false;
