@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora - Account</title>
+  <!-- Tailwind CSS para sa mabilis at malinis na styling na kahawig ng dashboard -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #9ca3af;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-20">
+
+  <!-- Top Header -->
+  <header class="flex justify-between items-center px-6 py-4 bg-[#111827] border-b border-gray-800">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">N</div>
+      <div>
+        <h1 class="text-white font-bold tracking-wider text-sm">NEXORA</h1>
+        <p class="text-[10px] text-gray-400 uppercase tracking-widest">Live Trading Engine</p>
+      </div>
+    </div>
+    <button onclick="logoutUser()" class="bg-rose-950/40 border border-rose-800/50 text-rose-400 hover:bg-rose-900/50 px-4 py-1.5 rounded-md text-xs font-semibold transition">
+      Logout
+    </button>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <div class="mb-6">
+      <h2 class="text-xl font-bold text-white">Account Profile & Wallets</h2>
+      <p id="userEmailDisplay" class="text-xs text-gray-400 mt-1">user@nexora.local</p>
+    </div>
+
+    <!-- Wallet Balances Section (Kapareho ng nasa dashboard layout) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      
+      <!-- Dollar Balance Card -->
+      <div class="bg-[#111827] border border-gray-800 rounded-xl p-5 shadow-lg">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Account Wallet Balances</span>
+        <div class="mt-4">
+          <p class="text-xs text-gray-400">DOLLAR BALANCE (USD)</p>
+          <h3 id="dollarBalance" class="text-2xl font-bold text-white mt-1">$0.00</h3>
+          <p class="text-[11px] text-gray-500 mt-1">Trading Capital</p>
+        </div>
+      </div>
+
+      <!-- Peso Balance Card -->
+      <div class="bg-[#111827] border border-gray-800 rounded-xl p-5 shadow-lg flex flex-col justify-between">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">&nbsp;</span>
+          <div class="mt-4">
+            <p class="text-xs text-gray-400">PESO BALANCE (PHP)</p>
+            <h3 id="pesoBalance" class="text-2xl font-bold text-white mt-1">₱0.00</h3>
+            <p class="text-[11px] text-gray-500 mt-1">Deposit / Withdraw</p>
+          </div>
+        </div>
+        <div class="mt-4">
+          <button onclick="openWithdrawModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 px-4 rounded-lg text-xs transition flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Withdraw Pesos (PHP)</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Actions / Menu List -->
+    <div class="bg-[#111827] border border-gray-800 rounded-xl p-5 shadow-lg">
+      <h3 class="text-sm font-bold text-white mb-4">Account Settings & Actions</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <button onclick="openBankModal()" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 p-4 rounded-xl text-center transition">
+          <i class="fa-solid fa-credit-card text-blue-500 text-lg mb-2"></i>
+          <p class="text-xs text-white font-medium">Bank / GCash</p>
+        </button>
+        <button onclick="openHistoryModal()" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 p-4 rounded-xl text-center transition">
+          <i class="fa-solid fa-clock-rotate-left text-amber-500 text-lg mb-2"></i>
+          <p class="text-xs text-white font-medium">Transactions</p>
+        </button>
+        <button onclick="openSupport()" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 p-4 rounded-xl text-center transition">
+          <i class="fa-solid fa-headset text-emerald-500 text-lg mb-2"></i>
+          <p class="text-xs text-white font-medium">Support</p>
+        </button>
+        <button onclick="openTeam()" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 p-4 rounded-xl text-center transition">
+          <i class="fa-solid fa-users text-purple-500 text-lg mb-2"></i>
+          <p class="text-xs text-white font-medium">Team Group</p>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar (Tulad ng nasa ibaba ng larawan) -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#111827] border-t border-gray-800 py-3 px-6 flex justify-around items-center text-xs text-gray-400">
+    <a href="dashboard.html" class="flex flex-col items-center hover:text-white transition">
+      <i class="fa-solid fa-chart-line text-lg mb-1"></i>
+      <span>Live Terminal</span>
+    </a>
+    <a href="account.html" class="flex flex-col items-center text-blue-500 font-semibold">
+      <i class="fa-solid fa-user text-lg mb-1"></i>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Firebase Scripts & Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // Ilagay dito ang iyong Firebase config kung kinakailangan
+    const firebaseConfig = {
+      // API credentials mo rito
+    };
+
+    // Para sa demo / kung naka-setup na ang Firebase:
+    // const app = initializeApp(firebaseConfig);
+    // const auth = getAuth(app);
+    // const db = getFirestore(app);
+
+    window.logoutUser = function() {
+      // auth.signOut().then(() => { window.location.href = "index.html"; });
+      window.location.href = "index.html";
+    }
+
+    window.openWithdrawModal = function() {
+      alert("Withdrawal feature clicked.");
+    }
+    window.openBankModal = function() {
+      alert("Bank / GCash settings clicked.");
+    }
+    window.openHistoryModal = function() {
+      alert("Transaction history clicked.");
+    }
+    window.openSupport = function() {
+      alert("Support clicked.");
+    }
+    window.openTeam = function() {
+      alert("Team group clicked.");
+    }
+  </script>
+</body>
+</html>
