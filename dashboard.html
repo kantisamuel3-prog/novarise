@@ -818,7 +818,7 @@ canvas#liveChart {
     }
 
     const elapsedMs = Math.max(0, Date.now() - startMs);
-    accountAgeDays = Math.min(31, Math.floor(elapsedMs / 86400000));
+    accountAgeDays = Math.floor(elapsedMs / 86400000);
     return accountAgeDays;
   }
 
