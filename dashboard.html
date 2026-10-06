@@ -3,181 +3,813 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nexora - Dashboard & Wallet</title>
+<title>Nexora Algorithmic Live Trading Terminal</title>
+
+<!-- FIREBASE SDKs (Compat v10) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome para sa mga icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-* { box-sizing: border-box; }
+/* =====================================================
+   GLOBAL & NEXORA DARK TRADING THEME
+===================================================== */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: #060913; color: #e2e8f0; padding-bottom: 90px; min-height: 100vh;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #060913;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 212, 255, 0.12), transparent 50%),
+    radial-gradient(circle at 10% 80%, rgba(16, 185, 129, 0.05), transparent 40%),
+    linear-gradient(180deg, #060913 0%, #0a0e1a 100%);
+  color: #e2e8f0;
+  padding-bottom: 90px;
+  min-height: 100vh;
 }
+
+/* =====================================================
+   TRADING TICKER BAR (TOP)
+===================================================== */
 .ticker-bar {
-  background: #03050a; border-bottom: 1px solid rgba(0, 212, 255, 0.15);
-  font-family: monospace; font-size: 11px; padding: 6px 16px; display: flex; gap: 24px; overflow-x: auto; white-space: nowrap; color: #64748b;
+  background: #03050a;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+  font-family: monospace;
+  font-size: 11px;
+  padding: 6px 16px;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  white-space: nowrap;
+  color: #64748b;
 }
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ticker-symbol {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.up { color: #10b981; }
+.down { color: #ef4444; }
+
+/* =====================================================
+   HEADER
+===================================================== */
 header {
-  background: rgba(10, 14, 26, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 14px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;
+  background: rgba(10, 14, 26, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
-.logo { display: flex; align-items: center; gap: 12px; }
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .logo-icon {
-  width: 38px; height: 38px; background: linear-gradient(135deg, #00d4ff, #0055ff); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; color: #ffffff;
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #00d4ff, #0055ff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 18px;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
 }
-.logo-copy strong { display: block; color: #ffffff; font-size: 16px; }
-.logo-copy small { display: block; color: #00d4ff; font-size: 9px; text-transform: uppercase; }
+
+.logo-copy strong {
+  display: block;
+  color: #ffffff;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.logo-copy small {
+  display: block;
+  color: #00d4ff;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
 #logoutButton {
-  border: 1px solid rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); color: #fca5a5;
-  padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all 0.2s ease;
 }
-main { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+
+/* =====================================================
+   MAIN CONTAINER
+===================================================== */
+main {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.welcome h2 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+}
+
+#userEmail {
+  color: #00d4ff;
+  font-size: 13px;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+/* =====================================================
+   CARD STYLING
+===================================================== */
 .card {
-  background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(0, 212, 255, 0.15);
-  border-radius: 16px; padding: 16px; backdrop-filter: blur(8px); margin-bottom: 16px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 16px;
+  padding: 16px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
-.balances-wrapper { display: flex; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
-.bal-box { flex: 1; min-width: 120px; background: rgba(0, 0, 0, 0.3); padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); }
-.bal-label { font-size: 10px; color: #00d4ff; font-weight: 700; text-transform: uppercase; }
-.bal-amount { font-size: 20px; font-weight: 800; color: #ffffff; margin-top: 4px; }
+
+@media (min-width: 768px) {
+  .card {
+    padding: 24px;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE GRIDS (MAGKATABI SA PC, NAKAPATONG SA MOBILE)
+===================================================== */
+.top-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 1024px) {
+  .top-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(340px, 1fr);
+    gap: 20px;
+  }
+}
+
+.balance-card {
+  background: linear-gradient(135deg, rgba(10, 20, 40, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 25px rgba(0, 212, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.balances-wrapper {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+.bal-box {
+  flex: 1;
+  min-width: 120px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bal-label {
+  font-size: 10px;
+  color: #00d4ff;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bal-amount {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 4px;
+  word-break: break-all;
+}
+
+@media (min-width: 768px) {
+  .bal-amount {
+    font-size: 24px;
+  }
+}
+
 .btn-action {
-  width: 100%; padding: 12px; border-radius: 10px; border: none; cursor: pointer; font-weight: 700; font-size: 13px;
-  background: linear-gradient(135deg, #10b981, #059669); color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-.converter-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+
+.btn-withdraw {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.converter-card {
+  background: rgba(10, 15, 30, 0.9);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.converter-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
 .tab-btn {
-  flex: 1; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8;
-  padding: 8px; font-size: 10px; font-weight: 700; border-radius: 6px; cursor: pointer; text-align: center;
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  padding: 8px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
 }
-.tab-btn.active { background: rgba(0, 212, 255, 0.15); border-color: #00d4ff; color: #00d4ff; }
-.converter-pane { display: none; }
-.converter-pane.active { display: block; }
-.convert-input-group { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+
+@media (min-width: 768px) {
+  .tab-btn {
+    font-size: 11px;
+    padding: 6px;
+  }
+}
+
+.tab-btn.active {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: #00d4ff;
+  color: #00d4ff;
+}
+
+.converter-pane {
+  display: none;
+}
+
+.converter-pane.active {
+  display: block;
+}
+
+.convert-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .convert-input-group input {
-  flex: 1; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px; padding: 10px; color: #ffffff; font-weight: 700; font-size: 14px; outline: none;
+  flex: 1;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  outline: none;
 }
+
 .btn-convert-action {
-  background: linear-gradient(135deg, #00d4ff, #0055ff); color: #ffffff; border: none;
-  border-radius: 8px; padding: 10px 14px; font-weight: 700; font-size: 12px; cursor: pointer;
+  background: linear-gradient(135deg, #00d4ff, #0055ff);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
 }
+
+/* =====================================================
+   MIDDLE SECTION: GRAPH & MARKET LIST
+===================================================== */
+.middle-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 1024px) {
+  .middle-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 20px;
+  }
+}
+
+.chart-card {
+  background: rgba(8, 12, 22, 0.95);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  position: relative;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.market-live-price {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: bold;
+  color: #10b981;
+}
+
+@media (min-width: 768px) {
+  .market-live-price {
+    font-size: 18px;
+  }
+}
+
+canvas#liveChart {
+  width: 100%;
+  height: 180px;
+  background: #02050b;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (min-width: 768px) {
+  canvas#liveChart {
+    height: 200px;
+  }
+}
+
+/* =====================================================
+   BOTTOM SECTION: TRADING CODE EXECUTION
+===================================================== */
+.code-input-card {
+  background: rgba(10, 15, 30, 0.85);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.code-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+@media (min-width: 540px) {
+  .code-input-group {
+    flex-direction: row;
+  }
+}
+
+.code-input-group input {
+  flex: 1;
+  width: 100%;
+  background: #030712;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: #00d4ff;
+  font-family: monospace;
+  font-size: 15px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  outline: none;
+}
+
+.btn-execute-code {
+  background: linear-gradient(135deg, #0055ff, #00d4ff);
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  width: 100%;
+}
+
+@media (min-width: 540px) {
+  .btn-execute-code {
+    width: auto;
+  }
+}
+
+.terminal-logs {
+  background: #02040a;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 10px;
+  padding: 10px;
+  height: 110px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 11px;
+  margin-top: 12px;
+}
+
+.log-entry { color: #94a3b8; margin-bottom: 4px; word-break: break-all; }
+.log-entry .profit { color: #10b981; font-weight: bold; }
+.log-entry .loss { color: #ef4444; font-weight: bold; }
+.log-entry .action { color: #00d4ff; }
+
+/* PROGRESS BAR */
+.progress-container {
+  margin-top: 12px;
+  display: none;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff, #10b981);
+  transition: width 0.3s ease;
+}
+
+/* =====================================================
+   MODALS
+===================================================== */
 .modal-overlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(3, 6, 15, 0.85);
-  display: none; align-items: center; justify-content: center; z-index: 1000; padding: 16px;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(3, 6, 15, 0.85);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
 }
+
 .modal {
-  background: #0d1322; border: 1px solid rgba(0, 212, 255, 0.35); border-radius: 20px; padding: 20px; width: 100%; max-width: 420px;
+  background: linear-gradient(135deg, rgba(13, 19, 34, 0.98) 0%, rgba(8, 12, 22, 0.98) 100%);
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
 }
+
+@media (min-width: 768px) {
+  .modal {
+    padding: 28px;
+  }
+}
+
 .form-group { margin-bottom: 14px; }
 .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
 .form-group input, .form-group select {
-  width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff;
+  width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff;
 }
+
 .modal-buttons { display: flex; gap: 12px; margin-top: 22px; }
-.btn-close { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: none; padding: 12px; flex: 1; border-radius: 10px; cursor: pointer; font-weight: 600; }
-.btn-confirm { background: linear-gradient(135deg, #00d4ff, #0055ff); color: #fff; border: none; padding: 12px; flex: 1; border-radius: 10px; cursor: pointer; font-weight: 700; }
+.btn-close { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px; flex: 1; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; }
+.btn-confirm { background: linear-gradient(135deg, #00d4ff, #0055ff); color: #fff; border: none; padding: 12px; flex: 1; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 13px; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3); }
 </style>
 </head>
+
 <body>
 
+<!-- TRADING TICKER BAR -->
 <div class="ticker-bar">
-  <div>NEX/USD: <b>$18.95</b></div>
-  <div>BTC/USD: <b>$96,420.00</b></div>
-  <div>USD/PHP: <b>₱60.00</b></div>
+  <div class="ticker-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up" id="tickNex">$18.95 (+18.4%)</span></div>
+  <div class="ticker-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up" id="tickBtc">$96,420.00 (+3.2%)</span></div>
+  <div class="ticker-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>
+  <div class="ticker-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>
 </div>
 
+<!-- HEADER -->
 <header>
   <div class="logo">
     <div class="logo-icon">N</div>
     <div class="logo-copy">
       <strong>NEXORA</strong>
-      <small>Wallet Dashboard</small>
+      <small>Live Trading Engine</small>
     </div>
   </div>
   <button id="logoutButton" onclick="handleLogout()">Logout</button>
 </header>
 
-<main>
-  <div style="margin-bottom: 20px;">
-    <h2 style="margin: 0 0 4px; font-size: 22px; color: #fff;">Account Balances</h2>
-    <div id="userEmail" style="color: #00d4ff; font-size: 13px; font-family: monospace;">Loading...</div>
-  </div>
+<main id="home">
 
-  <!-- WALLET CARD -->
-  <div class="card">
-    <h3 style="margin: 0 0 10px; font-size: 13px; color: #94a3b8; text-transform: uppercase;">Your Wallets</h3>
-    <div class="balances-wrapper">
-      <div class="bal-box">
-        <div class="bal-label">USD Capital</div>
-        <div class="bal-amount" id="usdBalance">$0.00</div>
-      </div>
-      <div class="bal-box">
-        <div class="bal-label">PHP Balance</div>
-        <div class="bal-amount" id="phpBalance">₱0.00</div>
-      </div>
-    </div>
-    <button class="btn-action" onclick="openWithdrawModal()">🏦 Withdraw Pesos (PHP)</button>
-  </div>
-
-  <!-- CONVERTER CARD -->
-  <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-      <h4 style="margin: 0; color: #00d4ff; font-size: 13px;">💱 Dual Currency Converter</h4>
-      <span style="font-size: 10px; color: #00d4ff; background: rgba(0,212,255,0.1); padding: 2px 6px; border-radius: 10px;">$1 = ₱60.00</span>
-    </div>
-
-    <div class="converter-tabs">
-      <button class="tab-btn active" onclick="switchTab('phpToUsd', event)">PHP ➔ USD</button>
-      <button class="tab-btn" onclick="switchTab('usdToPhp', event)">USD ➔ PHP</button>
-    </div>
-
-    <div id="phpToUsdPane" class="converter-pane active">
-      <div class="convert-input-group">
-        <input type="number" id="phpInput" placeholder="Enter PHP (₱)" oninput="previewPhpToUsd()">
-        <button class="btn-convert-action" onclick="convertPhpToUsd()">Convert</button>
-      </div>
-      <div style="font-size: 11px; color: #10b981; margin-top: 6px;" id="phpToUsdPreview">You will receive: $0.00 USD</div>
-    </div>
-
-    <div id="usdToPhpPane" class="converter-pane">
-      <div class="convert-input-group">
-        <input type="number" id="usdInput" placeholder="Enter USD ($)" oninput="previewUsdToPhp()">
-        <button class="btn-convert-action" onclick="handleUsdToPhpAction()">Convert</button>
-      </div>
-      <div style="font-size: 11px; color: #94a3b8; margin-top: 6px;" id="usdToPhpPreview">You will receive: ₱0.00 PHP</div>
+  <div class="welcome">
+    <div>
+      <h2>Algorithmic Live Dashboard</h2>
+      <div id="userEmail">Loading user...</div>
     </div>
   </div>
 
-  <!-- MARKET ASSETS LIST -->
-  <div class="card">
-    <div class="flex justify-between items-center text-xs font-medium text-gray-400 mb-3 pb-2 border-b border-gray-800">
-      <span class="text-yellow-400 font-bold">Live Markets</span>
-    </div>
-    <div class="space-y-3 text-xs" id="liveTickerTable">
-      <div class="flex justify-between items-center py-1">
-        <span class="font-bold text-white">BTC / USD</span>
-        <span class="font-medium text-white">$85,520.01</span>
-        <span class="font-bold text-red-500">-1.10%</span>
+  <!-- TOP GRID: BALANCES & CONVERTERS -->
+  <div class="top-grid">
+    <div class="card balance-card">
+      <div>
+        <h3 style="margin: 0; font-size: 13px; color: #94a3b8; text-transform: uppercase;">Account Wallet Balances</h3>
       </div>
-      <div class="flex justify-between items-center py-1">
-        <span class="font-bold text-white">ETH / USD</span>
-        <span class="font-medium text-white">$2,700.01</span>
-        <span class="font-bold text-red-500">-1.01%</span>
+
+      <div class="balances-wrapper">
+        <div class="bal-box">
+          <div class="bal-label">Dollar Balance (USD)</div>
+          <div class="bal-amount" id="usdBalance">$0.00</div>
+          <small style="color: #64748b; font-size: 10px;">Trading Capital</small>
+        </div>
+
+        <div class="bal-box">
+          <div class="bal-label">Peso Balance (PHP)</div>
+          <div class="bal-amount" id="phpBalance">₱0.00</div>
+          <small style="color: #64748b; font-size: 10px;">Deposit / Withdrawal</small>
+        </div>
+      </div>
+
+      <button type="button" class="btn-action btn-withdraw" onclick="openWithdrawModal()">
+        <span>🏦 Withdraw Pesos (PHP)</span>
+      </button>
+    </div>
+
+    <!-- DUAL CONVERTER CARD -->
+    <div class="card converter-card">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h4 style="margin: 0; color: #00d4ff; font-size: 13px;">💱 Dual Currency Converter</h4>
+          <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px;">$1 = ₱60.00</span>
+        </div>
+
+        <!-- CONVERTER TABS -->
+        <div class="converter-tabs">
+          <button class="tab-btn active" onclick="switchConverterTab('phpToUsd', event)">PHP ➔ USD (Deposit)</button>
+          <button class="tab-btn" onclick="switchConverterTab('usdToPhp', event)">USD ➔ PHP (Withdraw)</button>
+        </div>
+
+        <!-- TAB 1: PHP TO USD -->
+        <div id="phpToUsdPane" class="converter-pane active">
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px;">
+            <div style="font-size: 10px; font-weight: 700; color: #94a3b8; margin-bottom: 6px;">CONVERT DEPOSITED PHP TO USD FOR TRADING</div>
+            <div class="convert-input-group">
+              <input type="number" id="phpInput" placeholder="Enter PHP (₱)" oninput="previewPhpToUsd()">
+              <button class="btn-convert-action" onclick="convertPhpToUsd()">Convert</button>
+            </div>
+            <div style="font-size: 10px; color: #10b981; margin-top: 5px;" id="phpToUsdPreview">You will receive: $0.00 USD</div>
+          </div>
+        </div>
+
+        <!-- TAB 2: USD TO PHP -->
+        <div id="usdToPhpPane" class="converter-pane">
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px;">
+            <div style="font-size: 10px; font-weight: 700; color: #00d4ff; margin-bottom: 6px;">CONVERT USD TO PHP FOR WITHDRAWAL</div>
+            <div class="convert-input-group">
+              <input type="number" id="usdInput" placeholder="Enter USD ($)" oninput="previewUsdToPhp()">
+              <button class="btn-convert-action" onclick="handleUsdToPhpAction()">Convert</button>
+            </div>
+            <div style="font-size: 10px; color: #64748b; margin-top: 5px;" id="usdToPhpPreview">You will receive: ₱0.00 PHP</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
+
+  <!-- MIDDLE SECTION: LIVE MARKET GRAPH & COMPACT LIVE ASSET LIST -->
+  <div class="middle-grid">
+    
+    <!-- REAL-TIME GRAPH CHART CARD -->
+    <div class="card chart-card">
+      <div class="chart-header">
+        <div>
+          <span style="color: #94a3b8; font-size: 11px; font-weight: bold;">LIVE MARKET GRAPH (BTC/USD)</span>
+          <div class="market-live-price" id="livePriceDisplay">$96,420.00</div>
+        </div>
+        <div style="text-align: right;">
+          <span style="color: #10b981; font-size: 11px; font-weight: bold;" id="pnlStatus">● IDLE</span>
+        </div>
+      </div>
+
+      <canvas id="liveChart"></canvas>
+    </div>
+
+    <!-- COMPACT LIVE MARKET ASSETS CARD -->
+    <div class="bg-[#111827] border border-gray-800 rounded-xl p-4 shadow-xl flex flex-col justify-between">
+      <div class="flex justify-between items-center text-xs font-medium text-gray-400 mb-3 pb-2 border-b border-gray-800">
+        <span class="text-yellow-400 font-bold">Markets</span>
+        <a href="#" class="text-gray-500 hover:text-yellow-400 transition">View All ></a>
+      </div>
+
+      <div class="space-y-3 text-xs" id="liveTickerTable">
+        <!-- Row 1: BTC -->
+        <div class="grid grid-cols-3 items-center">
+          <div class="flex items-center gap-2">
+            <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=032" alt="BTC" class="w-6 h-6 object-contain">
+            <div>
+              <span class="font-bold text-white">BTC</span>
+              <span class="text-gray-400 block text-[10px]">Bitcoin</span>
+            </div>
+          </div>
+          <span class="font-medium text-white text-center asset-price">$85,520.01</span>
+          <span class="font-bold text-red-500 text-right asset-percent">-1.10%</span>
+        </div>
+
+        <!-- Row 2: ETH -->
+        <div class="grid grid-cols-3 items-center">
+          <div class="flex items-center gap-2">
+            <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=032" alt="ETH" class="w-6 h-6 object-contain">
+            <div>
+              <span class="font-bold text-white">ETH</span>
+              <span class="text-gray-400 block text-[10px]">Ethereum</span>
+            </div>
+          </div>
+          <span class="font-medium text-white text-center asset-price">$2,700.01</span>
+          <span class="font-bold text-red-500 text-right asset-percent">-1.01%</span>
+        </div>
+
+        <!-- Row 3: BNB -->
+        <div class="grid grid-cols-3 items-center">
+          <div class="flex items-center gap-2">
+            <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png?v=032" alt="BNB" class="w-6 h-6 object-contain">
+            <div>
+              <span class="font-bold text-white">BNB</span>
+              <span class="text-gray-400 block text-[10px]">BNB</span>
+            </div>
+          </div>
+          <span class="font-medium text-white text-center asset-price">$782.29</span>
+          <span class="font-bold text-red-500 text-right asset-percent">-1.83%</span>
+        </div>
+
+        <!-- Row 4: SpaceX -->
+        <div class="grid grid-cols-3 items-center">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center font-bold text-xs text-white">X</div>
+            <div>
+              <span class="font-bold text-white">SPCXB</span>
+              <span class="text-gray-400 block text-[10px]">SpaceX</span>
+            </div>
+          </div>
+          <span class="font-medium text-white text-center asset-price">$171.83</span>
+          <span class="font-bold text-green-500 text-right asset-percent">+7.22%</span>
+        </div>
+
+        <!-- Row 5: NVIDIA -->
+        <div class="grid grid-cols-3 items-center">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full bg-[#76b900] flex items-center justify-center shadow-md overflow-hidden p-1">
+              <svg viewBox="0 0 24 24" class="w-4 h-4 fill-white" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.53 2c-3.13.11-6.13 1.58-8.24 3.97-2.11 2.39-3.08 5.57-2.69 8.74.39 3.17 2.13 6.01 4.84 7.69 2.71 1.68 6.07 1.96 9.03.73l-1.42-2.5c-2.09.87-4.59.67-6.5-.52-1.91-1.19-3.14-3.19-3.32-5.45-.18-2.26.79-4.47 2.61-5.81 1.82-1.34 4.19-1.61 6.25-.7l1.39-2.53C15.2 2.67 13.38 2.07 11.53 2zm7.1 2.65l-1.39 2.53c1.67.75 3 2.05 3.73 3.69.73 1.64.84 3.52.31 5.23l2.67.89c.79-2.5.58-5.26-.57-7.61-1.15-2.35-3.19-4.14-5.65-4.73z"/>
+              </svg>
+            </div>
+            <div>
+              <span class="font-bold text-white">NVDAB</span>
+              <span class="text-gray-400 block text-[10px]">NVIDIA (bStocks)</span>
+            </div>
+          </div>
+          <span class="font-medium text-white text-center asset-price">$239.76</span>
+          <span class="font-bold text-green-500 text-right asset-percent">+0.03%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM SECTION: TRADING CODE EXECUTION -->
+  <div class="card code-input-card">
+    <div>
+      <h3 style="margin: 0 0 6px; color: #ffffff; font-size: 18px;">Trading Code Execution</h3>
+      <p style="margin: 0; color: #94a3b8; font-size: 12px;">Enter code to execute algorithmic trading session (2 Mins).</p>
+      
+      <div class="code-input-group">
+        <input type="text" id="tradingCodeInput" placeholder="ENTER CODE..." maxlength="12">
+        <button class="btn-execute-code" id="btnExecute" onclick="startTradingProcess()">Execute Code</button>
+      </div>
+
+      <div class="progress-container" id="progressContainer">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
+          <span id="progressStatusText">Running Algorithmic Session...</span>
+          <span id="progressPercentText">1%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="terminal-logs" id="terminalLogs">
+      <div class="log-entry">[SYSTEM] Connected to WebSocket live market feed...</div>
+      <div class="log-entry">[SYSTEM] Waiting for trading code activation...</div>
+    </div>
+  </div>
+
 </main>
 
-<!-- WITHDRAW MODAL -->
+<!-- MODALS -->
+<div class="modal-overlay" id="zeroBalanceModal">
+  <div class="modal" style="border-color: rgba(239, 68, 68, 0.4); text-align: center;">
+    <div style="width: 50px; height: 50px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 22px;">
+      ⚠️
+    </div>
+    <h3 style="margin-top: 0; color: #fca5a5; font-size: 18px;">Insufficient Balance</h3>
+    <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin-bottom: 20px;">
+      You have a <strong>$0.00</strong> balance! Please recharge or convert your PHP to USD before executing a trading code.
+    </p>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-close" onclick="closeZeroBalanceModal()">Close</button>
+      <button class="btn-confirm" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" onclick="closeZeroBalanceModal()">OK, Got it</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="conversionConfirmModal">
+  <div class="modal">
+    <h3 style="margin-top: 0; color: #00d4ff; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+      <span>⚠️</span> Conversion Confirmation
+    </h3>
+    <div id="conversionModalBody" style="font-size: 13px; color: #cbd5e1; line-height: 1.6; background: rgba(0,0,0,0.4); padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); margin-top: 10px;">
+    </div>
+    <div class="modal-buttons">
+      <button class="btn-close" onclick="closeConversionModal()">Cancel</button>
+      <button class="btn-confirm" onclick="confirmUsdToPhpConversion()">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="withdrawModal">
   <div class="modal">
     <h3 style="margin-top: 0; color: #00d4ff;">Withdraw Funds (PHP)</h3>
     <div class="form-group">
       <label>Payout Channel</label>
-      <select id="payoutMethod"><option value="GCash">GCash</option><option value="Maya">Maya</option></select>
+      <select id="payoutMethod">
+        <option value="GCash">GCash</option>
+        <option value="Maya">Maya</option>
+        <option value="Bank Transfer">Bank Transfer</option>
+      </select>
     </div>
     <div class="form-group">
       <label>Account Number / Phone</label>
@@ -189,23 +821,23 @@ main { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
     </div>
     <div class="modal-buttons">
       <button class="btn-close" onclick="closeWithdrawModal()">Cancel</button>
-      <button class="btn-confirm" onclick="submitWithdrawal()">Submit</button>
+      <button class="btn-confirm" style="flex:1" onclick="submitWithdrawal()">Submit Request</button>
     </div>
   </div>
 </div>
 
-<!-- BOTTOM NAVIGATION -->
-<nav style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #111827; border-top: 1px solid #1f2937; padding: 12px 24px; display: flex; justify-content: space-around; align-items: center; font-size: 12px; color: #9ca3af; z-index: 999;">
+<!-- Bottom Navigation Bar -->
+<nav style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #111827; border-top: 1px solid #1f2937; padding: 12px 24px; display: flex; justify-content: space-around; align-items: center; font-size: 12px; color: #9ca3af; z-index: 9999;">
   <a href="dashboard.html" style="display: flex; flex-direction: column; align-items: center; color: #3b82f6; font-weight: 600; text-decoration: none;">
-    <i class="fa-solid fa-wallet" style="font-size: 18px; margin-bottom: 4px;"></i>
-    <span>Wallet</span>
-  </a>
-  <a href="trading.html" style="display: flex; flex-direction: column; align-items: center; color: #9ca3af; text-decoration: none;">
     <i class="fa-solid fa-chart-line" style="font-size: 18px; margin-bottom: 4px;"></i>
-    <span>Trading & Graph</span>
+    <span>Live Terminal</span>
+  </a>
+  <a href="account.html" style="display: flex; flex-direction: column; align-items: center; color: #9ca3af; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#9ca3af'">
+    <i class="fa-solid fa-user" style="font-size: 18px; margin-bottom: 4px;"></i>
+    <span>Account</span>
   </a>
 </nav>
-
+   
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
@@ -213,62 +845,437 @@ main { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
     projectId: "investpro-2dafb",
     storageBucket: "investpro-2dafb.firebasestorage.app",
     messagingSenderId: "135092039764",
-    appId: "1:135092039764:web:c4c71eef0c904346a77dc1"
+    appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
+    measurementId: "G-0L77SFTC4F"
   };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  let usdBalance = 0, phpBalance = 0, currentUser = null;
+  const EXCHANGE_RATE = 60;
+  let usdBalance = 0.00;
+  let phpBalance = 0.00;
+  let isTradingRunning = false;
+  let accountAgeDays = 35; 
+  const requiredDaysForNoFee = 31;
+  let pendingConversionData = null;
+  let currentUser = null;
 
   auth.onAuthStateChanged((user) => {
     if (user) {
       currentUser = user;
-      document.getElementById('userEmail').innerText = user.email || user.phoneNumber;
-      db.collection("users").doc(user.uid).get().then(doc => {
-        if(doc.exists) {
-          usdBalance = doc.data().usdBalance || 0;
-          phpBalance = doc.data().phpBalance || 0;
-          updateUI();
-        }
-      });
+      document.getElementById('userEmail').innerText = user.email || user.phoneNumber || "User Connected";
+      loadUserDataFromFirestore(user.uid);
     } else {
       window.location.href = "login.html";
     }
   });
 
-  function updateUI() {
-    document.getElementById('usdBalance').innerText = '$' + usdBalance.toFixed(2);
-    document.getElementById('phpBalance').innerText = '₱' + phpBalance.toLocaleString(undefined, {minimumFractionDigits: 2});
+  function loadUserDataFromFirestore(uid) {
+    db.collection("users").doc(uid).get().then((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        if (data.usdBalance !== undefined) usdBalance = Number(data.usdBalance);
+        if (data.phpBalance !== undefined) phpBalance = Number(data.phpBalance);
+        if (data.accountAgeDays !== undefined) accountAgeDays = Number(data.accountAgeDays);
+      } else {
+        saveUserDataToFirestore();
+      }
+      updateBalancesUI();
+    }).catch((error) => {
+      console.error("Error loading user data:", error);
+      updateBalancesUI();
+    });
   }
 
-  function handleLogout() { auth.signOut().then(() => window.location.href = "login.html"); }
-  function switchTab(tab, e) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.converter-pane').forEach(p => p.classList.remove('active'));
-    e.currentTarget.classList.add('active');
-    document.getElementById(tab + 'Pane').classList.add('active');
+  function saveUserDataToFirestore() {
+    if (!currentUser) return;
+    db.collection("users").doc(currentUser.uid).set({
+      usdBalance: usdBalance,
+      phpBalance: phpBalance,
+      accountAgeDays: accountAgeDays,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).catch((error) => {
+      console.error("Error saving user data:", error);
+    });
   }
+
+  function handleLogout() {
+    auth.signOut().then(() => {
+      window.location.href = "login.html";
+    }).catch((error) => {
+      console.error("Logout error:", error);
+    });
+  }
+
+  function updateBalancesUI(colorMode = 'normal') {
+    const usdElem = document.getElementById('usdBalance');
+    if (usdElem) {
+      usdElem.innerText = '$' + usdBalance.toFixed(2);
+      if (colorMode === 'up') usdElem.style.color = '#10b981';
+      else if (colorMode === 'down') usdElem.style.color = '#ef4444';
+      else usdElem.style.color = '#ffffff';
+    }
+
+    const phpElem = document.getElementById('phpBalance');
+    if (phpElem) {
+      phpElem.innerText = '₱' + phpBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+    saveUserDataToFirestore();
+  }
+
+  function switchConverterTab(tabName, event) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.converter-pane').forEach(pane => pane.classList.remove('active'));
+
+    if (tabName === 'phpToUsd') {
+      event.currentTarget.classList.add('active');
+      document.getElementById('phpToUsdPane').classList.add('active');
+    } else {
+      event.currentTarget.classList.add('active');
+      document.getElementById('usdToPhpPane').classList.add('active');
+    }
+  }
+
   function previewPhpToUsd() {
-    let val = parseFloat(document.getElementById('phpInput').value) || 0;
-    document.getElementById('phpToUsdPreview').innerText = `You will receive: $${(val / 60).toFixed(2)} USD`;
+    const phpVal = parseFloat(document.getElementById('phpInput').value) || 0;
+    const convertedUsd = phpVal / EXCHANGE_RATE;
+    document.getElementById('phpToUsdPreview').innerText = `You will receive: $${convertedUsd.toFixed(2)} USD`;
   }
+
   function convertPhpToUsd() {
-    let val = parseFloat(document.getElementById('phpInput').value) || 0;
-    if(val <= 0 || val > phpBalance) { alert("Invalid amount!"); return; }
-    phpBalance -= val; usdBalance += (val / 60);
-    db.collection("users").doc(currentUser.uid).set({usdBalance, phpBalance}, {merge:true});
-    updateUI(); alert("Converted successfully!");
+    const phpAmount = parseFloat(document.getElementById('phpInput').value) || 0;
+    if (phpAmount <= 0 || phpAmount > phpBalance) {
+      alert('Invalid or insufficient PHP balance!');
+      return;
+    }
+    const convertedUsd = phpAmount / EXCHANGE_RATE;
+    phpBalance -= phpAmount;
+    usdBalance += convertedUsd;
+    alert(`Successfully converted ₱${phpAmount.toFixed(2)} PHP to $${convertedUsd.toFixed(2)} USD for trading.`);
+    document.getElementById('phpInput').value = '';
+    previewPhpToUsd();
+    updateBalancesUI();
   }
+
+  function previewUsdToPhp() {
+    const usdVal = parseFloat(document.getElementById('usdInput').value) || 0;
+    let rawPhp = usdVal * EXCHANGE_RATE;
+    let finalPhp = rawPhp;
+
+    if (accountAgeDays < requiredDaysForNoFee) {
+      const deduction = rawPhp * 0.25;
+      finalPhp = rawPhp - deduction;
+      document.getElementById('usdToPhpPreview').innerText = `You will receive: ₱${finalPhp.toFixed(2)} PHP (After 25% deduction fee)`;
+    } else {
+      document.getElementById('usdToPhpPreview').innerText = `You will receive: ₱${finalPhp.toFixed(2)} PHP (0% fee - 31 days reached)`;
+    }
+  }
+
+  function handleUsdToPhpAction() {
+    const usdAmount = parseFloat(document.getElementById('usdInput').value) || 0;
+    if (usdAmount <= 0 || usdAmount > usdBalance) {
+      alert('Please enter a valid or sufficient USD amount.');
+      return;
+    }
+
+    let rawPhp = usdAmount * EXCHANGE_RATE;
+
+    if (accountAgeDays >= requiredDaysForNoFee) {
+      usdBalance -= usdAmount;
+      phpBalance += rawPhp;
+      alert(`USD to PHP Conversion Successful!\n\nConverted: $${usdAmount.toFixed(2)} USD\nDeduction: ₱0.00 PHP (0% Fee Waived)\nNet Received: ₱${rawPhp.toFixed(2)} PHP`);
+      document.getElementById('usdInput').value = '';
+      previewUsdToPhp();
+      updateBalancesUI();
+      return;
+    }
+
+    let deduction = rawPhp * 0.25;
+    let finalPhp = rawPhp - deduction;
+    pendingConversionData = { usdAmount, finalPhp, deduction };
+
+    let modalHtml = `
+      <div style="margin-bottom: 6px;"><strong style="color: #00d4ff;">Account Age:</strong> Day ${accountAgeDays} of ${requiredDaysForNoFee} (Under 31 Days)</div>
+      <div style="margin-bottom: 6px;"><strong style="color: #fff;">Converting Amount:</strong> $${usdAmount.toFixed(2)} USD</div>
+      <div style="margin-bottom: 6px;"><strong style="color: #fca5a5;">25% Deduction Fee:</strong> ₱${deduction.toFixed(2)} PHP</div>
+      <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 8px;"><strong style="color: #10b981; font-size: 14px;">Net Total to Receive: ₱${finalPhp.toFixed(2)} PHP</strong></div>
+      <div style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Notice: Accounts must exceed 31 days of age to waive the deduction fee.</div>
+    `;
+
+    document.getElementById('conversionModalBody').innerHTML = modalHtml;
+    document.getElementById('conversionConfirmModal').style.display = 'flex';
+  }
+
+  function closeConversionModal() {
+    document.getElementById('conversionConfirmModal').style.display = 'none';
+    pendingConversionData = null;
+  }
+
+  function confirmUsdToPhpConversion() {
+    if (!pendingConversionData) return;
+    const { usdAmount, finalPhp, deduction } = pendingConversionData;
+    usdBalance -= usdAmount;
+    phpBalance += finalPhp;
+    alert(`USD to PHP Conversion Successful!\n\nConverted: $${usdAmount.toFixed(2)} USD\nDeduction: ₱${deduction.toFixed(2)} PHP\nNet Received: ₱${finalPhp.toFixed(2)} PHP`);
+    closeConversionModal();
+    document.getElementById('usdInput').value = '';
+    previewUsdToPhp();
+    updateBalancesUI();
+  }
+
+  const canvas = document.getElementById('liveChart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth || 500;
+  canvas.height = canvas.offsetHeight || 200;
+
+  let pricePoints = Array(35).fill(96420);
+  let currentPrice = 96420;
+
+  function drawChart() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const rightPadding = 55; 
+    const bottomPadding = 18; 
+    const chartWidth = canvas.width - rightPadding;
+    const chartHeight = canvas.height - bottomPadding;
+
+    const minPrice = Math.min(...pricePoints) - 10;
+    const maxPrice = Math.max(...pricePoints) + 10;
+
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+    ctx.fillStyle = "#64748b";
+    ctx.font = "9px monospace";
+    ctx.lineWidth = 1;
+
+    for (let i = 0; i <= 4; i++) {
+      const y = (chartHeight / 4) * i;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(chartWidth, y);
+      ctx.stroke();
+
+      const priceVal = maxPrice - ((maxPrice - minPrice) / 4) * i;
+      ctx.fillText(`$${priceVal.toFixed(0)}`, chartWidth + 4, y + 3);
+    }
+
+    ctx.fillText("T-35s", 4, chartHeight + 12);
+    ctx.fillText("Live", chartWidth - 25, chartHeight + 12);
+
+    ctx.beginPath();
+    const step = chartWidth / (pricePoints.length - 1);
+
+    for (let i = 0; i < pricePoints.length; i++) {
+      const x = i * step;
+      const y = chartHeight - ((pricePoints[i] - minPrice) / (maxPrice - minPrice)) * chartHeight;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+
+    const isUp = pricePoints[pricePoints.length - 1] >= pricePoints[pricePoints.length - 2];
+    ctx.strokeStyle = isUp ? "#10b981" : "#ef4444";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.lineTo(chartWidth, chartHeight);
+    ctx.lineTo(0, chartHeight);
+    ctx.closePath();
+    const gradient = ctx.createLinearGradient(0, 0, 0, chartHeight);
+    gradient.addColorStop(0, isUp ? "rgba(16, 185, 129, 0.25)" : "rgba(239, 68, 68, 0.25)");
+    gradient.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = gradient;
+    ctx.fill();
+  }
+
+  let chartTimer = null;
+  function runLiveChart() {
+    if (chartTimer) clearInterval(chartTimer);
+    const speedInterval = isTradingRunning ? 350 : 1200;
+
+    chartTimer = setInterval(() => {
+      let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
+      currentPrice += change;
+      pricePoints.shift();
+      pricePoints.push(currentPrice);
+
+      const priceElem = document.getElementById('livePriceDisplay');
+      if (priceElem) {
+        priceElem.innerText = `$${currentPrice.toFixed(2)}`;
+        priceElem.style.color = change >= 0 ? '#10b981' : '#ef4444';
+      }
+      drawChart();
+    }, speedInterval);
+  }
+
+  runLiveChart();
+
+  function simulateLiveAssetPrices() {
+    const rows = document.querySelectorAll('#liveTickerTable > div');
+    rows.forEach(row => {
+      const priceSpan = row.querySelector('.asset-price');
+      const percentSpan = row.querySelector('.asset-percent');
+      
+      if (priceSpan && percentSpan) {
+        let currentText = priceSpan.innerText.replace('$', '').replace(/,/g, '');
+        let currentVal = parseFloat(currentText);
+        let change = (Math.random() * 2 - 1.02) * (currentVal * 0.0015);
+        let newVal = currentVal + change;
+        
+        priceSpan.innerText = '$' + newVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        let isPositive = change >= 0;
+        percentSpan.className = `font-bold text-right asset-percent ${isPositive ? 'text-green-500' : 'text-red-500'}`;
+        percentSpan.innerText = (isPositive ? '+' : '') + (change / currentVal * 100).toFixed(2) + '%';
+      }
+    });
+  }
+
+  setInterval(simulateLiveAssetPrices, 3000);
+
+  const terminalLogs = document.getElementById('terminalLogs');
+  function addLog(text) {
+    if (!terminalLogs) return;
+    const log = document.createElement('div');
+    log.className = 'log-entry';
+    const now = new Date().toLocaleTimeString();
+    log.innerHTML = `<span style="color:#64748b;">[${now}]</span> ${text}`;
+    terminalLogs.appendChild(log);
+    terminalLogs.scrollTop = terminalLogs.scrollHeight;
+  }
+
+  function openZeroBalanceModal() { document.getElementById('zeroBalanceModal').style.display = 'flex'; }
+  function closeZeroBalanceModal() { document.getElementById('zeroBalanceModal').style.display = 'none'; }
+
+  function startTradingProcess() {
+    const codeInputElem = document.getElementById('tradingCodeInput');
+    if (!codeInputElem) return;
+    const codeInput = codeInputElem.value.trim();
+    if (!codeInput) { alert('Please enter a trading code.'); return; }
+
+    if (usdBalance <= 0) {
+      openZeroBalanceModal();
+      addLog(`<span class="loss">[REJECTED]</span> Trading code failed: Insufficient balance ($0.00). Please recharge.`);
+      return;
+    }
+
+    if (isTradingRunning) return;
+
+    isTradingRunning = true;
+    runLiveChart(); 
+
+    document.getElementById('btnExecute').disabled = true;
+    document.getElementById('btnExecute').style.opacity = '0.5';
+    document.getElementById('progressContainer').style.display = 'block';
+    document.getElementById('pnlStatus').innerText = '● EXECUTING...';
+    document.getElementById('pnlStatus').style.color = '#00d4ff';
+
+    const initialBalance = usdBalance;
+    const randomProfitPercent = Math.random() * (0.03 - 0.015) + 0.015;
+    const targetProfitGain = parseFloat((initialBalance * randomProfitPercent).toFixed(2));
+    const finalBalanceTarget = parseFloat((initialBalance + targetProfitGain).toFixed(2));
+
+    const durationInSeconds = 120;
+    const updateInterval = 600; 
+    const totalSteps = (durationInSeconds * 1000) / updateInterval;
+    
+    let elapsedSteps = 0;
+    let currentSessionBalance = initialBalance;
+
+    addLog(`<span class="action">[CODE ACCEPTED]</span> Code <b>${codeInput.toUpperCase()}</b> activated! Starting 2-Minute Session with Balance: $${initialBalance.toFixed(2)}`);
+
+    const timer = setInterval(() => {
+      elapsedSteps++;
+      let currentPercent = Math.floor((elapsedSteps / totalSteps) * 100);
+      if (currentPercent < 1) currentPercent = 1;
+      if (currentPercent > 100) currentPercent = 100;
+
+      if (elapsedSteps < totalSteps) {
+        const idealProgressRatio = elapsedSteps / totalSteps;
+        const idealBalanceSoFar = initialBalance + (targetProfitGain * idealProgressRatio);
+
+        const maxAllowedDrop = initialBalance * 0.01; 
+        const fluctuationNoise = (Math.random() - 0.48) * (initialBalance * 0.015);
+        let tempBalance = idealBalanceSoFar + fluctuationNoise;
+
+        if (tempBalance < initialBalance - maxAllowedDrop) {
+          tempBalance = initialBalance - maxAllowedDrop + 0.05;
+        }
+
+        const delta = tempBalance - currentSessionBalance;
+        currentSessionBalance = tempBalance;
+        usdBalance = currentSessionBalance;
+
+        if (Math.random() > 0.60) {
+          const pairs = ['BTC/USD', 'ETH/USD', 'NEX/USD', 'SOL/USD'];
+          const randomPair = pairs[Math.floor(Math.random() * pairs.length)];
+          
+          if (delta >= 0) {
+            addLog(`<span class="profit">+ $${Math.abs(delta).toFixed(2)} USD</span> Order Executed on <b>${randomPair}</b>`);
+            updateBalancesUI('up');
+          } else {
+            addLog(`<span class="loss">- $${Math.abs(delta).toFixed(2)} USD</span> Market Adjustment on <b>${randomPair}</b>`);
+            updateBalancesUI('down');
+          }
+        } else {
+          updateBalancesUI('normal');
+        }
+      } else {
+        usdBalance = finalBalanceTarget;
+        updateBalancesUI('up');
+      }
+
+      document.getElementById('progressBarFill').style.width = `${currentPercent}%`;
+      document.getElementById('progressPercentText').innerText =`${currentPercent}%`;
+
+      if (elapsedSteps >= totalSteps) {
+        clearInterval(timer);
+        usdBalance = finalBalanceTarget;
+        updateBalancesUI('normal');
+
+        document.getElementById('pnlStatus').innerText = '● IDLE';
+        document.getElementById('pnlStatus').style.color = '#10b981';
+
+        isTradingRunning = false;
+        runLiveChart(); 
+
+        const actualPercentEarned = ((targetProfitGain / initialBalance) * 100).toFixed(2);
+        addLog(`<span class="profit">[SESSION COMPLETED]</span> 2-Minute Session Finished! Yield: <b>+${actualPercentEarned}% (+$${targetProfitGain.toFixed(2)} USD)</b>`);
+        alert(`Trading Execution Complete!\n\nInitial Balance: $${initialBalance.toFixed(2)} USD\nNet Profit Earned (+${actualPercentEarned}%): +$${targetProfitGain.toFixed(2)} USD\nUpdated Total USD Balance: $${usdBalance.toFixed(2)} USD`);
+
+        document.getElementById('tradingCodeInput').value = '';
+        document.getElementById('btnExecute').disabled = false;
+        document.getElementById('btnExecute').style.opacity = '1';
+        document.getElementById('progressContainer').style.display = 'none';
+        document.getElementById('progressBarFill').style.width = '0%';
+      }
+    }, updateInterval);
+  }
+
   function openWithdrawModal() { document.getElementById('withdrawModal').style.display = 'flex'; }
   function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
+  
   function submitWithdrawal() {
-    let amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
-    if(amt < 100 || amt > phpBalance) { alert("Invalid withdrawal amount!"); return; }
-    phpBalance -= amt;
-    db.collection("users").doc(currentUser.uid).set({phpBalance}, {merge:true});
-    updateUI(); closeWithdrawModal(); alert("Withdrawal submitted!");
+    const method = document.getElementById('payoutMethod').value;
+    const accountNo = document.getElementById('accountNo').value.trim();
+    const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+
+    if (!accountNo || amount < 100) {
+      alert("Please enter a valid account number and minimum withdrawal amount of ₱100.");
+      return;
+    }
+
+    if (amount > phpBalance) {
+      alert("Insufficient PHP balance for this withdrawal request.");
+      return;
+    }
+
+    phpBalance -= amount;
+    updateBalancesUI();
+    closeWithdrawModal();
+    alert(`Withdrawal Request Submitted Successfully!\n\nChannel: ${method}\nAccount: ${accountNo}\nAmount: ₱${amount.toFixed(2)} PHP\nStatus: Processing`);
   }
 </script>
+
 </body>
 </html>
