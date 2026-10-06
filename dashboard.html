@@ -174,7 +174,7 @@ main {
 }
 
 /* =====================================================
-   BALANCE CARD & DUAL CONVERTERS
+   BALANCE CARD & DUAL CONVERTERS (MAGKATABI)
 ===================================================== */
 .top-grid {
   display: grid;
@@ -475,10 +475,6 @@ canvas#liveChart {
 
 .btn-confirm { background: linear-gradient(135deg, #00d4ff, #0055ff); color: #fff; border: none; padding: 12px; flex: 1; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 13px; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3); transition: transform 0.1s; }
 .btn-confirm:active { transform: scale(0.97); }
-
-@media (max-width: 768px) {
-  .top-grid, .middle-grid { grid-template-columns: 1fr; }
-}
 </style>
 </head>
 
@@ -659,7 +655,7 @@ canvas#liveChart {
           <span class="font-bold text-green-500 text-right asset-percent">+7.22%</span>
         </div>
 
-        <!-- Row 5: NVIDIA (Naayos na Logo na Bilog at Green) -->
+        <!-- Row 5: NVIDIA -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-2">
             <div class="w-6 h-6 rounded-full bg-[#76b900] flex items-center justify-center shadow-md overflow-hidden p-1">
@@ -710,7 +706,7 @@ canvas#liveChart {
 
 </main>
 
-<!-- WARNING / ZERO BALANCE DESIGNED MODAL -->
+<!-- MODALS -->
 <div class="modal-overlay" id="zeroBalanceModal">
   <div class="modal" style="border-color: rgba(239, 68, 68, 0.4); text-align: center;">
     <div style="width: 50px; height: 50px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 22px;">
@@ -727,7 +723,6 @@ canvas#liveChart {
   </div>
 </div>
 
-<!-- USD TO PHP CONVERSION CONFIRMATION MODAL -->
 <div class="modal-overlay" id="conversionConfirmModal">
   <div class="modal">
     <h3 style="margin-top: 0; color: #00d4ff; font-size: 18px; display: flex; align-items: center; gap: 8px;">
@@ -742,7 +737,6 @@ canvas#liveChart {
   </div>
 </div>
 
-<!-- WITHDRAWAL MODAL -->
 <div class="modal-overlay" id="withdrawModal">
   <div class="modal">
     <h3 style="margin-top: 0; color: #00d4ff;">Withdraw Funds (PHP)</h3>
@@ -782,9 +776,6 @@ canvas#liveChart {
 </nav>
    
 <script>
-  // =====================================================
-  // FIREBASE INITIALIZATION CONFIGURATION
-  // =====================================================
   const firebaseConfig = {
     apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
     authDomain: "investpro-2dafb.firebaseapp.com",
@@ -810,7 +801,6 @@ canvas#liveChart {
   let pendingConversionData = null;
   let currentUser = null;
 
-  // Track Firebase Authentication State
   auth.onAuthStateChanged((user) => {
     if (user) {
       currentUser = user;
@@ -862,24 +852,18 @@ canvas#liveChart {
     const usdElem = document.getElementById('usdBalance');
     if (usdElem) {
       usdElem.innerText = '$' + usdBalance.toFixed(2);
-      if (colorMode === 'up') {
-        usdElem.style.color = '#10b981';
-      } else if (colorMode === 'down') {
-        usdElem.style.color = '#ef4444';
-      } else {
-        usdElem.style.color = '#ffffff';
-      }
+      if (colorMode === 'up') usdElem.style.color = '#10b981';
+      else if (colorMode === 'down') usdElem.style.color = '#ef4444';
+      else usdElem.style.color = '#ffffff';
     }
 
     const phpElem = document.getElementById('phpBalance');
     if (phpElem) {
       phpElem.innerText = '₱' + phpBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
-    
     saveUserDataToFirestore();
   }
 
-  // CONVERTER TABS
   function switchConverterTab(tabName, event) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.converter-pane').forEach(pane => pane.classList.remove('active'));
@@ -940,9 +924,7 @@ canvas#liveChart {
     if (accountAgeDays >= requiredDaysForNoFee) {
       usdBalance -= usdAmount;
       phpBalance += rawPhp;
-
       alert(`USD to PHP Conversion Successful!\n\nConverted: $${usdAmount.toFixed(2)} USD\nDeduction: ₱0.00 PHP (0% Fee Waived)\nNet Received: ₱${rawPhp.toFixed(2)} PHP`);
-      
       document.getElementById('usdInput').value = '';
       previewUsdToPhp();
       updateBalancesUI();
@@ -972,21 +954,16 @@ canvas#liveChart {
 
   function confirmUsdToPhpConversion() {
     if (!pendingConversionData) return;
-
     const { usdAmount, finalPhp, deduction } = pendingConversionData;
-
     usdBalance -= usdAmount;
     phpBalance += finalPhp;
-
     alert(`USD to PHP Conversion Successful!\n\nConverted: $${usdAmount.toFixed(2)} USD\nDeduction: ₱${deduction.toFixed(2)} PHP\nNet Received: ₱${finalPhp.toFixed(2)} PHP`);
-    
     closeConversionModal();
     document.getElementById('usdInput').value = '';
     previewUsdToPhp();
     updateBalancesUI();
   }
 
-  // REAL-TIME CANVAS CHART
   const canvas = document.getElementById('liveChart');
   const ctx = canvas.getContext('2d');
   canvas.width = canvas.offsetWidth || 500;
@@ -997,7 +974,6 @@ canvas#liveChart {
 
   function drawChart() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
     const rightPadding = 55; 
     const bottomPadding = 18; 
     const chartWidth = canvas.width - rightPadding;
@@ -1051,17 +1027,12 @@ canvas#liveChart {
   }
 
   let chartTimer = null;
-
   function runLiveChart() {
     if (chartTimer) clearInterval(chartTimer);
-
     const speedInterval = isTradingRunning ? 350 : 1200;
 
     chartTimer = setInterval(() => {
-      let change = isTradingRunning 
-        ? (Math.random() - 0.45) * 40  
-        : (Math.random() - 0.48) * 4;  
-
+      let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
       currentPrice += change;
       pricePoints.shift();
       pricePoints.push(currentPrice);
@@ -1071,17 +1042,14 @@ canvas#liveChart {
         priceElem.innerText = `$${currentPrice.toFixed(2)}`;
         priceElem.style.color = change >= 0 ? '#10b981' : '#ef4444';
       }
-
       drawChart();
     }, speedInterval);
   }
 
   runLiveChart();
 
-  // LIVE ANIMATING TICKER TABLE SCRIPT
   function simulateLiveAssetPrices() {
     const rows = document.querySelectorAll('#liveTickerTable > div');
-    
     rows.forEach(row => {
       const priceSpan = row.querySelector('.asset-price');
       const percentSpan = row.querySelector('.asset-percent');
@@ -1089,12 +1057,10 @@ canvas#liveChart {
       if (priceSpan && percentSpan) {
         let currentText = priceSpan.innerText.replace('$', '').replace(/,/g, '');
         let currentVal = parseFloat(currentText);
-        
         let change = (Math.random() * 2 - 1.02) * (currentVal * 0.0015);
         let newVal = currentVal + change;
         
         priceSpan.innerText = '$' + newVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        
         let isPositive = change >= 0;
         percentSpan.className = `font-bold text-right asset-percent ${isPositive ? 'text-green-500' : 'text-red-500'}`;
         percentSpan.innerText = (isPositive ? '+' : '') + (change / currentVal * 100).toFixed(2) + '%';
@@ -1115,13 +1081,8 @@ canvas#liveChart {
     terminalLogs.scrollTop = terminalLogs.scrollHeight;
   }
 
-  function openZeroBalanceModal() {
-    document.getElementById('zeroBalanceModal').style.display = 'flex';
-  }
-
-  function closeZeroBalanceModal() {
-    document.getElementById('zeroBalanceModal').style.display = 'none';
-  }
+  function openZeroBalanceModal() { document.getElementById('zeroBalanceModal').style.display = 'flex'; }
+  function closeZeroBalanceModal() { document.getElementById('zeroBalanceModal').style.display = 'none'; }
 
   function startTradingProcess() {
     const codeInputElem = document.getElementById('tradingCodeInput');
@@ -1151,7 +1112,7 @@ canvas#liveChart {
     const targetProfitGain = parseFloat((initialBalance * randomProfitPercent).toFixed(2));
     const finalBalanceTarget = parseFloat((initialBalance + targetProfitGain).toFixed(2));
 
-    const durationInSeconds = 120; // 2 minutes
+    const durationInSeconds = 120;
     const updateInterval = 600; 
     const totalSteps = (durationInSeconds * 1000) / updateInterval;
     
@@ -1249,7 +1210,7 @@ canvas#liveChart {
     phpBalance -= amount;
     updateBalancesUI();
     closeWithdrawModal();
-    alert(`Withdrawal Request Submitted Successfully!\n\nChannel: ${method}\nAccount: ${accountNo}\nAmount: ₱${amount.toFixed(2)} PHP\nStatus: Processing`);
+    alert(`Withdrawal Request Submitted Submitted Successfully!\n\nChannel: ${method}\nAccount: ${accountNo}\nAmount: ₱${amount.toFixed(2)} PHP\nStatus: Processing`);
   }
 </script>
 
