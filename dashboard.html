@@ -636,6 +636,23 @@ canvas#liveChart {
 
 </main>
 
+<!-- WARNING / ZERO BALANCE DESIGNED MODAL -->
+<div class="modal-overlay" id="zeroBalanceModal">
+  <div class="modal" style="border-color: rgba(239, 68, 68, 0.4); text-align: center;">
+    <div style="width: 50px; height: 50px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 22px;">
+      ⚠️
+    </div>
+    <h3 style="margin-top: 0; color: #fca5a5; font-size: 18px;">Insufficient Balance</h3>
+    <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin-bottom: 20px;">
+      You have a <strong>$0.00</strong> balance! Please recharge or convert your PHP to USD before executing a trading code.
+    </p>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-close" onclick="closeZeroBalanceModal()">Close</button>
+      <button class="btn-confirm" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" onclick="closeZeroBalanceModal()">OK, Got it</button>
+    </div>
+  </div>
+</div>
+
 <!-- USD TO PHP CONVERSION CONFIRMATION MODAL -->
 <div class="modal-overlay" id="conversionConfirmModal">
   <div class="modal">
@@ -704,7 +721,6 @@ canvas#liveChart {
   const db = firebase.firestore();
 
   const EXCHANGE_RATE = 60;
-  // Sinimulan sa 0 para matiyak na susundin ang Firestore data nang walang default dummy override
   let usdBalance = 0.00;
   let phpBalance = 0.00;
   let isTradingRunning = false;
@@ -728,12 +744,10 @@ canvas#liveChart {
     db.collection("users").doc(uid).get().then((doc) => {
       if (doc.exists) {
         const data = doc.data();
-        // Kung may nakasulat na balanse sa database, i-load ito. Kung wala o 0, mananatiling 0.
         if (data.usdBalance !== undefined) usdBalance = Number(data.usdBalance);
         if (data.phpBalance !== undefined) phpBalance = Number(data.phpBalance);
         if (data.accountAgeDays !== undefined) accountAgeDays = Number(data.accountAgeDays);
       } else {
-        // Kung bagong user at walang document pa, i-save ang default na 0 balanse
         saveUserDataToFirestore();
       }
       updateBalancesUI();
@@ -994,15 +1008,24 @@ canvas#liveChart {
     terminalLogs.scrollTop = terminalLogs.scrollHeight;
   }
 
+  // MGA FUNCTIONS PARA SA ZERO BALANCE MODAL
+  function openZeroBalanceModal() {
+    document.getElementById('zeroBalanceModal').style.display = 'flex';
+  }
+
+  function closeZeroBalanceModal() {
+    document.getElementById('zeroBalanceModal').style.display = 'none';
+  }
+
   function startTradingProcess() {
     const codeInputElem = document.getElementById('tradingCodeInput');
     if (!codeInputElem) return;
     const codeInput = codeInputElem.value.trim();
     if (!codeInput) { alert('Please enter a trading code.'); return; }
 
-    // STRICT CHECK: Kapag 0 balance o mas mababa sa 0, hindi papayagang mag-trade
+    // STRICT CHECK: Kapag 0 o mas mababa ang balanse, bubuksan ang magandang modal na may disenyo
     if (usdBalance <= 0) {
-      alert('You have a 0.00 balance! Please recharge or convert your PHP to USD before executing a trading code.');
+      openZeroBalanceModal();
       addLog(`<span class="loss">[REJECTED]</span> Trading code failed: Insufficient balance ($0.00). Please recharge.`);
       return;
     }
