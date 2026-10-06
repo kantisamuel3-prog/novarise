@@ -949,24 +949,36 @@ canvas#liveChart {
     ctx.fill();
   }
 
-  setInterval(() => {
-    let change = (Math.random() - 0.48) * 12; 
-    if (isTradingRunning) {
-      change = (Math.random() - 0.45) * 40; 
-    }
+  // DYNAMIC LIVE CHART LOOP (Mabagal kapag idle, Mabilis kapag nag-a-execute ng trade)
+  let chartTimer = null;
 
-    currentPrice += change;
-    pricePoints.shift();
-    pricePoints.push(currentPrice);
+  function runLiveChart() {
+    if (chartTimer) clearInterval(chartTimer);
 
-    const priceElem = document.getElementById('livePriceDisplay');
-    if (priceElem) {
-      priceElem.innerText = `$${currentPrice.toFixed(2)}`;
-      priceElem.style.color = change >= 0 ? '#10b981' : '#ef4444';
-    }
+    // 1200ms (1.2 seconds) kapag idle/mabagal, 350ms kapag nag-e-execute na ang trading
+    const speedInterval = isTradingRunning ? 350 : 1200;
 
-    drawChart();
-  }, 400);
+    chartTimer = setInterval(() => {
+      let change = isTradingRunning 
+        ? (Math.random() - 0.45) * 40  // Malaki at mabilis na galaw kapag trading
+        : (Math.random() - 0.48) * 4;  // Mabagal, banayad, at mahina ang galaw kapag idle
+
+      currentPrice += change;
+      pricePoints.shift();
+      pricePoints.push(currentPrice);
+
+      const priceElem = document.getElementById('livePriceDisplay');
+      if (priceElem) {
+        priceElem.innerText = `$${currentPrice.toFixed(2)}`;
+        priceElem.style.color = change >= 0 ? '#10b981' : '#ef4444';
+      }
+
+      drawChart();
+    }, speedInterval);
+  }
+
+  // Simulan agad ang mabagal na takbo ng chart sa load
+  runLiveChart();
 
   const terminalLogs = document.getElementById('terminalLogs');
   function addLog(text) {
@@ -987,6 +999,8 @@ canvas#liveChart {
     if (isTradingRunning) return;
 
     isTradingRunning = true;
+    runLiveChart(); // <--- I-trigger para bumilis agad ang graph pagka-execute ng code!
+
     document.getElementById('btnExecute').disabled = true;
     document.getElementById('btnExecute').style.opacity = '0.5';
     document.getElementById('progressContainer').style.display = 'block';
@@ -1059,6 +1073,9 @@ canvas#liveChart {
         document.getElementById('pnlStatus').innerText = '● LIVE MARKET IDLE';
         document.getElementById('pnlStatus').style.color = '#10b981';
 
+        isTradingRunning = false;
+        runLiveChart(); // <--- I-balik sa mabagal at mahinang takbo ang graph pagkatapos ng 2 minutes!
+
         const actualPercentEarned = ((targetProfitGain / initialBalance) * 100).toFixed(2);
         addLog(`<span class="profit">[SESSION COMPLETED]</span> 2-Minute Session Finished! Yield: <b>+${actualPercentEarned}% (+$${targetProfitGain.toFixed(2)} USD)</b>`);
         alert(`Trading Execution Complete!\n\nDuration: 2 Minutes (120s)\nNet Profit Earned: +$${targetProfitGain.toFixed(2)} USD (+${actualPercentEarned}%)\nUpdated Total USD Balance: $${usdBalance.toFixed(2)} USD`);
@@ -1068,7 +1085,6 @@ canvas#liveChart {
         document.getElementById('btnExecute').style.opacity = '1';
         document.getElementById('progressContainer').style.display = 'none';
         document.getElementById('progressBarFill').style.width = '0%';
-        isTradingRunning = false;
       }
     }, updateInterval);
   }
