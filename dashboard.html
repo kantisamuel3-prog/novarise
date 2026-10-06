@@ -768,6 +768,7 @@ canvas#liveChart {
   let accountAgeDays = 0;
   let usdBalanceStartAt = null;
   const requiredDaysForNoFee = 31;
+  const minimumUsdForOnePercentFee = 130;
   let pendingConversionData = null;
   let currentUser = null;
   let balanceDataLoaded = false;
@@ -822,9 +823,22 @@ canvas#liveChart {
   }
 
   function startUsdBalanceTimerIfNeeded(previousUsd, newUsd) {
-    if (safeNumber(previousUsd) <= 0 && safeNumber(newUsd) > 0) {
+    const previous = safeNumber(previousUsd);
+    const current = safeNumber(newUsd);
+
+    if (current <= 0) {
+      usdBalanceStartAt = null;
+      accountAgeDays = 0;
+    } else if (
+      !usdBalanceStartAt ||
+      (previous > 0 &&
+       previous < minimumUsdForOnePercentFee &&
+       current >= minimumUsdForOnePercentFee)
+    ) {
       usdBalanceStartAt = firebase.firestore.Timestamp.now();
+      accountAgeDays = 0;
     }
+
     calculateAccountAgeDays();
   }
 
@@ -862,11 +876,16 @@ canvas#liveChart {
       usdBalance = safeNumber(data.usdBalance);
       usdBalanceStartAt = data.usdBalanceStartAt || null;
 
-      // The 31-day clock starts ONLY when USD balance first becomes greater than zero.
-      // Stored accountAgeDays is not trusted; it is calculated from usdBalanceStartAt.
+      // Timer rules:
+      // USD = 0 -> no timer.
+      // USD > 0 + existing timestamp -> keep the timer.
+      // USD > 0 + no timestamp -> start the timer now.
+      // accountAgeDays is calculated from the timestamp, never trusted directly.
+      let createdStartDate = false;
       if (usdBalance > 0) {
         if (!usdBalanceStartAt) {
           usdBalanceStartAt = firebase.firestore.Timestamp.now();
+          createdStartDate = true;
         }
         calculateAccountAgeDays();
       } else {
@@ -876,7 +895,18 @@ canvas#liveChart {
 
       balanceDataLoaded = true;
       renderBalancesUI();
-      console.log("NEXORA BALANCE LOADED:", {uid: uid, documentExists: true, balance: data.balance, phpBalance: phpBalance, usdBalance: usdBalance});
+
+      // Persist the timer immediately when USD existed but had no start timestamp.
+      // This prevents the account from going back to Day 0 after a refresh.
+      if (createdStartDate) {
+        await db.collection("Users").doc(uid).set({
+          usdBalanceStartAt: usdBalanceStartAt,
+          accountAgeDays: accountAgeDays,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      }
+
+      console.log("NEXORA BALANCE LOADED:", {uid: uid, documentExists: true, balance: data.balance, phpBalance: phpBalance, usdBalance: usdBalance, accountAgeDays: accountAgeDays});
       startBalanceListeners(uid);
     } catch (error) {
       console.error("Error loading user data:", error);
@@ -975,43 +1005,66 @@ canvas#liveChart {
     updateBalancesUI();
   }
 
+  function isOnePercentEligible(remainingUsd = usdBalance) {
+    return (
+      safeNumber(remainingUsd) >= minimumUsdForOnePercentFee &&
+      accountAgeDays >= requiredDaysForNoFee &&
+      !!usdBalanceStartAt
+    );
+  }
+
   function previewUsdToPhp() {
     calculateAccountAgeDays();
     const usdVal = parseFloat(document.getElementById('usdInput').value) || 0;
-    let rawPhp = usdVal * EXCHANGE_RATE;
-    let finalPhp = rawPhp;
+    const rawPhp = usdVal * EXCHANGE_RATE;
+    const remainingUsd = usdBalance - usdVal;
+    const onePercentEligible = isOnePercentEligible(remainingUsd);
+    const feePercent = onePercentEligible ? 0.01 : 0.25;
+    const deduction = rawPhp * feePercent;
+    const finalPhp = rawPhp - deduction;
 
-    if (accountAgeDays < requiredDaysForNoFee) {
-      const deduction = rawPhp * 0.25;
-      finalPhp = rawPhp - deduction;
-      document.getElementById('usdToPhpPreview').innerText = `You will receive: ₱${finalPhp.toFixed(2)} PHP (w/ 25% fee)`;
-    } else {
-      const deduction = rawPhp * 0.01;
-      finalPhp = rawPhp - deduction;
-      document.getElementById('usdToPhpPreview').innerText = `You will receive: ₱${finalPhp.toFixed(2)} PHP (w/ 1% fee)`;
-    }
+    document.getElementById('usdToPhpPreview').innerText =
+      `You will receive: ₱${finalPhp.toFixed(2)} PHP (w/ ${feePercent * 100}% fee)`;
   }
 
   function handleUsdToPhpAction() {
     calculateAccountAgeDays();
     const usdAmount = parseFloat(document.getElementById('usdInput').value) || 0;
+
     if (usdAmount <= 0 || usdAmount > usdBalance) {
       alert('Please enter a valid or sufficient USD amount.');
       return;
     }
 
-    let rawPhp = usdAmount * EXCHANGE_RATE;
-    let feePercent = accountAgeDays < requiredDaysForNoFee ? 0.25 : 0.01;
-    let deduction = rawPhp * feePercent;
-    let finalPhp = rawPhp - deduction;
-    pendingConversionData = { usdAmount, finalPhp, deduction, feePercent };
+    const remainingUsd = usdBalance - usdAmount;
+    const rawPhp = usdAmount * EXCHANGE_RATE;
+    const onePercentEligible = isOnePercentEligible(remainingUsd);
+    const feePercent = onePercentEligible ? 0.01 : 0.25;
+    const deduction = rawPhp * feePercent;
+    const finalPhp = rawPhp - deduction;
 
-    let modalHtml = `
-      <div style="margin-bottom: 4px;"><strong style="color: #00d4ff;">Account Age:</strong> Day ${accountAgeDays} of ${requiredDaysForNoFee} (${accountAgeDays < requiredDaysForNoFee ? 'Under 31 Days' : '31+ Days'})</div>
-      <div style="margin-bottom: 4px;"><strong style="color: #fff;">Converting Amount:</strong> $${usdAmount.toFixed(2)} USD</div>
-      <div style="margin-bottom: 4px;"><strong style="color: #fca5a5;">Deduction Fee (${feePercent * 100}%):</strong> ₱${deduction.toFixed(2)} PHP</div>
-      <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 6px; padding-top: 6px;"><strong style="color: #10b981; font-size: 13px;">Net Total to Receive: ₱${finalPhp.toFixed(2)} PHP</strong></div>
-      <div style="font-size: 10px; color: #94a3b8; margin-top: 6px;">Notice: Accounts under 31 days have a 25% fee, while 31+ days accounts have a 1% fee.</div>
+    pendingConversionData = {
+      usdAmount,
+      finalPhp,
+      deduction,
+      feePercent,
+      remainingUsd,
+      onePercentEligible
+    };
+
+    const feeLabel = onePercentEligible
+      ? '31+ Days + $130+ Remaining'
+      : (accountAgeDays >= requiredDaysForNoFee
+          ? '25% Fee — USD Remaining Would Be Below $130'
+          : '25% Fee — Under 31 Days');
+
+    const modalHtml = `
+      <div style="margin-bottom:4px;"><strong style="color:#00d4ff;">Account Age:</strong> Day ${accountAgeDays} of ${requiredDaysForNoFee} (${accountAgeDays < requiredDaysForNoFee ? 'Under 31 Days' : '31+ Days'})</div>
+      <div style="margin-bottom:4px;"><strong style="color:#fff;">Converting Amount:</strong> $${usdAmount.toFixed(2)} USD</div>
+      <div style="margin-bottom:4px;"><strong style="color:#fff;">USD Remaining:</strong> $${remainingUsd.toFixed(2)} USD</div>
+      <div style="margin-bottom:4px;"><strong style="color:#fca5a5;">Deduction Fee (${feePercent * 100}%):</strong> ₱${deduction.toFixed(2)} PHP</div>
+      <div style="border-top:1px solid rgba(255,255,255,.1);margin-top:6px;padding-top:6px;"><strong style="color:#10b981;font-size:13px;">Net Total to Receive: ₱${finalPhp.toFixed(2)} PHP</strong></div>
+      <div style="font-size:10px;color:#94a3b8;margin-top:6px;">${feeLabel}. The 1% fee is retained only when Day 31+ is complete and at least $130 USD remains after conversion.</div>
     `;
 
     document.getElementById('conversionModalBody').innerHTML = modalHtml;
@@ -1029,10 +1082,9 @@ canvas#liveChart {
     usdBalance -= usdAmount;
     phpBalance += finalPhp;
 
-    // If all USD was converted, the 31-day clock is reset.
-    // A future USD deposit starts a fresh 31-day period.
-    if (usdBalance <= 0) {
-      usdBalance = 0;
+    // 1% eligibility is retained only while at least $130 remains.
+    // Dropping below $130 resets the cycle to 25%.
+    if (usdBalance < minimumUsdForOnePercentFee) {
       usdBalanceStartAt = null;
       accountAgeDays = 0;
     } else {
