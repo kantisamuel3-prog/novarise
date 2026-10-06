@@ -173,26 +173,41 @@ main {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
-@media (min-width: 768px) {
-  .card {
-    padding: 20px;
-  }
-}
-
 /* =====================================================
-   RESPONSIVE GRIDS
+   TOP HORIZONTAL SCROLLING WRAPPER (MAGKATABI SA MOBILE)
 ===================================================== */
-.top-grid {
-  display: grid;
-  grid-template-columns: 1fr;
+.top-scroll-container {
+  display: flex;
   gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
   margin-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
 }
 
-@media (min-width: 1024px) {
-  .top-grid {
+.top-scroll-container::-webkit-scrollbar {
+  height: 4px;
+}
+.top-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 2px;
+}
+
+.top-scroll-item {
+  flex: 0 0 92vw;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+  .top-scroll-container {
+    display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(340px, 1fr);
-    gap: 16px;
+    overflow-x: visible;
+  }
+  .top-scroll-item {
+    flex: unset;
+    width: 100%;
   }
 }
 
@@ -205,6 +220,7 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 100%;
 }
 
 .balances-wrapper {
@@ -238,12 +254,6 @@ main {
   word-break: break-all;
 }
 
-@media (min-width: 768px) {
-  .bal-amount {
-    font-size: 22px;
-  }
-}
-
 .btn-action {
   width: 100%;
   padding: 9px 12px;
@@ -270,6 +280,7 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 100%;
 }
 
 .converter-tabs {
@@ -374,24 +385,12 @@ main {
   color: #10b981;
 }
 
-@media (min-width: 768px) {
-  .market-live-price {
-    font-size: 16px;
-  }
-}
-
 canvas#liveChart {
   width: 100%;
   height: 140px;
   background: #02050b;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-@media (min-width: 768px) {
-  canvas#liveChart {
-    height: 180px;
-  }
 }
 
 /* =====================================================
@@ -515,12 +514,6 @@ canvas#liveChart {
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7);
 }
 
-@media (min-width: 768px) {
-  .modal {
-    padding: 24px;
-  }
-}
-
 .form-group { margin-bottom: 10px; }
 .form-group label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
 .form-group input, .form-group select {
@@ -565,72 +558,79 @@ canvas#liveChart {
     </div>
   </div>
 
-  <!-- TOP GRID: BALANCES & CONVERTERS -->
-  <div class="top-grid">
-    <div class="card balance-card">
-      <div>
-        <h3 style="margin: 0; font-size: 11px; color: #94a3b8; text-transform: uppercase;">Account Wallet Balances</h3>
-      </div>
-
-      <div class="balances-wrapper">
-        <div class="bal-box">
-          <div class="bal-label">Dollar Balance (USD)</div>
-          <div class="bal-amount" id="usdBalance">$0.00</div>
-          <small style="color: #64748b; font-size: 9px;">Trading Capital</small>
+  <!-- TOP HORIZONTAL SCROLLING WRAPPER (MAGKATABI SA MOBILE: 1 at 2) -->
+  <div class="top-scroll-container">
+    
+    <!-- 1. ACCOUNT WALLET -->
+    <div class="top-scroll-item">
+      <div class="card balance-card">
+        <div>
+          <h3 style="margin: 0; font-size: 11px; color: #94a3b8; text-transform: uppercase;">Account Wallet Balances</h3>
         </div>
 
-        <div class="bal-box">
-          <div class="bal-label">Peso Balance (PHP)</div>
-          <div class="bal-amount" id="phpBalance">₱0.00</div>
-          <small style="color: #64748b; font-size: 9px;">Deposit / Withdrawal</small>
-        </div>
-      </div>
+        <div class="balances-wrapper">
+          <div class="bal-box">
+            <div class="bal-label">Dollar Balance (USD)</div>
+            <div class="bal-amount" id="usdBalance">$0.00</div>
+            <small style="color: #64748b; font-size: 9px;">Trading Capital</small>
+          </div>
 
-      <button type="button" class="btn-action btn-withdraw" onclick="openWithdrawModal()">
-        <span>🏦 Withdraw Pesos (PHP)</span>
-      </button>
-    </div>
-
-    <!-- DUAL CONVERTER CARD -->
-    <div class="card converter-card">
-      <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <h4 style="margin: 0; color: #00d4ff; font-size: 11px;">💱 Dual Currency Converter</h4>
-          <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 20px;">$1 = ₱60.00</span>
-        </div>
-
-        <!-- CONVERTER TABS -->
-        <div class="converter-tabs">
-          <button class="tab-btn active" onclick="switchConverterTab('phpToUsd', event)">PHP ➔ USD (Deposit)</button>
-          <button class="tab-btn" onclick="switchConverterTab('usdToPhp', event)">USD ➔ PHP (Withdraw)</button>
-        </div>
-
-        <!-- TAB 1: PHP TO USD -->
-        <div id="phpToUsdPane" class="converter-pane active">
-          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px;">
-            <div style="font-size: 9px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">CONVERT DEPOSITED PHP TO USD FOR TRADING</div>
-            <div class="convert-input-group">
-              <input type="number" id="phpInput" placeholder="Enter PHP (₱)" oninput="previewPhpToUsd()">
-              <button class="btn-convert-action" onclick="convertPhpToUsd()">Convert</button>
-            </div>
-            <div style="font-size: 9px; color: #10b981; margin-top: 4px;" id="phpToUsdPreview">You will receive: $0.00 USD</div>
+          <div class="bal-box">
+            <div class="bal-label">Peso Balance (PHP)</div>
+            <div class="bal-amount" id="phpBalance">₱0.00</div>
+            <small style="color: #64748b; font-size: 9px;">Deposit / Withdrawal</small>
           </div>
         </div>
 
-        <!-- TAB 2: USD TO PHP -->
-        <div id="usdToPhpPane" class="converter-pane">
-          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px;">
-            <div style="font-size: 9px; font-weight: 700; color: #00d4ff; margin-bottom: 4px;">CONVERT USD TO PHP FOR WITHDRAWAL</div>
-            <div class="convert-input-group">
-              <input type="number" id="usdInput" placeholder="Enter USD ($)" oninput="previewUsdToPhp()">
-              <button class="btn-convert-action" onclick="handleUsdToPhpAction()">Convert</button>
-            </div>
-            <div style="font-size: 9px; color: #64748b; margin-top: 4px;" id="usdToPhpPreview">You will receive: ₱0.00 PHP</div>
-          </div>
-        </div>
-
+        <button type="button" class="btn-action btn-withdraw" onclick="openWithdrawModal()">
+          <span>🏦 Withdraw Pesos (PHP)</span>
+        </button>
       </div>
     </div>
+
+    <!-- 2. DUAL CONVERTER CARD -->
+    <div class="top-scroll-item">
+      <div class="card converter-card">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <h4 style="margin: 0; color: #00d4ff; font-size: 11px;">💱 Dual Currency Converter</h4>
+            <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 20px;">$1 = ₱60.00</span>
+          </div>
+
+          <!-- CONVERTER TABS -->
+          <div class="converter-tabs">
+            <button class="tab-btn active" onclick="switchConverterTab('phpToUsd', event)">PHP ➔ USD (Deposit)</button>
+            <button class="tab-btn" onclick="switchConverterTab('usdToPhp', event)">USD ➔ PHP (Withdraw)</button>
+          </div>
+
+          <!-- TAB 1: PHP TO USD -->
+          <div id="phpToUsdPane" class="converter-pane active">
+            <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px;">
+              <div style="font-size: 9px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">CONVERT DEPOSITED PHP TO USD FOR TRADING</div>
+              <div class="convert-input-group">
+                <input type="number" id="phpInput" placeholder="Enter PHP (₱)" oninput="previewPhpToUsd()">
+                <button class="btn-convert-action" onclick="convertPhpToUsd()">Convert</button>
+              </div>
+              <div style="font-size: 9px; color: #10b981; margin-top: 4px;" id="phpToUsdPreview">You will receive: $0.00 USD</div>
+            </div>
+          </div>
+
+          <!-- TAB 2: USD TO PHP -->
+          <div id="usdToPhpPane" class="converter-pane">
+            <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px;">
+              <div style="font-size: 9px; font-weight: 700; color: #00d4ff; margin-bottom: 4px;">CONVERT USD TO PHP FOR WITHDRAWAL</div>
+              <div class="convert-input-group">
+                <input type="number" id="usdInput" placeholder="Enter USD ($)" oninput="previewUsdToPhp()">
+                <button class="btn-convert-action" onclick="handleUsdToPhpAction()">Convert</button>
+              </div>
+              <div style="font-size: 9px; color: #64748b; margin-top: 4px;" id="usdToPhpPreview">You will receive: ₱0.00 PHP</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- MIDDLE SECTION: LIVE MARKET GRAPH & COMPACT LIVE ASSET LIST -->
