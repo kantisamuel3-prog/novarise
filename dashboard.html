@@ -512,11 +512,11 @@ canvas#liveChart {
       </button>
     </div>
 
-    <!-- 2.CURRENCY CONVERTER CARD -->
+    <!-- 2. DUAL CURRENCY CONVERTER CARD -->
     <div class="card converter-card">
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h4 style="margin: 0; color: #00d4ff; font-size: 9px; display: flex; align-items: center; gap: 3px;"><i class="fa-solid fa-rotate"></i>Currency Converter</h4>
+          <h4 style="margin: 0; color: #00d4ff; font-size: 9px; display: flex; align-items: center; gap: 3px;"><i class="fa-solid fa-rotate"></i> Dual Currency Converter</h4>
           <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 7px; font-weight: 700; padding: 1px 4px; border-radius: 20px;">$1 = ₱60.00</span>
         </div>
 
@@ -529,7 +529,7 @@ canvas#liveChart {
         <!-- TAB 1: PHP TO USD (DEPOSIT) -->
         <div id="phpToUsdPane" class="converter-pane active">
           <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 5px;">
-            <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">CONVERT PHP TO USD FOR TRADING</div>
+            <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">CONVERT DEPOSITED PHP TO USD FOR TRADING</div>
             <div class="convert-input-group">
               <input type="number" id="phpInput" placeholder="Enter PHP (₱)" oninput="previewPhpToUsd()">
               <button class="btn-convert-action" onclick="convertPhpToUsd()">Convert</button>
@@ -780,7 +780,7 @@ canvas#liveChart {
   });
 
   function loadUserDataFromFirestore(uid) {
-    db.collection("users").doc(uid).get().then((doc) => {
+    db.collection("User").doc(uid).get().then((doc) => {
       if (doc.exists) {
         const data = doc.data();
         if (data.usdBalance !== undefined) usdBalance = Number(data.usdBalance);
@@ -798,7 +798,7 @@ canvas#liveChart {
 
   function saveUserDataToFirestore() {
     if (!currentUser) return;
-    db.collection("users").doc(currentUser.uid).set({
+    db.collection("User").doc(currentUser.uid).set({
       usdBalance: usdBalance,
       phpBalance: phpBalance,
       accountAgeDays: accountAgeDays,
