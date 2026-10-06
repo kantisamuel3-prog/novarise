@@ -9,6 +9,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
 <!-- FontAwesome para sa mga icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -576,6 +578,86 @@ canvas#liveChart {
     </div>
   </div>
 
+  <!-- LIVE MARKET ASSETS TABLE (Nakalagay na rito ang live updating prices) -->
+  <div class="bg-[#111827] border border-gray-800 rounded-xl p-6 mb-6 shadow-xl">
+    <div class="flex justify-between items-center mb-6 text-sm font-medium text-gray-400">
+      <div class="flex gap-6">
+        <span class="text-yellow-400 font-bold border-b-2 border-yellow-400 pb-1">Popular</span>
+        <span>New Listing</span>
+        <span>Stocks</span>
+        <span>tCommodities</span>
+      </div>
+      <a href="#" class="text-gray-500 hover:text-yellow-400 transition">View All ></a>
+    </div>
+
+    <div class="space-y-5 text-sm" id="liveTickerTable">
+      <!-- Row 1: BTC -->
+      <div class="grid grid-cols-3 items-center">
+        <div class="flex items-center gap-3">
+          <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=032" alt="BTC" class="w-8 h-8">
+          <div>
+            <span class="font-bold text-white">BTC</span>
+            <span class="text-gray-400 block text-xs">Bitcoin</span>
+          </div>
+        </div>
+        <span class="font-medium text-white text-center asset-price">$85,520.01</span>
+        <span class="font-bold text-red-500 text-right asset-percent">-1.10%</span>
+      </div>
+
+      <!-- Row 2: ETH -->
+      <div class="grid grid-cols-3 items-center">
+        <div class="flex items-center gap-3">
+          <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=032" alt="ETH" class="w-8 h-8">
+          <div>
+            <span class="font-bold text-white">ETH</span>
+            <span class="text-gray-400 block text-xs">Ethereum</span>
+          </div>
+        </div>
+        <span class="font-medium text-white text-center asset-price">$2,700.01</span>
+        <span class="font-bold text-red-500 text-right asset-percent">-1.01%</span>
+      </div>
+
+      <!-- Row 3: BNB -->
+      <div class="grid grid-cols-3 items-center">
+        <div class="flex items-center gap-3">
+          <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png?v=032" alt="BNB" class="w-8 h-8">
+          <div>
+            <span class="font-bold text-white">BNB</span>
+            <span class="text-gray-400 block text-xs">BNB</span>
+          </div>
+        </div>
+        <span class="font-medium text-white text-center asset-price">$782.29</span>
+        <span class="font-bold text-red-500 text-right asset-percent">-1.83%</span>
+      </div>
+
+      <!-- Row 4: SpaceX -->
+      <div class="grid grid-cols-3 items-center">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center font-bold text-sm text-white">X</div>
+          <div>
+            <span class="font-bold text-white">SPCXB</span>
+            <span class="text-gray-400 block text-xs">SpaceX (bStocks)</span>
+          </div>
+        </div>
+        <span class="font-medium text-white text-center asset-price">$171.83</span>
+        <span class="font-bold text-green-500 text-right asset-percent">+7.22%</span>
+      </div>
+
+      <!-- Row 5: NVIDIA -->
+      <div class="grid grid-cols-3 items-center">
+        <div class="flex items-center gap-3">
+          <img src="https://img.icons8.com/?size=100&id=TEcZ40u1i1Hl&format=png&color=ffffff" alt="NVDA" class="w-8 h-8">
+          <div>
+            <span class="font-bold text-white">NVDAB</span>
+            <span class="text-gray-400 block text-xs">NVIDIA (bStocks)</span>
+          </div>
+        </div>
+        <span class="font-medium text-white text-center asset-price">$239.72</span>
+        <span class="font-bold text-green-500 text-right asset-percent">+1.74%</span>
+      </div>
+    </div>
+  </div>
+
   <!-- LIVE CHART & TRADING CODE EXECUTION SECTION -->
   <div class="trading-execution-grid">
     
@@ -685,7 +767,7 @@ canvas#liveChart {
   </div>
 </div>
 
-<!-- Bottom Navigation Bar (Tamang sukat na katulad ng sample) -->
+<!-- Bottom Navigation Bar -->
 <nav style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #111827; border-top: 1px solid #1f2937; padding: 12px 24px; display: flex; justify-content: space-around; align-items: center; font-size: 12px; color: #9ca3af; z-index: 9999;">
   <a href="dashboard.html" style="display: flex; flex-direction: column; align-items: center; color: #3b82f6; font-weight: 600; text-decoration: none;">
     <i class="fa-solid fa-chart-line" style="font-size: 18px; margin-bottom: 4px;"></i>
@@ -993,6 +1075,32 @@ canvas#liveChart {
   }
 
   runLiveChart();
+
+  // LIVE ANIMATING TICKER TABLE SCRIPT (Gumagalaw ang USD at nagpapalit ng berde/pula)
+  function simulateLiveAssetPrices() {
+    const rows = document.querySelectorAll('#liveTickerTable > div');
+    
+    rows.forEach(row => {
+      const priceSpan = row.querySelector('.asset-price');
+      const percentSpan = row.querySelector('.asset-percent');
+      
+      if (priceSpan && percentSpan) {
+        let currentText = priceSpan.innerText.replace('$', '').replace(/,/g, '');
+        let currentVal = parseFloat(currentText);
+        
+        let change = (Math.random() * 2 - 1.02) * (currentVal * 0.0015);
+        let newVal = currentVal + change;
+        
+        priceSpan.innerText = '$' + newVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        let isPositive = change >= 0;
+        percentSpan.className = `font-bold text-right asset-percent ${isPositive ? 'text-green-500' : 'text-red-500'}`;
+        percentSpan.innerText = (isPositive ? '+' : '') + (change / currentVal * 100).toFixed(2) + '%';
+      }
+    });
+  }
+
+  setInterval(simulateLiveAssetPrices, 3000);
 
   const terminalLogs = document.getElementById('terminalLogs');
   function addLog(text) {
