@@ -16,7 +16,7 @@
 
 <style>
 /* =====================================================
-   GLOBAL & NEXORA DARK TRADING THEME
+   GLOBAL & NEXORA DARK TRADING THEME (MOBILE OPTIMIZED)
 ===================================================== */
 * {
   box-sizing: border-box;
@@ -35,7 +35,7 @@ body {
     radial-gradient(circle at 10% 80%, rgba(16, 185, 129, 0.05), transparent 40%),
     linear-gradient(180deg, #060913 0%, #0a0e1a 100%);
   color: #e2e8f0;
-  padding-bottom: 90px;
+  padding-bottom: 75px;
   min-height: 100vh;
 }
 
@@ -46,10 +46,10 @@ body {
   background: #03050a;
   border-bottom: 1px solid rgba(0, 212, 255, 0.15);
   font-family: monospace;
-  font-size: 11px;
-  padding: 6px 16px;
+  font-size: 10px;
+  padding: 4px 10px;
   display: flex;
-  gap: 24px;
+  gap: 16px;
   overflow-x: auto;
   white-space: nowrap;
   color: #64748b;
@@ -58,7 +58,7 @@ body {
 .ticker-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .ticker-symbol {
@@ -76,7 +76,7 @@ header {
   background: rgba(10, 14, 26, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 14px 5%;
+  padding: 10px 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -88,35 +88,35 @@ header {
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .logo-icon {
-  width: 38px;
-  height: 38px;
+  width: 30px;
+  height: 30px;
   background: linear-gradient(135deg, #00d4ff, #0055ff);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
-  font-size: 18px;
+  font-size: 14px;
   color: #ffffff;
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
 }
 
 .logo-copy strong {
   display: block;
   color: #ffffff;
-  font-size: 16px;
-  letter-spacing: 1px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
 }
 
 .logo-copy small {
   display: block;
   color: #00d4ff;
-  font-size: 9px;
-  letter-spacing: 1.5px;
+  font-size: 8px;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
@@ -124,12 +124,11 @@ header {
   border: 1px solid rgba(239, 68, 68, 0.4);
   background: rgba(239, 68, 68, 0.1);
   color: #fca5a5;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 12px;
-  transition: all 0.2s ease;
+  font-size: 11px;
 }
 
 /* =====================================================
@@ -137,27 +136,27 @@ header {
 ===================================================== */
 main {
   max-width: 1200px;
-  margin: 24px auto;
-  padding: 0 16px;
+  margin: 12px auto;
+  padding: 0 10px;
 }
 
 .welcome {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .welcome h2 {
-  margin: 0 0 4px;
-  font-size: 24px;
+  margin: 0 0 2px;
+  font-size: 18px;
   letter-spacing: -0.5px;
   color: #ffffff;
 }
 
 #userEmail {
   color: #00d4ff;
-  font-size: 13px;
+  font-size: 11px;
   font-family: monospace;
   word-break: break-all;
 }
@@ -168,39 +167,39 @@ main {
 .card {
   background: rgba(15, 23, 42, 0.65);
   border: 1px solid rgba(0, 212, 255, 0.15);
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 12px;
+  padding: 12px;
   backdrop-filter: blur(8px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
 @media (min-width: 768px) {
   .card {
-    padding: 24px;
+    padding: 20px;
   }
 }
 
 /* =====================================================
-   RESPONSIVE GRIDS (MAGKATABI SA PC, NAKAPATONG SA MOBILE)
+   RESPONSIVE GRIDS
 ===================================================== */
 .top-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 @media (min-width: 1024px) {
   .top-grid {
     grid-template-columns: minmax(0, 1.2fr) minmax(340px, 1fr);
-    gap: 20px;
+    gap: 16px;
   }
 }
 
 .balance-card {
   background: linear-gradient(135deg, rgba(10, 20, 40, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
   border: 1px solid rgba(0, 212, 255, 0.3);
-  box-shadow: 0 0 25px rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -210,59 +209,59 @@ main {
 
 .balances-wrapper {
   display: flex;
-  gap: 12px;
-  margin: 16px 0;
+  gap: 8px;
+  margin: 10px 0;
   flex-wrap: wrap;
 }
 
 .bal-box {
   flex: 1;
-  min-width: 120px;
+  min-width: 110px;
   background: rgba(0, 0, 0, 0.3);
-  padding: 12px;
-  border-radius: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .bal-label {
-  font-size: 10px;
+  font-size: 9px;
   color: #00d4ff;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .bal-amount {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 800;
   color: #ffffff;
-  margin-top: 4px;
+  margin-top: 2px;
   word-break: break-all;
 }
 
 @media (min-width: 768px) {
   .bal-amount {
-    font-size: 24px;
+    font-size: 22px;
   }
 }
 
 .btn-action {
   width: 100%;
-  padding: 12px 16px;
-  border-radius: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .btn-withdraw {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
 }
 
 .converter-card {
@@ -275,8 +274,8 @@ main {
 
 .converter-tabs {
   display: flex;
-  gap: 6px;
-  margin-bottom: 12px;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
 .tab-btn {
@@ -284,20 +283,13 @@ main {
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
-  padding: 8px 4px;
-  font-size: 10px;
+  padding: 6px 2px;
+  font-size: 9px;
   font-weight: 700;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   text-align: center;
   transition: all 0.2s;
-}
-
-@media (min-width: 768px) {
-  .tab-btn {
-    font-size: 11px;
-    padding: 6px;
-  }
 }
 
 .tab-btn.active {
@@ -317,7 +309,7 @@ main {
 .convert-input-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .convert-input-group input {
@@ -325,11 +317,11 @@ main {
   width: 100%;
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 6px;
+  padding: 7px 8px;
   color: #ffffff;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 12px;
   outline: none;
 }
 
@@ -337,10 +329,10 @@ main {
   background: linear-gradient(135deg, #00d4ff, #0055ff);
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 10px 14px;
+  border-radius: 6px;
+  padding: 7px 10px;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -351,14 +343,14 @@ main {
 .middle-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 @media (min-width: 1024px) {
   .middle-grid {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: 20px;
+    gap: 16px;
   }
 }
 
@@ -372,33 +364,33 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .market-live-price {
   font-family: monospace;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   color: #10b981;
 }
 
 @media (min-width: 768px) {
   .market-live-price {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 
 canvas#liveChart {
   width: 100%;
-  height: 180px;
+  height: 140px;
   background: #02050b;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 @media (min-width: 768px) {
   canvas#liveChart {
-    height: 200px;
+    height: 180px;
   }
 }
 
@@ -416,8 +408,8 @@ canvas#liveChart {
 .code-input-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 @media (min-width: 540px) {
@@ -431,12 +423,12 @@ canvas#liveChart {
   width: 100%;
   background: #030712;
   border: 1px solid rgba(0, 212, 255, 0.3);
-  padding: 12px 16px;
-  border-radius: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
   color: #00d4ff;
   font-family: monospace;
-  font-size: 15px;
-  letter-spacing: 2px;
+  font-size: 13px;
+  letter-spacing: 1px;
   text-transform: uppercase;
   outline: none;
 }
@@ -445,11 +437,12 @@ canvas#liveChart {
   background: linear-gradient(135deg, #0055ff, #00d4ff);
   color: #ffffff;
   border: none;
-  padding: 12px 20px;
-  border-radius: 10px;
+  padding: 9px 16px;
+  border-radius: 8px;
   font-weight: 700;
+  font-size: 12px;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  box-shadow: 0 3px 10px rgba(0, 212, 255, 0.3);
   width: 100%;
 }
 
@@ -462,31 +455,31 @@ canvas#liveChart {
 .terminal-logs {
   background: #02040a;
   border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: 10px;
-  padding: 10px;
-  height: 110px;
+  border-radius: 8px;
+  padding: 8px;
+  height: 90px;
   overflow-y: auto;
   font-family: monospace;
-  font-size: 11px;
-  margin-top: 12px;
+  font-size: 10px;
+  margin-top: 8px;
 }
 
-.log-entry { color: #94a3b8; margin-bottom: 4px; word-break: break-all; }
+.log-entry { color: #94a3b8; margin-bottom: 3px; word-break: break-all; }
 .log-entry .profit { color: #10b981; font-weight: bold; }
 .log-entry .loss { color: #ef4444; font-weight: bold; }
 .log-entry .action { color: #00d4ff; }
 
 /* PROGRESS BAR */
 .progress-container {
-  margin-top: 12px;
+  margin-top: 8px;
   display: none;
 }
 
 .progress-bar-bg {
   width: 100%;
-  height: 8px;
+  height: 6px;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
 }
 
@@ -509,35 +502,35 @@ canvas#liveChart {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 16px;
+  padding: 12px;
 }
 
 .modal {
   background: linear-gradient(135deg, rgba(13, 19, 34, 0.98) 0%, rgba(8, 12, 22, 0.98) 100%);
   border: 1px solid rgba(0, 212, 255, 0.35);
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 16px;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+  max-width: 380px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7);
 }
 
 @media (min-width: 768px) {
   .modal {
-    padding: 28px;
+    padding: 24px;
   }
 }
 
-.form-group { margin-bottom: 14px; }
-.form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
+.form-group { margin-bottom: 10px; }
+.form-group label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
 .form-group input, .form-group select {
-  width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff;
+  width: 100%; padding: 8px; background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; color: #fff; font-size: 12px;
 }
 
-.modal-buttons { display: flex; gap: 12px; margin-top: 22px; }
-.btn-close { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px; flex: 1; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; }
-.btn-confirm { background: linear-gradient(135deg, #00d4ff, #0055ff); color: #fff; border: none; padding: 12px; flex: 1; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 13px; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3); }
+.modal-buttons { display: flex; gap: 10px; margin-top: 16px; }
+.btn-close { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px; flex: 1; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; }
+.btn-confirm { background: linear-gradient(135deg, #00d4ff, #0055ff); color: #fff; border: none; padding: 10px; flex: 1; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 3px 10px rgba(0, 212, 255, 0.3); }
 </style>
 </head>
 
@@ -576,20 +569,20 @@ canvas#liveChart {
   <div class="top-grid">
     <div class="card balance-card">
       <div>
-        <h3 style="margin: 0; font-size: 13px; color: #94a3b8; text-transform: uppercase;">Account Wallet Balances</h3>
+        <h3 style="margin: 0; font-size: 11px; color: #94a3b8; text-transform: uppercase;">Account Wallet Balances</h3>
       </div>
 
       <div class="balances-wrapper">
         <div class="bal-box">
           <div class="bal-label">Dollar Balance (USD)</div>
           <div class="bal-amount" id="usdBalance">$0.00</div>
-          <small style="color: #64748b; font-size: 10px;">Trading Capital</small>
+          <small style="color: #64748b; font-size: 9px;">Trading Capital</small>
         </div>
 
         <div class="bal-box">
           <div class="bal-label">Peso Balance (PHP)</div>
           <div class="bal-amount" id="phpBalance">₱0.00</div>
-          <small style="color: #64748b; font-size: 10px;">Deposit / Withdrawal</small>
+          <small style="color: #64748b; font-size: 9px;">Deposit / Withdrawal</small>
         </div>
       </div>
 
@@ -601,9 +594,9 @@ canvas#liveChart {
     <!-- DUAL CONVERTER CARD -->
     <div class="card converter-card">
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <h4 style="margin: 0; color: #00d4ff; font-size: 13px;">💱 Dual Currency Converter</h4>
-          <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px;">$1 = ₱60.00</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <h4 style="margin: 0; color: #00d4ff; font-size: 11px;">💱 Dual Currency Converter</h4>
+          <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 20px;">$1 = ₱60.00</span>
         </div>
 
         <!-- CONVERTER TABS -->
@@ -614,25 +607,25 @@ canvas#liveChart {
 
         <!-- TAB 1: PHP TO USD -->
         <div id="phpToUsdPane" class="converter-pane active">
-          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px;">
-            <div style="font-size: 10px; font-weight: 700; color: #94a3b8; margin-bottom: 6px;">CONVERT DEPOSITED PHP TO USD FOR TRADING</div>
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px;">
+            <div style="font-size: 9px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">CONVERT DEPOSITED PHP TO USD FOR TRADING</div>
             <div class="convert-input-group">
               <input type="number" id="phpInput" placeholder="Enter PHP (₱)" oninput="previewPhpToUsd()">
               <button class="btn-convert-action" onclick="convertPhpToUsd()">Convert</button>
             </div>
-            <div style="font-size: 10px; color: #10b981; margin-top: 5px;" id="phpToUsdPreview">You will receive: $0.00 USD</div>
+            <div style="font-size: 9px; color: #10b981; margin-top: 4px;" id="phpToUsdPreview">You will receive: $0.00 USD</div>
           </div>
         </div>
 
         <!-- TAB 2: USD TO PHP -->
         <div id="usdToPhpPane" class="converter-pane">
-          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px;">
-            <div style="font-size: 10px; font-weight: 700; color: #00d4ff; margin-bottom: 6px;">CONVERT USD TO PHP FOR WITHDRAWAL</div>
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px;">
+            <div style="font-size: 9px; font-weight: 700; color: #00d4ff; margin-bottom: 4px;">CONVERT USD TO PHP FOR WITHDRAWAL</div>
             <div class="convert-input-group">
               <input type="number" id="usdInput" placeholder="Enter USD ($)" oninput="previewUsdToPhp()">
               <button class="btn-convert-action" onclick="handleUsdToPhpAction()">Convert</button>
             </div>
-            <div style="font-size: 10px; color: #64748b; margin-top: 5px;" id="usdToPhpPreview">You will receive: ₱0.00 PHP</div>
+            <div style="font-size: 9px; color: #64748b; margin-top: 4px;" id="usdToPhpPreview">You will receive: ₱0.00 PHP</div>
           </div>
         </div>
 
@@ -647,11 +640,11 @@ canvas#liveChart {
     <div class="card chart-card">
       <div class="chart-header">
         <div>
-          <span style="color: #94a3b8; font-size: 11px; font-weight: bold;">LIVE MARKET GRAPH (BTC/USD)</span>
+          <span style="color: #94a3b8; font-size: 10px; font-weight: bold;">LIVE MARKET GRAPH (BTC/USD)</span>
           <div class="market-live-price" id="livePriceDisplay">$96,420.00</div>
         </div>
         <div style="text-align: right;">
-          <span style="color: #10b981; font-size: 11px; font-weight: bold;" id="pnlStatus">● IDLE</span>
+          <span style="color: #10b981; font-size: 10px; font-weight: bold;" id="pnlStatus">● IDLE</span>
         </div>
       </div>
 
@@ -659,20 +652,20 @@ canvas#liveChart {
     </div>
 
     <!-- COMPACT LIVE MARKET ASSETS CARD -->
-    <div class="bg-[#111827] border border-gray-800 rounded-xl p-4 shadow-xl flex flex-col justify-between">
-      <div class="flex justify-between items-center text-xs font-medium text-gray-400 mb-3 pb-2 border-b border-gray-800">
+    <div class="bg-[#111827] border border-gray-800 rounded-xl p-3 shadow-xl flex flex-col justify-between">
+      <div class="flex justify-between items-center text-[11px] font-medium text-gray-400 mb-2 pb-1 border-b border-gray-800">
         <span class="text-yellow-400 font-bold">Markets</span>
         <a href="#" class="text-gray-500 hover:text-yellow-400 transition">View All ></a>
       </div>
 
-      <div class="space-y-3 text-xs" id="liveTickerTable">
+      <div class="space-y-2 text-[11px]" id="liveTickerTable">
         <!-- Row 1: BTC -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-2">
-            <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=032" alt="BTC" class="w-6 h-6 object-contain">
+            <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=032" alt="BTC" class="w-5 h-5 object-contain">
             <div>
               <span class="font-bold text-white">BTC</span>
-              <span class="text-gray-400 block text-[10px]">Bitcoin</span>
+              <span class="text-gray-400 block text-[9px]">Bitcoin</span>
             </div>
           </div>
           <span class="font-medium text-white text-center asset-price">$85,520.01</span>
@@ -682,10 +675,10 @@ canvas#liveChart {
         <!-- Row 2: ETH -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-2">
-            <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=032" alt="ETH" class="w-6 h-6 object-contain">
+            <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=032" alt="ETH" class="w-5 h-5 object-contain">
             <div>
               <span class="font-bold text-white">ETH</span>
-              <span class="text-gray-400 block text-[10px]">Ethereum</span>
+              <span class="text-gray-400 block text-[9px]">Ethereum</span>
             </div>
           </div>
           <span class="font-medium text-white text-center asset-price">$2,700.01</span>
@@ -695,10 +688,10 @@ canvas#liveChart {
         <!-- Row 3: BNB -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-2">
-            <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png?v=032" alt="BNB" class="w-6 h-6 object-contain">
+            <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png?v=032" alt="BNB" class="w-5 h-5 object-contain">
             <div>
               <span class="font-bold text-white">BNB</span>
-              <span class="text-gray-400 block text-[10px]">BNB</span>
+              <span class="text-gray-400 block text-[9px]">BNB</span>
             </div>
           </div>
           <span class="font-medium text-white text-center asset-price">$782.29</span>
@@ -708,10 +701,10 @@ canvas#liveChart {
         <!-- Row 4: SpaceX -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center font-bold text-xs text-white">X</div>
+            <div class="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center font-bold text-[10px] text-white">X</div>
             <div>
               <span class="font-bold text-white">SPCXB</span>
-              <span class="text-gray-400 block text-[10px]">SpaceX</span>
+              <span class="text-gray-400 block text-[9px]">SpaceX</span>
             </div>
           </div>
           <span class="font-medium text-white text-center asset-price">$171.83</span>
@@ -721,14 +714,14 @@ canvas#liveChart {
         <!-- Row 5: NVIDIA -->
         <div class="grid grid-cols-3 items-center">
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded-full bg-[#76b900] flex items-center justify-center shadow-md overflow-hidden p-1">
-              <svg viewBox="0 0 24 24" class="w-4 h-4 fill-white" xmlns="http://www.w3.org/2000/svg">
+            <div class="w-5 h-5 rounded-full bg-[#76b900] flex items-center justify-center shadow-md overflow-hidden p-0.5">
+              <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 fill-white" xmlns="http://www.w3.org/2000/svg">
                 <path d="M11.53 2c-3.13.11-6.13 1.58-8.24 3.97-2.11 2.39-3.08 5.57-2.69 8.74.39 3.17 2.13 6.01 4.84 7.69 2.71 1.68 6.07 1.96 9.03.73l-1.42-2.5c-2.09.87-4.59.67-6.5-.52-1.91-1.19-3.14-3.19-3.32-5.45-.18-2.26.79-4.47 2.61-5.81 1.82-1.34 4.19-1.61 6.25-.7l1.39-2.53C15.2 2.67 13.38 2.07 11.53 2zm7.1 2.65l-1.39 2.53c1.67.75 3 2.05 3.73 3.69.73 1.64.84 3.52.31 5.23l2.67.89c.79-2.5.58-5.26-.57-7.61-1.15-2.35-3.19-4.14-5.65-4.73z"/>
               </svg>
             </div>
             <div>
               <span class="font-bold text-white">NVDAB</span>
-              <span class="text-gray-400 block text-[10px]">NVIDIA (bStocks)</span>
+              <span class="text-gray-400 block text-[9px]">NVIDIA (bStocks)</span>
             </div>
           </div>
           <span class="font-medium text-white text-center asset-price">$239.76</span>
@@ -742,8 +735,8 @@ canvas#liveChart {
   <!-- BOTTOM SECTION: TRADING CODE EXECUTION -->
   <div class="card code-input-card">
     <div>
-      <h3 style="margin: 0 0 6px; color: #ffffff; font-size: 18px;">Trading Code Execution</h3>
-      <p style="margin: 0; color: #94a3b8; font-size: 12px;">Enter code to execute algorithmic trading session (2 Mins).</p>
+      <h3 style="margin: 0 0 4px; color: #ffffff; font-size: 15px;">Trading Code Execution</h3>
+      <p style="margin: 0; color: #94a3b8; font-size: 11px;">Enter code to execute algorithmic trading session (2 Mins).</p>
       
       <div class="code-input-group">
         <input type="text" id="tradingCodeInput" placeholder="ENTER CODE..." maxlength="12">
@@ -751,7 +744,7 @@ canvas#liveChart {
       </div>
 
       <div class="progress-container" id="progressContainer">
-        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">
           <span id="progressStatusText">Running Algorithmic Session...</span>
           <span id="progressPercentText">1%</span>
         </div>
@@ -772,26 +765,26 @@ canvas#liveChart {
 <!-- MODALS -->
 <div class="modal-overlay" id="zeroBalanceModal">
   <div class="modal" style="border-color: rgba(239, 68, 68, 0.4); text-align: center;">
-    <div style="width: 50px; height: 50px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 22px;">
+    <div style="width: 40px; height: 40px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 18px;">
       ⚠️
     </div>
-    <h3 style="margin-top: 0; color: #fca5a5; font-size: 18px;">Insufficient Balance</h3>
-    <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin-bottom: 20px;">
+    <h3 style="margin-top: 0; color: #fca5a5; font-size: 16px;">Insufficient Balance</h3>
+    <p style="font-size: 11px; color: #cbd5e1; line-height: 1.5; margin-bottom: 16px;">
       You have a <strong>$0.00</strong> balance! Please recharge or convert your PHP to USD before executing a trading code.
     </p>
-    <div style="display: flex; gap: 10px;">
+    <div style="display: flex; gap: 8px;">
       <button class="btn-close" onclick="closeZeroBalanceModal()">Close</button>
-      <button class="btn-confirm" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" onclick="closeZeroBalanceModal()">OK, Got it</button>
+      <button class="btn-confirm" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);" onclick="closeZeroBalanceModal()">OK, Got it</button>
     </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="conversionConfirmModal">
   <div class="modal">
-    <h3 style="margin-top: 0; color: #00d4ff; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+    <h3 style="margin-top: 0; color: #00d4ff; font-size: 16px; display: flex; align-items: center; gap: 6px;">
       <span>⚠️</span> Conversion Confirmation
     </h3>
-    <div id="conversionModalBody" style="font-size: 13px; color: #cbd5e1; line-height: 1.6; background: rgba(0,0,0,0.4); padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); margin-top: 10px;">
+    <div id="conversionModalBody" style="font-size: 11px; color: #cbd5e1; line-height: 1.5; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-top: 8px;">
     </div>
     <div class="modal-buttons">
       <button class="btn-close" onclick="closeConversionModal()">Cancel</button>
@@ -802,7 +795,7 @@ canvas#liveChart {
 
 <div class="modal-overlay" id="withdrawModal">
   <div class="modal">
-    <h3 style="margin-top: 0; color: #00d4ff;">Withdraw Funds (PHP)</h3>
+    <h3 style="margin-top: 0; color: #00d4ff; font-size: 16px;">Withdraw Funds (PHP)</h3>
     <div class="form-group">
       <label>Payout Channel</label>
       <select id="payoutMethod">
@@ -827,13 +820,13 @@ canvas#liveChart {
 </div>
 
 <!-- Bottom Navigation Bar -->
-<nav style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #111827; border-top: 1px solid #1f2937; padding: 12px 24px; display: flex; justify-content: space-around; align-items: center; font-size: 12px; color: #9ca3af; z-index: 9999;">
+<nav style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #111827; border-top: 1px solid #1f2937; padding: 10px 16px; display: flex; justify-content: space-around; align-items: center; font-size: 11px; color: #9ca3af; z-index: 9999;">
   <a href="dashboard.html" style="display: flex; flex-direction: column; align-items: center; color: #3b82f6; font-weight: 600; text-decoration: none;">
-    <i class="fa-solid fa-chart-line" style="font-size: 18px; margin-bottom: 4px;"></i>
+    <i class="fa-solid fa-chart-line" style="font-size: 16px; margin-bottom: 2px;"></i>
     <span>Live Terminal</span>
   </a>
   <a href="account.html" style="display: flex; flex-direction: column; align-items: center; color: #9ca3af; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#9ca3af'">
-    <i class="fa-solid fa-user" style="font-size: 18px; margin-bottom: 4px;"></i>
+    <i class="fa-solid fa-user" style="font-size: 16px; margin-bottom: 2px;"></i>
     <span>Account</span>
   </a>
 </nav>
@@ -999,11 +992,11 @@ canvas#liveChart {
     pendingConversionData = { usdAmount, finalPhp, deduction };
 
     let modalHtml = `
-      <div style="margin-bottom: 6px;"><strong style="color: #00d4ff;">Account Age:</strong> Day ${accountAgeDays} of ${requiredDaysForNoFee} (Under 31 Days)</div>
-      <div style="margin-bottom: 6px;"><strong style="color: #fff;">Converting Amount:</strong> $${usdAmount.toFixed(2)} USD</div>
-      <div style="margin-bottom: 6px;"><strong style="color: #fca5a5;">25% Deduction Fee:</strong> ₱${deduction.toFixed(2)} PHP</div>
-      <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 8px;"><strong style="color: #10b981; font-size: 14px;">Net Total to Receive: ₱${finalPhp.toFixed(2)} PHP</strong></div>
-      <div style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Notice: Accounts must exceed 31 days of age to waive the deduction fee.</div>
+      <div style="margin-bottom: 4px;"><strong style="color: #00d4ff;">Account Age:</strong> Day ${accountAgeDays} of ${requiredDaysForNoFee} (Under 31 Days)</div>
+      <div style="margin-bottom: 4px;"><strong style="color: #fff;">Converting Amount:</strong> $${usdAmount.toFixed(2)} USD</div>
+      <div style="margin-bottom: 4px;"><strong style="color: #fca5a5;">25% Deduction Fee:</strong> ₱${deduction.toFixed(2)} PHP</div>
+      <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 6px; padding-top: 6px;"><strong style="color: #10b981; font-size: 13px;">Net Total to Receive: ₱${finalPhp.toFixed(2)} PHP</strong></div>
+      <div style="font-size: 10px; color: #94a3b8; margin-top: 6px;">Notice: Accounts must exceed 31 days of age to waive the deduction fee.</div>
     `;
 
     document.getElementById('conversionModalBody').innerHTML = modalHtml;
@@ -1030,15 +1023,15 @@ canvas#liveChart {
   const canvas = document.getElementById('liveChart');
   const ctx = canvas.getContext('2d');
   canvas.width = canvas.offsetWidth || 500;
-  canvas.height = canvas.offsetHeight || 200;
+  canvas.height = canvas.offsetHeight || 140;
 
   let pricePoints = Array(35).fill(96420);
   let currentPrice = 96420;
 
   function drawChart() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const rightPadding = 55; 
-    const bottomPadding = 18; 
+    const rightPadding = 45; 
+    const bottomPadding = 14; 
     const chartWidth = canvas.width - rightPadding;
     const chartHeight = canvas.height - bottomPadding;
 
@@ -1047,7 +1040,7 @@ canvas#liveChart {
 
     ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
     ctx.fillStyle = "#64748b";
-    ctx.font = "9px monospace";
+    ctx.font = "8px monospace";
     ctx.lineWidth = 1;
 
     for (let i = 0; i <= 4; i++) {
@@ -1058,11 +1051,11 @@ canvas#liveChart {
       ctx.stroke();
 
       const priceVal = maxPrice - ((maxPrice - minPrice) / 4) * i;
-      ctx.fillText(`$${priceVal.toFixed(0)}`, chartWidth + 4, y + 3);
+      ctx.fillText(`$${priceVal.toFixed(0)}`, chartWidth + 3, y + 3);
     }
 
-    ctx.fillText("T-35s", 4, chartHeight + 12);
-    ctx.fillText("Live", chartWidth - 25, chartHeight + 12);
+    ctx.fillText("T-35s", 2, chartHeight + 10);
+    ctx.fillText("Live", chartWidth - 20, chartHeight + 10);
 
     ctx.beginPath();
     const step = chartWidth / (pricePoints.length - 1);
