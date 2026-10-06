@@ -163,7 +163,7 @@ main {
 }
 
 /* =====================================================
-   SIDE-BY-SIDE WRAPPER (MAGKATABI SA CELLPHONE)
+   SIDE-BY-SIDE CONTAINER (WALLET & CONVERTER)
 ===================================================== */
 .side-by-side-container {
   display: grid;
@@ -310,26 +310,15 @@ main {
 }
 
 /* =====================================================
-   MIDDLE SECTION: GRAPH & MARKET LIST
+   MIDDLE SECTION: GRAPH ONLY
 ===================================================== */
-.middle-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-@media (min-width: 1024px) {
-  .middle-grid {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: 16px;
-  }
-}
-
 .chart-card {
   background: rgba(8, 12, 22, 0.95);
   border: 1px solid rgba(0, 212, 255, 0.25);
   position: relative;
+  margin-bottom: 12px;
+  padding: 8px;
+  border-radius: 10px;
 }
 
 .chart-header {
@@ -355,11 +344,30 @@ canvas#liveChart {
 }
 
 /* =====================================================
-   BOTTOM SECTION: TRADING CODE EXECUTION
+   BOTTOM SECTION: MARKETS & TRADING CODE SIDE-BY-SIDE
 ===================================================== */
+.bottom-side-by-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.compact-markets-card {
+  background: #111827;
+  border: 1px solid rgba(31, 41, 55, 1);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .code-input-card {
   background: rgba(10, 15, 30, 0.85);
   border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 10px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -368,27 +376,20 @@ canvas#liveChart {
 .code-input-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-@media (min-width: 540px) {
-  .code-input-group {
-    flex-direction: row;
-  }
+  gap: 4px;
+  margin-top: 6px;
 }
 
 .code-input-group input {
-  flex: 1;
   width: 100%;
   background: #030712;
   border: 1px solid rgba(0, 212, 255, 0.3);
-  padding: 9px 12px;
-  border-radius: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
   color: #00d4ff;
   font-family: monospace;
-  font-size: 13px;
-  letter-spacing: 1px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   outline: none;
 }
@@ -397,49 +398,43 @@ canvas#liveChart {
   background: linear-gradient(135deg, #0055ff, #00d4ff);
   color: #ffffff;
   border: none;
-  padding: 9px 16px;
-  border-radius: 8px;
+  padding: 6px;
+  border-radius: 6px;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 9px;
   cursor: pointer;
   box-shadow: 0 3px 10px rgba(0, 212, 255, 0.3);
   width: 100%;
 }
 
-@media (min-width: 540px) {
-  .btn-execute-code {
-    width: auto;
-  }
-}
-
 .terminal-logs {
   background: #02040a;
   border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: 8px;
-  padding: 8px;
-  height: 90px;
+  border-radius: 6px;
+  padding: 5px;
+  height: 70px;
   overflow-y: auto;
   font-family: monospace;
-  font-size: 10px;
-  margin-top: 8px;
+  font-size: 8px;
+  margin-top: 6px;
 }
 
-.log-entry { color: #94a3b8; margin-bottom: 3px; word-break: break-all; }
+.log-entry { color: #94a3b8; margin-bottom: 2px; word-break: break-all; }
 .log-entry .profit { color: #10b981; font-weight: bold; }
 .log-entry .loss { color: #ef4444; font-weight: bold; }
 .log-entry .action { color: #00d4ff; }
 
 /* PROGRESS BAR */
 .progress-container {
-  margin-top: 8px;
+  margin-top: 6px;
   display: none;
 }
 
 .progress-bar-bg {
   width: 100%;
-  height: 6px;
+  height: 4px;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 3px;
+  border-radius: 2px;
   overflow: hidden;
 }
 
@@ -519,7 +514,7 @@ canvas#liveChart {
     </div>
   </div>
 
-  <!-- SIDE-BY-SIDE CONTAINER (MAGKATABI SA CELLPHONE NA KASYA SA SCREEN) -->
+  <!-- SIDE-BY-SIDE CONTAINER (WALLET & CONVERTER) -->
   <div class="side-by-side-container">
     
     <!-- 1. ACCOUNT WALLET -->
@@ -586,131 +581,130 @@ canvas#liveChart {
 
   </div>
 
-  <!-- MIDDLE SECTION: LIVE MARKET GRAPH & COMPACT LIVE ASSET LIST -->
-  <div class="middle-grid">
-    
-    <!-- REAL-TIME GRAPH CHART CARD -->
-    <div class="card chart-card">
-      <div class="chart-header">
-        <div>
-          <span style="color: #94a3b8; font-size: 10px; font-weight: bold;">LIVE MARKET GRAPH (BTC/USD)</span>
-          <div class="market-live-price" id="livePriceDisplay">$96,420.00</div>
-        </div>
-        <div style="text-align: right;">
-          <span style="color: #10b981; font-size: 10px; font-weight: bold;" id="pnlStatus">● IDLE</span>
-        </div>
+  <!-- MIDDLE SECTION: LIVE MARKET GRAPH ONLY (UNTOUCHED) -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <span style="color: #94a3b8; font-size: 10px; font-weight: bold;">LIVE MARKET GRAPH (BTC/USD)</span>
+        <div class="market-live-price" id="livePriceDisplay">$96,420.00</div>
       </div>
-
-      <canvas id="liveChart"></canvas>
+      <div style="text-align: right;">
+        <span style="color: #10b981; font-size: 10px; font-weight: bold;" id="pnlStatus">● IDLE</span>
+      </div>
     </div>
 
-    <!-- COMPACT LIVE MARKET ASSETS CARD -->
-    <div class="bg-[#111827] border border-gray-800 rounded-xl p-3 shadow-xl flex flex-col justify-between">
-      <div class="flex justify-between items-center text-[11px] font-medium text-gray-400 mb-2 pb-1 border-b border-gray-800">
+    <canvas id="liveChart"></canvas>
+  </div>
+
+  <!-- BOTTOM SECTION: MARKETS (LEFT) & TRADING EXECUTION (RIGHT) SIDE-BY-SIDE -->
+  <div class="bottom-side-by-side">
+    
+    <!-- LEFT: COMPACT LIVE MARKET ASSETS CARD -->
+    <div class="compact-markets-card">
+      <div class="flex justify-between items-center text-[10px] font-medium text-gray-400 mb-1.5 pb-1 border-b border-gray-800">
         <span class="text-yellow-400 font-bold">Markets</span>
-        <a href="#" class="text-gray-500 hover:text-yellow-400 transition">View All ></a>
+        <a href="#" class="text-gray-500 hover:text-yellow-400 transition text-[9px]">View All ></a>
       </div>
 
-      <div class="space-y-2 text-[11px]" id="liveTickerTable">
+      <div class="space-y-1.5 text-[9px]" id="liveTickerTable">
         <!-- Row 1: BTC -->
         <div class="grid grid-cols-3 items-center">
-          <div class="flex items-center gap-2">
-            <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=032" alt="BTC" class="w-5 h-5 object-contain">
+          <div class="flex items-center gap-1.5">
+            <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=032" alt="BTC" class="w-4 h-4 object-contain">
             <div>
               <span class="font-bold text-white">BTC</span>
-              <span class="text-gray-400 block text-[9px]">Bitcoin</span>
+              <span class="text-gray-400 block text-[7px]">Bitcoin</span>
             </div>
           </div>
-          <span class="font-medium text-white text-center asset-price">$85,520.01</span>
+          <span class="font-medium text-white text-center asset-price">$85,520</span>
           <span class="font-bold text-red-500 text-right asset-percent">-1.10%</span>
         </div>
 
         <!-- Row 2: ETH -->
         <div class="grid grid-cols-3 items-center">
-          <div class="flex items-center gap-2">
-            <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=032" alt="ETH" class="w-5 h-5 object-contain">
+          <div class="flex items-center gap-1.5">
+            <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=032" alt="ETH" class="w-4 h-4 object-contain">
             <div>
               <span class="font-bold text-white">ETH</span>
-              <span class="text-gray-400 block text-[9px]">Ethereum</span>
+              <span class="text-gray-400 block text-[7px]">Ethereum</span>
             </div>
           </div>
-          <span class="font-medium text-white text-center asset-price">$2,700.01</span>
+          <span class="font-medium text-white text-center asset-price">$2,700</span>
           <span class="font-bold text-red-500 text-right asset-percent">-1.01%</span>
         </div>
 
         <!-- Row 3: BNB -->
         <div class="grid grid-cols-3 items-center">
-          <div class="flex items-center gap-2">
-            <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png?v=032" alt="BNB" class="w-5 h-5 object-contain">
+          <div class="flex items-center gap-1.5">
+            <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png?v=032" alt="BNB" class="w-4 h-4 object-contain">
             <div>
               <span class="font-bold text-white">BNB</span>
-              <span class="text-gray-400 block text-[9px]">BNB</span>
+              <span class="text-gray-400 block text-[7px]">BNB</span>
             </div>
           </div>
-          <span class="font-medium text-white text-center asset-price">$782.29</span>
+          <span class="font-medium text-white text-center asset-price">$782</span>
           <span class="font-bold text-red-500 text-right asset-percent">-1.83%</span>
         </div>
 
         <!-- Row 4: SpaceX -->
         <div class="grid grid-cols-3 items-center">
-          <div class="flex items-center gap-2">
-            <div class="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center font-bold text-[10px] text-white">X</div>
+          <div class="flex items-center gap-1.5">
+            <div class="w-4 h-4 rounded-full bg-gray-700 flex items-center justify-center font-bold text-[8px] text-white">X</div>
             <div>
               <span class="font-bold text-white">SPCXB</span>
-              <span class="text-gray-400 block text-[9px]">SpaceX</span>
+              <span class="text-gray-400 block text-[7px]">SpaceX</span>
             </div>
           </div>
-          <span class="font-medium text-white text-center asset-price">$171.83</span>
+          <span class="font-medium text-white text-center asset-price">$171</span>
           <span class="font-bold text-green-500 text-right asset-percent">+7.22%</span>
         </div>
 
         <!-- Row 5: NVIDIA -->
         <div class="grid grid-cols-3 items-center">
-          <div class="flex items-center gap-2">
-            <div class="w-5 h-5 rounded-full bg-[#76b900] flex items-center justify-center shadow-md overflow-hidden p-0.5">
-              <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 fill-white" xmlns="http://www.w3.org/2000/svg">
+          <div class="flex items-center gap-1.5">
+            <div class="w-4 h-4 rounded-full bg-[#76b900] flex items-center justify-center shadow-md overflow-hidden p-0.5">
+              <svg viewBox="0 0 24 24" class="w-3 h-3 fill-white" xmlns="http://www.w3.org/2000/svg">
                 <path d="M11.53 2c-3.13.11-6.13 1.58-8.24 3.97-2.11 2.39-3.08 5.57-2.69 8.74.39 3.17 2.13 6.01 4.84 7.69 2.71 1.68 6.07 1.96 9.03.73l-1.42-2.5c-2.09.87-4.59.67-6.5-.52-1.91-1.19-3.14-3.19-3.32-5.45-.18-2.26.79-4.47 2.61-5.81 1.82-1.34 4.19-1.61 6.25-.7l1.39-2.53C15.2 2.67 13.38 2.07 11.53 2zm7.1 2.65l-1.39 2.53c1.67.75 3 2.05 3.73 3.69.73 1.64.84 3.52.31 5.23l2.67.89c.79-2.5.58-5.26-.57-7.61-1.15-2.35-3.19-4.14-5.65-4.73z"/>
               </svg>
             </div>
             <div>
               <span class="font-bold text-white">NVDAB</span>
-              <span class="text-gray-400 block text-[9px]">NVIDIA (bStocks)</span>
+              <span class="text-gray-400 block text-[7px]">NVIDIA</span>
             </div>
           </div>
-          <span class="font-medium text-white text-center asset-price">$239.76</span>
+          <span class="font-medium text-white text-center asset-price">$239</span>
           <span class="font-bold text-green-500 text-right asset-percent">+0.03%</span>
         </div>
       </div>
     </div>
 
-  </div>
+    <!-- RIGHT: TRADING CODE EXECUTION -->
+    <div class="code-input-card">
+      <div>
+        <h3 style="margin: 0 0 2px; color: #ffffff; font-size: 11px;">Trading Code</h3>
+        <p style="margin: 0; color: #94a3b8; font-size: 8px;">Enter code for 2-min session.</p>
+        
+        <div class="code-input-group">
+          <input type="text" id="tradingCodeInput" placeholder="ENTER CODE..." maxlength="12">
+          <button class="btn-execute-code" id="btnExecute" onclick="startTradingProcess()">Execute</button>
+        </div>
 
-  <!-- BOTTOM SECTION: TRADING CODE EXECUTION -->
-  <div class="card code-input-card">
-    <div>
-      <h3 style="margin: 0 0 4px; color: #ffffff; font-size: 15px;">Trading Code Execution</h3>
-      <p style="margin: 0; color: #94a3b8; font-size: 11px;">Enter code to execute algorithmic trading session (2 Mins).</p>
-      
-      <div class="code-input-group">
-        <input type="text" id="tradingCodeInput" placeholder="ENTER CODE..." maxlength="12">
-        <button class="btn-execute-code" id="btnExecute" onclick="startTradingProcess()">Execute Code</button>
+        <div class="progress-container" id="progressContainer">
+          <div style="display: flex; justify-content: space-between; font-size: 8px; color: #94a3b8; margin-bottom: 2px;">
+            <span id="progressStatusText">Running...</span>
+            <span id="progressPercentText">1%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+          </div>
+        </div>
       </div>
 
-      <div class="progress-container" id="progressContainer">
-        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">
-          <span id="progressStatusText">Running Algorithmic Session...</span>
-          <span id="progressPercentText">1%</span>
-        </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="progressBarFill"></div>
-        </div>
+      <div class="terminal-logs" id="terminalLogs">
+        <div class="log-entry">[SYSTEM] Ready for trading code...</div>
       </div>
     </div>
 
-    <div class="terminal-logs" id="terminalLogs">
-      <div class="log-entry">[SYSTEM] Connected to WebSocket live market feed...</div>
-      <div class="log-entry">[SYSTEM] Waiting for trading code activation...</div>
-    </div>
   </div>
 
 </main>
@@ -1069,7 +1063,7 @@ canvas#liveChart {
         let change = (Math.random() * 2 - 1.02) * (currentVal * 0.0015);
         let newVal = currentVal + change;
         
-        priceSpan.innerText = '$' + newVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        priceSpan.innerText = '$' + newVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         let isPositive = change >= 0;
         percentSpan.className = `font-bold text-right asset-percent ${isPositive ? 'text-green-500' : 'text-red-500'}`;
         percentSpan.innerText = (isPositive ? '+' : '') + (change / currentVal * 100).toFixed(2) + '%';
@@ -1101,7 +1095,7 @@ canvas#liveChart {
 
     if (usdBalance <= 0) {
       openZeroBalanceModal();
-      addLog(`<span class="loss">[REJECTED]</span> Trading code failed: Insufficient balance ($0.00). Please recharge.`);
+      addLog(`<span class="loss">[REJECTED]</span> Insufficient balance ($0.00).`);
       return;
     }
 
@@ -1128,7 +1122,7 @@ canvas#liveChart {
     let elapsedSteps = 0;
     let currentSessionBalance = initialBalance;
 
-    addLog(`<span class="action">[CODE ACCEPTED]</span> Code <b>${codeInput.toUpperCase()}</b> activated! Starting 2-Minute Session with Balance: $${initialBalance.toFixed(2)}`);
+    addLog(`<span class="action">[ACCEPTED]</span> Code <b>${codeInput.toUpperCase()}</b> activated!`);
 
     const timer = setInterval(() => {
       elapsedSteps++;
@@ -1153,14 +1147,11 @@ canvas#liveChart {
         usdBalance = currentSessionBalance;
 
         if (Math.random() > 0.60) {
-          const pairs = ['BTC/USD', 'ETH/USD', 'NEX/USD', 'SOL/USD'];
-          const randomPair = pairs[Math.floor(Math.random() * pairs.length)];
-          
           if (delta >= 0) {
-            addLog(`<span class="profit">+ $${Math.abs(delta).toFixed(2)} USD</span> Order Executed on <b>${randomPair}</b>`);
+            addLog(`<span class="profit">+ $${Math.abs(delta).toFixed(2)}</span> Order executed`);
             updateBalancesUI('up');
           } else {
-            addLog(`<span class="loss">- $${Math.abs(delta).toFixed(2)} USD</span> Market Adjustment on <b>${randomPair}</b>`);
+            addLog(`<span class="loss">- $${Math.abs(delta).toFixed(2)}</span> Adjustment`);
             updateBalancesUI('down');
           }
         } else {
@@ -1186,8 +1177,8 @@ canvas#liveChart {
         runLiveChart(); 
 
         const actualPercentEarned = ((targetProfitGain / initialBalance) * 100).toFixed(2);
-        addLog(`<span class="profit">[SESSION COMPLETED]</span> 2-Minute Session Finished! Yield: <b>+${actualPercentEarned}% (+$${targetProfitGain.toFixed(2)} USD)</b>`);
-        alert(`Trading Execution Complete!\n\nInitial Balance: $${initialBalance.toFixed(2)} USD\nNet Profit Earned (+${actualPercentEarned}%): +$${targetProfitGain.toFixed(2)} USD\nUpdated Total USD Balance: $${usdBalance.toFixed(2)} USD`);
+        addLog(`<span class="profit">[COMPLETED]</span> +$${targetProfitGain.toFixed(2)} USD (+${actualPercentEarned}%)`);
+        alert(`Trading Execution Complete!\n\nInitial Balance: $${initialBalance.toFixed(2)} USD\nNet Profit Earned: +$${targetProfitGain.toFixed(2)} USD\nTotal USD Balance: $${usdBalance.toFixed(2)} USD`);
 
         document.getElementById('tradingCodeInput').value = '';
         document.getElementById('btnExecute').disabled = false;
