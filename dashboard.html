@@ -820,58 +820,17 @@ canvas#liveChart {
 
   async function loadUserDataFromFirestore(uid) {
     try {
-      // IMPORTANT:
-      // The registered account is stored in Users/{uid}.
-      // Users.balance is the PHP wallet balance.
-      const legacyDoc = await db.collection("Users").doc(uid).get();
-      const legacyData = legacyDoc.exists ? (legacyDoc.data() || {}) : {};
-
-      // Also support the optional newer User/{uid} document.
-      const newDoc = await db.collection("User").doc(uid).get();
-      const newData = newDoc.exists ? (newDoc.data() || {}) : {};
-
-      // PHP balance: Users.balance is the primary source.
-      if (legacyData.balance !== undefined && legacyData.balance !== null) {
-        phpBalance = safeNumber(legacyData.balance);
-      } else if (newData.phpBalance !== undefined && newData.phpBalance !== null) {
-        phpBalance = safeNumber(newData.phpBalance);
-      } else if (newData.balance !== undefined && newData.balance !== null) {
-        phpBalance = safeNumber(newData.balance);
-      } else {
-        phpBalance = 0;
-      }
-
-      // USD balance: support either schema.
-      if (newData.usdBalance !== undefined && newData.usdBalance !== null) {
-        usdBalance = safeNumber(newData.usdBalance);
-      } else if (legacyData.usdBalance !== undefined && legacyData.usdBalance !== null) {
-        usdBalance = safeNumber(legacyData.usdBalance);
-      } else {
-        usdBalance = 0;
-      }
-
-      // Account age if present.
-      if (newData.accountAgeDays !== undefined && newData.accountAgeDays !== null) {
-        accountAgeDays = safeNumber(newData.accountAgeDays, accountAgeDays);
-      } else if (legacyData.accountAgeDays !== undefined && legacyData.accountAgeDays !== null) {
-        accountAgeDays = safeNumber(legacyData.accountAgeDays, accountAgeDays);
-      }
-
+      const userRef = db.collection("Users").doc(uid);
+      const userDoc = await userRef.get();
+      if (!userDoc.exists) throw new Error("Users document not found for this logged-in UID.");
+      const data = userDoc.data() || {};
+      phpBalance = safeNumber(data.balance);
+      usdBalance = safeNumber(data.usdBalance);
+      if (data.accountAgeDays !== undefined && data.accountAgeDays !== null) accountAgeDays = safeNumber(data.accountAgeDays, accountAgeDays);
       balanceDataLoaded = true;
-
-      // Render the loaded values BEFORE any save.
       renderBalancesUI();
-
-      console.log("NEXORA BALANCE LOADED:", {
-        uid: uid,
-        usersDocumentExists: legacyDoc.exists,
-        usersBalance: legacyData.balance,
-        phpBalance: phpBalance,
-        usdBalance: usdBalance
-      });
-
+      console.log("NEXORA BALANCE LOADED:", {uid: uid, documentExists: true, balance: data.balance, phpBalance: phpBalance, usdBalance: usdBalance});
       startBalanceListeners(uid);
-
     } catch (error) {
       console.error("Error loading user data:", error);
       balanceDataLoaded = false;
@@ -880,105 +839,29 @@ canvas#liveChart {
   }
 
   function startBalanceListeners(uid) {
-    if (legacyBalanceUnsubscribe) {
-      legacyBalanceUnsubscribe();
-      legacyBalanceUnsubscribe = null;
-    }
-
-    if (newBalanceUnsubscribe) {
-      newBalanceUnsubscribe();
-      newBalanceUnsubscribe = null;
-    }
-
-    // Primary listener: Users/{uid}.balance
+    if (legacyBalanceUnsubscribe) { legacyBalanceUnsubscribe(); legacyBalanceUnsubscribe = null; }
     legacyBalanceUnsubscribe = db.collection("Users").doc(uid).onSnapshot((doc) => {
       if (!doc.exists || !balanceDataLoaded || isTradingRunning) return;
-
       const data = doc.data() || {};
-
-      if (data.balance !== undefined && data.balance !== null) {
-        phpBalance = safeNumber(data.balance);
-      }
-
-      if (data.usdBalance !== undefined && data.usdBalance !== null) {
-        usdBalance = safeNumber(data.usdBalance);
-      }
-
-      if (data.accountAgeDays !== undefined && data.accountAgeDays !== null) {
-        accountAgeDays = safeNumber(data.accountAgeDays, accountAgeDays);
-      }
-
+      if (data.balance !== undefined && data.balance !== null) phpBalance = safeNumber(data.balance);
+      if (data.usdBalance !== undefined && data.usdBalance !== null) usdBalance = safeNumber(data.usdBalance);
+      if (data.accountAgeDays !== undefined && data.accountAgeDays !== null) accountAgeDays = safeNumber(data.accountAgeDays, accountAgeDays);
       renderBalancesUI();
-
-      console.log("NEXORA FIRESTORE BALANCE UPDATED:", {
-        phpBalance: phpBalance,
-        usdBalance: usdBalance
-      });
-    }, (error) => {
-      console.error("Users balance listener error:", error);
-    });
-
-    // Optional listener for User/{uid}.
-    newBalanceUnsubscribe = db.collection("User").doc(uid).onSnapshot((doc) => {
-      if (!doc.exists || !balanceDataLoaded || isTradingRunning) return;
-
-      const data = doc.data() || {};
-
-      if (data.usdBalance !== undefined && data.usdBalance !== null) {
-        usdBalance = safeNumber(data.usdBalance);
-      }
-
-      // Only use User.phpBalance if Users.balance does not exist.
-      if (data.phpBalance !== undefined && data.phpBalance !== null) {
-        db.collection("Users").doc(uid).get().then((legacyDoc) => {
-          const legacyData = legacyDoc.exists ? (legacyDoc.data() || {}) : {};
-          if (legacyData.balance === undefined || legacyData.balance === null) {
-            phpBalance = safeNumber(data.phpBalance);
-            renderBalancesUI();
-          }
-        }).catch(() => {});
-      }
-
-      if (data.accountAgeDays !== undefined && data.accountAgeDays !== null) {
-        accountAgeDays = safeNumber(data.accountAgeDays, accountAgeDays);
-      }
-
-      renderBalancesUI();
-    }, (error) => {
-      console.error("User balance listener error:", error);
-    });
+      console.log("NEXORA FIRESTORE BALANCE UPDATED:", {phpBalance: phpBalance, usdBalance: usdBalance});
+    }, (error) => console.error("Users balance listener error:", error));
   }
 
   async function saveUserDataToFirestore() {
     if (!currentUser || !balanceDataLoaded) return;
-
-    const uid = currentUser.uid;
-
     try {
-      // Keep the existing Users document in sync because the platform uses
-      // Users/{uid}.balance as the PHP wallet.
-      await db.collection("Users").doc(uid).set({
+      await db.collection("Users").doc(currentUser.uid).set({
         balance: safeNumber(phpBalance),
         usdBalance: safeNumber(usdBalance),
         accountAgeDays: safeNumber(accountAgeDays),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
-
-      // Also keep the optional User document synchronized.
-      await db.collection("User").doc(uid).set({
-        phpBalance: safeNumber(phpBalance),
-        usdBalance: safeNumber(usdBalance),
-        accountAgeDays: safeNumber(accountAgeDays),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-
-      console.log("NEXORA BALANCE SAVED:", {
-        phpBalance: phpBalance,
-        usdBalance: usdBalance
-      });
-    } catch (error) {
-      console.error("Error saving user data:", error);
-    }
+      console.log("NEXORA BALANCE SAVED:", {uid: currentUser.uid, phpBalance: phpBalance, usdBalance: usdBalance});
+    } catch (error) { console.error("Error saving Users balance:", error); }
   }
 
   function handleLogout() {
