@@ -9,6 +9,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- FontAwesome para sa mga icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
 /* =====================================================
@@ -469,18 +471,6 @@ canvas#liveChart {
 .btn-confirm { background: linear-gradient(135deg, #00d4ff, #0055ff); color: #fff; border: none; padding: 12px; flex: 1; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 13px; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3); transition: transform 0.1s; }
 .btn-confirm:active { transform: scale(0.97); }
 
-/* =====================================================
-   BOTTOM NAVIGATION
-===================================================== */
-.bottom-nav {
-  position: fixed; left: 0; right: 0; bottom: 0; height: 68px;
-  background: rgba(6, 9, 19, 0.92); border-top: 1px solid rgba(0, 212, 255, 0.15);
-  display: flex; align-items: center; justify-content: space-around; z-index: 999;
-}
-
-.nav-item { text-decoration: none; color: #64748b; font-size: 11px; }
-.nav-item.active { color: #00d4ff; font-weight: 600; }
-
 @media (max-width: 768px) {
   .top-grid, .trading-execution-grid { grid-template-columns: 1fr; }
 }
@@ -695,17 +685,17 @@ canvas#liveChart {
   </div>
 </div>
 
-<!-- Bottom Navigation Bar (Tulad ng nasa ibaba ng larawan) -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-[#111827] border-t border-gray-800 py-3 px-6 flex justify-around items-center text-xs text-gray-400">
-    <a href="dashboard.html" class="flex flex-col items-center hover:text-white transition">
-      <i class="fa-solid fa-chart-line text-lg mb-1"></i>
-      <span>Live Terminal</span>
-    </a>
-    <a href="account.html" class="flex flex-col items-center text-blue-500 font-semibold">
-      <i class="fa-solid fa-user text-lg mb-1"></i>
-      <span>Account</span>
-    </a>
-  </nav>
+<!-- Bottom Navigation Bar (Parehong pareho na ang size at disenyo sa account.html) -->
+<nav class="fixed bottom-0 left-0 right-0 bg-[#111827] border-t border-gray-800 py-3 px-6 flex justify-around items-center text-xs text-gray-400 z-50">
+  <a href="dashboard.html" class="flex flex-col items-center text-blue-500 font-semibold transition">
+    <i class="fa-solid fa-chart-line text-lg mb-1"></i>
+    <span>Live Terminal</span>
+  </a>
+  <a href="account.html" class="flex flex-col items-center hover:text-white transition">
+    <i class="fa-solid fa-user text-lg mb-1"></i>
+    <span>Account</span>
+  </a>
+</nav>
 
 <script>
   // =====================================================
@@ -1015,7 +1005,6 @@ canvas#liveChart {
     terminalLogs.scrollTop = terminalLogs.scrollHeight;
   }
 
-  // MGA FUNCTIONS PARA SA ZERO BALANCE MODAL
   function openZeroBalanceModal() {
     document.getElementById('zeroBalanceModal').style.display = 'flex';
   }
@@ -1030,7 +1019,6 @@ canvas#liveChart {
     const codeInput = codeInputElem.value.trim();
     if (!codeInput) { alert('Please enter a trading code.'); return; }
 
-    // STRICT CHECK: Kapag 0 o mas mababa ang balanse, bubuksan ang magandang modal na may disenyo
     if (usdBalance <= 0) {
       openZeroBalanceModal();
       addLog(`<span class="loss">[REJECTED]</span> Trading code failed: Insufficient balance ($0.00). Please recharge.`);
