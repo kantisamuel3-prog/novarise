@@ -216,14 +216,21 @@ body::after{
   text-shadow:0 0 15px rgba(255, 255, 255, 0.7);
 }
 
-.hero-title{
-  font-size:28px;
-  font-weight:900;
-  letter-spacing:5px;
-  background:linear-gradient(180deg,#ffffff,#8c9daf);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
+.hero-logo-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: #ffffff;
+  margin-top: 4px;
+}
+
+.hero-logo-text .gold-x {
+  color: #facc15;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
 }
 
 .hero-sub{
@@ -661,43 +668,26 @@ body::after{
 ========================================================= */
 
 @media(max-width:600px){
-
   .page{
     padding:20px 13px 25px;
   }
-
-  .hero-title{
-    font-size:24px;
-    letter-spacing:4px;
-  }
-
-  .hero-sub{
-    font-size:9px;
-    letter-spacing:3px;
-  }
-
   .balance-card{
     min-height:165px;
     padding:17px;
   }
-
   .balance-value{
     font-size:23px;
     margin-top:21px;
   }
-
   .actions{
     gap:8px;
   }
-
   .action-btn{
     min-height:78px;
   }
-
   .nav-item{
     font-size:12px;
   }
-
   .nav-item svg{
     width:26px;
     height:26px;
@@ -712,925 +702,282 @@ body::after{
 <div class="glow one"></div>
 <div class="glow two"></div>
 
-
 <!-- =====================================================
      MARKET TICKER
 ===================================================== -->
-
 <div class="market-ticker">
-
   <div class="ticker-track">
-
-    <div class="ticker-logo">
-      NEXORA TAPE
-    </div>
-
-    <div class="ticker-item green">
-      BTC/USD
-      <strong>$104,820.40 ▲ +4.12%</strong>
-    </div>
-
-    <div class="ticker-item">
-      ETH/USD
-      <strong>$3,520.80</strong>
-      <span style="color:#00d99a;">▲ +2.45%</span>
-    </div>
-
-    <div class="ticker-item cyan">
-      NEX/USD
-      <strong>$18.95 ▲ +18.40%</strong>
-    </div>
-
-    <div class="ticker-item gold">
-      GOLD/OUNCE
-      <strong>$2,650.10 ▲ +0.85%</strong>
-    </div>
-
-    <div class="ticker-item">
-      24H VOLUME
-      <strong style="color:#e3b63d;">$2.84 BILLION</strong>
-    </div>
-
-    <!-- duplicate for continuous ticker -->
-
-    <div class="ticker-logo">
-      NEXORA TAPE
-    </div>
-
-    <div class="ticker-item green">
-      BTC/USD
-      <strong>$104,820.40 ▲ +4.12%</strong>
-    </div>
-
-    <div class="ticker-item">
-      ETH/USD
-      <strong>$3,520.80</strong>
-      <span style="color:#00d99a;">▲ +2.45%</span>
-    </div>
-
-    <div class="ticker-item cyan">
-      NEX/USD
-      <strong>$18.95 ▲ +18.40%</strong>
-    </div>
-
-    <div class="ticker-item gold">
-      GOLD/OUNCE
-      <strong>$2,650.10 ▲ +0.85%</strong>
-    </div>
-
+    <div class="ticker-logo">NEXORA TAPE</div>
+    <div class="ticker-item green">BTC/USD<strong>$104,820.40 ▲ +4.12%</strong></div>
+    <div class="ticker-item">ETH/USD<strong>$3,520.80</strong><span style="color:#00d99a;">▲ +2.45%</span></div>
+    <div class="ticker-item cyan">NEX/USD<strong>$18.95 ▲ +18.40%</strong></div>
+    <div class="ticker-item gold">GOLD/OUNCE<strong>$2,650.10 ▲ +0.85%</strong></div>
+    <div class="ticker-item">24H VOLUME<strong style="color:#e3b63d;">$2.84 BILLION</strong></div>
+    <div class="ticker-logo">NEXORA TAPE</div>
+    <div class="ticker-item green">BTC/USD<strong>$104,820.40 ▲ +4.12%</strong></div>
+    <div class="ticker-item">ETH/USD<strong>$3,520.80</strong><span style="color:#00d99a;">▲ +2.45%</span></div>
+    <div class="ticker-item cyan">NEX/USD<strong>$18.95 ▲ +18.40%</strong></div>
+    <div class="ticker-item gold">GOLD/OUNCE<strong>$2,650.10 ▲ +0.85%</strong></div>
   </div>
-
 </div>
-
 
 <!-- =====================================================
      MAIN
 ===================================================== -->
-
 <main class="page">
 
-
   <!-- HERO (Updated Logo & Text Design) -->
-
   <section class="account-hero">
-
     <div class="hero-ring">
       <div class="hero-n">N</div>
     </div>
-
-    <div class="hero-title">
-      NEXORA
+    <div class="hero-logo-text">
+      NEX<span class="gold-x">O</span>RA
     </div>
-
     <div class="hero-sub">
       INVEST <span>•</span> GROW <span>•</span> TOGETHER
     </div>
-
   </section>
-
 
   <!-- MEMBER -->
-
   <section class="member-card">
-
     <div class="member-content">
-
-      <div class="member-avatar">
-        👤
-      </div>
-
+      <div class="member-avatar">👤</div>
       <div>
-
-        <div
-          id="profileName"
-          class="member-name"
-        >
-          Welcome Member!
-        </div>
-
-        <div
-          id="profilePhone"
-          class="member-phone"
-        >
-          Loading account...
-        </div>
-
+        <div id="profileName" class="member-name">Welcome Member!</div>
+        <div id="profilePhone" class="member-phone">Loading account...</div>
       </div>
-
       <div class="member-status">
-        <span class="status-dot"></span>
-        LIVE
+        <span class="status-dot"></span>LIVE
       </div>
-
     </div>
-
   </section>
-
 
   <!-- BALANCES -->
-
   <div class="section-heading">
-
-    <h2>
-      ACCOUNT BALANCES
-    </h2>
-
+    <h2>ACCOUNT BALANCES</h2>
     <div class="section-line"></div>
-
   </div>
-
 
   <section class="balance-grid">
-
-
     <!-- USD -->
-
     <div class="balance-card">
-
       <div class="balance-top">
-
-        <div class="balance-label">
-          USD BALANCE
-        </div>
-
-        <div class="balance-symbol">
-          $
-        </div>
-
+        <div class="balance-label">USD BALANCE</div>
+        <div class="balance-symbol">$</div>
       </div>
-
-      <div
-        id="dollarBalance"
-        class="balance-value loading"
-      >
-        $0.00
-      </div>
-
-      <div class="balance-status">
-        <i></i>
-        AVAILABLE TRADING BALANCE
-      </div>
-
+      <div id="dollarBalance" class="balance-value loading">$0.00</div>
+      <div class="balance-status"><i></i>AVAILABLE TRADING BALANCE</div>
     </div>
-
 
     <!-- PHP -->
-
     <div class="balance-card php">
-
       <div class="balance-top">
-
-        <div class="balance-label">
-          PHP BALANCE
-        </div>
-
-        <div class="balance-symbol">
-          ₱
-        </div>
-
+        <div class="balance-label">PHP BALANCE</div>
+        <div class="balance-symbol">₱</div>
       </div>
-
-      <div
-        id="pesoBalance"
-        class="balance-value loading"
-      >
-        ₱0.00
-      </div>
-
-      <div class="balance-status">
-        <i></i>
-        AVAILABLE WALLET BALANCE
-      </div>
-
+      <div id="pesoBalance" class="balance-value loading">₱0.00</div>
+      <div class="balance-status"><i></i>AVAILABLE WALLET BALANCE</div>
     </div>
-
   </section>
-
 
   <!-- ACTIONS -->
-
   <div class="section-heading">
-
-    <h2>
-      QUICK ACTIONS
-    </h2>
-
+    <h2>QUICK ACTIONS</h2>
     <div class="section-line"></div>
-
   </div>
-
 
   <section class="actions">
-
-
-    <button
-      class="action-btn"
-      id="rechargeButton"
-    >
-
-      <div class="action-icon">
-        +
-      </div>
-
-      <div class="action-text">
-        RECHARGE
-      </div>
-
+    <button class="action-btn" id="rechargeButton">
+      <div class="action-icon">+</div>
+      <div class="action-text">RECHARGE</div>
     </button>
-
-
-    <button
-      class="action-btn"
-      id="withdrawButton"
-    >
-
-      <div class="action-icon">
-        ₱
-      </div>
-
-      <div class="action-text">
-        WITHDRAW
-      </div>
-
+    <button class="action-btn" id="withdrawButton">
+      <div class="action-icon">₱</div>
+      <div class="action-text">WITHDRAW</div>
     </button>
-
-
-    <button
-      class="action-btn"
-      id="historyButton"
-    >
-
-      <div class="action-icon">
-        ≡
-      </div>
-
-      <div class="action-text">
-        HISTORY
-      </div>
-
+    <button class="action-btn" id="historyButton">
+      <div class="action-icon">≡</div>
+      <div class="action-text">HISTORY</div>
     </button>
-
-
   </section>
-
 
   <!-- ACCOUNT INFORMATION -->
-
   <div class="section-heading">
-
-    <h2>
-      ACCOUNT INFORMATION
-    </h2>
-
+    <h2>ACCOUNT INFORMATION</h2>
     <div class="section-line"></div>
-
   </div>
 
-
   <section class="info-card">
-
-
     <div class="info-row">
-
-      <div class="info-icon">
-        ✓
-      </div>
-
+      <div class="info-icon">✓</div>
       <div class="info-text">
-
-        <div class="info-title">
-          ACCOUNT STATUS
-        </div>
-
-        <div class="info-value">
-          Active Member
-        </div>
-
+        <div class="info-title">ACCOUNT STATUS</div>
+        <div class="info-value">Active Member</div>
       </div>
-
     </div>
-
-
     <div class="info-row">
-
-      <div class="info-icon">
-        $
-      </div>
-
+      <div class="info-icon">$</div>
       <div class="info-text">
-
-        <div class="info-title">
-          USD ACCOUNT
-        </div>
-
-        <div class="info-value">
-          Trading balance connected
-        </div>
-
+        <div class="info-title">USD ACCOUNT</div>
+        <div class="info-value">Trading balance connected</div>
       </div>
-
     </div>
-
-
     <div class="info-row">
-
-      <div class="info-icon">
-        ₱
-      </div>
-
+      <div class="info-icon">₱</div>
       <div class="info-text">
-
-        <div class="info-title">
-          PHP WALLET
-        </div>
-
-        <div class="info-value">
-          Wallet balance connected
-        </div>
-
+        <div class="info-title">PHP WALLET</div>
+        <div class="info-value">Wallet balance connected</div>
       </div>
-
     </div>
-
-
   </section>
 
-
   <!-- LOGOUT -->
-
-  <button
-    id="logoutButton"
-    class="logout"
-  >
-    LOG OUT OF ACCOUNT
-  </button>
-
+  <button id="logoutButton" class="logout">LOG OUT OF ACCOUNT</button>
 
 </main>
-
 
 <!-- =====================================================
      BOTTOM NAVIGATION
 ===================================================== -->
-
 <nav class="bottom-nav">
-
-
-  <a
-    href="dashboard.html"
-    class="nav-item"
-  >
-
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
+  <a href="dashboard.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M3 11.5 12 4l9 7.5"></path>
       <path d="M5.5 10.5V20h13v-9.5"></path>
       <path d="M9.5 20v-5.5h5V20"></path>
     </svg>
-
     <span>Home</span>
-
   </a>
-
-
-  <a
-    href="dashboard.html#products"
-    class="nav-item"
-  >
-
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      <rect
-        x="3"
-        y="4"
-        width="18"
-        height="16"
-        rx="2"
-      ></rect>
-
+  <a href="dashboard.html#products" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="4" width="18" height="16" rx="2"></rect>
       <path d="M3 9h18"></path>
-
       <path d="M8 14h2"></path>
-
       <path d="M14 14h2"></path>
-
     </svg>
-
     <span>Products</span>
-
   </a>
-
-
-  <a
-    href="team.html"
-    class="nav-item"
-  >
-
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-
-      <path
-        d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
-      ></path>
-
-      <circle
-        cx="9"
-        cy="7"
-        r="4"
-      ></circle>
-
-      <path
-        d="M22 21v-2a4 4 0 0 0-3-3.87"
-      ></path>
-
-      <path
-        d="M16 3.13a4 4 0 0 1 0 7.75"
-      ></path>
-
+  <a href="team.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+      <circle cx="9" cy="7" r="4"></circle>
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
     </svg>
-
     <span>Team</span>
-
   </a>
-
-
-  <a
-    href="account.html"
-    class="nav-item active"
-  >
-
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-
-      <circle
-        cx="12"
-        cy="8"
-        r="4"
-      ></circle>
-
-      <path
-        d="M4 21a8 8 0 0 1 16 0"
-      ></path>
-
+  <a href="account.html" class="nav-item active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="8" r="4"></circle>
+      <path d="M4 21a8 8 0 0 1 16 0"></path>
     </svg>
-
     <span>Account</span>
-
   </a>
-
-
 </nav>
 
-
 <!-- =====================================================
-     FIREBASE
+     FIREBASE (Pinanatiling Buo ang Lahat ng Importanteng Code)
 ===================================================== -->
-
 <script type="module">
-
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import {
-  getFirestore,
-  doc,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-
-/* =====================================================
-   FIREBASE CONFIG
-===================================================== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
-
-  authDomain:
-    "investpro-2dafb.firebaseapp.com",
-
-  projectId:
-    "investpro-2dafb",
-
-  storageBucket:
-    "investpro-2dafb.firebasestorage.app",
-
-  messagingSenderId:
-    "135092039764",
-
-  appId:
-    "1:135092039764:web:c4c71eef0c904346a77dc1",
-
-  measurementId:
-    "G-0L77SFTC4F"
-
+  apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+  authDomain: "investpro-2dafb.firebaseapp.com",
+  projectId: "investpro-2dafb",
+  storageBucket: "investpro-2dafb.firebasestorage.app",
+  messagingSenderId: "135092039764",
+  appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
+  measurementId: "G-0L77SFTC4F"
 };
 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-/* =====================================================
-   INITIALIZE FIREBASE
-===================================================== */
-
-const app =
-  initializeApp(firebaseConfig);
-
-const auth =
-  getAuth(app);
-
-const db =
-  getFirestore(app);
-
-
-/* =====================================================
-   ELEMENTS
-===================================================== */
-
-const dollarBalance =
-  document.getElementById(
-    "dollarBalance"
-  );
-
-const pesoBalance =
-  document.getElementById(
-    "pesoBalance"
-  );
-
-const profilePhone =
-  document.getElementById(
-    "profilePhone"
-  );
-
-const profileName =
-  document.getElementById(
-    "profileName"
-  );
-
-const logoutButton =
-  document.getElementById(
-    "logoutButton"
-  );
-
-
-/* =====================================================
-   FORMAT
-===================================================== */
+const dollarBalance = document.getElementById("dollarBalance");
+const pesoBalance = document.getElementById("pesoBalance");
+const profilePhone = document.getElementById("profilePhone");
+const profileName = document.getElementById("profileName");
+const logoutButton = document.getElementById("logoutButton");
 
 function formatUSD(value){
-
-  const number =
-    Number(value) || 0;
-
-  return "$" +
-    number.toLocaleString(
-      "en-US",
-      {
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      }
-    );
-
+  const number = Number(value) || 0;
+  return "$" + number.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
-
 
 function formatPeso(value){
-
-  const number =
-    Number(value) || 0;
-
-  return "₱" +
-    number.toLocaleString(
-      "en-PH",
-      {
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      }
-    );
-
+  const number = Number(value) || 0;
+  return "₱" + number.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+onAuthStateChanged(auth, (user) => {
+  console.log("ACCOUNT AUTH UID:", user ? user.uid : null);
 
-/* =====================================================
-   AUTH STATE
-===================================================== */
+  if(!user){
+    window.location.href = "login.html";
+    return;
+  }
 
-onAuthStateChanged(
-  auth,
-  (user) => {
+  profilePhone.textContent = user.email || "Member account";
+  profileName.textContent = "Welcome Member!";
 
-    console.log(
-      "ACCOUNT AUTH UID:",
-      user ? user.uid : null
-    );
+  const userRef = doc(db, "Users", user.uid);
 
-
-    if(!user){
-
-      window.location.href =
-        "login.html";
-
+  onSnapshot(userRef, (snapshot) => {
+    if(!snapshot.exists()){
+      console.error("Users document not found:", user.uid);
+      dollarBalance.textContent = "$0.00";
+      pesoBalance.textContent = "₱0.00";
+      dollarBalance.classList.remove("loading");
+      pesoBalance.classList.remove("loading");
       return;
-
     }
 
+    const data = snapshot.data() || {};
+    console.log("ACCOUNT DATA:", data);
 
-    /*
-      SHOW USER EMAIL / PHONE
-    */
+    const phpBalance = Number(data.balance) || 0;
+    const usdBalance = Number(data.usdBalance) || 0;
 
-    profilePhone.textContent =
-      user.email ||
-      "Member account";
+    dollarBalance.textContent = formatUSD(usdBalance);
+    pesoBalance.textContent = formatPeso(phpBalance);
 
+    dollarBalance.classList.remove("loading");
+    pesoBalance.classList.remove("loading");
+  }, (error) => {
+    console.error("ACCOUNT FIRESTORE ERROR:", error);
+  });
+});
 
-    /*
-      MEMBER NAME
-    */
-
-    profileName.textContent =
-      "Welcome Member!";
-
-
-    /*
-      IMPORTANT:
-
-      Users/{UID}
-
-      balance
-        = PHP balance
-
-      usdBalance
-        = USD balance
-    */
-
-    const userRef =
-      doc(
-        db,
-        "Users",
-        user.uid
-      );
-
-
-    /*
-      REAL-TIME FIRESTORE LISTENER
-    */
-
-    onSnapshot(
-
-      userRef,
-
-      (snapshot) => {
-
-        if(!snapshot.exists()){
-
-          console.error(
-            "Users document not found:",
-            user.uid
-          );
-
-          dollarBalance.textContent =
-            "$0.00";
-
-          pesoBalance.textContent =
-            "₱0.00";
-
-          dollarBalance
-            .classList
-            .remove("loading");
-
-          pesoBalance
-            .classList
-            .remove("loading");
-
-          return;
-
-        }
-
-
-        const data =
-          snapshot.data() || {};
-
-
-        console.log(
-          "ACCOUNT DATA:",
-          data
-        );
-
-
-        /*
-          PHP
-        */
-
-        const phpBalance =
-          Number(
-            data.balance
-          ) || 0;
-
-
-        /*
-          USD
-        */
-
-        const usdBalance =
-          Number(
-            data.usdBalance
-          ) || 0;
-
-
-        console.log(
-          "USD BALANCE:",
-          usdBalance
-        );
-
-        console.log(
-          "PHP BALANCE:",
-          phpBalance
-        );
-
-
-        /*
-          UPDATE UI
-        */
-
-        dollarBalance.textContent =
-          formatUSD(
-            usdBalance
-          );
-
-
-        pesoBalance.textContent =
-          formatPeso(
-            phpBalance
-          );
-
-
-        dollarBalance
-          .classList
-          .remove("loading");
-
-        pesoBalance
-          .classList
-          .remove("loading");
-
-      },
-
-
-      (error) => {
-
-        console.error(
-          "ACCOUNT FIRESTORE ERROR:",
-          error
-        );
-
-      }
-
-    );
-
+logoutButton.addEventListener("click", async () => {
+  try{
+    logoutButton.disabled = true;
+    logoutButton.textContent = "LOGGING OUT...";
+    await signOut(auth);
+    window.location.href = "login.html";
+  }catch(error){
+    console.error("LOGOUT ERROR:", error);
+    logoutButton.disabled = false;
+    logoutButton.textContent = "LOG OUT OF ACCOUNT";
+    alert("Unable to logout. Please try again.");
   }
+});
 
-);
+document.getElementById("rechargeButton").addEventListener("click", () => {
+  window.location.href = "recharge.html";
+});
 
+document.getElementById("withdrawButton").addEventListener("click", () => {
+  window.location.href = "withdraw.html";
+});
 
-/* =====================================================
-   LOGOUT
-===================================================== */
-
-logoutButton.addEventListener(
-  "click",
-  async () => {
-
-    try{
-
-      logoutButton.disabled =
-        true;
-
-      logoutButton.textContent =
-        "LOGGING OUT...";
-
-
-      await signOut(auth);
-
-
-      window.location.href =
-        "login.html";
-
-
-    }catch(error){
-
-      console.error(
-        "LOGOUT ERROR:",
-        error
-      );
-
-
-      logoutButton.disabled =
-        false;
-
-      logoutButton.textContent =
-        "LOG OUT OF ACCOUNT";
-
-
-      alert(
-        "Unable to logout. Please try again."
-      );
-
-    }
-
-  }
-);
-
-
-/* =====================================================
-   QUICK ACTIONS
-===================================================== */
-
-document
-  .getElementById(
-    "rechargeButton"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      window.location.href =
-        "recharge.html";
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "withdrawButton"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      window.location.href =
-        "withdraw.html";
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "historyButton"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      window.location.href =
-        "history.html";
-
-    }
-  );
-
+document.getElementById("historyButton").addEventListener("click", () => {
+  window.location.href = "history.html";
+});
 </script>
 
 </body>
