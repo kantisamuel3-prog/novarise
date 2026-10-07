@@ -580,13 +580,29 @@
         }
 
         const transactions = Array.isArray(data.transactions) ? [...data.transactions] : [];
+        const requestId =
+          "WD-" +
+          Date.now() +
+          "-" +
+          Math.random().toString(36).slice(2, 8).toUpperCase();
+
         transactions.push({
-          type: "Withdrawal",
+          type: "Withdrawal Request",
           status: "PENDING",
+          requestId: requestId,
           amount: amount,
           method: selectedMethod,
           accountName: name,
           accountNumber: number,
+          UserName:
+            data.name ||
+            data.fullName ||
+            data.username ||
+            data.phone ||
+            data.phoneNumber ||
+            currentUser.email ||
+            "Member",
+          userId: currentUser.uid,
           date: new Date().toISOString()
         });
 
