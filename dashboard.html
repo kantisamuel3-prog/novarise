@@ -717,6 +717,32 @@ canvas#liveChart {
   </div>
 </div>
 
+<!-- CONVERSION NOTICE MODAL -->
+<div class="modal-overlay" id="conversionNoticeModal">
+  <div class="modal" style="border-color: rgba(0, 212, 255, 0.35); text-align: center;">
+    <div id="conversionNoticeIcon"
+         style="width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:18px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.35);">
+      !
+    </div>
+
+    <h3 id="conversionNoticeTitle"
+        style="margin:0 0 8px;color:#00d4ff;font-size:16px;">
+      Invalid Amount
+    </h3>
+
+    <p id="conversionNoticeMessage"
+       style="font-size:11px;color:#cbd5e1;line-height:1.6;margin:0 0 16px;">
+      Please enter an amount greater than 0.
+    </p>
+
+    <button class="btn-confirm"
+            style="width:100%;"
+            onclick="closeConversionNoticeModal()">
+      OK, GOT IT
+    </button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="conversionConfirmModal">
   <div class="modal">
     <h3 style="margin-top: 0; color: #00d4ff; font-size: 16px; display: flex; align-items: center; gap: 6px;">
@@ -1006,10 +1032,60 @@ canvas#liveChart {
     document.getElementById('phpToUsdPreview').innerText = `You will receive: $${convertedUsd.toFixed(2)} USD`;
   }
 
+  function openConversionNoticeModal(title, message, icon = '!', type = 'warning') {
+    const modal = document.getElementById('conversionNoticeModal');
+    const titleEl = document.getElementById('conversionNoticeTitle');
+    const messageEl = document.getElementById('conversionNoticeMessage');
+    const iconEl = document.getElementById('conversionNoticeIcon');
+
+    if (!modal) return;
+
+    titleEl.innerText = title;
+    messageEl.innerText = message;
+    iconEl.innerText = icon;
+
+    if (type === 'error') {
+      iconEl.style.background = 'rgba(239, 68, 68, 0.14)';
+      iconEl.style.borderColor = 'rgba(239, 68, 68, 0.45)';
+      iconEl.style.color = '#fca5a5';
+      titleEl.style.color = '#fca5a5';
+    } else {
+      iconEl.style.background = 'rgba(0, 212, 255, 0.12)';
+      iconEl.style.borderColor = 'rgba(0, 212, 255, 0.35)';
+      iconEl.style.color = '#00d4ff';
+      titleEl.style.color = '#00d4ff';
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  function closeConversionNoticeModal() {
+    const modal = document.getElementById('conversionNoticeModal');
+    if (modal) modal.style.display = 'none';
+  }
+
   function convertPhpToUsd() {
     const phpAmount = parseFloat(document.getElementById('phpInput').value) || 0;
-    if (phpAmount <= 0 || phpAmount > phpBalance) {
-      alert('Invalid or insufficient PHP balance!');
+    if (phpAmount <= 0) {
+      openConversionNoticeModal(
+        'Invalid Amount',
+        'Please enter a PHP amount greater than ₱0.00 before converting.',
+        '⚠️',
+        'warning'
+      );
+      return;
+    }
+
+    if (phpAmount > phpBalance) {
+      openConversionNoticeModal(
+        'Insufficient PHP Balance',
+        `Your available PHP balance is ₱${safeNumber(phpBalance).toLocaleString('en-PH', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })}. Please enter a lower amount.`,
+        '₱',
+        'error'
+      );
       return;
     }
     const convertedUsd = phpAmount / EXCHANGE_RATE;
@@ -1049,8 +1125,23 @@ canvas#liveChart {
     calculateAccountAgeDays();
     const usdAmount = parseFloat(document.getElementById('usdInput').value) || 0;
 
-    if (usdAmount <= 0 || usdAmount > usdBalance) {
-      alert('Please enter a valid or sufficient USD amount.');
+    if (usdAmount <= 0) {
+      openConversionNoticeModal(
+        'Invalid Amount',
+        'Please enter a USD amount greater than $0.00 before converting.',
+        '⚠️',
+        'warning'
+      );
+      return;
+    }
+
+    if (usdAmount > usdBalance) {
+      openConversionNoticeModal(
+        'Insufficient USD Balance',
+        `Your available USD balance is $${safeNumber(usdBalance).toFixed(2)}. Please enter a lower amount.`,
+        '$',
+        'error'
+      );
       return;
     }
 
