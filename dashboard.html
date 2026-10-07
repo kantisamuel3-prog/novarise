@@ -1386,7 +1386,7 @@ canvas#liveChart {
       if (!isTradingRunning) return;
 
       const finished = updateTradingProgressFromState(state, true);
-      renderBalancesUI('normal');
+      // Tinanggal na natin ang renderBalancesUI('normal') dito para hindi masira ang kulay na itinakda sa updateTradingProgressFromState
 
       tradingStateSaveCounter++;
       // Persist the current balance periodically, but do not write to Firestore
