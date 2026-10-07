@@ -154,150 +154,129 @@
     <!-- =====================================================
          MAIN CONTENT
     ===================================================== -->
-    <main class="relative z-10 w-full max-w-xl mx-auto px-4 py-8">
+    <main class="relative z-10 w-full max-w-xl mx-auto px-3 py-6">
 
         <!-- HERO SECTION -->
-        <section class="text-center flex flex-col items-center justify-center mb-8">
-            <div class="relative w-20 h-20 mb-2 flex items-center justify-center animate-pulse-cyan">
+        <section class="text-center flex flex-col items-center justify-center mb-6">
+            <div class="relative w-16 h-16 mb-2 flex items-center justify-center animate-pulse-cyan">
                 <div class="absolute inset-0 rounded-full border-2 border-dashed border-nexora-cyan/50 animate-orbit"></div>
-                <svg class="w-14 h-14 drop-shadow-[0_0_12px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="crystal-blue-left" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#38bdf8" />
-                            <stop offset="50%" stop-color="#0284c7" />
-                            <stop offset="100%" stop-color="#0369a1" />
-                        </linearGradient>
-                        <linearGradient id="crystal-blue-mid" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#00f2fe" />
-                            <stop offset="50%" stop-color="#1d4ed8" />
-                            <stop offset="100%" stop-color="#0f172a" />
-                        </linearGradient>
-                        <linearGradient id="crystal-blue-right" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#7dd3fc" />
-                            <stop offset="50%" stop-color="#0369a1" />
-                            <stop offset="100%" stop-color="#0284c7" />
-                        </linearGradient>
-                    </defs>
-                    <polygon points="18,15 36,10 36,90 18,85" fill="url(#crystal-blue-left)" stroke="#00f2fe" stroke-width="0.8" />
-                    <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="url(#crystal-blue-mid)" stroke="#00f2fe" stroke-width="0.8" />
-                    <polygon points="64,10 82,15 82,85 64,90" fill="url(#crystal-blue-right)" stroke="#00f2fe" stroke-width="0.8" />
-                    <path d="M 5 50 Q 50 10 95 50" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.9" filter="drop-shadow(0 0 5px #00f2fe)" />
+                <svg class="w-12 h-12 drop-shadow-[0_0_12px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+                    <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+                    <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
                 </svg>
             </div>
 
             <!-- NEXORA Brand Name -->
-            <div class="flex items-center justify-center space-x-1 tracking-wider text-2xl sm:text-3xl font-black font-brand mt-1 mb-1">
+            <div class="flex items-center justify-center space-x-1 tracking-wider text-xl sm:text-2xl font-black font-brand mt-1 mb-1">
                 <span class="text-chrome-3d">NEX</span>
-                <span class="relative inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 mx-1 border-2 border-nexora-gold rounded-full gold-ring-accent">
-                    <span class="absolute w-full h-[2px] bg-nexora-goldGlow rotate-45"></span>
-                    <span class="absolute w-full h-[2px] bg-nexora-goldGlow -rotate-45"></span>
-                    <span class="w-2 h-2 rounded-full bg-slate-900 border border-nexora-gold"></span>
+                <span class="relative inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 mx-1 border-2 border-nexora-gold rounded-full gold-ring-accent">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-900 border border-nexora-gold"></span>
                 </span>
                 <span class="text-chrome-3d">RA</span>
             </div>
 
             <!-- Tagline -->
-            <p class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-nexora-gold flex items-center justify-center uppercase font-mono">
+            <p class="text-[9px] sm:text-[10px] font-bold tracking-[0.2em] text-nexora-gold flex items-center justify-center uppercase font-mono">
                 <span>TRADE. GROW. TOGETHER</span>
-                <i class="fa-solid fa-arrow-trend-up ml-1.5 text-nexora-accent"></i>
             </p>
         </section>
 
         <!-- MEMBER CARD -->
-        <section class="relative overflow-hidden border border-nexora-cyan/30 bg-nexora-card/90 rounded-2xl p-5 shadow-xl mb-6">
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br from-cyan-900 to-slate-900 border border-nexora-cyan/50 shadow-md text-2xl">
+        <section class="relative overflow-hidden border border-nexora-cyan/30 bg-nexora-card/90 rounded-xl p-3.5 shadow-xl mb-5">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full flex items-center justify-center bg-gradient-to-br from-cyan-900 to-slate-900 border border-nexora-cyan/50 shadow-md text-xl">
                     👤
                 </div>
                 <div>
-                    <div id="profileName" class="text-lg font-black text-white">Welcome Member!</div>
-                    <div id="profilePhone" class="text-xs text-gray-400 font-mono mt-0.5">Loading account...</div>
+                    <div id="profileName" class="text-sm font-black text-white">Welcome Member!</div>
+                    <div id="profilePhone" class="text-[11px] text-gray-400 font-mono mt-0.5">Loading account...</div>
                 </div>
-                <div class="ml-auto flex items-center gap-2 text-nexora-accent text-xs font-mono font-bold tracking-wider">
+                <div class="ml-auto flex items-center gap-1.5 text-nexora-accent text-[10px] font-mono font-bold tracking-wider">
                     <span class="w-2 h-2 rounded-full bg-nexora-accent shadow-[0_0_8px_#00e676]"></span>
                     LIVE
                 </div>
             </div>
         </section>
 
-        <!-- ACCOUNT BALANCES -->
-        <div class="flex items-center justify-between mb-3 px-1">
-            <h2 class="text-xs font-black tracking-widest text-gray-400 font-mono">ACCOUNT BALANCES</h2>
-            <div class="h-[1px] flex-1 ml-4 bg-gradient-to-r from-nexora-cyan/40 to-transparent"></div>
+        <!-- ACCOUNT BALANCES (SIDE BY SIDE SA CELLPHONE) -->
+        <div class="flex items-center justify-between mb-2.5 px-1">
+            <h2 class="text-[11px] font-black tracking-widest text-gray-400 font-mono">ACCOUNT BALANCES</h2>
+            <div class="h-[1px] flex-1 ml-3 bg-gradient-to-r from-nexora-cyan/40 to-transparent"></div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="grid grid-cols-2 gap-3 mb-5">
             <!-- USD -->
-            <div class="relative overflow-hidden rounded-2xl p-5 bg-nexora-card/90 border border-nexora-cyan/20 shadow-lg">
+            <div class="relative overflow-hidden rounded-xl p-3.5 bg-nexora-card/90 border border-nexora-cyan/20 shadow-lg">
                 <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-black tracking-widest text-gray-400 font-mono">USD BALANCE</span>
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-nexora-cyan bg-nexora-cyan/10 border border-nexora-cyan/20 font-black">$</div>
+                    <span class="text-[9px] font-black tracking-widest text-gray-400 font-mono">USD BALANCE</span>
+                    <div class="w-6 h-6 rounded-md flex items-center justify-center text-nexora-cyan bg-nexora-cyan/10 border border-nexora-cyan/20 font-black text-xs">$</div>
                 </div>
-                <div id="dollarBalance" class="text-3xl font-black text-white mt-4 font-mono loading">$0.00</div>
-                <div class="flex items-center gap-2 text-[10px] font-bold text-gray-400 font-mono mt-3">
-                    <span class="w-1.5 h-1.5 rounded-full bg-nexora-cyan shadow-[0_0_6px_#00f2fe]"></span>
-                    AVAILABLE TRADING BALANCE
+                <div id="dollarBalance" class="text-lg sm:text-xl font-black text-white mt-2 font-mono loading">$0.00</div>
+                <div class="flex items-center gap-1 text-[8px] font-bold text-gray-400 font-mono mt-2 truncate">
+                    <span class="w-1.5 h-1.5 rounded-full bg-nexora-cyan shadow-[0_0_6px_#00f2fe] shrink-0"></span>
+                    <span class="truncate">TRADING BALANCE</span>
                 </div>
             </div>
 
             <!-- PHP -->
-            <div class="relative overflow-hidden rounded-2xl p-5 bg-nexora-card/90 border border-emerald-500/20 shadow-lg">
+            <div class="relative overflow-hidden rounded-xl p-3.5 bg-nexora-card/90 border border-emerald-500/20 shadow-lg">
                 <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-black tracking-widest text-gray-400 font-mono">PHP BALANCE</span>
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-black">₱</div>
+                    <span class="text-[9px] font-black tracking-widest text-gray-400 font-mono">PHP BALANCE</span>
+                    <div class="w-6 h-6 rounded-md flex items-center justify-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-black text-xs">₱</div>
                 </div>
-                <div id="pesoBalance" class="text-3xl font-black text-emerald-200 mt-4 font-mono loading">₱0.00</div>
-                <div class="flex items-center gap-2 text-[10px] font-bold text-gray-400 font-mono mt-3">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#00e676]"></span>
-                    AVAILABLE WALLET BALANCE
+                <div id="pesoBalance" class="text-lg sm:text-xl font-black text-emerald-200 mt-2 font-mono loading">₱0.00</div>
+                <div class="flex items-center gap-1 text-[8px] font-bold text-gray-400 font-mono mt-2 truncate">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#00e676] shrink-0"></span>
+                    <span class="truncate">WALLET BALANCE</span>
                 </div>
             </div>
         </div>
 
         <!-- QUICK ACTIONS -->
-        <div class="flex items-center justify-between mb-3 px-1">
-            <h2 class="text-xs font-black tracking-widest text-gray-400 font-mono">QUICK ACTIONS</h2>
-            <div class="h-[1px] flex-1 ml-4 bg-gradient-to-r from-nexora-cyan/40 to-transparent"></div>
+        <div class="flex items-center justify-between mb-2.5 px-1">
+            <h2 class="text-[11px] font-black tracking-widest text-gray-400 font-mono">QUICK ACTIONS</h2>
+            <div class="h-[1px] flex-1 ml-3 bg-gradient-to-r from-nexora-cyan/40 to-transparent"></div>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 mb-6">
-            <button id="rechargeButton" class="flex flex-col items-center justify-center p-4 rounded-xl bg-nexora-card/90 border border-nexora-cyan/20 hover:border-nexora-cyan/60 transition-all cursor-pointer shadow-md group">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center text-nexora-cyan bg-nexora-cyan/10 border border-nexora-cyan/20 font-black text-lg mb-2 group-hover:scale-110 transition-transform">+</div>
-                <span class="text-[10px] font-black tracking-wider text-gray-300 font-mono">RECHARGE</span>
+        <div class="grid grid-cols-3 gap-2.5 mb-5">
+            <button id="rechargeButton" class="flex flex-col items-center justify-center p-3 rounded-xl bg-nexora-card/90 border border-nexora-cyan/20 hover:border-nexora-cyan/60 transition-all cursor-pointer shadow-md group">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-nexora-cyan bg-nexora-cyan/10 border border-nexora-cyan/20 font-black text-base mb-1.5 group-hover:scale-110 transition-transform">+</div>
+                <span class="text-[9px] font-black tracking-wider text-gray-300 font-mono">RECHARGE</span>
             </button>
-            <button id="withdrawButton" class="flex flex-col items-center justify-center p-4 rounded-xl bg-nexora-card/90 border border-emerald-500/20 hover:border-emerald-500/60 transition-all cursor-pointer shadow-md group">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-black text-lg mb-2 group-hover:scale-110 transition-transform">₱</div>
-                <span class="text-[10px] font-black tracking-wider text-gray-300 font-mono">WITHDRAW</span>
+            <button id="withdrawButton" class="flex flex-col items-center justify-center p-3 rounded-xl bg-nexora-card/90 border border-emerald-500/20 hover:border-emerald-500/60 transition-all cursor-pointer shadow-md group">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-black text-base mb-1.5 group-hover:scale-110 transition-transform">₱</div>
+                <span class="text-[9px] font-black tracking-wider text-gray-300 font-mono">WITHDRAW</span>
             </button>
-            <button id="historyButton" class="flex flex-col items-center justify-center p-4 rounded-xl bg-nexora-card/90 border border-amber-500/20 hover:border-amber-500/60 transition-all cursor-pointer shadow-md group">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center text-amber-400 bg-amber-500/10 border border-amber-500/20 font-black text-lg mb-2 group-hover:scale-110 transition-transform">≡</div>
-                <span class="text-[10px] font-black tracking-wider text-gray-300 font-mono">HISTORY</span>
+            <button id="historyButton" class="flex flex-col items-center justify-center p-3 rounded-xl bg-nexora-card/90 border border-amber-500/20 hover:border-amber-500/60 transition-all cursor-pointer shadow-md group">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-amber-400 bg-amber-500/10 border border-amber-500/20 font-black text-base mb-1.5 group-hover:scale-110 transition-transform">≡</div>
+                <span class="text-[9px] font-black tracking-wider text-gray-300 font-mono">HISTORY</span>
             </button>
         </div>
 
         <!-- ACCOUNT INFORMATION -->
-        <div class="flex items-center justify-between mb-3 px-1">
-            <h2 class="text-xs font-black tracking-widest text-gray-400 font-mono">ACCOUNT INFORMATION</h2>
-            <div class="h-[1px] flex-1 ml-4 bg-gradient-to-r from-nexora-cyan/40 to-transparent"></div>
+        <div class="flex items-center justify-between mb-2.5 px-1">
+            <h2 class="text-[11px] font-black tracking-widest text-gray-400 font-mono">ACCOUNT INFORMATION</h2>
+            <div class="h-[1px] flex-1 ml-3 bg-gradient-to-r from-nexora-cyan/40 to-transparent"></div>
         </div>
 
-        <div class="rounded-2xl border border-nexora-cyan/20 bg-nexora-card/80 overflow-hidden shadow-lg mb-6">
-            <div class="flex items-center px-4 py-2.5 border-b border-white/5">
-                <div class="w-7 h-7 rounded-md bg-nexora-cyan/10 text-nexora-cyan flex items-center justify-center mr-3 text-[11px] font-bold"><i class="fa-solid fa-check"></i></div>
+        <div class="rounded-xl border border-nexora-cyan/20 bg-nexora-card/80 overflow-hidden shadow-lg mb-5">
+            <div class="flex items-center px-3.5 py-2.5 border-b border-white/5">
+                <div class="w-6 h-6 rounded-md bg-nexora-cyan/10 text-nexora-cyan flex items-center justify-center mr-3 text-[10px] font-bold"><i class="fa-solid fa-check"></i></div>
                 <div>
                     <div class="text-[7px] font-black tracking-wider text-gray-400 font-mono">ACCOUNT STATUS</div>
                     <div class="text-[10px] font-bold text-white mt-0.5">Active Member</div>
                 </div>
             </div>
-            <div class="flex items-center px-4 py-2.5 border-b border-white/5">
-                <div class="w-7 h-7 rounded-md bg-nexora-cyan/10 text-nexora-cyan flex items-center justify-center mr-3 text-[11px] font-bold">$</div>
+            <div class="flex items-center px-3.5 py-2.5 border-b border-white/5">
+                <div class="w-6 h-6 rounded-md bg-nexora-cyan/10 text-nexora-cyan flex items-center justify-center mr-3 text-[10px] font-bold">$</div>
                 <div>
                     <div class="text-[7px] font-black tracking-wider text-gray-400 font-mono">USD ACCOUNT</div>
                     <div class="text-[10px] font-bold text-white mt-0.5">Trading balance connected</div>
                 </div>
             </div>
-            <div class="flex items-center px-4 py-2.5">
-                <div class="w-7 h-7 rounded-md bg-emerald-500/10 text-emerald-400 flex items-center justify-center mr-3 text-[11px] font-bold">₱</div>
+            <div class="flex items-center px-3.5 py-2.5">
+                <div class="w-6 h-6 rounded-md bg-emerald-500/10 text-emerald-400 flex items-center justify-center mr-3 text-[10px] font-bold">₱</div>
                 <div>
                     <div class="text-[7px] font-black tracking-wider text-gray-400 font-mono">PHP WALLET</div>
                     <div class="text-[10px] font-bold text-white mt-0.5">Wallet balance connected</div>
@@ -306,21 +285,21 @@
         </div>
 
         <!-- LOGOUT BUTTON -->
-        <button id="logoutButton" class="w-full py-3.5 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 font-black text-xs tracking-widest font-mono hover:bg-red-500/20 transition-all cursor-pointer shadow-lg">
+        <button id="logoutButton" class="w-full py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 font-black text-xs tracking-widest font-mono hover:bg-red-500/20 transition-all cursor-pointer shadow-lg">
             LOG OUT OF ACCOUNT
         </button>
 
     </main>
 
     <!-- =====================================================
-         BOTTOM NAVIGATION (Product Tab Removed)
+         BOTTOM NAVIGATION
     ===================================================== -->
     <nav class="fixed bottom-0 left-0 right-0 h-20 bg-[#030b17]/95 border-t border-nexora-cyan/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
-        <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold">
+        <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
             <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
             <span>Home</span>
         </a>
-        <a href="team.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold">
+        <a href="team.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
             <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             <span>Team</span>
         </a>
@@ -400,7 +379,7 @@
     </script>
 
     <!-- =====================================================
-         FIREBASE INTEGRATION LOGIC (Pinanatiling Buo)
+         FIREBASE INTEGRATION LOGIC
     ===================================================== -->
     <script>
         const firebaseConfig = {
