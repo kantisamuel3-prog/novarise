@@ -370,14 +370,14 @@
       <div class="field">
         <label for="accountName">ACCOUNT NAME</label>
         <div class="input-wrap">
-          <input id="accountName" class="nexora-input !pl-3.5" type="text" placeholder="e.g., Juan Dela Cruz" autocomplete="off">
+          <input id="accountName" class="nexora-input !pl-3.5" type="text" placeholder="Enter your full name" autocomplete="off">
         </div>
       </div>
 
       <div class="field">
         <label for="accountNumber" id="accountLabel">GCASH NUMBER</label>
         <div class="input-wrap">
-          <input id="accountNumber" class="nexora-input !pl-3.5" type="text" placeholder="e.g., 09171234567" autocomplete="off">
+          <input id="accountNumber" class="nexora-input !pl-3.5" type="text" placeholder="Enter your number" autocomplete="off">
         </div>
       </div>
 
@@ -516,7 +516,7 @@
       
       // Dynamic label update
       if(selectedMethod === "Maya") {
-        $("accountLabel").textContent = "MAYA NUMBER";
+        $("accountLabel").textContent = "ACCOUNT NUMBER";
       } else {
         $("accountLabel").textContent = "GCASH NUMBER";
       }
