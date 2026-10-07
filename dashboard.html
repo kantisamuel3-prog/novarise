@@ -1306,16 +1306,17 @@ canvas#liveChart {
     }
 
     const previousBalance = usdBalance;
-usdBalance = Number(newBalance.toFixed(2));
+    const updatedNewBalance = Number(newBalance.toFixed(2));
+    
+    let colorMode = "normal";
+    if (updatedNewBalance > previousBalance) {
+      colorMode = "up";
+    } else if (updatedNewBalance < previousBalance) {
+      colorMode = "down";
+    }
 
-// Change balance color based on movement
-if (usdBalance > previousBalance) {
-  renderBalancesUI('up');       // GREEN
-} else if (usdBalance < previousBalance) {
-  renderBalancesUI('down');     // RED
-} else {
-  renderBalancesUI('normal');   // NORMAL
-}
+    usdBalance = updatedNewBalance;
+    renderBalancesUI(colorMode);
 
     const bar = document.getElementById('progressBarFill');
     const percent = document.getElementById('progressPercentText');
