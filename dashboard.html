@@ -846,9 +846,14 @@ canvas#liveChart {
     const usdElem = document.getElementById("usdBalance");
     if (usdElem) {
       usdElem.innerText = "$" + safeNumber(usdBalance).toFixed(2);
-      if (colorMode === "up") usdElem.style.color = "#10b981";
-      else if (colorMode === "down") usdElem.style.color = "#ef4444";
-      else usdElem.style.color = "#ffffff";
+      
+      if (colorMode === "up") {
+        usdElem.style.color = "#10b981"; // Berde kung tumaas
+      } else if (colorMode === "down") {
+        usdElem.style.color = "#ef4444"; // Pula kung bumaba
+      } else {
+        usdElem.style.color = "#ffffff"; // Puti (Normal)
+      }
     }
 
     const phpElem = document.getElementById("phpBalance");
@@ -859,7 +864,6 @@ canvas#liveChart {
       });
     }
   }
-
   // Keep one public UI function only. It updates the screen and then saves.
   function updateBalancesUI(colorMode = "normal") {
     renderBalancesUI(colorMode);
