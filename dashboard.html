@@ -47,6 +47,17 @@ body {
   overflow-x: auto;
   white-space: nowrap;
   color: #64748b;
+  position: relative;
+}
+
+/* Ticker Fade Animation para sa live ads effect */
+.ticker-fade-item {
+  opacity: 1;
+  transition: opacity 0.6s ease-in-out;
+}
+
+.ticker-fade-item.fade-out {
+  opacity: 0;
 }
 
 .ticker-item {
@@ -460,11 +471,11 @@ canvas#liveChart {
 
 <body>
 
-<div class="ticker-bar">
-  <div class="ticker-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up" id="tickNex">$18.95 (+18.4%)</span></div>
-  <div class="ticker-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up" id="tickBtc">$96,420.00 (+3.2%)</span></div>
-  <div class="ticker-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>
-  <div class="ticker-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>
+<div class="ticker-bar" id="tickerBarContent">
+  <div class="ticker-item ticker-fade-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up" id="tickNex">$18.95 (+18.4%)</span></div>
+  <div class="ticker-item ticker-fade-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up" id="tickBtc">$96,420.00 (+3.2%)</span></div>
+  <div class="ticker-item ticker-fade-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>
+  <div class="ticker-item ticker-fade-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>
 </div>
 
 <header>
@@ -775,6 +786,35 @@ canvas#liveChart {
   let legacyBalanceUnsubscribe = null;
   let newBalanceUnsubscribe = null;
 
+  // Live Ticker Ads / Text Fade Effect Script
+  const tickerMessages = [
+    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up">$18.95 (+18.4%)</span></div>',
+    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up">$96,420.00 (+3.2%)</span></div>',
+    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>',
+    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>',
+    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">PROMO</span> <span class="ticker-price" style="color:#00d4ff;">💎 VIP Withdrawal Fee Discount Active for 31+ Days Accounts!</span></div>',
+    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">SYSTEM</span> <span class="ticker-price" style="color:#10b981;">🚀 Algorithmic Execution Engine Running Smoothly.</span></div>'
+  ];
+
+  let currentTickerIndex = 0;
+  function initLiveTickerAds() {
+    const tickerBar = document.getElementById('tickerBarContent');
+    if (!tickerBar) return;
+
+    setInterval(() => {
+      tickerBar.classList.add('fade-out');
+      setTimeout(() => {
+        currentTickerIndex = (currentTickerIndex + 1) % tickerMessages.length;
+        tickerBar.innerHTML = tickerMessages[currentTickerIndex];
+        tickerBar.classList.remove('fade-out');
+      }, 600);
+    }, 4000);
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initLiveTickerAds();
+  });
+
   auth.onAuthStateChanged((user) => {
     if (!user) {
       window.location.href = "login.html";
@@ -864,7 +904,7 @@ canvas#liveChart {
       });
     }
   }
-  // Keep one public UI function only. It updates the screen and then saves.
+
   function updateBalancesUI(colorMode = "normal") {
     renderBalancesUI(colorMode);
     saveUserDataToFirestore();
@@ -880,11 +920,6 @@ canvas#liveChart {
       usdBalance = safeNumber(data.usdBalance);
       usdBalanceStartAt = data.usdBalanceStartAt || null;
 
-      // Timer rules:
-      // USD = 0 -> no timer.
-      // USD > 0 + existing timestamp -> keep the timer.
-      // USD > 0 + no timestamp -> start the timer now.
-      // accountAgeDays is calculated from the timestamp, never trusted directly.
       let createdStartDate = false;
       if (usdBalance > 0) {
         if (!usdBalanceStartAt) {
@@ -900,8 +935,6 @@ canvas#liveChart {
       balanceDataLoaded = true;
       renderBalancesUI();
 
-      // Persist the timer immediately when USD existed but had no start timestamp.
-      // This prevents the account from going back to Day 0 after a refresh.
       if (createdStartDate) {
         await db.collection("Users").doc(uid).set({
           usdBalanceStartAt: usdBalanceStartAt,
@@ -1087,8 +1120,6 @@ canvas#liveChart {
     usdBalance -= usdAmount;
     phpBalance += finalPhp;
 
-    // 1% eligibility is retained only while at least $130 remains.
-    // Dropping below $130 resets the cycle to 25%.
     if (usdBalance < minimumUsdForOnePercentFee) {
       usdBalanceStartAt = null;
       accountAgeDays = 0;
@@ -1223,13 +1254,6 @@ canvas#liveChart {
   function openZeroBalanceModal() { document.getElementById('zeroBalanceModal').style.display = 'flex'; }
   function closeZeroBalanceModal() { document.getElementById('zeroBalanceModal').style.display = 'none'; }
 
-  // ============================================================
-  // PERSISTENT TRADING EXECUTION
-  // The execution state is stored in Firestore, so a page refresh
-  // does NOT cancel the running execution. The browser interval is
-  // only responsible for updating the UI; elapsed time comes from
-  // executionStartedAt stored in Firestore.
-  // ============================================================
   let tradingTimer = null;
   let tradingStateSaveCounter = 0;
 
@@ -1250,8 +1274,6 @@ canvas#liveChart {
   }
 
   function deterministicTradingNoise(step, initialBalance) {
-    // Deterministic noise means the same execution can resume after refresh
-    // without generating a different balance curve.
     const wave = Math.sin(step * 12.9898) * 43758.5453;
     const normalized = wave - Math.floor(wave);
     return (normalized - 0.48) * (initialBalance * 0.015);
@@ -1314,11 +1336,11 @@ canvas#liveChart {
     
     let colorMode = "normal";
     if (updatedNewBalance > previousBalance) {
-      colorMode = "up";      // Green kapag tumaas
+      colorMode = "up";
     } else if (updatedNewBalance < previousBalance) {
-      colorMode = "down";    // Red kapag bumaba
+      colorMode = "down";
     } else {
-      colorMode = "normal";  // White kung walang nangyaring pagbabago
+      colorMode = "normal";
     }
 
     usdBalance = updatedNewBalance;
@@ -1391,13 +1413,9 @@ canvas#liveChart {
     const tick = async () => {
       if (!isTradingRunning) return;
 
-      // Dito tinatawag ang updateTradingProgressFromState kung saan nakatakda
-      // ang pag-update ng balanse at pagpili kung Green, Red, o White (normal).
       const finished = updateTradingProgressFromState(state, true);
 
       tradingStateSaveCounter++;
-      // Persist the current balance periodically, but do not write to Firestore
-      // every 600ms. The authoritative execution clock remains executionStartedAt.
       if (tradingStateSaveCounter % 5 === 0) {
         await db.collection('Users').doc(currentUser.uid).set({
           usdBalance: safeNumber(usdBalance),
@@ -1467,8 +1485,6 @@ canvas#liveChart {
       lastKnownPercent: 0
     };
 
-    // Save BEFORE starting the local timer. This makes the execution recoverable
-    // even if the page is refreshed immediately after clicking Execute.
     await db.collection('Users').doc(currentUser.uid).set({
       tradingExecution: state,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
