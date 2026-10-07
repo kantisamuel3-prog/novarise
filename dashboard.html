@@ -242,26 +242,6 @@ main {
   word-break: break-all;
 }
 
-.btn-action {
-  width: 100%;
-  padding: 6px 4px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-
-.btn-withdraw {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
-}
-
 .converter-card {
   background: rgba(10, 15, 30, 0.9);
   border: 1px solid rgba(0, 212, 255, 0.25);
@@ -537,7 +517,7 @@ canvas#liveChart {
 
   <div class="side-by-side-container">
     
-    <!-- 1. ACCOUNT WALLET -->
+    <!-- 1. ACCOUNT WALLET (Tinanggal ang Withdraw PHP button) -->
     <div class="card balance-card">
       <div>
         <h3 style="margin: 0 0 2px; font-size: 9px; color: #94a3b8; text-transform: uppercase;">Wallet Balances</h3>
@@ -554,10 +534,6 @@ canvas#liveChart {
           <div class="bal-amount" id="phpBalance">₱0.00</div>
         </div>
       </div>
-
-      <button type="button" class="btn-action btn-withdraw" onclick="openWithdrawModal()">
-        <span>🏦 Withdraw PHP</span>
-      </button>
     </div>
 
     <!-- 2. DUAL CURRENCY CONVERTER CARD -->
@@ -754,32 +730,6 @@ canvas#liveChart {
   </div>
 </div>
 
-<div class="modal-overlay" id="withdrawModal">
-  <div class="modal">
-    <h3 style="margin-top: 0; color: #00d4ff; font-size: 16px;">Withdraw Funds (PHP)</h3>
-    <div class="form-group">
-      <label>Payout Channel</label>
-      <select id="payoutMethod">
-        <option value="GCash">GCash</option>
-        <option value="Maya">Maya</option>
-        <option value="Bank Transfer">Bank Transfer</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Account Number / Phone</label>
-      <input type="text" id="accountNo" placeholder="09123456789">
-    </div>
-    <div class="form-group">
-      <label>Amount in Pesos (₱)</label>
-      <input type="number" id="withdrawAmount" placeholder="Min. ₱100">
-    </div>
-    <div class="modal-buttons">
-      <button class="btn-close" onclick="closeWithdrawModal()">Cancel</button>
-      <button class="btn-confirm" style="flex:1" onclick="submitWithdrawal()">Submit Request</button>
-    </div>
-  </div>
-</div>
-
 <!-- TRADING COMPLETION CUSTOM MODAL -->
 <div class="modal-overlay" id="tradingCompleteModal" style="display: none;">
   <div class="modal" style="border-color: rgba(0, 242, 254, 0.5); box-shadow: 0 0 25px rgba(0, 242, 254, 0.25);">
@@ -799,7 +749,7 @@ canvas#liveChart {
 </div>
 
 <!-- =====================================================
-     BOTTOM NAVIGATION (Aktibo/Umiilaw ang Home na may eksaktong kulay Cyan)
+     BOTTOM NAVIGATION
 ===================================================== -->
 <nav class="fixed bottom-0 left-0 right-0 h-20 bg-[#030b17]/95 border-t border-nexora-cyan/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
     <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-nexora-cyan transition-colors text-xs font-bold drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
@@ -921,11 +871,11 @@ canvas#liveChart {
       usdElem.innerText = "$" + safeNumber(usdBalance).toFixed(2);
       
       if (colorMode === "up") {
-        usdElem.style.color = "#10b981"; // Berde kung tumaas
+        usdElem.style.color = "#10b981";
       } else if (colorMode === "down") {
-        usdElem.style.color = "#ef4444"; // Pula kung bumaba
+        usdElem.style.color = "#ef4444";
       } else {
-        usdElem.style.color = "#ffffff"; // Puti (Normal)
+        usdElem.style.color = "#ffffff";
       }
     }
 
@@ -976,7 +926,6 @@ canvas#liveChart {
         }, { merge: true });
       }
 
-      console.log("NEXORA BALANCE LOADED:", {uid: uid, documentExists: true, balance: data.balance, phpBalance: phpBalance, usdBalance: usdBalance, accountAgeDays: accountAgeDays});
       startBalanceListeners(uid);
       await resumeTradingFromFirestore(data);
     } catch (error) {
@@ -997,7 +946,6 @@ canvas#liveChart {
       if (usdBalance <= 0) usdBalanceStartAt = null;
       calculateAccountAgeDays();
       renderBalancesUI();
-      console.log("NEXORA FIRESTORE BALANCE UPDATED:", {phpBalance: phpBalance, usdBalance: usdBalance});
     }, (error) => console.error("Users balance listener error:", error));
   }
 
@@ -1012,7 +960,6 @@ canvas#liveChart {
         usdBalanceStartAt: usdBalanceStartAt || null,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
-      console.log("NEXORA BALANCE SAVED:", {uid: currentUser.uid, phpBalance: phpBalance, usdBalance: usdBalance});
     } catch (error) { console.error("Error saving Users balance:", error); }
   }
 
@@ -1321,20 +1268,6 @@ canvas#liveChart {
     return Number.isFinite(parsed) ? parsed : null;
   }
 
-  async function saveTradingExecutionState(extra = {}) {
-    if (!currentUser) return;
-    try {
-      await db.collection('Users').doc(currentUser.uid).set({
-        tradingExecution: {
-          ...extra
-        },
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-    } catch (error) {
-      console.error('Error saving trading execution:', error);
-    }
-  }
-
   function updateTradingProgressFromState(state, showLogs = true) {
     if (!state) return false;
 
@@ -1432,7 +1365,6 @@ canvas#liveChart {
     document.getElementById('progressBarFill').style.width = '0%';
     runLiveChart();
 
-    // SHOW CUSTOM STYLISH MODAL INSTEAD OF BROWSER ALERT
     showTradingCompleteModal(initialBalance, targetProfitGain, usdBalance);
   }
 
@@ -1552,30 +1484,6 @@ canvas#liveChart {
     addLog(`<span class="action">[ACCEPTED]</span> Code <b>${codeInput.toUpperCase()}</b> activated!`);
 
     runPersistentTrading(state);
-  }
-
-  function openWithdrawModal() { document.getElementById('withdrawModal').style.display = 'flex'; }
-  function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
-  
-  function submitWithdrawal() {
-    const method = document.getElementById('payoutMethod').value;
-    const accountNo = document.getElementById('accountNo').value.trim();
-    const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
-
-    if (!accountNo || amount < 100) {
-      alert("Please enter a valid account number and minimum withdrawal amount of ₱100.");
-      return;
-    }
-
-    if (amount > phpBalance) {
-      alert("Insufficient PHP balance for this withdrawal request.");
-      return;
-    }
-
-    phpBalance -= amount;
-    updateBalancesUI();
-    closeWithdrawModal();
-    alert(`Withdrawal Request Submitted Successfully!\n\nChannel: ${method}\nAccount: ${accountNo}\nAmount: ₱${amount.toFixed(2)} PHP\nStatus: Processing`);
   }
 </script>
 
