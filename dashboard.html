@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Nexora Algorithmic Live Trading Terminal</title>
 
-<!-- FIREBASE SDKs (Compat v10)[cite: 1] -->
+<!-- FIREBASE SDKs (Compat v10) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -211,35 +211,38 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 10px;
 }
 
+/* Pinalapit at pinaganda ang espasyo at laki ng balanse */
 .balances-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin: 6px 0;
+  gap: 6px;
+  margin: 8px 0;
 }
 
 .bal-box {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 5px 6px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 6px 8px;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .bal-label {
-  font-size: 7px;
+  font-size: 7.5px;
   color: #00d4ff;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .bal-amount {
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 900;
   color: #ffffff;
-  margin-top: 1px;
+  margin-top: 2px;
   word-break: break-all;
+  font-family: monospace;
 }
 
 .converter-card {
@@ -482,12 +485,10 @@ canvas#liveChart {
 <!-- Live Marquee Ticker Bar sa Itaas -->
 <div class="ticker-bar">
   <div class="ticker-track">
-    <!-- Unang set ng mga items -->
     <div class="ticker-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up" id="tickNex">$18.95 (+18.4%)</span></div>
     <div class="ticker-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up" id="tickBtc">$96,420.00 (+3.2%)</span></div>
     <div class="ticker-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>
     <div class="ticker-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>
-    <!-- Pangalawang kopya para sa tuluy-tuloy na loop animation -->
     <div class="ticker-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up">$18.95 (+18.4%)</span></div>
     <div class="ticker-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up" id="tickBtc2">$96,420.00 (+3.2%)</span></div>
     <div class="ticker-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>
@@ -517,7 +518,7 @@ canvas#liveChart {
 
   <div class="side-by-side-container">
     
-    <!-- 1. ACCOUNT WALLET (Tinanggal ang Withdraw PHP button) -->
+    <!-- 1. ACCOUNT WALLET (Pinaiksi ang agwat at pinalaki ang fonts) -->
     <div class="card balance-card">
       <div>
         <h3 style="margin: 0 0 2px; font-size: 9px; color: #94a3b8; text-transform: uppercase;">Wallet Balances</h3>
@@ -739,7 +740,6 @@ canvas#liveChart {
     <h3 style="margin-top: 0; color: #00f2fe; font-size: 16px; text-align: center; font-family: monospace; letter-spacing: 1px;">TRADING COMPLETE</h3>
     
     <div id="tradingCompleteBody" style="font-size: 11px; color: #cbd5e1; line-height: 1.6; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2); margin: 10px 0; font-family: monospace;">
-      <!-- Dynamic details go here -->
     </div>
 
     <div style="margin-top: 14px;">
