@@ -1681,40 +1681,10 @@ canvas#liveChart {
     if (state === 'invalid') input.classList.add('code-invalid');
   }
 
-  async function validateTradingCode(code) {
-    const normalizedCode = String(code || '').trim().toUpperCase();
-    if (!normalizedCode) return { valid: false, reason: 'empty' };
-
-    /*
-      FIRESTORE SETUP:
-      Collection: TradingCodes
-      Document ID: exact trading code, e.g. NEXORA2026
-      Optional field:
-        active: true
-      If "active" is omitted, the code is treated as active.
-    */
-    const codeRef = db.collection('TradingCodes').doc(normalizedCode);
-    const codeSnap = await codeRef.get();
-
-    if (!codeSnap.exists) {
-      return { valid: false, reason: 'not_found' };
-    }
-
-    const codeData = codeSnap.data() || {};
-
-    if (codeData.active === false) {
-      return { valid: false, reason: 'inactive' };
-    }
-
-    return {
-      valid: true,
-      data: codeData
-    };
-  }
-
   async function startTradingProcess() {
     const codeInputElem = document.getElementById('tradingCodeInput');
     if (!codeInputElem) return;
+
     const codeInput = codeInputElem.value.trim().toUpperCase();
 
     if (!codeInput) {
@@ -1738,24 +1708,116 @@ canvas#liveChart {
     }
 
     try {
-      const validation = await validateTradingCode(codeInput);
+      if (!currentUser) {
+        throw new Error('USER_NOT_AUTHENTICATED');
+      }
 
-      if (!validation.valid) {
+      /*
+        ONE-TIME TRADING CODE
+        ---------------------------------------------
+        The code is checked and consumed inside ONE
+        Firestore transaction.
+
+        This means:
+        - active:true  -> can execute once
+        - active:false -> already used / unavailable
+        - two users trying the same code at once cannot
+          both consume it successfully
+        - refreshing the page will NOT make the code
+          usable again
+      */
+      const codeRef = db.collection('TradingCodes').doc(codeInput);
+      const userRef = db.collection('Users').doc(currentUser.uid);
+
+      const executionResult = await db.runTransaction(async (transaction) => {
+        // All reads are done before writes.
+        const codeSnap = await transaction.get(codeRef);
+        const userSnap = await transaction.get(userRef);
+
+        if (!codeSnap.exists) {
+          return { ok: false, reason: 'not_found' };
+        }
+
+        if (!userSnap.exists) {
+          return { ok: false, reason: 'user_not_found' };
+        }
+
+        const codeData = codeSnap.data() || {};
+        const userData = userSnap.data() || {};
+        const liveUsdBalance = safeNumber(userData.usdBalance);
+
+        // The code MUST explicitly be active.
+        if (codeData.active !== true) {
+          return { ok: false, reason: 'used' };
+        }
+
+        if (liveUsdBalance <= 0) {
+          return { ok: false, reason: 'insufficient_balance' };
+        }
+
+        const durationMs = 120000;
+        const initialBalance = Number(liveUsdBalance.toFixed(2));
+        const randomProfitPercent = Math.random() * (0.02 - 0.002) + 0.002;
+        const targetProfitGain = Number((initialBalance * randomProfitPercent).toFixed(2));
+        const finalBalanceTarget = Number((initialBalance + targetProfitGain).toFixed(2));
+        const executionStartedAt = firebase.firestore.Timestamp.now();
+
+        const state = {
+          status: 'RUNNING',
+          code: codeInput,
+          executionStartedAt: executionStartedAt,
+          durationMs: durationMs,
+          initialBalance: initialBalance,
+          targetProfitGain: targetProfitGain,
+          finalBalanceTarget: finalBalanceTarget,
+          lastKnownPercent: 0
+        };
+
+        // CONSUME THE CODE PERMANENTLY.
+        transaction.update(codeRef, {
+          active: false,
+          used: true,
+          usedBy: currentUser.uid,
+          usedAt: executionStartedAt
+        });
+
+        // Save the trading execution at the same time.
+        transaction.set(userRef, {
+          tradingExecution: state,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
+        return {
+          ok: true,
+          state: state
+        };
+      });
+
+      if (!executionResult.ok) {
         setTradingCodeInputState('invalid');
 
-        const message =
-          validation.reason === 'inactive'
-            ? 'This trading code is currently inactive. Please use an active code created in the system.'
-            : 'This trading code was not found. Only valid codes execute.';
+        let title = 'Invalid Trading Code';
+        let message = 'This trading code was not found. Only valid codes created in the system can execute.';
+        let icon = '✕';
+        let type = 'error';
 
-        openTradingCodeNoticeModal(
-          'Invalid Trading Code',
-          message,
-          '✕',
-          'error'
-        );
+        if (executionResult.reason === 'used') {
+          title = 'Trading Code Already Used';
+          message = 'This trading code has already been used. Each valid trading code can only be executed once.';
+          icon = '🔒';
+        } else if (executionResult.reason === 'insufficient_balance') {
+          title = 'Insufficient Balance';
+          message = 'Your USD balance is $0.00. Please recharge or convert PHP to USD before executing a trading code.';
+          icon = '⚠️';
+          type = 'warning';
+        } else if (executionResult.reason === 'user_not_found') {
+          title = 'Account Error';
+          message = 'Your account data could not be found. Please log in again.';
+          icon = '⚠️';
+        }
 
-        addLog(`<span class="loss">[REJECTED]</span> Invalid trading code <b>${codeInput}</b>.`);
+        openTradingCodeNoticeModal(title, message, icon, type);
+        addLog(`<span class="loss">[REJECTED]</span> Code <b>${codeInput}</b> was not executed (${executionResult.reason}).`);
 
         if (executeButton) {
           executeButton.disabled = false;
@@ -1765,15 +1827,28 @@ canvas#liveChart {
         return;
       }
 
+      const state = executionResult.state;
+      const initialBalance = state.initialBalance;
+      const targetProfitGain = state.targetProfitGain;
+
+      // Keep the local UI synchronized with the balance used by the transaction.
+      usdBalance = initialBalance;
+      renderBalancesUI();
       setTradingCodeInputState('valid');
 
+      isTradingRunning = true;
+      setTradingUIRunning(true);
+      addLog(`<span class="action">[ACCEPTED]</span> Code <b>${codeInput}</b> activated and consumed. This code cannot be used again.`);
+
+      runPersistentTrading(state);
+
     } catch (error) {
-      console.error('Trading code validation error:', error);
+      console.error('Trading code execution error:', error);
       setTradingCodeInputState('invalid');
 
       openTradingCodeNoticeModal(
         'Code Verification Failed',
-        'Unable to verify the trading code right now. Please try again.',
+        'Unable to execute the trading code right now. No code was consumed. Please try again.',
         '!',
         'error'
       );
@@ -1783,47 +1858,7 @@ canvas#liveChart {
         executeButton.style.opacity = '1';
         executeButton.innerText = 'Execute';
       }
-      return;
     }
-
-    if (usdBalance <= 0) {
-      openZeroBalanceModal();
-      addLog(`<span class="loss">[REJECTED]</span> Insufficient balance ($0.00).`);
-      if (executeButton) {
-        executeButton.disabled = false;
-        executeButton.style.opacity = '1';
-        executeButton.innerText = 'Execute';
-      }
-      return;
-    }
-
-    const durationMs = 120000;
-    const initialBalance = Number(usdBalance.toFixed(2));
-    const randomProfitPercent = Math.random() * (0.02 - 0.002) + 0.002;
-    const targetProfitGain = Number((initialBalance * randomProfitPercent).toFixed(2));
-    const finalBalanceTarget = Number((initialBalance + targetProfitGain).toFixed(2));
-
-    const state = {
-      status: 'RUNNING',
-      code: codeInput.toUpperCase(),
-      executionStartedAt: firebase.firestore.Timestamp.now(),
-      durationMs: durationMs,
-      initialBalance: initialBalance,
-      targetProfitGain: targetProfitGain,
-      finalBalanceTarget: finalBalanceTarget,
-      lastKnownPercent: 0
-    };
-
-    await db.collection('Users').doc(currentUser.uid).set({
-      tradingExecution: state,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-
-    isTradingRunning = true;
-    setTradingUIRunning(true);
-    addLog(`<span class="action">[ACCEPTED]</span> Code <b>${codeInput.toUpperCase()}</b> activated!`);
-
-    runPersistentTrading(state);
   }
 </script>
 
