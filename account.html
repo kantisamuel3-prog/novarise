@@ -3,1670 +3,538 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Nexora - Account & Balances</title>
 
-<title>NEXORA — Account</title>
+<!-- FIREBASE SDKs (Compat v10) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome para sa mga icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  min-height:100%;
-}
-
-body{
-  background:#030b17;
-  color:#e9f5ff;
-  font-family:Arial,Helvetica,sans-serif;
-  overflow-x:hidden;
-  padding-bottom:92px;
-}
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:-5;
-  background:
-    radial-gradient(circle at 50% 18%,rgba(0,217,255,.12),transparent 28%),
-    radial-gradient(circle at 15% 70%,rgba(0,119,255,.08),transparent 28%),
-    radial-gradient(circle at 90% 55%,rgba(0,255,190,.06),transparent 30%),
-    #030b17;
-}
-
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:-4;
-  opacity:.32;
-  background-image:
-    linear-gradient(rgba(0,214,255,.055) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,214,255,.055) 1px,transparent 1px);
-  background-size:55px 55px;
-  mask-image:linear-gradient(to bottom,black,transparent 85%);
-  pointer-events:none;
-}
-
-/* GLOW ORBS */
-
-.glow{
-  position:fixed;
-  border-radius:50%;
-  filter:blur(80px);
-  pointer-events:none;
-  z-index:-3;
-  opacity:.18;
-}
-
-.glow.one{
-  width:240px;
-  height:240px;
-  background:#00d9ff;
-  top:150px;
-  left:-100px;
-  animation:floatOne 8s ease-in-out infinite;
-}
-
-.glow.two{
-  width:260px;
-  height:260px;
-  background:#0066ff;
-  right:-120px;
-  top:420px;
-  animation:floatTwo 10s ease-in-out infinite;
-}
-
-@keyframes floatOne{
-  0%,100%{transform:translate(0,0)}
-  50%{transform:translate(35px,25px)}
-}
-
-@keyframes floatTwo{
-  0%,100%{transform:translate(0,0)}
-  50%{transform:translate(-30px,-25px)}
-}
-
-/* =========================================================
-   MARKET TICKER
-========================================================= */
-
-.market-ticker{
-  width:100%;
-  height:52px;
-  overflow:hidden;
-  background:#020812;
-  border-bottom:1px solid rgba(0,214,255,.16);
-  box-shadow:0 4px 25px rgba(0,0,0,.35);
-  position:relative;
-}
-
-.ticker-track{
-  height:100%;
-  width:max-content;
-  display:flex;
-  align-items:center;
-  gap:34px;
-  padding-left:20px;
-  animation:tickerMove 28s linear infinite;
-}
-
-@keyframes tickerMove{
-  from{transform:translateX(0)}
-  to{transform:translateX(-35%)}
-}
-
-.ticker-item{
-  white-space:nowrap;
-  font-size:12px;
-  font-weight:700;
-  color:#7f8fa4;
-  letter-spacing:.5px;
-}
-
-.ticker-item strong{
-  color:#d9e8f7;
-  margin-left:6px;
-}
-
-.ticker-item.green strong{
-  color:#00d99a;
-}
-
-.ticker-item.cyan strong{
-  color:#00dcff;
-}
-
-.ticker-item.gold strong{
-  color:#e8b83f;
-}
-
-.ticker-logo{
-  color:#00eaff;
-  font-size:13px;
-  font-weight:900;
-  letter-spacing:1px;
-  padding:8px 15px;
-  background:rgba(0,229,255,.07);
-  border-left:1px solid rgba(0,229,255,.45);
-  border-right:1px solid rgba(0,229,255,.2);
-}
-
-/* =========================================================
-   MAIN
-========================================================= */
-
-.page{
-  width:100%;
-  max-width:980px;
-  margin:0 auto;
-  padding:26px 18px 30px;
-}
-
-/* =========================================================
-   ACCOUNT HERO
-========================================================= */
-
-.account-hero{
-  text-align:center;
-  padding:12px 0 25px;
-}
-
-.hero-ring{
-  width:76px;
-  height:76px;
-  margin:0 auto 14px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  background:
-    radial-gradient(circle,#092d52 0%,#04101f 65%);
-  border:1px solid rgba(0,224,255,.65);
-  box-shadow:
-    0 0 12px rgba(0,224,255,.35),
-    0 0 45px rgba(0,180,255,.15);
-}
-
-.hero-ring::before{
-  content:"";
-  position:absolute;
-  inset:-7px;
-  border-radius:50%;
-  border:1px dashed rgba(0,222,255,.55);
-  animation:rotateRing 10s linear infinite;
-}
-
-@keyframes rotateRing{
-  to{transform:rotate(360deg)}
-}
-
-.hero-n{
-  font-size:38px;
-  font-weight:900;
-  font-style:italic;
-  color:#00dcff;
-  text-shadow:0 0 20px rgba(0,220,255,.5);
-}
-
-.hero-title{
-  font-size:28px;
-  font-weight:900;
-  letter-spacing:5px;
-  background:linear-gradient(180deg,#ffffff,#8c9daf);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-}
-
-.hero-sub{
-  margin-top:7px;
-  color:#dcae31;
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:4px;
-}
-
-.hero-sub span{
-  color:#00e0aa;
-}
-
-/* =========================================================
-   MEMBER CARD
-========================================================= */
-
-.member-card{
-  position:relative;
-  overflow:hidden;
-  border:1px solid rgba(0,215,255,.25);
-  background:
-    linear-gradient(135deg,rgba(10,31,52,.94),rgba(3,12,25,.96));
-  border-radius:20px;
-  padding:20px;
-  box-shadow:
-    0 18px 45px rgba(0,0,0,.35),
-    inset 0 1px 0 rgba(255,255,255,.035);
-}
-
-.member-card::before{
-  content:"";
-  position:absolute;
-  width:180px;
-  height:180px;
-  right:-70px;
-  top:-90px;
-  border-radius:50%;
-  background:rgba(0,217,255,.12);
-  filter:blur(35px);
-}
-
-.member-content{
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
-
-.member-avatar{
-  width:55px;
-  height:55px;
-  flex-shrink:0;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(145deg,#063f67,#071522);
-  border:1px solid rgba(0,225,255,.5);
-  box-shadow:0 0 18px rgba(0,218,255,.12);
-  font-size:25px;
-}
-
-.member-name{
-  font-size:17px;
-  font-weight:900;
-  color:#f5fbff;
-}
-
-.member-phone{
-  margin-top:5px;
-  color:#71869c;
-  font-size:11px;
-}
-
-.member-status{
-  margin-left:auto;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  color:#00d99a;
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:1px;
-}
-
-.status-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:#00d99a;
-  box-shadow:0 0 10px rgba(0,217,154,.8);
-}
-
-/* =========================================================
-   BALANCE SECTION
-========================================================= */
-
-.section-heading{
-  margin:26px 2px 12px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.section-heading h2{
-  margin:0;
-  font-size:13px;
-  letter-spacing:2px;
-  color:#8fa3b8;
-  font-weight:900;
-}
-
-.section-line{
-  height:1px;
-  flex:1;
-  margin-left:15px;
-  background:linear-gradient(90deg,rgba(0,217,255,.3),transparent);
-}
-
-.balance-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-}
-
-/* BALANCE CARD */
-
-.balance-card{
-  min-height:185px;
-  position:relative;
-  overflow:hidden;
-  border-radius:20px;
-  padding:20px;
-  background:
-    linear-gradient(145deg,rgba(9,32,54,.96),rgba(3,12,24,.98));
-  border:1px solid rgba(0,215,255,.2);
-  box-shadow:
-    0 15px 35px rgba(0,0,0,.3),
-    inset 0 1px 0 rgba(255,255,255,.03);
-}
-
-.balance-card::before{
-  content:"";
-  position:absolute;
-  width:130px;
-  height:130px;
-  right:-55px;
-  bottom:-55px;
-  border-radius:50%;
-  background:#00cfff;
-  opacity:.08;
-  filter:blur(25px);
-}
-
-.balance-card.php::before{
-  background:#00e39b;
-}
-
-.balance-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.balance-label{
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:2px;
-  color:#72879c;
-}
-
-.balance-symbol{
-  width:34px;
-  height:34px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:10px;
-  font-size:14px;
-  font-weight:900;
-  color:#00dcff;
-  background:rgba(0,220,255,.08);
-  border:1px solid rgba(0,220,255,.18);
-}
-
-.php .balance-symbol{
-  color:#00dc9a;
-  background:rgba(0,220,154,.08);
-  border-color:rgba(0,220,154,.18);
-}
-
-.balance-value{
-  margin-top:24px;
-  font-size:29px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:-.5px;
-  color:#f5fbff;
-  text-shadow:0 0 22px rgba(0,217,255,.15);
-  word-break:break-word;
-}
-
-.php .balance-value{
-  color:#dffff3;
-  text-shadow:0 0 22px rgba(0,217,154,.12);
-}
-
-.balance-status{
-  margin-top:17px;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  color:#62788d;
-  font-size:9px;
-  font-weight:800;
-  letter-spacing:1px;
-}
-
-.balance-status i{
-  width:5px;
-  height:5px;
-  border-radius:50%;
-  background:#00dcff;
-  box-shadow:0 0 7px rgba(0,220,255,.8);
-}
-
-.php .balance-status i{
-  background:#00dc9a;
-  box-shadow:0 0 7px rgba(0,220,154,.8);
-}
-
-/* =========================================================
-   ACTIONS
-========================================================= */
-
-.actions{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:11px;
-}
-
-.action-btn{
-  min-height:84px;
-  border:1px solid rgba(0,215,255,.17);
-  border-radius:17px;
-  background:
-    linear-gradient(145deg,rgba(8,29,49,.95),rgba(3,12,23,.98));
-  color:white;
-  cursor:pointer;
-  transition:.2s ease;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  box-shadow:0 10px 25px rgba(0,0,0,.22);
-}
-
-.action-btn:hover{
-  transform:translateY(-2px);
-  border-color:rgba(0,220,255,.5);
-  box-shadow:
-    0 12px 30px rgba(0,0,0,.35),
-    0 0 18px rgba(0,220,255,.08);
-}
-
-.action-icon{
-  width:32px;
-  height:32px;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#00dcff;
-  background:rgba(0,220,255,.08);
-  border:1px solid rgba(0,220,255,.18);
-  font-size:16px;
-  font-weight:900;
-}
-
-.action-btn:nth-child(2) .action-icon{
-  color:#00dc9a;
-  background:rgba(0,220,154,.08);
-  border-color:rgba(0,220,154,.18);
-}
-
-.action-btn:nth-child(3) .action-icon{
-  color:#e3b63d;
-  background:rgba(227,182,61,.08);
-  border-color:rgba(227,182,61,.18);
-}
-
-.action-text{
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:1px;
-  color:#b7c7d7;
-}
-
-/* =========================================================
-   ACCOUNT INFO
-========================================================= */
-
-.info-card{
-  border:1px solid rgba(0,215,255,.16);
-  border-radius:18px;
-  overflow:hidden;
-  background:rgba(4,17,31,.9);
-  box-shadow:0 12px 30px rgba(0,0,0,.25);
-}
-
-.info-row{
-  min-height:57px;
-  display:flex;
-  align-items:center;
-  padding:12px 16px;
-  border-bottom:1px solid rgba(255,255,255,.045);
-}
-
-.info-row:last-child{
-  border-bottom:0;
-}
-
-.info-icon{
-  width:34px;
-  height:34px;
-  border-radius:9px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin-right:12px;
-  color:#00dcff;
-  background:rgba(0,220,255,.06);
-}
-
-.info-text{
-  min-width:0;
-}
-
-.info-title{
-  color:#8fa3b7;
-  font-size:9px;
-  font-weight:900;
-  letter-spacing:1px;
-}
-
-.info-value{
-  color:#e4edf6;
-  font-size:12px;
-  font-weight:700;
-  margin-top:3px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-.logout{
-  width:100%;
-  height:50px;
-  margin-top:14px;
-  border:1px solid rgba(255,75,95,.22);
-  border-radius:14px;
-  background:rgba(255,55,75,.045);
-  color:#ff7180;
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:2px;
-  cursor:pointer;
-}
-
-/* =========================================================
-   BOTTOM NAV
-   Same general dimensions / placement
-========================================================= */
-
-.bottom-nav{
-  position:fixed;
-  left:0;
-  right:0;
-  bottom:0;
-  height:78px;
-  background:rgba(3,11,23,.96);
-  border-top:1px solid rgba(0,215,255,.14);
-  z-index:99999;
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
-  padding-bottom:env(safe-area-inset-bottom);
-  backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
-  box-shadow:0 -8px 30px rgba(0,0,0,.35);
-}
-
-.nav-item{
-  width:100%;
-  max-width:150px;
-  height:100%;
-  text-decoration:none;
-  color:#667b91;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:5px;
-  font-size:13px;
-  font-weight:700;
-  transition:.2s ease;
-}
-
-.nav-item svg{
-  width:27px;
-  height:27px;
-  stroke:currentColor;
-}
-
-.nav-item.active{
-  color:#00dcff;
-  text-shadow:0 0 12px rgba(0,220,255,.4);
-}
-
-/* =========================================================
-   LOADING
-========================================================= */
-
-.loading{
-  color:#52697f !important;
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(max-width:600px){
-
-  .page{
-    padding:20px 13px 25px;
-  }
-
-  .hero-title{
-    font-size:24px;
-    letter-spacing:4px;
-  }
-
-  .hero-sub{
-    font-size:9px;
-    letter-spacing:3px;
-  }
-
-  .balance-card{
-    min-height:165px;
-    padding:17px;
-  }
-
-  .balance-value{
-    font-size:23px;
-    margin-top:21px;
-  }
-
-  .actions{
-    gap:8px;
-  }
-
-  .action-btn{
-    min-height:78px;
-  }
-
-  .nav-item{
-    font-size:12px;
-  }
-
-  .nav-item svg{
-    width:26px;
-    height:26px;
-  }
-}
-
-@media(max-width:380px){
-
-  .balance-grid{
-    gap:8px;
-  }
-
-  .balance-card{
-    padding:14px;
-  }
-
-  .balance-value{
-    font-size:20px;
-  }
-
-  .member-card{
-    padding:16px;
-  }
-
-  .member-status{
-    font-size:8px;
-  }
-
-  .nav-item{
-    font-size:11px;
-  }
-
-  .nav-item svg{
-    width:24px;
-    height:24px;
-  }
-}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #060913;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 212, 255, 0.12), transparent 50%),
+    radial-gradient(circle at 10% 80%, rgba(16, 185, 129, 0.05), transparent 40%),
+    linear-gradient(180deg, #060913 0%, #0a0e1a 100%);
+  color: #e2e8f0;
+  padding-bottom: 75px;
+  min-height: 100vh;
+}
+
+/* Ticker Bar na may Marquee Animation */
+.ticker-bar {
+  background: #03050a;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+  font-family: monospace;
+  font-size: 10px;
+  padding: 6px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #64748b;
+  position: relative;
+  width: 100%;
+}
+
+.ticker-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marqueeTicker 25s linear infinite;
+  will-change: transform;
+}
+
+.ticker-bar:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeTicker {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 32px;
+}
+
+.ticker-symbol {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.up { color: #10b981; }
+.down { color: #ef4444; }
+
+header {
+  background: rgba(10, 14, 26, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, #00d4ff, #0055ff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 14px;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+}
+
+.logo-copy strong {
+  display: block;
+  color: #ffffff;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.logo-copy small {
+  display: block;
+  color: #00d4ff;
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+#logoutButton {
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+main {
+  max-width: 1200px;
+  margin: 12px auto;
+  padding: 0 8px;
+}
+
+.welcome-card {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00d4ff;
+  font-size: 18px;
+}
+
+.card {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 10px;
+  padding: 12px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  margin-bottom: 12px;
+}
+
+.balances-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.bal-box {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bal-label {
+  font-size: 8px;
+  color: #00d4ff;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bal-amount {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 4px;
+  word-break: break-all;
+}
+
+.action-tile {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.action-tile:hover {
+  border-color: rgba(0, 212, 255, 0.4);
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(3, 6, 15, 0.85);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 12px;
+}
+
+.modal {
+  background: linear-gradient(135deg, rgba(13, 19, 34, 0.98) 0%, rgba(8, 12, 22, 0.98) 100%);
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: 16px;
+  padding: 16px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7);
+}
+
+.form-group { margin-bottom: 10px; }
+.form-group label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+.form-group input, .form-group select {
+  width: 100%; padding: 8px; background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; color: #fff; font-size: 12px;
+}
+
+.modal-buttons { display: flex; gap: 10px; margin-top: 16px; }
+.btn-close { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px; flex: 1; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; }
+.btn-confirm { background: linear-gradient(135deg, #00d4ff, #0055ff); color: #fff; border: none; padding: 10px; flex: 1; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 3px 10px rgba(0, 212, 255, 0.3); }
 </style>
 </head>
 
 <body>
 
-<!-- BACKGROUND EFFECTS -->
-<div class="glow one"></div>
-<div class="glow two"></div>
-
-
-<!-- =====================================================
-     MARKET TICKER
-===================================================== -->
-
-<div class="market-ticker">
-
+<!-- Live Marquee Ticker Bar sa Itaas -->
+<div class="ticker-bar">
   <div class="ticker-track">
-
-    <div class="ticker-logo">
-      NEXORA TAPE
-    </div>
-
-    <div class="ticker-item green">
-      BTC/USD
-      <strong>$104,820.40 ▲ +4.12%</strong>
-    </div>
-
-    <div class="ticker-item">
-      ETH/USD
-      <strong>$3,520.80</strong>
-      <span style="color:#00d99a;">▲ +2.45%</span>
-    </div>
-
-    <div class="ticker-item cyan">
-      NEX/USD
-      <strong>$18.95 ▲ +18.40%</strong>
-    </div>
-
-    <div class="ticker-item gold">
-      GOLD/OUNCE
-      <strong>$2,650.10 ▲ +0.85%</strong>
-    </div>
-
-    <div class="ticker-item">
-      24H VOLUME
-      <strong style="color:#e3b63d;">$2.84 BILLION</strong>
-    </div>
-
-    <!-- duplicate for continuous ticker -->
-
-    <div class="ticker-logo">
-      NEXORA TAPE
-    </div>
-
-    <div class="ticker-item green">
-      BTC/USD
-      <strong>$104,820.40 ▲ +4.12%</strong>
-    </div>
-
-    <div class="ticker-item">
-      ETH/USD
-      <strong>$3,520.80</strong>
-      <span style="color:#00d99a;">▲ +2.45%</span>
-    </div>
-
-    <div class="ticker-item cyan">
-      NEX/USD
-      <strong>$18.95 ▲ +18.40%</strong>
-    </div>
-
-    <div class="ticker-item gold">
-      GOLD/OUNCE
-      <strong>$2,650.10 ▲ +0.85%</strong>
-    </div>
-
+    <div class="ticker-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up">$18.95 (+18.4%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up">$96,420.00 (+3.2%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up">$18.95 (+18.4%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up">$96,420.00 (+3.2%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>
   </div>
-
 </div>
 
-
-<!-- =====================================================
-     MAIN
-===================================================== -->
-
-<main class="page">
-
-
-  <!-- HERO -->
-
-  <section class="account-hero">
-
-    <div class="hero-ring">
-      <div class="hero-n">N</div>
+<header>
+  <div class="logo">
+    <div class="logo-icon">N</div>
+    <div class="logo-copy">
+      <strong>NEXORA</strong>
+      <small>Live Trading Engine</small>
     </div>
+  </div>
+  <button id="logoutButton" onclick="handleLogout()">Logout</button>
+</header>
 
-    <div class="hero-title">
-      NEXORA
+<main>
+  <!-- Welcome Profile Card -->
+  <div class="welcome-card">
+    <div class="user-avatar">
+      <i class="fa-solid fa-user"></i>
     </div>
-
-    <div class="hero-sub">
-      INVEST <span>•</span> GROW <span>•</span> TOGETHER
+    <div>
+      <div style="font-size: 14px; font-weight: bold; color: #ffffff;">Welcome Member!</div>
+      <div id="userEmail" style="font-size: 10px; color: #00d4ff; font-family: monospace;">Loading user...</div>
     </div>
-
-  </section>
-
-
-  <!-- MEMBER -->
-
-  <section class="member-card">
-
-    <div class="member-content">
-
-      <div class="member-avatar">
-        👤
-      </div>
-
-      <div>
-
-        <div
-          id="profileName"
-          class="member-name"
-        >
-          Welcome Member!
-        </div>
-
-        <div
-          id="profilePhone"
-          class="member-phone"
-        >
-          Loading account...
-        </div>
-
-      </div>
-
-      <div class="member-status">
-        <span class="status-dot"></span>
-        LIVE
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- BALANCES -->
-
-  <div class="section-heading">
-
-    <h2>
-      ACCOUNT BALANCES
-    </h2>
-
-    <div class="section-line"></div>
-
   </div>
 
-
-  <section class="balance-grid">
-
-
-    <!-- USD -->
-
-    <div class="balance-card">
-
-      <div class="balance-top">
-
-        <div class="balance-label">
-          USD BALANCE
-        </div>
-
-        <div class="balance-symbol">
-          $
-        </div>
-
-      </div>
-
-      <div
-        id="dollarBalance"
-        class="balance-value loading"
-      >
-        $0.00
-      </div>
-
-      <div class="balance-status">
-        <i></i>
-        AVAILABLE TRADING BALANCE
-      </div>
-
+  <!-- Balances Grid -->
+  <div class="balances-grid">
+    <div class="bal-box">
+      <div class="bal-label">USD Balance</div>
+      <div class="bal-amount" id="usdBalance">$0.00</div>
+      <div style="font-size: 7px; color: #64748b; margin-top: 2px;">Available trading balance</div>
     </div>
 
-
-    <!-- PHP -->
-
-    <div class="balance-card php">
-
-      <div class="balance-top">
-
-        <div class="balance-label">
-          PHP BALANCE
-        </div>
-
-        <div class="balance-symbol">
-          ₱
-        </div>
-
-      </div>
-
-      <div
-        id="pesoBalance"
-        class="balance-value loading"
-      >
-        ₱0.00
-      </div>
-
-      <div class="balance-status">
-        <i></i>
-        AVAILABLE WALLET BALANCE
-      </div>
-
+    <div class="bal-box">
+      <div class="bal-label">PHP Balance</div>
+      <div class="bal-amount" id="phpBalance">₱0.00</div>
+      <div style="font-size: 7px; color: #64748b; margin-top: 2px;">Available wallet balance</div>
     </div>
-
-  </section>
-
-
-  <!-- ACTIONS -->
-
-  <div class="section-heading">
-
-    <h2>
-      QUICK ACTIONS
-    </h2>
-
-    <div class="section-line"></div>
-
   </div>
 
-
-  <section class="actions">
-
-
-    <button
-      class="action-btn"
-      id="rechargeButton"
-    >
-
-      <div class="action-icon">
-        +
+  <!-- Quick Actions (Recharge & Withdraw) -->
+  <div class="card">
+    <h3 style="margin: 0 0 10px 0; font-size: 11px; color: #94a3b8; text-transform: uppercase;">Account Actions</h3>
+    
+    <div class="action-tile" onclick="openRechargeModal()">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 28px; background: rgba(16, 185, 129, 0.15); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 12px;">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div>
+          <div style="font-size: 11px; font-weight: bold; color: #ffffff;">Recharge</div>
+          <div style="font-size: 8px; color: #94a3b8;">Add funds to your account</div>
+        </div>
       </div>
+      <i class="fa-solid fa-chevron-right" style="font-size: 10px; color: #64748b;"></i>
+    </div>
 
-      <div class="action-text">
-        RECHARGE
+    <div class="action-tile" onclick="openWithdrawModal()" style="margin-bottom: 0;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 28px; background: rgba(0, 212, 255, 0.15); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #00d4ff; font-size: 12px;">
+          <i class="fa-solid fa-arrow-down"></i>
+        </div>
+        <div>
+          <div style="font-size: 11px; font-weight: bold; color: #ffffff;">Withdraw</div>
+          <div style="font-size: 8px; color: #94a3b8;">Request a withdrawal</div>
+        </div>
       </div>
-
-    </button>
-
-
-    <button
-      class="action-btn"
-      id="withdrawButton"
-    >
-
-      <div class="action-icon">
-        ₱
-      </div>
-
-      <div class="action-text">
-        WITHDRAW
-      </div>
-
-    </button>
-
-
-    <button
-      class="action-btn"
-      id="historyButton"
-    >
-
-      <div class="action-icon">
-        ≡
-      </div>
-
-      <div class="action-text">
-        HISTORY
-      </div>
-
-    </button>
-
-
-  </section>
-
-
-  <!-- ACCOUNT INFORMATION -->
-
-  <div class="section-heading">
-
-    <h2>
-      ACCOUNT INFORMATION
-    </h2>
-
-    <div class="section-line"></div>
-
+      <i class="fa-solid fa-chevron-right" style="font-size: 10px; color: #64748b;"></i>
+    </div>
   </div>
 
-
-  <section class="info-card">
-
-
-    <div class="info-row">
-
-      <div class="info-icon">
-        ✓
-      </div>
-
-      <div class="info-text">
-
-        <div class="info-title">
-          ACCOUNT STATUS
-        </div>
-
-        <div class="info-value">
-          Active Member
-        </div>
-
-      </div>
-
+  <!-- Transaction History Card -->
+  <div class="card">
+    <h3 style="margin: 0 0 8px 0; font-size: 11px; color: #94a3b8; text-transform: uppercase;">Transaction History</h3>
+    <div id="transactionHistoryList" style="font-size: 9px; color: #94a3b8; font-family: monospace;">
+      <div style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">[SYSTEM] No recent transactions recorded.</div>
     </div>
-
-
-    <div class="info-row">
-
-      <div class="info-icon">
-        $
-      </div>
-
-      <div class="info-text">
-
-        <div class="info-title">
-          USD ACCOUNT
-        </div>
-
-        <div class="info-value">
-          Trading balance connected
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="info-row">
-
-      <div class="info-icon">
-        ₱
-      </div>
-
-      <div class="info-text">
-
-        <div class="info-title">
-          PHP WALLET
-        </div>
-
-        <div class="info-value">
-          Wallet balance connected
-        </div>
-
-      </div>
-
-    </div>
-
-
-  </section>
-
-
-  <!-- LOGOUT -->
-
-  <button
-    id="logoutButton"
-    class="logout"
-  >
-    LOG OUT OF ACCOUNT
-  </button>
-
-
+  </div>
 </main>
 
+<!-- Recharge Modal -->
+<div class="modal-overlay" id="rechargeModal">
+  <div class="modal">
+    <h3 style="margin-top: 0; color: #00d4ff; font-size: 16px;">Recharge Funds (PHP)</h3>
+    <div class="form-group">
+      <label>Payment Channel</label>
+      <select id="rechargeMethod">
+        <option value="GCash">GCash</option>
+        <option value="Maya">Maya</option>
+        <option value="Bank Transfer">Bank Transfer</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Amount in Pesos (₱)</label>
+      <input type="number" id="rechargeAmount" placeholder="Min. ₱100">
+    </div>
+    <div class="modal-buttons">
+      <button class="btn-close" onclick="closeRechargeModal()">Cancel</button>
+      <button class="btn-confirm" onclick="submitRecharge()">Proceed Recharge</button>
+    </div>
+  </div>
+</div>
 
-<!-- =====================================================
-     BOTTOM NAVIGATION
-===================================================== -->
+<!-- Withdraw Modal -->
+<div class="modal-overlay" id="withdrawModal">
+  <div class="modal">
+    <h3 style="margin-top: 0; color: #00d4ff; font-size: 16px;">Withdraw Funds (PHP)</h3>
+    <div class="form-group">
+      <label>Payout Channel</label>
+      <select id="payoutMethod">
+        <option value="GCash">GCash</option>
+        <option value="Maya">Maya</option>
+        <option value="Bank Transfer">Bank Transfer</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Account Number / Phone</label>
+      <input type="text" id="accountNo" placeholder="09123456789">
+    </div>
+    <div class="form-group">
+      <label>Amount in Pesos (₱)</label>
+      <input type="number" id="withdrawAmount" placeholder="Min. ₱100">
+    </div>
+    <div class="modal-buttons">
+      <button class="btn-close" onclick="closeWithdrawModal()">Cancel</button>
+      <button class="btn-confirm" onclick="submitWithdrawal()">Submit Request</button>
+    </div>
+  </div>
+</div>
 
-<nav class="bottom-nav">
-
-
-  <a
-    href="dashboard.html"
-    class="nav-item"
-  >
-
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      <path d="M3 11.5 12 4l9 7.5"></path>
-      <path d="M5.5 10.5V20h13v-9.5"></path>
-      <path d="M9.5 20v-5.5h5V20"></path>
-    </svg>
-
-    <span>Home</span>
-
+<!-- Navigation Footer -->
+<nav style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #111827; border-top: 1px solid #1f2937; padding: 10px 16px; display: flex; justify-content: space-around; align-items: center; font-size: 11px; color: #9ca3af; z-index: 9999;">
+  <a href="dashboard.html" style="display: flex; flex-direction: column; align-items: center; color: #9ca3af; text-decoration: none;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#9ca3af'">
+    <i class="fa-solid fa-chart-line" style="font-size: 16px; margin-bottom: 2px;"></i>
+    <span>Live Terminal</span>
   </a>
-
-
-  <a
-    href="dashboard.html#products"
-    class="nav-item"
-  >
-
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      <rect
-        x="3"
-        y="4"
-        width="18"
-        height="16"
-        rx="2"
-      ></rect>
-
-      <path d="M3 9h18"></path>
-
-      <path d="M8 14h2"></path>
-
-      <path d="M14 14h2"></path>
-
-    </svg>
-
-    <span>Products</span>
-
-  </a>
-
-
-  <a
-    href="team.html"
-    class="nav-item"
-  >
-
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-
-      <path
-        d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
-      ></path>
-
-      <circle
-        cx="9"
-        cy="7"
-        r="4"
-      ></circle>
-
-      <path
-        d="M22 21v-2a4 4 0 0 0-3-3.87"
-      ></path>
-
-      <path
-        d="M16 3.13a4 4 0 0 1 0 7.75"
-      ></path>
-
-    </svg>
-
-    <span>Team</span>
-
-  </a>
-
-
-  <a
-    href="account.html"
-    class="nav-item active"
-  >
-
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-
-      <circle
-        cx="12"
-        cy="8"
-        r="4"
-      ></circle>
-
-      <path
-        d="M4 21a8 8 0 0 1 16 0"
-      ></path>
-
-    </svg>
-
+  <a href="account.html" style="display: flex; flex-direction: column; align-items: center; color: #3b82f6; font-weight: 600; text-decoration: none;">
+    <i class="fa-solid fa-user" style="font-size: 16px; margin-bottom: 2px;"></i>
     <span>Account</span>
-
   </a>
-
-
 </nav>
 
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+    authDomain: "investpro-2dafb.firebaseapp.com",
+    projectId: "investpro-2dafb",
+    storageBucket: "investpro-2dafb.firebasestorage.app",
+    messagingSenderId: "135092039764",
+    appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
+    measurementId: "G-0L77SFTC4F"
+  };
 
-<!-- =====================================================
-     FIREBASE
-===================================================== -->
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
 
-<script type="module">
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  let phpBalance = 0.00;
+  let usdBalance = 0.00;
+  let currentUser = null;
 
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import {
-  getFirestore,
-  doc,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-
-/* =====================================================
-   FIREBASE CONFIG
-===================================================== */
-
-const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
-
-  authDomain:
-    "investpro-2dafb.firebaseapp.com",
-
-  projectId:
-    "investpro-2dafb",
-
-  storageBucket:
-    "investpro-2dafb.firebasestorage.app",
-
-  messagingSenderId:
-    "135092039764",
-
-  appId:
-    "1:135092039764:web:c4c71eef0c904346a77dc1",
-
-  measurementId:
-    "G-0L77SFTC4F"
-
-};
-
-
-/* =====================================================
-   INITIALIZE FIREBASE
-===================================================== */
-
-const app =
-  initializeApp(firebaseConfig);
-
-const auth =
-  getAuth(app);
-
-const db =
-  getFirestore(app);
-
-
-/* =====================================================
-   ELEMENTS
-===================================================== */
-
-const dollarBalance =
-  document.getElementById(
-    "dollarBalance"
-  );
-
-const pesoBalance =
-  document.getElementById(
-    "pesoBalance"
-  );
-
-const profilePhone =
-  document.getElementById(
-    "profilePhone"
-  );
-
-const profileName =
-  document.getElementById(
-    "profileName"
-  );
-
-const logoutButton =
-  document.getElementById(
-    "logoutButton"
-  );
-
-
-/* =====================================================
-   FORMAT
-===================================================== */
-
-function formatUSD(value){
-
-  const number =
-    Number(value) || 0;
-
-  return "$" +
-    number.toLocaleString(
-      "en-US",
-      {
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      }
-    );
-
-}
-
-
-function formatPeso(value){
-
-  const number =
-    Number(value) || 0;
-
-  return "₱" +
-    number.toLocaleString(
-      "en-PH",
-      {
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      }
-    );
-
-}
-
-
-/* =====================================================
-   AUTH STATE
-===================================================== */
-
-onAuthStateChanged(
-  auth,
-  (user) => {
-
-    console.log(
-      "ACCOUNT AUTH UID:",
-      user ? user.uid : null
-    );
-
-
-    if(!user){
-
-      window.location.href =
-        "login.html";
-
+  auth.onAuthStateChanged((user) => {
+    if (!user) {
+      window.location.href = "login.html";
       return;
-
     }
+    currentUser = user;
+    document.getElementById("userEmail").innerText = user.email || user.phoneNumber || "User Connected";
+    loadUserData(user.uid);
+  });
 
+  function safeNumber(val) {
+    const n = Number(val);
+    return Number.isFinite(n) ? n : 0;
+  }
 
-    /*
-      SHOW USER EMAIL / PHONE
-    */
-
-    profilePhone.textContent =
-      user.email ||
-      "Member account";
-
-
-    /*
-      MEMBER NAME
-    */
-
-    profileName.textContent =
-      "Welcome Member!";
-
-
-    /*
-      IMPORTANT:
-
-      Users/{UID}
-
-      balance
-        = PHP balance
-
-      usdBalance
-        = USD balance
-    */
-
-    const userRef =
-      doc(
-        db,
-        "Users",
-        user.uid
-      );
-
-
-    /*
-      REAL-TIME FIRESTORE LISTENER
-    */
-
-    onSnapshot(
-
-      userRef,
-
-      (snapshot) => {
-
-        if(!snapshot.exists()){
-
-          console.error(
-            "Users document not found:",
-            user.uid
-          );
-
-          dollarBalance.textContent =
-            "$0.00";
-
-          pesoBalance.textContent =
-            "₱0.00";
-
-          dollarBalance
-            .classList
-            .remove("loading");
-
-          pesoBalance
-            .classList
-            .remove("loading");
-
-          return;
-
-        }
-
-
-        const data =
-          snapshot.data() || {};
-
-
-        console.log(
-          "ACCOUNT DATA:",
-          data
-        );
-
-
-        /*
-          PHP
-        */
-
-        const phpBalance =
-          Number(
-            data.balance
-          ) || 0;
-
-
-        /*
-          USD
-        */
-
-        const usdBalance =
-          Number(
-            data.usdBalance
-          ) || 0;
-
-
-        console.log(
-          "USD BALANCE:",
-          usdBalance
-        );
-
-        console.log(
-          "PHP BALANCE:",
-          phpBalance
-        );
-
-
-        /*
-          UPDATE UI
-        */
-
-        dollarBalance.textContent =
-          formatUSD(
-            usdBalance
-          );
-
-
-        pesoBalance.textContent =
-          formatPeso(
-            phpBalance
-          );
-
-
-        dollarBalance
-          .classList
-          .remove("loading");
-
-        pesoBalance
-          .classList
-          .remove("loading");
-
-      },
-
-
-      (error) => {
-
-        console.error(
-          "ACCOUNT FIRESTORE ERROR:",
-          error
-        );
-
+  async function loadUserData(uid) {
+    try {
+      const doc = await db.collection("Users").doc(uid).get();
+      if (doc.exists) {
+        const data = doc.data();
+        phpBalance = safeNumber(data.balance);
+        usdBalance = safeNumber(data.usdBalance);
+        renderBalances();
       }
-
-    );
-
+    } catch (e) {
+      console.error("Error loading account data:", e);
+    }
   }
 
-);
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-
-logoutButton.addEventListener(
-  "click",
-  async () => {
-
-    try{
-
-      logoutButton.disabled =
-        true;
-
-      logoutButton.textContent =
-        "LOGGING OUT...";
-
-
-      await signOut(auth);
-
-
-      window.location.href =
-        "login.html";
-
-
-    }catch(error){
-
-      console.error(
-        "LOGOUT ERROR:",
-        error
-      );
-
-
-      logoutButton.disabled =
-        false;
-
-      logoutButton.textContent =
-        "LOG OUT OF ACCOUNT";
-
-
-      alert(
-        "Unable to logout. Please try again."
-      );
-
-    }
-
+  function renderBalances() {
+    const usdElem = document.getElementById("usdBalance");
+    const phpElem = document.getElementById("phpBalance");
+    if (usdElem) usdElem.innerText = "$" + usdBalance.toFixed(2);
+    if (phpElem) phpElem.innerText = "₱" + phpBalance.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
-);
 
-
-/* =====================================================
-   QUICK ACTIONS
-===================================================== */
-
-document
-  .getElementById(
-    "rechargeButton"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      window.location.href =
-        "recharge.html";
-
+  async function saveBalancesToFirestore() {
+    if (!currentUser) return;
+    try {
+      await db.collection("Users").doc(currentUser.uid).set({
+        balance: safeNumber(phpBalance),
+        usdBalance: safeNumber(usdBalance),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    } catch (e) {
+      console.error("Error saving balances:", e);
     }
-  );
+  }
 
+  function openRechargeModal() { document.getElementById('rechargeModal').style.display = 'flex'; }
+  function closeRechargeModal() { document.getElementById('rechargeModal').style.display = 'none'; }
 
-document
-  .getElementById(
-    "withdrawButton"
-  )
-  .addEventListener(
-    "click",
-    () => {
+  function openWithdrawModal() { document.getElementById('withdrawModal').style.display = 'flex'; }
+  function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
 
-      window.location.href =
-        "withdraw.html";
-
+  async function submitRecharge() {
+    const amount = parseFloat(document.getElementById('rechargeAmount').value) || 0;
+    if (amount < 100) {
+      alert("Minimum recharge amount is ₱100.");
+      return;
     }
-  );
+    phpBalance += amount;
+    renderBalances();
+    await saveBalancesToFirestore();
+    closeRechargeModal();
+    alert(`Successfully recharged ₱${amount.toFixed(2)} PHP!`);
+    document.getElementById('rechargeAmount').value = '';
+  }
 
-
-document
-  .getElementById(
-    "historyButton"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      window.location.href =
-        "history.html";
-
+  async function submitWithdrawal() {
+    const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+    const accountNo = document.getElementById('accountNo').value.trim();
+    if (!accountNo || amount < 100) {
+      alert("Please enter a valid account number and minimum withdrawal amount of ₱100.");
+      return;
     }
-  );
+    if (amount > phpBalance) {
+      alert("Insufficient PHP balance.");
+      return;
+    }
+    phpBalance -= amount;
+    renderBalances();
+    await saveBalancesToFirestore();
+    closeWithdrawModal();
+    alert(`Withdrawal request for ₱${amount.toFixed(2)} PHP submitted successfully!`);
+    document.getElementById('withdrawAmount').value = '';
+    document.getElementById('accountNo').value = '';
+  }
 
+  function handleLogout() {
+    auth.signOut().then(() => {
+      window.location.href = "login.html";
+    });
+  }
 </script>
 
 </body>
