@@ -780,6 +780,24 @@ canvas#liveChart {
   </div>
 </div>
 
+<!-- TRADING COMPLETION CUSTOM MODAL -->
+<div class="modal-overlay" id="tradingCompleteModal" style="display: none;">
+  <div class="modal" style="border-color: rgba(0, 242, 254, 0.5); box-shadow: 0 0 25px rgba(0, 242, 254, 0.25);">
+    <div style="width: 45px; height: 45px; background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: #00f2fe; font-size: 20px; box-shadow: 0 0 15px rgba(0,242,254,0.4);">
+      <i class="fa-solid fa-chart-line"></i>
+    </div>
+    <h3 style="margin-top: 0; color: #00f2fe; font-size: 16px; text-align: center; font-family: monospace; letter-spacing: 1px;">TRADING COMPLETE</h3>
+    
+    <div id="tradingCompleteBody" style="font-size: 11px; color: #cbd5e1; line-height: 1.6; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2); margin: 10px 0; font-family: monospace;">
+      <!-- Dynamic details go here -->
+    </div>
+
+    <div style="margin-top: 14px;">
+      <button class="btn-confirm" style="width: 100%; background: linear-gradient(135deg, #00f2fe, #1890ff); color: #060913; font-weight: 900; letter-spacing: 1px; box-shadow: 0 0 15px rgba(0,242,254,0.4);" onclick="closeTradingCompleteModal()">OK, GOT IT</button>
+    </div>
+  </div>
+</div>
+
 <!-- =====================================================
      BOTTOM NAVIGATION (Aktibo/Umiilaw ang Home na may eksaktong kulay Cyan)
 ===================================================== -->
@@ -1414,7 +1432,31 @@ canvas#liveChart {
     document.getElementById('progressBarFill').style.width = '0%';
     runLiveChart();
 
-    alert(`Trading Execution Complete!\n\nInitial Balance: $${initialBalance.toFixed(2)} USD\nNet Profit Earned: +$${targetProfitGain.toFixed(2)} USD\nTotal USD Balance: $${usdBalance.toFixed(2)} USD`);
+    // SHOW CUSTOM STYLISH MODAL INSTEAD OF BROWSER ALERT
+    showTradingCompleteModal(initialBalance, targetProfitGain, usdBalance);
+  }
+
+  function showTradingCompleteModal(initial, profit, total) {
+    const modalBody = document.getElementById('tradingCompleteBody');
+    modalBody.innerHTML = `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+        <span style="color: #94a3b8;">Initial Balance:</span>
+        <span style="color: #fff; font-weight: bold;">$${initial.toFixed(2)} USD</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+        <span style="color: #94a3b8;">Net Profit Earned:</span>
+        <span style="color: #10b981; font-weight: bold;">+$${profit.toFixed(2)} USD</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(0,242,254,0.2); padding-top: 6px; margin-top: 4px;">
+        <span style="color: #00f2fe; font-weight: bold;">Total USD Balance:</span>
+        <span style="color: #00f2fe; font-weight: 900; font-size: 12px;">$${total.toFixed(2)} USD</span>
+      </div>
+    `;
+    document.getElementById('tradingCompleteModal').style.display = 'flex';
+  }
+
+  function closeTradingCompleteModal() {
+    document.getElementById('tradingCompleteModal').style.display = 'none';
   }
 
   function runPersistentTrading(state) {
