@@ -1314,9 +1314,11 @@ canvas#liveChart {
     
     let colorMode = "normal";
     if (updatedNewBalance > previousBalance) {
-      colorMode = "up";
+      colorMode = "up";      // Green kapag tumaas
     } else if (updatedNewBalance < previousBalance) {
-      colorMode = "down";
+      colorMode = "down";    // Red kapag bumaba
+    } else {
+      colorMode = "normal";  // White kung walang nangyaring pagbabago
     }
 
     usdBalance = updatedNewBalance;
@@ -1389,8 +1391,9 @@ canvas#liveChart {
     const tick = async () => {
       if (!isTradingRunning) return;
 
+      // Dito tinatawag ang updateTradingProgressFromState kung saan nakatakda
+      // ang pag-update ng balanse at pagpili kung Green, Red, o White (normal).
       const finished = updateTradingProgressFromState(state, true);
-      // Tinanggal na natin ang renderBalancesUI('normal') dito para hindi masira ang kulay na itinakda sa updateTradingProgressFromState
 
       tradingStateSaveCounter++;
       // Persist the current balance periodically, but do not write to Firestore
