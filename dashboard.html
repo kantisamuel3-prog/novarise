@@ -477,6 +477,83 @@ canvas#liveChart {
 .modal-buttons { display: flex; gap: 10px; margin-top: 16px; }
 .btn-close { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px; flex: 1; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; }
 .btn-confirm { background: linear-gradient(135deg, #00d4ff, #0055ff); color: #fff; border: none; padding: 10px; flex: 1; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; box-shadow: 0 3px 10px rgba(0, 212, 255, 0.3); }
+
+/* TRADING CODE INPUT ENHANCEMENT */
+.code-input-card{
+  position:relative;
+  overflow:hidden;
+}
+.code-input-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(120deg,rgba(0,212,255,.035),transparent 45%,rgba(37,99,235,.035));
+}
+.code-input-group{
+  position:relative;
+  display:flex;
+  gap:7px;
+  margin-top:8px;
+  padding:5px;
+  border:1px solid rgba(0,212,255,.18);
+  border-radius:11px;
+  background:rgba(2,8,18,.78);
+  box-shadow:inset 0 0 18px rgba(0,212,255,.025),0 0 14px rgba(0,212,255,.025);
+}
+#tradingCodeInput{
+  flex:1;
+  min-width:0;
+  height:34px;
+  border:1px solid rgba(0,212,255,.12);
+  border-radius:7px;
+  background:rgba(0,0,0,.35);
+  color:#fff;
+  padding:0 11px;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.2px;
+  outline:none;
+  text-transform:uppercase;
+}
+#tradingCodeInput::placeholder{
+  color:#475569;
+  letter-spacing:1.4px;
+}
+#tradingCodeInput:focus{
+  border-color:rgba(0,212,255,.65);
+  box-shadow:0 0 0 2px rgba(0,212,255,.07),0 0 14px rgba(0,212,255,.12);
+}
+#tradingCodeInput.code-valid{
+  border-color:rgba(16,185,129,.7);
+  box-shadow:0 0 0 2px rgba(16,185,129,.07),0 0 14px rgba(16,185,129,.12);
+}
+#tradingCodeInput.code-invalid{
+  border-color:rgba(239,68,68,.65);
+  box-shadow:0 0 0 2px rgba(239,68,68,.07),0 0 14px rgba(239,68,68,.10);
+}
+.btn-execute-code{
+  min-width:82px;
+  border-radius:7px!important;
+  font-weight:800!important;
+  letter-spacing:.4px;
+}
+.trading-code-hint{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  margin-top:6px;
+  color:#64748b;
+  font-size:7px;
+}
+.trading-code-dot{
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#00d4ff;
+  box-shadow:0 0 7px rgba(0,212,255,.8);
+}
+
 </style>
 </head>
 
@@ -677,8 +754,12 @@ canvas#liveChart {
         <p style="margin: 0; color: #94a3b8; font-size: 8px;">Enter code for 2-min session.</p>
         
         <div class="code-input-group">
-          <input type="text" id="tradingCodeInput" placeholder="ENTER CODE..." maxlength="12">
+          <input type="text" id="tradingCodeInput" placeholder="ENTER VALID CODE..." maxlength="40" autocomplete="off" spellcheck="false">
           <button class="btn-execute-code" id="btnExecute" onclick="startTradingProcess()">Execute</button>
+        </div>
+        <div class="trading-code-hint">
+          <span class="trading-code-dot"></span>
+          <span>Only active codes created in the system are accepted.</span>
         </div>
 
         <div class="progress-container" id="progressContainer">
@@ -714,6 +795,27 @@ canvas#liveChart {
       <button class="btn-close" onclick="closeZeroBalanceModal()">Close</button>
       <button class="btn-confirm" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);" onclick="closeZeroBalanceModal()">OK, Got it</button>
     </div>
+  </div>
+</div>
+
+<!-- TRADING CODE NOTICE MODAL -->
+<div class="modal-overlay" id="tradingCodeNoticeModal">
+  <div class="modal" style="border-color:rgba(0,212,255,.32);text-align:center;max-width:360px;">
+    <div id="tradingCodeNoticeIcon"
+         style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:18px;background:rgba(0,212,255,.10);border:1px solid rgba(0,212,255,.35);">
+      ⚡
+    </div>
+    <h3 id="tradingCodeNoticeTitle"
+        style="margin:0 0 7px;color:#00d4ff;font-size:16px;">
+      Trading Code
+    </h3>
+    <p id="tradingCodeNoticeMessage"
+       style="font-size:11px;color:#cbd5e1;line-height:1.6;margin:0 0 16px;">
+      Enter a valid trading code.
+    </p>
+    <button class="btn-confirm" style="width:100%;" onclick="closeTradingCodeNoticeModal()">
+      OK, GOT IT
+    </button>
   </div>
 </div>
 
@@ -1534,19 +1636,166 @@ canvas#liveChart {
     runPersistentTrading(state);
   }
 
+  function openTradingCodeNoticeModal(title, message, icon = '⚡', type = 'warning') {
+    const modal = document.getElementById('tradingCodeNoticeModal');
+    const iconEl = document.getElementById('tradingCodeNoticeIcon');
+    const titleEl = document.getElementById('tradingCodeNoticeTitle');
+    const messageEl = document.getElementById('tradingCodeNoticeMessage');
+
+    if (!modal) return;
+
+    titleEl.innerText = title;
+    messageEl.innerText = message;
+    iconEl.innerText = icon;
+
+    if (type === 'error') {
+      iconEl.style.background = 'rgba(239,68,68,.12)';
+      iconEl.style.borderColor = 'rgba(239,68,68,.45)';
+      iconEl.style.color = '#fca5a5';
+      titleEl.style.color = '#fca5a5';
+    } else if (type === 'success') {
+      iconEl.style.background = 'rgba(16,185,129,.12)';
+      iconEl.style.borderColor = 'rgba(16,185,129,.45)';
+      iconEl.style.color = '#6ee7b7';
+      titleEl.style.color = '#6ee7b7';
+    } else {
+      iconEl.style.background = 'rgba(0,212,255,.10)';
+      iconEl.style.borderColor = 'rgba(0,212,255,.35)';
+      iconEl.style.color = '#00d4ff';
+      titleEl.style.color = '#00d4ff';
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  function closeTradingCodeNoticeModal() {
+    const modal = document.getElementById('tradingCodeNoticeModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function setTradingCodeInputState(state) {
+    const input = document.getElementById('tradingCodeInput');
+    if (!input) return;
+    input.classList.remove('code-valid', 'code-invalid');
+    if (state === 'valid') input.classList.add('code-valid');
+    if (state === 'invalid') input.classList.add('code-invalid');
+  }
+
+  async function validateTradingCode(code) {
+    const normalizedCode = String(code || '').trim().toUpperCase();
+    if (!normalizedCode) return { valid: false, reason: 'empty' };
+
+    /*
+      FIRESTORE SETUP:
+      Collection: TradingCodes
+      Document ID: exact trading code, e.g. NEXORA2026
+      Optional field:
+        active: true
+      If "active" is omitted, the code is treated as active.
+    */
+    const codeRef = db.collection('TradingCodes').doc(normalizedCode);
+    const codeSnap = await codeRef.get();
+
+    if (!codeSnap.exists) {
+      return { valid: false, reason: 'not_found' };
+    }
+
+    const codeData = codeSnap.data() || {};
+
+    if (codeData.active === false) {
+      return { valid: false, reason: 'inactive' };
+    }
+
+    return {
+      valid: true,
+      data: codeData
+    };
+  }
+
   async function startTradingProcess() {
     const codeInputElem = document.getElementById('tradingCodeInput');
     if (!codeInputElem) return;
-    const codeInput = codeInputElem.value.trim();
-    if (!codeInput) { alert('Please enter a trading code.'); return; }
+    const codeInput = codeInputElem.value.trim().toUpperCase();
 
-    if (usdBalance <= 0) {
-      openZeroBalanceModal();
-      addLog(`<span class="loss">[REJECTED]</span> Insufficient balance ($0.00).`);
+    if (!codeInput) {
+      setTradingCodeInputState('invalid');
+      openTradingCodeNoticeModal(
+        'Trading Code Required',
+        'Please enter a trading code before starting the 2-minute session.',
+        '⚠️',
+        'warning'
+      );
       return;
     }
 
     if (isTradingRunning) return;
+
+    const executeButton = document.getElementById('btnExecute');
+    if (executeButton) {
+      executeButton.disabled = true;
+      executeButton.style.opacity = '0.65';
+      executeButton.innerText = 'Checking...';
+    }
+
+    try {
+      const validation = await validateTradingCode(codeInput);
+
+      if (!validation.valid) {
+        setTradingCodeInputState('invalid');
+
+        const message =
+          validation.reason === 'inactive'
+            ? 'This trading code is currently inactive. Please use an active code created in the system.'
+            : 'This trading code was not found. Only valid codes created in Firestore can be used.';
+
+        openTradingCodeNoticeModal(
+          'Invalid Trading Code',
+          message,
+          '✕',
+          'error'
+        );
+
+        addLog(`<span class="loss">[REJECTED]</span> Invalid trading code <b>${codeInput}</b>.`);
+
+        if (executeButton) {
+          executeButton.disabled = false;
+          executeButton.style.opacity = '1';
+          executeButton.innerText = 'Execute';
+        }
+        return;
+      }
+
+      setTradingCodeInputState('valid');
+
+    } catch (error) {
+      console.error('Trading code validation error:', error);
+      setTradingCodeInputState('invalid');
+
+      openTradingCodeNoticeModal(
+        'Code Verification Failed',
+        'Unable to verify the trading code right now. Please try again.',
+        '!',
+        'error'
+      );
+
+      if (executeButton) {
+        executeButton.disabled = false;
+        executeButton.style.opacity = '1';
+        executeButton.innerText = 'Execute';
+      }
+      return;
+    }
+
+    if (usdBalance <= 0) {
+      openZeroBalanceModal();
+      addLog(`<span class="loss">[REJECTED]</span> Insufficient balance ($0.00).`);
+      if (executeButton) {
+        executeButton.disabled = false;
+        executeButton.style.opacity = '1';
+        executeButton.innerText = 'Execute';
+      }
+      return;
+    }
 
     const durationMs = 120000;
     const initialBalance = Number(usdBalance.toFixed(2));
