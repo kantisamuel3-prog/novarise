@@ -69,7 +69,7 @@
           font-family: 'Inter', sans-serif;
           overflow-x: hidden;
           min-height: 100vh;
-          padding-bottom: 92px;
+          padding-bottom: 85px;
       }
 
       .brushed-metal-overlay {
@@ -97,21 +97,21 @@
       .toast {
           position: fixed;
           left: 50%;
-          bottom: 91px;
+          bottom: 85px;
           transform: translate(-50%, 20px);
           opacity: 0;
           pointer-events: none;
           z-index: 3000;
           color: #040814;
           background: #00f2fe;
-          padding: 10px 18px;
+          padding: 8px 14px;
           border-radius: 9999px;
-          font-size: 11px;
+          font-size: 10px;
           font-family: 'JetBrains Mono', monospace;
           font-weight: 700;
           white-space: nowrap;
           transition: all 0.25s ease;
-          box-shadow: 0 0 15px rgba(0,242,254,0.5);
+          box-shadow: 0 0 12px rgba(0,242,254,0.5);
       }
       .toast.show {
           opacity: 1;
@@ -135,37 +135,28 @@
   <!-- =====================================================
        MARKET TICKER
   ===================================================== -->
-  <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-2">
-      <div class="flex items-center text-xs font-mono">
-          <div class="px-4 py-1 bg-nexora-cyan/10 border-r border-nexora-cyan/30 text-nexora-cyan font-bold flex items-center shrink-0 z-10 shadow-lg">
-              <span class="w-2 h-2 rounded-full bg-nexora-accent animate-ping mr-2"></span>
+  <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-1.5">
+      <div class="flex items-center text-[11px] font-mono">
+          <div class="px-3 py-0.5 bg-nexora-cyan/10 border-r border-nexora-cyan/30 text-nexora-cyan font-bold flex items-center shrink-0 z-10 shadow-lg">
+              <span class="w-1.5 h-1.5 rounded-full bg-nexora-accent animate-ping mr-1.5"></span>
               <span>NEXORA TAPE</span>
           </div>
           <div class="overflow-hidden whitespace-nowrap flex w-full">
-              <div class="inline-flex animate-marquee space-x-10 items-center pl-6">
-                  <div class="flex items-center space-x-2">
+              <div class="inline-flex animate-marquee space-x-8 items-center pl-4">
+                  <div class="flex items-center space-x-1.5">
                       <span class="text-gray-400">BTC/USD</span>
                       <span class="text-white font-semibold">$96,420.00</span>
-                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +3.2%</span>
+                      <span class="text-nexora-accent text-[10px]"><i class="fa-solid fa-caret-up"></i> +3.2%</span>
                   </div>
-                  <div class="flex items-center space-x-2">
+                  <div class="flex items-center space-x-1.5">
                       <span class="text-gray-400">ETH/USD</span>
                       <span class="text-white font-semibold">$3,520.80</span>
-                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +2.4%</span>
+                      <span class="text-nexora-accent text-[10px]"><i class="fa-solid fa-caret-up"></i> +2.4%</span>
                   </div>
-                  <div class="flex items-center space-x-2">
+                  <div class="flex items-center space-x-1.5">
                       <span class="text-gray-400">NEX/USD</span>
                       <span class="text-nexora-cyan font-bold">$18.95</span>
-                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +18.4%</span>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                      <span class="text-gray-400">GOLD/OUNCE</span>
-                      <span class="text-white font-semibold">$2,658.18</span>
-                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +0.85%</span>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                      <span class="text-gray-400">24H VOLUME</span>
-                      <span class="text-nexora-gold font-semibold">$2.84 BILLION</span>
+                      <span class="text-nexora-accent text-[10px]"><i class="fa-solid fa-caret-up"></i> +18.4%</span>
                   </div>
               </div>
           </div>
@@ -173,125 +164,125 @@
   </header>
 
   <!-- =====================================================
-       MAIN CONTENT
+       MAIN CONTENT (COMPACT MOBILE OPTIMIZED)
   ===================================================== -->
-  <main class="relative z-10 w-full max-w-xl mx-auto px-4 py-6">
+  <main class="relative z-10 w-full max-w-md mx-auto px-3 py-4 space-y-3">
 
       <!-- HERO SECTION -->
-      <section class="text-center flex flex-col items-center justify-center mb-6">
-          <div class="relative w-20 h-20 mb-2 flex items-center justify-center animate-pulse-cyan">
+      <section class="text-center flex flex-col items-center justify-center">
+          <div class="relative w-14 h-14 mb-1 flex items-center justify-center animate-pulse-cyan">
               <div class="absolute inset-0 rounded-full border-2 border-dashed border-nexora-cyan/50 animate-orbit"></div>
-              <svg class="w-14 h-14 drop-shadow-[0_0_15px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg class="w-10 h-10 drop-shadow-[0_0_10px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
                   <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
                   <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
               </svg>
           </div>
 
-          <div class="flex items-center justify-center space-x-1 tracking-wider text-2xl font-black font-brand mt-1 mb-1">
+          <div class="flex items-center justify-center space-x-1 tracking-wider text-lg font-black font-brand">
               <span class="text-chrome-3d">NEX</span>
-              <span class="relative inline-flex items-center justify-center w-5 h-5 mx-1 border-2 border-nexora-gold rounded-full gold-ring-accent">
-                  <span class="w-2 h-2 rounded-full bg-slate-900 border border-nexora-gold"></span>
+              <span class="relative inline-flex items-center justify-center w-4 h-4 mx-0.5 border border-nexora-gold rounded-full gold-ring-accent">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 border border-nexora-gold"></span>
               </span>
               <span class="text-chrome-3d">RA</span>
           </div>
 
-          <p class="text-[10px] font-bold tracking-[0.3em] text-nexora-gold uppercase font-mono">
+          <p class="text-[9px] font-bold tracking-[0.2em] text-nexora-gold uppercase font-mono mt-0.5">
               TRADE. GROW. TOGETHER
           </p>
       </section>
 
       <!-- PAGE TITLE -->
-      <div class="mb-5 px-1">
-          <h1 class="text-xl font-bold text-white font-mono mb-1">My Team</h1>
-          <p class="text-xs text-gray-400 font-mono">Invite friends and grow your Nexora network[cite: 7].</p>
+      <div class="px-1 text-center sm:text-left">
+          <h1 class="text-base font-bold text-white font-mono">My Team</h1>
+          <p class="text-[11px] text-gray-400 font-mono">Invite friends and grow your Nexora network[cite: 7].</p>
       </div>
 
-      <!-- INVITATION CARD -->
-      <div class="relative overflow-hidden rounded-2xl p-5 bg-nexora-card/90 border border-nexora-cyan/30 shadow-xl mb-5 backdrop-blur-md">
-          <div class="text-[10px] font-black tracking-widest text-nexora-cyan font-mono mb-2">INVITATION CODE</div>
-          <div class="text-xl font-black text-white font-mono mb-4 tracking-wider">Your Invitation Code</div>
+      <!-- INVITATION CARD (COMPACT) -->
+      <div class="relative overflow-hidden rounded-xl p-3.5 bg-nexora-card/90 border border-nexora-cyan/30 shadow-lg backdrop-blur-md">
+          <div class="text-[9px] font-black tracking-widest text-nexora-cyan font-mono mb-1">INVITATION CODE</div>
+          <div class="text-sm font-black text-white font-mono mb-2">Your Invitation Code</div>
 
-          <div class="flex items-center justify-between bg-black/40 border border-nexora-cyan/30 rounded-xl px-4 py-3 mb-3">
-              <span id="referralCode" class="font-mono text-base font-bold text-nexora-cyan tracking-wider">Loading...</span>
-              <button type="button" id="copySmallButton" class="text-nexora-cyan hover:text-white text-base cursor-pointer" aria-label="Copy invitation code">
+          <div class="flex items-center justify-between bg-black/40 border border-nexora-cyan/30 rounded-lg px-3 py-2 mb-2.5">
+              <span id="referralCode" class="font-mono text-xs font-bold text-nexora-cyan tracking-wider">Loading...</span>
+              <button type="button" id="copySmallButton" class="text-nexora-cyan hover:text-white text-sm cursor-pointer" aria-label="Copy invitation code">
                   <i class="fa-regular fa-copy"></i>
               </button>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
-              <button type="button" id="copyCodeButton" class="py-3 rounded-xl bg-nexora-cyan/10 border border-nexora-cyan/30 text-nexora-cyan font-bold text-xs font-mono hover:bg-nexora-cyan/20 transition-all cursor-pointer">
+          <div class="grid grid-cols-2 gap-2">
+              <button type="button" id="copyCodeButton" class="py-2 rounded-lg bg-nexora-cyan/10 border border-nexora-cyan/30 text-nexora-cyan font-bold text-[11px] font-mono hover:bg-nexora-cyan/20 transition-all cursor-pointer">
                   <i class="fa-regular fa-copy mr-1"></i> Copy Code
               </button>
-              <button type="button" id="copyLinkButton" class="py-3 rounded-xl bg-gradient-to-r from-nexora-cyan to-nexora-blue text-slate-950 font-black text-xs font-mono hover:opacity-90 transition-all cursor-pointer shadow-[0_0_15px_rgba(0,242,254,0.4)]">
+              <button type="button" id="copyLinkButton" class="py-2 rounded-lg bg-gradient-to-r from-nexora-cyan to-nexora-blue text-slate-950 font-black text-[11px] font-mono hover:opacity-90 transition-all cursor-pointer shadow-[0_0_10px_rgba(0,242,254,0.4)]">
                   <i class="fa-solid fa-link mr-1"></i> Copy Link
               </button>
           </div>
       </div>
 
-      <!-- STAT CARDS -->
-      <div class="grid grid-cols-2 gap-4 mb-5">
-          <div class="rounded-2xl p-4 bg-nexora-card/90 border border-nexora-cyan/20 shadow-xl text-center backdrop-blur-md">
-              <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-nexora-cyan/10 text-nexora-cyan flex items-center justify-center text-lg border border-nexora-cyan/20">
+      <!-- STAT CARDS (COMPACT) -->
+      <div class="grid grid-cols-2 gap-2.5">
+          <div class="rounded-xl p-3 bg-nexora-card/90 border border-nexora-cyan/20 shadow-lg text-center backdrop-blur-md">
+              <div class="w-7 h-7 mx-auto mb-1 rounded-lg bg-nexora-cyan/10 text-nexora-cyan flex items-center justify-center text-xs border border-nexora-cyan/20">
                   <i class="fa-solid fa-users"></i>
               </div>
-              <div id="teamSize" class="text-xl font-black text-white font-mono mb-1">0</div>
-              <div class="text-[9px] font-black tracking-wider text-gray-400 font-mono uppercase">Team Size</div>
+              <div id="teamSize" class="text-base font-black text-white font-mono mb-0.5">0</div>
+              <div class="text-[8px] font-black tracking-wider text-gray-400 font-mono uppercase">Team Size</div>
           </div>
 
-          <div class="rounded-2xl p-4 bg-nexora-card/90 border border-emerald-500/20 shadow-xl text-center backdrop-blur-md">
-              <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg border border-emerald-500/20">
+          <div class="rounded-xl p-3 bg-nexora-card/90 border border-emerald-500/20 shadow-lg text-center backdrop-blur-md">
+              <div class="w-7 h-7 mx-auto mb-1 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs border border-emerald-500/20">
                   <span>₱</span>
               </div>
-              <div id="totalCommission" class="text-xl font-black text-emerald-400 font-mono mb-1">₱0.00</div>
-              <div class="text-[9px] font-black tracking-wider text-gray-400 font-mono uppercase">Total Commission</div>
+              <div id="totalCommission" class="text-base font-black text-emerald-400 font-mono mb-0.5">₱0.00</div>
+              <div class="text-[8px] font-black tracking-wider text-gray-400 font-mono uppercase">Total Commission</div>
           </div>
       </div>
 
-      <!-- TEAM OVERVIEW -->
-      <div class="rounded-2xl p-5 bg-nexora-card/90 border border-nexora-cyan/25 shadow-xl backdrop-blur-md mb-6">
-          <div class="flex items-center gap-3 mb-4 pb-3 border-b border-nexora-cyan/10">
-              <div class="w-10 h-10 rounded-xl bg-nexora-cyan/10 text-nexora-cyan flex items-center justify-center text-lg border border-nexora-cyan/20">
+      <!-- TEAM OVERVIEW (MAS COMPACT/MAS MALIIT) -->
+      <div class="rounded-xl p-3.5 bg-nexora-card/90 border border-nexora-cyan/25 shadow-lg backdrop-blur-md">
+          <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-nexora-cyan/10">
+              <div class="w-8 h-8 rounded-lg bg-nexora-cyan/10 text-nexora-cyan flex items-center justify-center text-sm border border-nexora-cyan/20">
                   <i class="fa-solid fa-network-wired"></i>
               </div>
               <div>
-                  <h2 class="text-sm font-bold text-white font-mono">Team Overview</h2>
-                  <p class="text-[11px] text-gray-400 font-mono">Your direct and extended team members[cite: 7].</p>
+                  <h2 class="text-xs font-bold text-white font-mono">Team Overview</h2>
+                  <p class="text-[10px] text-gray-400 font-mono">Direct and extended team members[cite: 7].</p>
               </div>
           </div>
 
-          <div class="space-y-2.5">
-              <div class="flex items-center justify-between p-3 bg-black/30 border border-white/5 rounded-xl">
-                  <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-lg bg-nexora-cyan/15 text-nexora-cyan font-bold font-mono text-xs flex items-center justify-center border border-nexora-cyan/30">L1</div>
+          <div class="space-y-2">
+              <div class="flex items-center justify-between p-2.5 bg-black/30 border border-white/5 rounded-lg">
+                  <div class="flex items-center gap-2">
+                      <div class="w-7 h-7 rounded-md bg-nexora-cyan/15 text-nexora-cyan font-bold font-mono text-[11px] flex items-center justify-center border border-nexora-cyan/30">L1</div>
                       <div>
-                          <div class="text-xs font-bold text-white font-mono">Level 1</div>
-                          <div class="text-[10px] text-gray-400 font-mono">Direct referrals[cite: 7]</div>
+                          <div class="text-[11px] font-bold text-white font-mono">Level 1</div>
+                          <div class="text-[9px] text-gray-400 font-mono">Direct referrals[cite: 7]</div>
                       </div>
                   </div>
-                  <div id="level1Count" class="text-base font-bold text-nexora-cyan font-mono">0</div>
+                  <div id="level1Count" class="text-sm font-bold text-nexora-cyan font-mono">0</div>
               </div>
 
-              <div class="flex items-center justify-between p-3 bg-black/30 border border-white/5 rounded-xl">
-                  <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-lg bg-nexora-cyan/15 text-nexora-cyan font-bold font-mono text-xs flex items-center justify-center border border-nexora-cyan/30">L2</div>
+              <div class="flex items-center justify-between p-2.5 bg-black/30 border border-white/5 rounded-lg">
+                  <div class="flex items-center gap-2">
+                      <div class="w-7 h-7 rounded-md bg-nexora-cyan/15 text-nexora-cyan font-bold font-mono text-[11px] flex items-center justify-center border border-nexora-cyan/30">L2</div>
                       <div>
-                          <div class="text-xs font-bold text-white font-mono">Level 2</div>
-                          <div class="text-[10px] text-gray-400 font-mono">Referrals of Level 1[cite: 7]</div>
+                          <div class="text-[11px] font-bold text-white font-mono">Level 2</div>
+                          <div class="text-[9px] text-gray-400 font-mono">Referrals of Level 1[cite: 7]</div>
                       </div>
                   </div>
-                  <div id="level2Count" class="text-base font-bold text-nexora-cyan font-mono">0</div>
+                  <div id="level2Count" class="text-sm font-bold text-nexora-cyan font-mono">0</div>
               </div>
 
-              <div class="flex items-center justify-between p-3 bg-black/30 border border-white/5 rounded-xl">
-                  <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-lg bg-nexora-cyan/15 text-nexora-cyan font-bold font-mono text-xs flex items-center justify-center border border-nexora-cyan/30">L3</div>
+              <div class="flex items-center justify-between p-2.5 bg-black/30 border border-white/5 rounded-lg">
+                  <div class="flex items-center gap-2">
+                      <div class="w-7 h-7 rounded-md bg-nexora-cyan/15 text-nexora-cyan font-bold font-mono text-[11px] flex items-center justify-center border border-nexora-cyan/30">L3</div>
                       <div>
-                          <div class="text-xs font-bold text-white font-mono">Level 3</div>
-                          <div class="text-[10px] text-gray-400 font-mono">Referrals of Level 2[cite: 7]</div>
+                          <div class="text-[11px] font-bold text-white font-mono">Level 3</div>
+                          <div class="text-[9px] text-gray-400 font-mono">Referrals of Level 2[cite: 7]</div>
                       </div>
                   </div>
-                  <div id="level3Count" class="text-base font-bold text-nexora-cyan font-mono">0</div>
+                  <div id="level3Count" class="text-sm font-bold text-nexora-cyan font-mono">0</div>
               </div>
           </div>
       </div>
@@ -301,17 +292,17 @@
   <!-- =====================================================
        BOTTOM NAVIGATION (Consistent with Dashboard & Account)
   ===================================================== -->
-  <nav class="fixed bottom-0 left-0 right-0 h-20 bg-[#030b17]/95 border-t border-nexora-cyan/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
-      <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
-          <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
+  <nav class="fixed bottom-0 left-0 right-0 h-18 bg-[#030b17]/95 border-t border-nexora-cyan/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
+      <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-[11px] font-bold">
+          <svg class="w-5 h-5 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
           <span>Home</span>
       </a>
-      <a href="team.html" class="flex flex-col items-center justify-center w-full h-full text-nexora-cyan transition-colors text-xs font-bold drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
-          <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      <a href="team.html" class="flex flex-col items-center justify-center w-full h-full text-nexora-cyan transition-colors text-[11px] font-bold drop-shadow-[0_0_6px_rgba(0,242,254,0.6)]">
+          <svg class="w-5 h-5 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           <span>Team</span>
       </a>
-      <a href="account.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
-          <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+      <a href="account.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-[11px] font-bold">
+          <svg class="w-5 h-5 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
           <span>Account</span>
       </a>
   </nav>
