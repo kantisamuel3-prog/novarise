@@ -1,2586 +1,589 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full select-none">
 
 <head>
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>NEXORA — Team</title>
 
-  <meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, User-scalable=no"
->
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-  <meta
-    name="theme-color"
-    content="#168ff0"
-  >
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <title>Novarise - My Team</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  fontFamily: {
+                      sans: ['Inter', 'sans-serif'],
+                      mono: ['JetBrains Mono', 'monospace'],
+                      brand: ['Montserrat', 'sans-serif']
+                  },
+                  colors: {
+                      nexora: {
+                          navy: '#0a1628',
+                          deep: '#040814',
+                          card: '#0d1d35',
+                          cyan: '#00f2fe',
+                          blue: '#1890ff',
+                          gold: '#dfb248',
+                          goldGlow: '#ffd700',
+                          accent: '#00e676'
+                      }
+                  },
+                  animation: {
+                      'marquee': 'marquee 25s linear infinite',
+                      'pulse-cyan': 'pulseCyan 3s ease-in-out infinite',
+                      'orbit': 'orbit 10s linear infinite',
+                  },
+                  keyframes: {
+                      marquee: {
+                          '0%': { transform: 'translateX(0%)' },
+                          '100%': { transform: 'translateX(-50%)' }
+                      },
+                      pulseCyan: {
+                          '0%, 100%': { filter: 'drop-shadow(0 0 15px rgba(0,242,254,0.4))' },
+                          '50%': { filter: 'drop-shadow(0 0 35px rgba(0,242,254,0.9)) drop-shadow(0 0 60px rgba(0,242,254,0.4))' }
+                      },
+                      orbit: {
+                          '0%': { transform: 'rotate(0deg)' },
+                          '100%': { transform: 'rotate(360deg)' }
+                      }
+                  }
+              }
+          }
+      }
+  </script>
 
   <style>
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-    }
-
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-
-    :root {
-      --blue: #2563eb;
-      --blue-dark: #1d4ed8;
-      --green: #a8d92d;
-      --text: #12365d;
-      --muted: #7890aa;
-      --border: #dcecff;
-    }
-
-
-    html,
-    body {
-      width: 100%;
-      min-height: 100%;
-    }
-
-
-    body {
-
-      min-height: 100vh;
-
-      background:
-        radial-gradient(
-          circle at 8% 8%,
-          rgba(39,154,245,.10),
-          transparent 25%
-        ),
-        radial-gradient(
-          circle at 92% 88%,
-          rgba(168,217,45,.10),
-          transparent 22%
-        ),
-        linear-gradient(
-          135deg,
-          #f9fcff 0%,
-          #edf7ff 52%,
-          #f8fbff 100%
-        );
-
-      color: var(--text);
-
-      padding-bottom: 92px;
-
-      overflow-x: hidden;
-    }
-
-
-
-    /* =====================================================
-       HEADER
-    ===================================================== */
-
-    header {
-
-      width: 100%;
-
-      background:
-        linear-gradient(
-          135deg,
-          #123f70,
-          #155fd6
-        );
-
-      color: white;
-
-      padding:
-        17px 20px;
-
-      box-shadow:
-        0 5px 20px
-        rgba(21,95,214,.18);
-
-    }
-
-
-    .header-inner {
-
-      width: 100%;
-
-      max-width: 900px;
-
-      margin: auto;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: space-between;
-
-    }
-
-
-    .logo {
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 10px;
-
-      font-size: 22px;
-
-      font-weight: 700;
-
-    }
-
-
-    .logo-icon {
-
-      width: 38px;
-      height: 38px;
-
-      border-radius: 11px;
-
-      background:
-        linear-gradient(
-          135deg,
-          #19a8ee,
-          #1d5ddd
-        );
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      font-size: 20px;
-
-      box-shadow:
-        0 5px 15px
-        rgba(0,0,0,.12);
-
-    }
-
-
-
-    /* =====================================================
-       MAIN
-    ===================================================== */
-
-    main {
-
-      width: 100%;
-
-      max-width: 900px;
-
-      margin:
-        24px auto;
-
-      padding:
-        0 17px;
-
-    }
-
-
-    .page-title {
-
-      margin-bottom: 19px;
-
-    }
-
-
-    .page-title h1 {
-
-      color: #123f70;
-
-      font-size: 28px;
-
-      margin-bottom: 6px;
-
-    }
-
-
-    .page-title p {
-
-      color: var(--muted);
-
-      font-size: 13px;
-
-      line-height: 1.5;
-
-    }
-
-
-
-    /* =====================================================
-       INVITATION CARD
-    ===================================================== */
-
-    .invite-card {
-
-      position: relative;
-
-      overflow: hidden;
-
-      background:
-        linear-gradient(
-          135deg,
-          #123f70 0%,
-          #155fd6 58%,
-          #168ff0 100%
-        );
-
-      color: white;
-
-      border-radius: 22px;
-
-      padding: 23px;
-
-      margin-bottom: 17px;
-
-      box-shadow:
-        0 16px 35px
-        rgba(21,95,214,.20);
-
-    }
-
-
-    .invite-card::before {
-
-      content: "";
-
-      position: absolute;
-
-      width: 230px;
-      height: 230px;
-
-      border-radius: 50%;
-
-      right: -115px;
-      top: -120px;
-
-      background:
-        rgba(255,255,255,.08);
-
-    }
-
-
-    .invite-card::after {
-
-      content: "";
-
-      position: absolute;
-
-      width: 170px;
-      height: 170px;
-
-      border-radius: 50%;
-
-      left: -105px;
-      bottom: -105px;
-
-      background:
-        rgba(168,217,45,.10);
-
-    }
-
-
-    .invite-content {
-
-      position: relative;
-
-      z-index: 2;
-
-    }
-
-
-    .invite-label {
-
-      color: #b9dcff;
-
-      font-size: 11px;
-
-      font-weight: 700;
-
-      letter-spacing: 1.7px;
-
-      margin-bottom: 7px;
-
-    }
-
-
-    .invite-title {
-
-      font-size: 22px;
-
-      margin-bottom: 15px;
-
-    }
-
-
-    .code-box {
-
-      width: 100%;
-
-      min-height: 55px;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: space-between;
-
-      gap: 10px;
-
-      background:
-        rgba(255,255,255,.10);
-
-      border:
-        1px solid
-        rgba(255,255,255,.18);
-
-      border-radius: 14px;
-
-      padding:
-        8px 9px 8px 15px;
-
-      margin-bottom: 12px;
-
-    }
-
-
-    #referralCode {
-
-      color: white;
-
-      font-size: 20px;
-
-      font-weight: 700;
-
-      letter-spacing: 2px;
-
-      word-break: break-all;
-
-    }
-
-
-    .copy-small {
-
-      flex-shrink: 0;
-
-      width: 40px;
-      height: 40px;
-
-      border: 0;
-
-      border-radius: 11px;
-
-      background:
-        rgba(255,255,255,.14);
-
-      color: white;
-
-      cursor: pointer;
-
-      font-size: 18px;
-
-    }
-
-
-    .copy-small:active {
-
-      transform: scale(.95);
-
-    }
-
-
-    .invite-buttons {
-
-      display: grid;
-
-      grid-template-columns:
-        1fr 1fr;
-
-      gap: 10px;
-
-    }
-
-
-    .invite-button {
-
-      min-height: 45px;
-
-      border: 0;
-
-      border-radius: 12px;
-
-      font-size: 13px;
-
-      font-weight: 700;
-
-      cursor: pointer;
-
-    }
-
-
-    #copyCodeButton {
-
-      background:
-        rgba(255,255,255,.11);
-
-      color: white;
-
-      border:
-        1px solid
-        rgba(255,255,255,.20);
-
-    }
-
-
-    #copyLinkButton {
-
-      background:
-        linear-gradient(
-          100deg,
-          #a8d92d,
-          #8bc51f
-        );
-
-      color: #183300;
-
-      box-shadow:
-        0 7px 17px
-        rgba(168,217,45,.20);
-
-    }
-
-
-    .invite-button:active {
-
-      transform: scale(.98);
-
-    }
-
-
-
-    /* =====================================================
-       STAT CARDS
-    ===================================================== */
-
-    .stats {
-
-      display: grid;
-
-      grid-template-columns:
-        1fr 1fr;
-
-      gap: 14px;
-
-      margin-bottom: 17px;
-
-    }
-
-
-    .stat-card {
-
-      background:
-        rgba(255,255,255,.96);
-
-      border:
-        1px solid
-        rgba(210,232,250,.95);
-
-      border-radius: 19px;
-
-      padding: 21px 15px;
-
-      text-align: center;
-
-      box-shadow:
-        0 9px 24px
-        rgba(37,105,157,.07);
-
-    }
-
-
-    .stat-icon {
-
-      width: 45px;
-      height: 45px;
-
-      margin:
-        0 auto 10px;
-
-      border-radius: 13px;
-
-      background:
-        #edf7ff;
-
-      color:
-        var(--blue);
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      font-size: 21px;
-
-    }
-
-
-    .stat-value {
-
-      color: #123f70;
-
-      font-size: 25px;
-
-      font-weight: 700;
-
-      margin-bottom: 5px;
-
-      word-break: break-word;
-
-    }
-
-
-    .stat-label {
-
-      color: #7890aa;
-
-      font-size: 11px;
-
-      font-weight: 700;
-
-      letter-spacing: .7px;
-
-      text-transform: uppercase;
-
-    }
-
-
-
-    /* =====================================================
-       TEAM OVERVIEW
-    ===================================================== */
-
-    .info-card {
-
-      background:
-        rgba(255,255,255,.97);
-
-      border:
-        1px solid
-        rgba(210,232,250,.95);
-
-      border-radius: 20px;
-
-      padding: 21px 18px;
-
-      margin-bottom: 17px;
-
-      box-shadow:
-        0 9px 24px
-        rgba(37,105,157,.07);
-
-    }
-
-
-    .section-heading {
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 11px;
-
-      margin-bottom: 16px;
-
-    }
-
-
-    .section-icon {
-
-      width: 43px;
-      height: 43px;
-
-      border-radius: 12px;
-
-      background:
-        #edf7ff;
-
-      color:
-        var(--blue);
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      font-size: 20px;
-
-    }
-
-
-    .section-heading h2 {
-
-      color: #123f70;
-
-      font-size: 19px;
-
-      margin-bottom: 3px;
-
-    }
-
-
-    .section-heading p {
-
-      color: #7890aa;
-
-      font-size: 12px;
-
-    }
-
-
-    .level-list {
-
-      display: grid;
-
-      gap: 9px;
-
-    }
-
-
-    .level {
-
-      width: 100%;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: space-between;
-
-      gap: 10px;
-
-      padding: 13px;
-
-      background:
-        #f8fbff;
-
-      border:
-        1px solid
-        #e4f0fa;
-
-      border-radius: 14px;
-
-    }
-
-
-    .level-left {
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 11px;
-
-      min-width: 0;
-
-    }
-
-
-    .level-number {
-
-      flex-shrink: 0;
-
-      width: 37px;
-      height: 37px;
-
-      border-radius: 10px;
-
-      background:
-        #e5f3ff;
-
-      color:
-        #1578d8;
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      font-size: 12px;
-
-      font-weight: 700;
-
-    }
-
-
-    .level-name {
-
-      color: #164e80;
-
-      font-size: 14px;
-
-      font-weight: 700;
-
-    }
-
-
-    .level-description {
-
-      color: #8aa0b4;
-
-      font-size: 11px;
-
-      margin-top: 2px;
-
-    }
-
-
-    .level-count {
-
-      flex-shrink: 0;
-
-      min-width: 35px;
-
-      text-align: right;
-
-      color: #1578d8;
-
-      font-size: 17px;
-
-      font-weight: 700;
-
-    }
-
-
-
-    /* =====================================================
-       BOTTOM NAVIGATION
-       SAME STYLE AS DASHBOARD
-    ===================================================== */
-
-    .bottom-nav {
-
-      position: fixed;
-
-      left: 0;
-      right: 0;
-      bottom: 0;
-
-      height: 78px;
-
-      background:
-        rgba(255,253,246,0.97);
-
-      border-top:
-        1px solid #e7e2d7;
-
-      box-shadow:
-        0 -5px 20px
-        rgba(15,23,42,0.08);
-
-      display: flex;
-
-      align-items: stretch;
-
-      justify-content: space-around;
-
-      z-index: 99999;
-
-      padding-bottom:
-        env(safe-area-inset-bottom);
-
-      backdrop-filter: blur(12px);
-
-      -webkit-backdrop-filter: blur(12px);
-
-    }
-
-
-    .nav-item {
-
-      flex: 1;
-
-      max-width: 150px;
-
-      display: flex;
-
-      flex-direction: column;
-
-      align-items: center;
-
-      justify-content: center;
-
-      gap: 4px;
-
-      text-decoration: none;
-
-      color: #777;
-
-      font-size: 13px;
-
-      font-weight: 500;
-
-      transition: .2s ease;
-
-      -webkit-tap-highlight-color:
-        transparent;
-
-    }
-
-
-    .nav-item svg {
-
-      width: 27px;
-      height: 27px;
-
-      stroke: #777;
-
-      stroke-width: 1.8;
-
-      fill: none;
-
-      stroke-linecap: round;
-      stroke-linejoin: round;
-
-      transition: .2s ease;
-
-    }
-
-
-    .nav-item.active {
-
-      color: #2563eb;
-
-      font-weight: 600;
-
-    }
-
-
-    .nav-item.active svg {
-
-      stroke: #2563eb;
-
-      transform:
-        translateY(-1px);
-
-    }
-
-
-    .nav-item:active {
-
-      transform:
-        scale(.94);
-
-    }
-
-
-
-    /* =====================================================
-       TOAST
-    ===================================================== */
-
-    .toast {
-
-      position: fixed;
-
-      left: 50%;
-
-      bottom: 91px;
-
-      transform:
-        translate(-50%, 20px);
-
-      opacity: 0;
-
-      pointer-events: none;
-
-      z-index: 3000;
-
-      color: white;
-
-      background:
-        #123f70;
-
-      padding:
-        11px 16px;
-
-      border-radius: 11px;
-
-      font-size: 12px;
-
-      white-space: nowrap;
-
-      transition:
-        .25s ease;
-
-    }
-
-
-    .toast.show {
-
-      opacity: 1;
-
-      transform:
-        translate(-50%, 0);
-
-    }
-
-
-
-    /* =====================================================
-       MOBILE
-    ===================================================== */
-
-    @media (max-width: 600px) {
-
       body {
-
-        padding-bottom: 88px;
-
+          background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
+          color: #f1f5f9;
+          font-family: 'Inter', sans-serif;
+          overflow-x: hidden;
+          min-height: 100vh;
+          padding-bottom: 92px;
       }
 
-
-      header {
-
-        padding:
-          14px 15px;
-
+      .brushed-metal-overlay {
+          background: repeating-radial-gradient(
+              circle at 50% 40%,
+              rgba(255, 255, 255, 0.015) 0px,
+              rgba(255, 255, 255, 0.015) 1px,
+              transparent 1px,
+              transparent 3px
+          );
       }
 
-
-      .logo {
-
-        font-size: 20px;
-
-        gap: 8px;
-
+      .text-chrome-3d {
+          background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 35%, #94a3b8 65%, #64748b 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.9));
       }
 
-
-      .logo-icon {
-
-        width: 35px;
-        height: 35px;
-
+      .gold-ring-accent {
+          background: radial-gradient(circle, #ffe380 0%, #d4af37 60%, #996515 100%);
+          box-shadow: 0 0 12px rgba(212, 175, 55, 0.8), inset 0 0 4px rgba(255, 255, 255, 0.8);
       }
 
-
-      main {
-
-        margin:
-          20px auto;
-
-        padding:
-          0 14px;
-
+      .toast {
+          position: fixed;
+          left: 50%;
+          bottom: 91px;
+          transform: translate(-50%, 20px);
+          opacity: 0;
+          pointer-events: none;
+          z-index: 3000;
+          color: #040814;
+          background: #00f2fe;
+          padding: 10px 18px;
+          border-radius: 9999px;
+          font-size: 11px;
+          font-family: 'JetBrains Mono', monospace;
+          font-weight: 700;
+          white-space: nowrap;
+          transition: all 0.25s ease;
+          box-shadow: 0 0 15px rgba(0,242,254,0.5);
+      }
+      .toast.show {
+          opacity: 1;
+          transform: translate(-50%, 0);
       }
 
-
-      .page-title h1 {
-
-        font-size: 26px;
-
-      }
-
-
-      .invite-card {
-
-        padding: 20px;
-
-        border-radius: 20px;
-
-      }
-
-
-      .invite-title {
-
-        font-size: 21px;
-
-      }
-
-
-      #referralCode {
-
-        font-size: 18px;
-
-      }
-
-
-      .stat-card {
-
-        padding:
-          19px 10px;
-
-      }
-
-
-      .stat-value {
-
-        font-size: 22px;
-
-      }
-
-
-      .info-card {
-
-        padding:
-          19px 15px;
-
-      }
-
-
-      .bottom-nav {
-
-        height: 76px;
-
-      }
-
-
-      .nav-item {
-
-        font-size: 12px;
-
-      }
-
-
-      .nav-item svg {
-
-        width: 26px;
-        height: 26px;
-
-      }
-
-    }
-
-
-    @media (max-width: 370px) {
-
-      .invite-buttons {
-
-        grid-template-columns:
-          1fr;
-
-      }
-
-
-      .stats {
-
-        grid-template-columns:
-          1fr;
-
-      }
-
-
-      .level-description {
-
-        font-size: 10px;
-
-      }
-
-    }
-
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: #020712; }
+      ::-webkit-scrollbar-thumb { background: #00f2fe; border-radius: 2px; }
   </style>
-
 </head>
 
+<body class="flex flex-col justify-between relative overflow-x-hidden selection:bg-nexora-cyan selection:text-black">
 
-<body>
-
-
-<!-- =====================================================
-     HEADER
-===================================================== -->
-
-<header>
-
-  <div class="header-inner">
-
-    <div class="logo">
-
-      <div class="logo-icon">
-        📈
-      </div>
-
-      Novarise
-
-    </div>
-
+  <!-- BACKGROUND EFFECTS & CANDLESTICK CHART -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+      <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
   </div>
 
-</header>
-
-
-
-<!-- =====================================================
-     MAIN
-===================================================== -->
-
-<main>
-
-
-  <div class="page-title">
-
-    <h1>
-      My Team
-    </h1>
-
-    <p>
-      Invite friends and grow your Novarise network.
-    </p>
-
-  </div>
-
-
-
-  <!-- ===================================================
-       INVITATION
-  ==================================================== -->
-
-  <div class="invite-card">
-
-    <div class="invite-content">
-
-      <div class="invite-label">
-        INVITATION
+  <!-- =====================================================
+       MARKET TICKER
+  ===================================================== -->
+  <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-2">
+      <div class="flex items-center text-xs font-mono">
+          <div class="px-4 py-1 bg-nexora-cyan/10 border-r border-nexora-cyan/30 text-nexora-cyan font-bold flex items-center shrink-0 z-10 shadow-lg">
+              <span class="w-2 h-2 rounded-full bg-nexora-accent animate-ping mr-2"></span>
+              <span>NEXORA TAPE</span>
+          </div>
+          <div class="overflow-hidden whitespace-nowrap flex w-full">
+              <div class="inline-flex animate-marquee space-x-10 items-center pl-6">
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">BTC/USD</span>
+                      <span class="text-white font-semibold">$96,420.00</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +3.2%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">ETH/USD</span>
+                      <span class="text-white font-semibold">$3,520.80</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +2.4%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">NEX/USD</span>
+                      <span class="text-nexora-cyan font-bold">$18.95</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +18.4%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">GOLD/OUNCE</span>
+                      <span class="text-white font-semibold">$2,658.18</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +0.85%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">24H VOLUME</span>
+                      <span class="text-nexora-gold font-semibold">$2.84 BILLION</span>
+                  </div>
+              </div>
+          </div>
       </div>
+  </header>
 
+  <!-- =====================================================
+       MAIN CONTENT
+  ===================================================== -->
+  <main class="relative z-10 w-full max-w-xl mx-auto px-4 py-6">
 
-      <div class="invite-title">
-        Your Invitation Code
-      </div>
-
-
-      <div class="code-box">
-
-        <span id="referralCode">
-          Loading...
-        </span>
-
-
-        <button
-          type="button"
-          class="copy-small"
-          id="copySmallButton"
-          aria-label="Copy invitation code"
-        >
-          ⧉
-        </button>
-
-      </div>
-
-
-      <div class="invite-buttons">
-
-        <button
-          type="button"
-          class="invite-button"
-          id="copyCodeButton"
-        >
-          ⧉ &nbsp; Copy Code
-        </button>
-
-
-        <button
-          type="button"
-          class="invite-button"
-          id="copyLinkButton"
-        >
-          ↗ &nbsp; Copy Link
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-
-  <!-- ===================================================
-       STATS
-  ==================================================== -->
-
-  <div class="stats">
-
-
-    <div class="stat-card">
-
-      <div class="stat-icon">
-        👥
-      </div>
-
-
-      <div
-        class="stat-value"
-        id="teamSize"
-      >
-        0
-      </div>
-
-
-      <div class="stat-label">
-        Team Size
-      </div>
-
-    </div>
-
-
-
-    <div class="stat-card">
-
-      <div class="stat-icon">
-        ₱
-      </div>
-
-
-      <div
-        class="stat-value"
-        id="totalCommission"
-      >
-        ₱0.00
-      </div>
-
-
-      <div class="stat-label">
-        Total Commission
-      </div>
-
-    </div>
-
-  </div>
-
-
-
-  <!-- ===================================================
-       TEAM OVERVIEW
-  ==================================================== -->
-
-  <div class="info-card">
-
-
-    <div class="section-heading">
-
-      <div class="section-icon">
-        👥
-      </div>
-
-
-      <div>
-
-        <h2>
-          Team Overview
-        </h2>
-
-        <p>
-          Your direct and extended team members.
-        </p>
-
-      </div>
-
-    </div>
-
-
-
-    <div class="level-list">
-
-
-      <div class="level">
-
-        <div class="level-left">
-
-          <div class="level-number">
-            L1
+      <!-- HERO SECTION -->
+      <section class="text-center flex flex-col items-center justify-center mb-6">
+          <div class="relative w-20 h-20 mb-2 flex items-center justify-center animate-pulse-cyan">
+              <div class="absolute inset-0 rounded-full border-2 border-dashed border-nexora-cyan/50 animate-orbit"></div>
+              <svg class="w-14 h-14 drop-shadow-[0_0_15px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+                  <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+                  <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
+              </svg>
           </div>
 
-
-          <div>
-
-            <div class="level-name">
-              Level 1
-            </div>
-
-            <div class="level-description">
-              Direct referrals
-            </div>
-
+          <div class="flex items-center justify-center space-x-1 tracking-wider text-2xl font-black font-brand mt-1 mb-1">
+              <span class="text-chrome-3d">NEX</span>
+              <span class="relative inline-flex items-center justify-center w-5 h-5 mx-1 border-2 border-nexora-gold rounded-full gold-ring-accent">
+                  <span class="w-2 h-2 rounded-full bg-slate-900 border border-nexora-gold"></span>
+              </span>
+              <span class="text-chrome-3d">RA</span>
           </div>
 
-        </div>
+          <p class="text-[10px] font-bold tracking-[0.3em] text-nexora-gold uppercase font-mono">
+              TRADE. GROW. TOGETHER
+          </p>
+      </section>
 
-
-        <div
-          class="level-count"
-          id="level1Count"
-        >
-          0
-        </div>
-
+      <!-- PAGE TITLE -->
+      <div class="mb-5 px-1">
+          <h1 class="text-xl font-bold text-white font-mono mb-1">My Team</h1>
+          <p class="text-xs text-gray-400 font-mono">Invite friends and grow your Nexora network[cite: 7].</p>
       </div>
 
+      <!-- INVITATION CARD -->
+      <div class="relative overflow-hidden rounded-2xl p-5 bg-nexora-card/90 border border-nexora-cyan/30 shadow-xl mb-5 backdrop-blur-md">
+          <div class="text-[10px] font-black tracking-widest text-nexora-cyan font-mono mb-2">INVITATION CODE</div>
+          <div class="text-xl font-black text-white font-mono mb-4 tracking-wider">Your Invitation Code</div>
 
-
-      <div class="level">
-
-        <div class="level-left">
-
-          <div class="level-number">
-            L2
+          <div class="flex items-center justify-between bg-black/40 border border-nexora-cyan/30 rounded-xl px-4 py-3 mb-3">
+              <span id="referralCode" class="font-mono text-base font-bold text-nexora-cyan tracking-wider">Loading...</span>
+              <button type="button" id="copySmallButton" class="text-nexora-cyan hover:text-white text-base cursor-pointer" aria-label="Copy invitation code">
+                  <i class="fa-regular fa-copy"></i>
+              </button>
           </div>
 
-
-          <div>
-
-            <div class="level-name">
-              Level 2
-            </div>
-
-            <div class="level-description">
-              Referrals of Level 1
-            </div>
-
+          <div class="grid grid-cols-2 gap-3">
+              <button type="button" id="copyCodeButton" class="py-3 rounded-xl bg-nexora-cyan/10 border border-nexora-cyan/30 text-nexora-cyan font-bold text-xs font-mono hover:bg-nexora-cyan/20 transition-all cursor-pointer">
+                  <i class="fa-regular fa-copy mr-1"></i> Copy Code
+              </button>
+              <button type="button" id="copyLinkButton" class="py-3 rounded-xl bg-gradient-to-r from-nexora-cyan to-nexora-blue text-slate-950 font-black text-xs font-mono hover:opacity-90 transition-all cursor-pointer shadow-[0_0_15px_rgba(0,242,254,0.4)]">
+                  <i class="fa-solid fa-link mr-1"></i> Copy Link
+              </button>
           </div>
-
-        </div>
-
-
-        <div
-          class="level-count"
-          id="level2Count"
-        >
-          0
-        </div>
-
       </div>
 
-
-
-      <div class="level">
-
-        <div class="level-left">
-
-          <div class="level-number">
-            L3
+      <!-- STAT CARDS -->
+      <div class="grid grid-cols-2 gap-4 mb-5">
+          <div class="rounded-2xl p-4 bg-nexora-card/90 border border-nexora-cyan/20 shadow-xl text-center backdrop-blur-md">
+              <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-nexora-cyan/10 text-nexora-cyan flex items-center justify-center text-lg border border-nexora-cyan/20">
+                  <i class="fa-solid fa-users"></i>
+              </div>
+              <div id="teamSize" class="text-xl font-black text-white font-mono mb-1">0</div>
+              <div class="text-[9px] font-black tracking-wider text-gray-400 font-mono uppercase">Team Size</div>
           </div>
 
-
-          <div>
-
-            <div class="level-name">
-              Level 3
-            </div>
-
-            <div class="level-description">
-              Referrals of Level 2
-            </div>
-
+          <div class="rounded-2xl p-4 bg-nexora-card/90 border border-emerald-500/20 shadow-xl text-center backdrop-blur-md">
+              <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg border border-emerald-500/20">
+                  <span>₱</span>
+              </div>
+              <div id="totalCommission" class="text-xl font-black text-emerald-400 font-mono mb-1">₱0.00</div>
+              <div class="text-[9px] font-black tracking-wider text-gray-400 font-mono uppercase">Total Commission</div>
           </div>
-
-        </div>
-
-
-        <div
-          class="level-count"
-          id="level3Count"
-        >
-          0
-        </div>
-
       </div>
 
-
-    </div>
-
-  </div>
-
-
-</main>
-
-
-
-<!-- =====================================================
-     BOTTOM NAVIGATION
-     SAME AS DASHBOARD
-===================================================== -->
-
-<nav class="bottom-nav">
-
-  <!-- HOME -->
-  
-  <a
-    href="dashboard.html#home"
-    class="nav-item"
-    id="homeNav"
-  >
-
-    <svg viewBox="0 0 24 24">
-
-      <path
-        d="M3 10.5L12 3l9 7.5"
-      />
-
-      <path
-        d="M5 9.5V21h14V9.5"
-      />
-
-      <path
-        d="M9 21v-6h6v6"
-      />
-
-    </svg>
-
-
-    <span>
-      Home
-    </span>
-
-  </a>
-
-  <!-- PRODUCT -->
-
-  <a
-    href="dashboard.html#products"
-    class="nav-item"
-    id="productNav"
-  >
-
-    <svg viewBox="0 0 24 24">
-
-      <path
-        d="M4 7h16"
-      />
-
-      <path
-        d="M6 7l1-3h10l1 3"
-      />
-
-      <rect
-        x="4"
-        y="7"
-        width="16"
-        height="13"
-        rx="2"
-      />
-
-      <path
-        d="M9 12h6"
-      />
-
-    </svg>
-
-    <span>
-      Product
-    </span>
-
-  </a>
-
-<a
-    href="my-investment.html"
-    class="nav-item"
-  >
-
-    <svg viewBox="0 0 24 24">
-   <rect
-     x="5"
-     y="3"
-     width="14"
-     height="18"
-     rx="3"
-   />
-   <path d="M8 8h8"/>
-   <path d="M8 12h8"/>
-   <path d="M8 16h5"/>
-    </svg>
-
-    <span>
-      Investments
-    </span>
-
-  </a>
-
-  <!-- TEAM -->
-
-  <a
-    href="team.html"
-    class="nav-item active"
-    id="teamNav"
-  >
-
-    <svg viewBox="0 0 24 24">
-
-      <circle
-        cx="9"
-        cy="8"
-        r="3"
-      />
-
-      <circle
-        cx="17"
-        cy="9"
-        r="2.5"
-      />
-
-      <path
-        d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"
-      />
-
-      <path
-        d="M15 14c3.2 0 6 2.2 6 5"
-      />
-
-    </svg>
-
-
-    <span>
-      Team
-    </span>
-
-  </a>
-
-
-
-  <!-- MY -->
-
-  <a
-    href="my.html"
-    class="nav-item"
-    id="myNav"
-  >
-
-    <svg viewBox="0 0 24 24">
-
-      <circle
-        cx="12"
-        cy="8"
-        r="4"
-      />
-
-      <path
-        d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"
-      />
-
-    </svg>
-
-
-    <span>
-      My
-    </span>
-
-  </a>
-
-
-</nav>
-
-
-
-<!-- =====================================================
-     TOAST
-===================================================== -->
-
-<div
-  class="toast"
-  id="toast"
->
-  Copied
-</div>
-
-
-
-<!-- =====================================================
-     FIREBASE
-===================================================== -->
-
-<script type="module">
-
-
-  import {
-    initializeApp
-  }
-  from
-    "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-
-
-  import {
-    getAuth,
-    onAuthStateChanged
-  }
-  from
-    "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-
-
-  import {
-    getFirestore,
-    doc,
-    getDoc,
-    collection,
-    query,
-    where,
-    getDocs
-  }
-  from
-    "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
-
-
-
-  /* =====================================================
-     FIREBASE CONFIG
-  ===================================================== */
-
-  const firebaseConfig = {
-
-    apiKey:
-      "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
-
-    authDomain:
-      "investpro-2dafb.firebaseapp.com",
-
-    projectId:
-      "investpro-2dafb",
-
-    storageBucket:
-      "investpro-2dafb.firebasestorage.app",
-
-    messagingSenderId:
-      "135092039764",
-
-    appId:
-      "1:135092039764:web:c4c71eef0c904346a77dc1"
-
-  };
-
-
-
-  /* =====================================================
-     INITIALIZE FIREBASE
-  ===================================================== */
-
-  const app =
-    initializeApp(
-      firebaseConfig
-    );
-
-
-  const auth =
-    getAuth(app);
-
-
-  const db =
-    getFirestore(app);
-
-
-
-  /* =====================================================
-     ELEMENTS
-  ===================================================== */
-
-  const referralCodeElement =
-    document.getElementById(
-      "referralCode"
-    );
-
-
-  const teamSizeElement =
-    document.getElementById(
-      "teamSize"
-    );
-
-
-  const totalCommissionElement =
-    document.getElementById(
-      "totalCommission"
-    );
-
-
-  const level1Element =
-    document.getElementById(
-      "level1Count"
-    );
-
-
-  const level2Element =
-    document.getElementById(
-      "level2Count"
-    );
-
-
-  const level3Element =
-    document.getElementById(
-      "level3Count"
-    );
-
-
-  const toastElement =
-    document.getElementById(
-      "toast"
-    );
-
-
-
-  /* =====================================================
-     TOAST
-  ===================================================== */
-
-  function showToast(message) {
-
-    toastElement.textContent =
-      message;
-
-
-    toastElement.classList.add(
-      "show"
-    );
-
-
-    setTimeout(
-      () => {
-
-        toastElement.classList.remove(
-          "show"
-        );
-
-      },
-      1800
-    );
-
-  }
-
-
-
-  /* =====================================================
-     COPY
-  ===================================================== */
-
-  async function copyText(
-    text,
-    message
-  ) {
-
-    try {
-
-      await navigator.clipboard.writeText(
-        text
-      );
-
-      showToast(
-        message
-      );
-
-    } catch (error) {
-
-      const textarea =
-        document.createElement(
-          "textarea"
-        );
-
-
-      textarea.value =
-        text;
-
-
-      textarea.style.position =
-        "fixed";
-
-
-      textarea.style.opacity =
-        "0";
-
-
-      document.body.appendChild(
-        textarea
-      );
-
-
-      textarea.focus();
-
-
-      textarea.select();
-
-
-      document.execCommand(
-        "copy"
-      );
-
-
-      textarea.remove();
-
-
-      showToast(
-        message
-      );
-
-    }
-
-  }
-
-
-
-  /* =====================================================
-     MONEY
-  ===================================================== */
-
-  function formatMoney(
-    amount
-  ) {
-
-    return "₱" +
-      Number(
-        amount || 0
-      ).toLocaleString(
-        "en-PH",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      );
-
-  }
-
-
-
-  /* =====================================================
-     FALLBACK REFERRAL CODE
-  ===================================================== */
-
-  function createFallbackCode(
-    uid
-  ) {
-
-    if (!uid) {
-
-      return "NOVARISE";
-
-    }
-
-
-    return (
-      "NOVA-" +
-      uid
-        .substring(0, 8)
-        .toUpperCase()
-    );
-
-  }
-
-
-
-  /* =====================================================
-     GET USER DOCUMENT
-     
-     IMPORTANT:
-     Dashboard uses "Users".
-     We therefore use "Users" first.
-     
-     Uppercase "Users" remains as compatibility
-     with old records.
-  ===================================================== */
-
-  async function getUserDocument(
-    uid
-  ) {
-
-    let data = {};
-    let found = false;
-
-
-    /* PRIMARY COLLECTION */
-
-    try {
-
-      const primaryRef =
-        doc(
-          db,
-          "Users",
-          uid
-        );
-
-
-      const primarySnapshot =
-        await getDoc(
-          primaryRef
-        );
-
-
-      if (
-        primarySnapshot.exists()
-      ) {
-
-        data =
-          primarySnapshot.data();
-
-        found = true;
-
+      <!-- TEAM OVERVIEW -->
+      <div class="rounded-2xl p-5 bg-nexora-card/90 border border-nexora-cyan/25 shadow-xl backdrop-blur-md mb-6">
+          <div class="flex items-center gap-3 mb-4 pb-3 border-b border-nexora-cyan/10">
+              <div class="w-10 h-10 rounded-xl bg-nexora-cyan/10 text-nexora-cyan flex items-center justify-center text-lg border border-nexora-cyan/20">
+                  <i class="fa-solid fa-network-wired"></i>
+              </div>
+              <div>
+                  <h2 class="text-sm font-bold text-white font-mono">Team Overview</h2>
+                  <p class="text-[11px] text-gray-400 font-mono">Your direct and extended team members[cite: 7].</p>
+              </div>
+          </div>
+
+          <div class="space-y-2.5">
+              <div class="flex items-center justify-between p-3 bg-black/30 border border-white/5 rounded-xl">
+                  <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-nexora-cyan/15 text-nexora-cyan font-bold font-mono text-xs flex items-center justify-center border border-nexora-cyan/30">L1</div>
+                      <div>
+                          <div class="text-xs font-bold text-white font-mono">Level 1</div>
+                          <div class="text-[10px] text-gray-400 font-mono">Direct referrals[cite: 7]</div>
+                      </div>
+                  </div>
+                  <div id="level1Count" class="text-base font-bold text-nexora-cyan font-mono">0</div>
+              </div>
+
+              <div class="flex items-center justify-between p-3 bg-black/30 border border-white/5 rounded-xl">
+                  <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-nexora-cyan/15 text-nexora-cyan font-bold font-mono text-xs flex items-center justify-center border border-nexora-cyan/30">L2</div>
+                      <div>
+                          <div class="text-xs font-bold text-white font-mono">Level 2</div>
+                          <div class="text-[10px] text-gray-400 font-mono">Referrals of Level 1[cite: 7]</div>
+                      </div>
+                  </div>
+                  <div id="level2Count" class="text-base font-bold text-nexora-cyan font-mono">0</div>
+              </div>
+
+              <div class="flex items-center justify-between p-3 bg-black/30 border border-white/5 rounded-xl">
+                  <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-nexora-cyan/15 text-nexora-cyan font-bold font-mono text-xs flex items-center justify-center border border-nexora-cyan/30">L3</div>
+                      <div>
+                          <div class="text-xs font-bold text-white font-mono">Level 3</div>
+                          <div class="text-[10px] text-gray-400 font-mono">Referrals of Level 2[cite: 7]</div>
+                      </div>
+                  </div>
+                  <div id="level3Count" class="text-base font-bold text-nexora-cyan font-mono">0</div>
+              </div>
+          </div>
+      </div>
+
+  </main>
+
+  <!-- =====================================================
+       BOTTOM NAVIGATION (Consistent with Dashboard & Account)
+  ===================================================== -->
+  <nav class="fixed bottom-0 left-0 right-0 h-20 bg-[#030b17]/95 border-t border-nexora-cyan/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
+      <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
+          <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
+          <span>Home</span>
+      </a>
+      <a href="team.html" class="flex flex-col items-center justify-center w-full h-full text-nexora-cyan transition-colors text-xs font-bold drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
+          <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>Team</span>
+      </a>
+      <a href="account.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
+          <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+          <span>Account</span>
+      </a>
+  </nav>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">Copied</div>
+
+  <!-- Candlestick Chart Animation Script -->
+  <script>
+      const canvas = document.getElementById('chartCanvas');
+      const ctx = canvas.getContext('2d');
+
+      function resizeCanvas() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
       }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
 
-    } catch (error) {
+      let candles = [];
+      const candleWidth = 14;
+      const spacing = 22;
 
-      console.warn(
-        "Users lookup error:",
-        error
-      );
+      function initCandles() {
+          candles = [];
+          const count = Math.ceil(canvas.width / spacing) + 5;
+          let currentPrice = canvas.height * 0.55;
 
-    }
-
-
-    /* COMPATIBILITY COLLECTION */
-
-    if (!found) {
-
-      try {
-
-        const oldRef =
-          doc(
-            db,
-            "Users",
-            uid
-          );
-
-
-        const oldSnapshot =
-          await getDoc(
-            oldRef
-          );
-
-
-        if (
-          oldSnapshot.exists()
-        ) {
-
-          data =
-            oldSnapshot.data();
-
-          found = true;
-
-        }
-
-      } catch (error) {
-
-        console.warn(
-          "Users lookup error:",
-          error
-        );
-
-      }
-
-    }
-
-
-    return {
-      exists: found,
-      data: data
-    };
-
-  }
-
-
-
-  /* =====================================================
-     QUERY CHILDREN FROM ONE COLLECTION
-  ===================================================== */
-
-  async function queryChildren(
-    collectionName,
-    parentIds
-  ) {
-
-    const result =
-      new Map();
-
-
-    if (
-      !parentIds ||
-      parentIds.length === 0
-    ) {
-
-      return result;
-
-    }
-
-
-    const UsersRef =
-      collection(
-        db,
-        collectionName
-      );
-
-
-    /*
-     * Firestore "in" query has
-     * a limit, so process 30 at a time.
-     */
-
-    for (
-      let i = 0;
-      i < parentIds.length;
-      i += 30
-    ) {
-
-      const batch =
-        parentIds.slice(
-          i,
-          i + 30
-        );
-
-
-      if (
-        batch.length === 0
-      ) {
-
-        continue;
-
-      }
-
-
-      /* referredBy */
-
-      try {
-
-        const q =
-          query(
-            UsersRef,
-            where(
-              "referredBy",
-              "in",
-              batch
-            )
-          );
-
-
-        const snapshot =
-          await getDocs(
-            q
-          );
-
-
-        snapshot.forEach(
-          item => {
-
-            result.set(
-              item.id,
-              item.data()
-            );
-
+          for (let i = 0; i < count; i++) {
+              const open = currentPrice;
+              const close = open + (Math.random() - 0.48) * 35;
+              const high = Math.max(open, close) + Math.random() * 15;
+              const low = Math.min(open, close) - Math.random() * 15;
+              candles.push({ open, close, high, low, x: i * spacing });
+              currentPrice = close;
           }
-        );
-
-      } catch (error) {
-
-        console.warn(
-          collectionName +
-          " referredBy query:",
-          error
-        );
-
       }
 
+      function drawChart() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      /* sponsorId */
+          for (let i = 0; i < candles.length; i++) {
+              const c = candles[i];
+              const isBullish = c.close <= c.open;
+              ctx.strokeStyle = isBullish ? '#00e676' : '#ff5252';
+              ctx.fillStyle = isBullish ? 'rgba(0, 230, 118, 0.5)' : 'rgba(255, 82, 82, 0.5)';
 
-      try {
+              ctx.beginPath();
+              ctx.moveTo(c.x + candleWidth / 2, c.high);
+              ctx.lineTo(c.x + candleWidth / 2, c.low);
+              ctx.stroke();
 
-        const q =
-          query(
-            UsersRef,
-            where(
-              "sponsorId",
-              "in",
-              batch
-            )
-          );
+              const bodyY = Math.min(c.open, c.close);
+              const bodyHeight = Math.max(Math.abs(c.open - c.close), 2);
+              ctx.fillRect(c.x, bodyY, candleWidth, bodyHeight);
 
-
-        const snapshot =
-          await getDocs(
-            q
-          );
-
-
-        snapshot.forEach(
-          item => {
-
-            result.set(
-              item.id,
-              item.data()
-            );
-
+              c.x -= 0.4;
           }
-        );
 
-      } catch (error) {
+          if (candles.length > 0 && candles[0].x < -spacing) {
+              const last = candles[candles.length - 1];
+              const open = last.close;
+              const close = open + (Math.random() - 0.48) * 35;
+              const high = Math.max(open, close) + Math.random() * 15;
+              const low = Math.min(open, close) - Math.random() * 15;
+              candles.shift();
+              candles.push({ open, close, high, low, x: last.x + spacing });
+          }
 
-        console.warn(
-          collectionName +
-          " sponsorId query:",
-          error
-        );
-
+          requestAnimationFrame(drawChart);
       }
 
-    }
-
-
-    return result;
-
-  }
-
-
-
-  /* =====================================================
-     GET TEAM LEVEL
-     
-     Reads both:
-       Users
-       Users
-     
-     and both:
-       referredBy
-       sponsorId
-  ===================================================== */
-
-  async function getChildren(
-    parentIds
-  ) {
-
-    const allMembers =
-      new Map();
-
-
-    if (
-      !parentIds ||
-      parentIds.length === 0
-    ) {
-
-      return [];
-
-    }
-
-
-    /* Users - primary */
-
-    const primary =
-      await queryChildren(
-        "Users",
-        parentIds
-      );
-
-
-    primary.forEach(
-      (data, id) => {
-
-        allMembers.set(
-          id,
-          data
-        );
-
-      }
-    );
-
-
-    /* Users - compatibility */
-
-    const compatibility =
-      await queryChildren(
-        "Users",
-        parentIds
-      );
-
-
-    compatibility.forEach(
-      (data, id) => {
-
-        if (
-          !allMembers.has(id)
-        ) {
-
-          allMembers.set(
-            id,
-            data
-          );
-
-        }
-
-      }
-    );
-
-
-    return Array.from(
-      allMembers.entries()
-    );
-
-  }
-
-
-
-  /* =====================================================
-     GET DIRECT REFERRALS
-  ===================================================== */
-
-  async function getDirectReferrals(
-    uid
-  ) {
-
-    return await getChildren(
-      [uid]
-    );
-
-  }
-
-
-
-  /* =====================================================
-     LOAD TEAM
-  ===================================================== */
-
-  async function loadTeam(
-    User
-  ) {
-
-    try {
-
-      /* -----------------------------------------------
-         CURRENT USER
-      ----------------------------------------------- */
-
-      const current =
-        await getUserDocument(
-          User.uid
-        );
-
-
-      const currentData =
-        current.data || {};
-
-
-
-      /* -----------------------------------------------
-         REFERRAL CODE
-      ----------------------------------------------- */
-
-      const myCode =
-        currentData.referralCode ||
-        currentData.invitationCode ||
-        currentData.referral_code ||
-        createFallbackCode(
-          User.uid
-        );
-
-
-      referralCodeElement.textContent =
-        myCode;
-
-
-
-      /* -----------------------------------------------
-         COMMISSION
-      ----------------------------------------------- */
-
-      const commission =
-        currentData.totalCommission ??
-        currentData.commission ??
-        0;
-
-
-      totalCommissionElement.textContent =
-        formatMoney(
-          commission
-        );
-
-
-
-      /* -----------------------------------------------
-         LEVEL 1
-      ----------------------------------------------- */
-
-      const level1 =
-        await getDirectReferrals(
-          User.uid
-        );
-
-
-      level1Element.textContent =
-        level1.length;
-
-
-
-      /* -----------------------------------------------
-         LEVEL 2
-      ----------------------------------------------- */
-
-      const level1Ids =
-        level1.map(
-          item => item[0]
-        );
-
-
-      const level2 =
-        await getChildren(
-          level1Ids
-        );
-
-
-      level2Element.textContent =
-        level2.length;
-
-
-
-      /* -----------------------------------------------
-         LEVEL 3
-      ----------------------------------------------- */
-
-      const level2Ids =
-        level2.map(
-          item => item[0]
-        );
-
-
-      const level3 =
-        await getChildren(
-          level2Ids
-        );
-
-
-      level3Element.textContent =
-        level3.length;
-
-
-
-      /* -----------------------------------------------
-         TOTAL TEAM
-         
-         L1 + L2 + L3
-      ----------------------------------------------- */
-
-      const totalTeam =
-        level1.length +
-        level2.length +
-        level3.length;
-
-
-      teamSizeElement.textContent =
-        totalTeam;
-
-
-      console.log(
-        "Novarise Team:",
-        {
-          level1: level1.length,
-          level2: level2.length,
-          level3: level3.length,
-          total: totalTeam
-        }
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Team loading error:",
-        error
-      );
-
-
-      referralCodeElement.textContent =
-        createFallbackCode(
-          User.uid
-        );
-
-
-      teamSizeElement.textContent =
-        "0";
-
-
-      level1Element.textContent =
-        "0";
-
-
-      level2Element.textContent =
-        "0";
-
-
-      level3Element.textContent =
-        "0";
-
-
-      totalCommissionElement.textContent =
-        "₱0.00";
-
-    }
-
-  }
-
-
-
-  /* =====================================================
-     AUTH
-  ===================================================== */
-
-  onAuthStateChanged(
-    auth,
-    async User => {
-
-      if (!User) {
-
-        window.location.href =
-          "login.html";
-
-        return;
-
+      initCandles();
+      drawChart();
+  </script>
+
+  <!-- =====================================================
+       FIREBASE & TEAM LOGIC
+  ===================================================== -->
+  <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+      import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+      import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+          apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+          authDomain: "investpro-2dafb.firebaseapp.com",
+          projectId: "investpro-2dafb",
+          storageBucket: "investpro-2dafb.firebasestorage.app",
+          messagingSenderId: "135092039764",
+          appId: "1:135092039764:web:c4c71eef0c904346a77dc1"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      const referralCodeElement = document.getElementById("referralCode");
+      const teamSizeElement = document.getElementById("teamSize");
+      const totalCommissionElement = document.getElementById("totalCommission");
+      const level1Element = document.getElementById("level1Count");
+      const level2Element = document.getElementById("level2Count");
+      const level3Element = document.getElementById("level3Count");
+      const toastElement = document.getElementById("toast");
+
+      function showToast(message) {
+          toastElement.textContent = message;
+          toastElement.classList.add("show");
+          setTimeout(() => {
+              toastElement.classList.remove("show");
+          }, 1800);
       }
 
-
-      await loadTeam(
-        User
-      );
-
-    }
-  );
-
-
-
-  /* =====================================================
-     COPY CODE
-  ===================================================== */
-
-  document
-    .getElementById(
-      "copyCodeButton"
-    )
-    .addEventListener(
-      "click",
-      () => {
-
-        const code =
-          referralCodeElement.textContent;
-
-
-        if (
-          !code ||
-          code === "Loading..."
-        ) {
-
-          showToast(
-            "Code is still loading"
-          );
-
-          return;
-
-        }
-
-
-        copyText(
-          code,
-          "Invitation code copied"
-        );
-
+      async function copyText(text, message) {
+          try {
+              await navigator.clipboard.writeText(text);
+              showToast(message);
+          } catch (error) {
+              const textarea = document.createElement("textarea");
+              textarea.value = text;
+              textarea.style.position = "fixed";
+              textarea.style.opacity = "0";
+              document.body.appendChild(textarea);
+              textarea.focus();
+              textarea.select();
+              document.execCommand("copy");
+              textarea.remove();
+              showToast(message);
+          }
       }
-    );
 
-
-
-  /* =====================================================
-     SMALL COPY
-  ===================================================== */
-
-  document
-    .getElementById(
-      "copySmallButton"
-    )
-    .addEventListener(
-      "click",
-      () => {
-
-        const code =
-          referralCodeElement.textContent;
-
-
-        if (
-          !code ||
-          code === "Loading..."
-        ) {
-
-          return;
-
-        }
-
-
-        copyText(
-          code,
-          "Invitation code copied"
-        );
-
+      function formatMoney(amount) {
+          return "₱" + Number(amount || 0).toLocaleString("en-PH", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+          });
       }
-    );
 
-
-
-  /* =====================================================
-     COPY INVITATION LINK
-  ===================================================== */
-
-  document
-    .getElementById(
-      "copyLinkButton"
-    )
-    .addEventListener(
-      "click",
-      () => {
-
-        const code =
-          referralCodeElement.textContent;
-
-
-        if (
-          !code ||
-          code === "Loading..."
-        ) {
-
-          showToast(
-            "Code is still loading"
-          );
-
-          return;
-
-        }
-
-
-        const registerPage =
-          window.location.origin +
-          window.location.pathname
-            .replace(
-              /\/[^\/]*$/,
-              "/register.html"
-            );
-
-
-        const inviteLink =
-          registerPage +
-          "?ref=" +
-          encodeURIComponent(
-            code
-          );
-
-
-        copyText(
-          inviteLink,
-          "Invitation link copied"
-        );
-
+      function createFallbackCode(uid) {
+          if (!uid) return "NEXORA";
+          return "NEX-" + uid.substring(0, 8).toUpperCase();
       }
-    );
 
+      async function getUserDocument(uid) {
+          let data = {};
+          let found = false;
+          try {
+              const primaryRef = doc(db, "Users", uid);
+              const primarySnapshot = await getDoc(primaryRef);
+              if (primarySnapshot.exists()) {
+                  data = primarySnapshot.data();
+                  found = true;
+              }
+          } catch (error) {
+              console.warn("Users lookup error:", error);
+          }
+          return { exists: found, data: data };
+      }
 
+      async function queryChildren(collectionName, parentIds) {
+          const result = new Map();
+          if (!parentIds || parentIds.length === 0) return result;
+          const UsersRef = collection(db, collectionName);
 
-</script>
+          for (let i = 0; i < parentIds.length; i += 30) {
+              const batch = parentIds.slice(i, i + 30);
+              if (batch.length === 0) continue;
+
+              try {
+                  const q = query(UsersRef, where("referredBy", "in", batch));
+                  const snapshot = await getDocs(q);
+                  snapshot.forEach(item => {
+                      result.set(item.id, item.data());
+                  });
+              } catch (error) {
+                  console.warn(collectionName + " referredBy query:", error);
+              }
+
+              try {
+                  const q = query(UsersRef, where("sponsorId", "in", batch));
+                  const snapshot = await getDocs(q);
+                  snapshot.forEach(item => {
+                      result.set(item.id, item.data());
+                  });
+              } catch (error) {
+                  console.warn(collectionName + " sponsorId query:", error);
+              }
+          }
+          return result;
+      }
+
+      async function getChildren(parentIds) {
+          const allMembers = new Map();
+          if (!parentIds || parentIds.length === 0) return [];
+          const primary = await queryChildren("Users", parentIds);
+          primary.forEach((data, id) => { allMembers.set(id, data); });
+          return Array.from(allMembers.entries());
+      }
+
+      async function getDirectReferrals(uid) {
+          return await getChildren([uid]);
+      }
+
+      async function loadTeam(User) {
+          try {
+              const current = await getUserDocument(User.uid);
+              const currentData = current.data || {};
+
+              const myCode = currentData.referralCode || currentData.invitationCode || currentData.referral_code || createFallbackCode(User.uid);
+              referralCodeElement.textContent = myCode;
+
+              const commission = currentData.totalCommission ?? currentData.commission ?? 0;
+              totalCommissionElement.textContent = formatMoney(commission);
+
+              const level1 = await getDirectReferrals(User.uid);
+              level1Element.textContent = level1.length;
+
+              const level1Ids = level1.map(item => item[0]);
+              const level2 = await getChildren(level1Ids);
+              level2Element.textContent = level2.length;
+
+              const level2Ids = level2.map(item => item[0]);
+              const level3 = await getChildren(level2Ids);
+              level3Element.textContent = level3.length;
+
+              const totalTeam = level1.length + level2.length + level3.length;
+              teamSizeElement.textContent = totalTeam;
+          } catch (error) {
+              console.error("Team loading error:", error);
+              referralCodeElement.textContent = createFallbackCode(User.uid);
+              teamSizeElement.textContent = "0";
+              level1Element.textContent = "0";
+              level2Element.textContent = "0";
+              level3Element.textContent = "0";
+              totalCommissionElement.textContent = "₱0.00";
+          }
+      }
+
+      onAuthStateChanged(auth, async User => {
+          if (!User) {
+              window.location.href = "login.html";
+              return;
+          }
+          await loadTeam(User);
+      });
+
+      document.getElementById("copyCodeButton").addEventListener("click", () => {
+          const code = referralCodeElement.textContent;
+          if (!code || code === "Loading...") {
+              showToast("Code is still loading");
+              return;
+          }
+          copyText(code, "Invitation code copied");
+      });
+
+      document.getElementById("copySmallButton").addEventListener("click", () => {
+          const code = referralCodeElement.textContent;
+          if (!code || code === "Loading...") return;
+          copyText(code, "Invitation code copied");
+      });
+
+      document.getElementById("copyLinkButton").addEventListener("click", () => {
+          const code = referralCodeElement.textContent;
+          if (!code || code === "Loading...") {
+              showToast("Code is still loading");
+              return;
+          }
+          const registerPage = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "/register.html");
+          const inviteLink = registerPage + "?ref=" + encodeURIComponent(code);
+          copyText(inviteLink, "Invitation link copied");
+      });
+  </script>
 
 </body>
 
