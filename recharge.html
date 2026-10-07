@@ -1,889 +1,661 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full select-none">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <title>Novarise — Recharge</title>
+  <title>NEXORA — Recharge</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  fontFamily: {
+                      sans: ['Inter', 'sans-serif'],
+                      mono: ['JetBrains Mono', 'monospace'],
+                      brand: ['Montserrat', 'sans-serif']
+                  },
+                  colors: {
+                      nexora: {
+                          navy: '#0a1628',
+                          deep: '#040814',
+                          card: '#0d1d35',
+                          cyan: '#00f2fe',
+                          blue: '#1890ff',
+                          gold: '#dfb248',
+                          goldGlow: '#ffd700',
+                          accent: '#00e676'
+                      }
+                  },
+                  animation: {
+                      'marquee': 'marquee 25s linear infinite',
+                      'pulse-cyan': 'pulseCyan 3s ease-in-out infinite',
+                      'orbit': 'orbit 10s linear infinite',
+                  },
+                  keyframes: {
+                      marquee: {
+                          '0%': { transform: 'translateX(0%)' },
+                          '100%': { transform: 'translateX(-50%)' }
+                      },
+                      pulseCyan: {
+                          '0%, 100%': { filter: 'drop-shadow(0 0 15px rgba(0,242,254,0.4))' },
+                          '50%': { filter: 'drop-shadow(0 0 35px rgba(0,242,254,0.9)) drop-shadow(0 0 60px rgba(0,242,254,0.4))' }
+                      },
+                      orbit: {
+                          '0%': { transform: 'rotate(0deg)' },
+                          '100%': { transform: 'rotate(360deg)' }
+                      }
+                  }
+              }
+          }
+      }
+  </script>
 
   <style>
-    *{
-      box-sizing:border-box;
-      -webkit-tap-highlight-color:transparent;
+    body {
+        background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
+        color: #f1f5f9;
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+        min-height: 100vh;
+        padding-bottom: 40px;
     }
 
-    :root{
-      --blue:#08a5e3;
-      --blue-dark:#0877c9;
-      --navy:#0b3152;
-      --lime:#b4d51a;
-      --bg:#f4f9fc;
-      --card:#fff;
-      --text:#103653;
-      --muted:#72879a;
-      --line:#e0ebf2;
-      --green:#14a889;
-      --danger:#d84a5b;
-    }
-
-    html,body{
-      margin:0;
-      padding:0;
-      min-height:100%;
-      background:
-        radial-gradient(
-          circle at 8% 4%,
-          rgba(8,165,227,.09),
-          transparent 25%
-        ),
-        radial-gradient(
-          circle at 92% 8%,
-          rgba(180,213,26,.08),
-          transparent 22%
-        ),
-        var(--bg);
-      color:var(--text);
-      font-family:
-        Inter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-    }
-
-    body{
-      padding-bottom:30px;
-    }
-
-    .app{
-      width:100%;
-      max-width:560px;
-      margin:0 auto;
-      min-height:100vh;
-    }
-
-    /* HEADER */
-
-    .top{
-      position:relative;
-      overflow:hidden;
-      padding:22px 18px 82px;
-
-      background:
-        radial-gradient(
-          circle at 82% 16%,
-          rgba(180,213,26,.20),
-          transparent 23%
-        ),
-        radial-gradient(
-          circle at 8% 90%,
-          rgba(8,165,227,.18),
-          transparent 30%
-        ),
-        linear-gradient(
-          135deg,
-          #063454 0%,
-          #075d8f 54%,
-          #0786bf 100%
-        );
-
-      box-shadow:
-        0 12px 30px rgba(7,83,127,.14);
-    }
-
-    .top:before{
-      content:"";
-      position:absolute;
-      width:190px;
-      height:190px;
-      right:-75px;
-      bottom:-105px;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:50%;
-      box-shadow:
-        0 0 0 28px rgba(255,255,255,.025),
-        0 0 0 56px rgba(255,255,255,.018);
-    }
-
-    .top:after{
-      content:"";
-      position:absolute;
-      width:270px;
-      height:270px;
-      right:-120px;
-      top:-150px;
-      border-radius:50%;
-      background:rgba(180,213,26,.09);
-    }
-
-    .topbar{
-      position:relative;
-      z-index:2;
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    .back-btn{
-      width:43px;
-      height:43px;
-      border:1px solid rgba(255,255,255,.20);
-      border-radius:14px;
-      background:rgba(255,255,255,.10);
-      color:#fff;
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      font-size:23px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:11px;
-      color:#fff;
-    }
-
-    .brand-icon{
-      width:45px;
-      height:45px;
-      border-radius:15px;
-      display:grid;
-      place-items:center;
-      background:rgba(255,255,255,.12);
-      border:1px solid rgba(255,255,255,.20);
-      box-shadow:
-        0 8px 22px rgba(0,0,0,.13),
-        inset 0 1px 0 rgba(255,255,255,.18);
-    }
-
-    .brand-icon svg{
-      width:28px;
-      height:28px;
-    }
-
-    .brand strong{
-      display:block;
-      font-size:20px;
-      line-height:1.05;
-      letter-spacing:-.3px;
-    }
-
-    .brand small{
-      display:block;
-      margin-top:4px;
-      color:rgba(255,255,255,.78);
-      font-size:8px;
-      font-weight:800;
-      letter-spacing:1.3px;
-    }
-
-    .page-title{
-      position:relative;
-      z-index:2;
-      margin:28px 0 0;
-      color:#fff;
-      font-size:29px;
-      line-height:1.1;
-      font-weight:800;
-      letter-spacing:-.6px;
-    }
-
-    .page-title:after{
-      content:"";
-      display:block;
-      width:42px;
-      height:3px;
-      margin-top:10px;
-      border-radius:99px;
-      background:
-        linear-gradient(
-          90deg,
-          var(--lime),
-          rgba(180,213,26,.15)
+    .brushed-metal-overlay {
+        background: repeating-radial-gradient(
+            circle at 50% 40%,
+            rgba(255, 255, 255, 0.015) 0px,
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 1px,
+            transparent 3px
         );
     }
 
-    .page-subtitle{
-      position:relative;
-      z-index:2;
-      margin:9px 0 0;
-      color:rgba(255,255,255,.80);
-      font-size:13px;
+    .text-chrome-3d {
+        background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 35%, #94a3b8 65%, #64748b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.9));
     }
 
-    /* CONTENT */
-
-    .content{
-      position:relative;
-      z-index:5;
-      margin:-57px 14px 0;
+    .gold-ring-accent {
+        background: radial-gradient(circle, #ffe380 0%, #d4af37 60%, #996515 100%);
+        box-shadow: 0 0 12px rgba(212, 175, 55, 0.8), inset 0 0 4px rgba(255, 255, 255, 0.8);
     }
 
-    .card{
-      background:#fff;
-      border:1px solid rgba(214,231,242,.95);
-      border-radius:27px;
-      padding:20px;
-      box-shadow:0 18px 45px rgba(8,72,112,.11);
+    .app {
+        width: 100%;
+        max-width: 560px;
+        margin: 0 auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
     }
 
-    .gcash-box{
-      padding:18px 14px;
-      border:1px solid #d8eee3;
-      border-radius:20px;
-      background:
-        linear-gradient(
-          145deg,
-          #f7fffb,
-          #eefaf5
-        );
-      text-align:center;
+    .content {
+        position: relative;
+        z-index: 5;
+        padding: 0 16px;
+        margin-top: 16px;
     }
 
-    .gcash-logo{
-      width:52px;
-      height:52px;
-      border-radius:16px;
-      margin:0 auto 10px;
-      display:grid;
-      place-items:center;
-      background:#007dfe;
-      color:#fff;
-      font-weight:900;
-      font-size:14px;
-      box-shadow:
-        0 8px 20px rgba(0,125,254,.20);
+    .card {
+        background: rgba(13, 29, 53, 0.9);
+        border: 1px solid rgba(0, 242, 254, 0.25);
+        border-radius: 24px;
+        padding: 22px;
+        box-shadow: 0 18px 45px rgba(0,0,0,0.6);
+        backdrop-filter: blur(12px);
     }
 
-    .gcash-box h3{
-      margin:0;
-      color:#103653;
-      font-size:18px;
+    .gcash-box {
+        padding: 18px 14px;
+        border: 1px solid rgba(0, 242, 254, 0.2);
+        border-radius: 18px;
+        background: rgba(0, 0, 0, 0.3);
+        text-align: center;
     }
 
-    .gcash-box p{
-      margin:6px auto 0;
-      max-width:350px;
-      color:#718278;
-      font-size:12px;
-      line-height:1.5;
+    .gcash-logo {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        margin: 0 auto 10px;
+        display: grid;
+        place-items: center;
+        background: #007dfe;
+        color: #fff;
+        font-weight: 900;
+        font-size: 14px;
+        box-shadow: 0 8px 20px rgba(0,125,254,0.3);
     }
 
-    /* AMOUNT */
-
-    .field{
-      margin-top:17px;
+    .gcash-box h3 {
+        margin: 0;
+        color: #ffffff;
+        font-size: 18px;
+        font-family: 'JetBrains Mono', monospace;
     }
 
-    .field label{
-      display:block;
-      margin-bottom:7px;
-      color:#637b8e;
-      font-size:10px;
-      font-weight:900;
-      letter-spacing:.8px;
+    .gcash-box p {
+        margin: 6px auto 0;
+        max-width: 350px;
+        color: #94a3b8;
+        font-size: 12px;
+        line-height: 1.5;
     }
 
-    .amount-wrap{
-      position:relative;
+    .field {
+        margin-top: 18px;
     }
 
-    .amount-symbol{
-      position:absolute;
-      left:15px;
-      top:50%;
-      transform:translateY(-50%);
-      color:#0877c9;
-      font-size:20px;
-      font-weight:900;
-      pointer-events:none;
+    .field label {
+        display: block;
+        margin-bottom: 7px;
+        color: #00f2fe;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: .8px;
+        font-family: 'JetBrains Mono', monospace;
     }
 
-    #moneyAmount{
-      width:100%;
-      height:56px;
-      padding:0 15px 0 39px;
-      border:1px solid #dce9f1;
-      border-radius:16px;
-      outline:none;
-      background:#fbfdfe;
-      color:#103653;
-      font:inherit;
-      font-size:21px;
-      font-weight:800;
+    .amount-wrap {
+        position: relative;
     }
 
-    #moneyAmount:focus{
-      border-color:#08a5e3;
-      box-shadow:
-        0 0 0 3px rgba(8,165,227,.10);
+    .amount-symbol {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #00f2fe;
+        font-size: 20px;
+        font-weight: 900;
+        pointer-events: none;
+        font-family: 'JetBrains Mono', monospace;
     }
 
-    /* STEPS */
-
-    .steps{
-      margin-top:15px;
-      padding:13px 14px;
-      background:#f8fbfd;
-      border:1px solid #e3edf4;
-      border-radius:15px;
-      color:#61798b;
-      font-size:12px;
-      line-height:1.65;
+    #moneyAmount {
+        width: 100%;
+        height: 56px;
+        padding: 0 15px 0 42px;
+        border: 1.5px solid rgba(0, 242, 254, 0.3);
+        border-radius: 16px;
+        outline: none;
+        background: rgba(4, 8, 20, 0.8);
+        color: #fff;
+        font: inherit;
+        font-size: 21px;
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
     }
 
-    .steps strong{
-      color:#103653;
+    #moneyAmount:focus {
+        border-color: #00f2fe;
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
     }
 
-    /* PAY BUTTON */
-
-    .pay-btn{
-      width:100%;
-      height:53px;
-      margin-top:16px;
-      border:0;
-      border-radius:27px;
-      background:
-        linear-gradient(
-          135deg,
-          #08a5e3,
-          #0877c9
-        );
-      color:#fff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:9px;
-      font-size:15px;
-      font-weight:900;
-      cursor:pointer;
-      box-shadow:
-        0 9px 20px rgba(8,120,202,.20);
+    .steps {
+        margin-top: 16px;
+        padding: 14px;
+        background: rgba(4, 8, 20, 0.6);
+        border: 1px solid rgba(0, 242, 254, 0.15);
+        border-radius: 16px;
+        color: #94a3b8;
+        font-size: 12px;
+        line-height: 1.65;
     }
 
-    .pay-btn:active{
-      transform:scale(.985);
+    .steps strong {
+        color: #fff;
     }
 
-    .pay-btn:disabled{
-      opacity:.62;
-      cursor:wait;
+    .pay-btn {
+        width: 100%;
+        height: 53px;
+        margin-top: 18px;
+        border: 0;
+        border-radius: 9999px;
+        background: linear-gradient(135deg, #00f2fe, #1890ff);
+        color: #040814;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        font-size: 15px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+        transition: all 0.3s ease;
     }
 
-    .pay-icon{
-      width:25px;
-      height:25px;
-      border:2px solid #fff;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      font-size:11px;
-      font-weight:900;
+    .pay-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 30px rgba(0, 242, 254, 0.7);
     }
 
-    /* QR PAYMENT */
-
-    .qr-payment-box{
-      display:none;
-      margin-top:17px;
-      padding:18px 14px 16px;
-      border:1px solid #e2ebf7;
-      border-radius:22px;
-      background:
-        linear-gradient(
-          180deg,
-          #ffffff 0%,
-          #f7fbff 100%
-        );
-      text-align:center;
-      box-shadow:
-        0 10px 28px rgba(10,58,110,.08);
+    .pay-btn:active {
+        transform: scale(.985);
     }
 
-    .qr-payment-box.show{
-      display:block;
+    .pay-btn:disabled {
+        opacity: .62;
+        cursor: wait;
+        transform: none;
     }
 
-    .qr-gcash-brand{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:9px;
-      color:#1260d9;
-      font-size:25px;
-      font-weight:900;
-      letter-spacing:-.6px;
+    .pay-icon {
+        width: 25px;
+        height: 25px;
+        border: 2px solid #040814;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 900;
     }
 
-    .qr-gcash-mark{
-      width:39px;
-      height:39px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      border:4px solid #1260d9;
-      color:#1260d9;
-      font-size:18px;
-      font-weight:900;
+    .qr-payment-box {
+        display: none;
+        margin-top: 18px;
+        padding: 18px 14px 16px;
+        border: 1px solid rgba(0, 242, 254, 0.3);
+        border-radius: 20px;
+        background: rgba(4, 8, 20, 0.9);
+        text-align: center;
+        box-shadow: 0 10px 28px rgba(0,0,0,0.5);
     }
 
-    .qr-secure{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
-      margin-top:7px;
-      color:#14a889;
-      font-size:13px;
-      font-weight:900;
+    .qr-payment-box.show {
+        display: block;
     }
 
-    .qr-payment-title{
-      margin:13px auto 7px;
-      max-width:330px;
-      color:#173b6d;
-      font-size:17px;
-      font-weight:900;
-      line-height:1.3;
+    .qr-gcash-brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        color: #00f2fe;
+        font-size: 25px;
+        font-weight: 900;
+        letter-spacing: -.6px;
+        font-family: 'JetBrains Mono', monospace;
     }
 
-    .qr-payment-note{
-      margin:0 auto 13px;
-      max-width:330px;
-      color:#71809a;
-      font-size:12px;
-      line-height:1.45;
+    .qr-gcash-mark {
+        width: 39px;
+        height: 39px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        border: 3px solid #00f2fe;
+        color: #00f2fe;
+        font-size: 18px;
+        font-weight: 900;
     }
 
-    #qrCodeContainer{
-      width:250px;
-      max-width:100%;
-      min-height:250px;
-      margin:0 auto 14px;
-      padding:9px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#fff;
-      border:1px solid #dce8f5;
-      border-radius:16px;
-      box-shadow:
-        0 6px 18px rgba(23,59,109,.08);
+    .qr-secure {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 7px;
+        color: #00e676;
+        font-size: 13px;
+        font-weight: 900;
+        font-family: 'JetBrains Mono', monospace;
     }
 
-    #qrCodeContainer img{
-      display:block;
-      width:230px;
-      height:230px;
-      max-width:100%;
-      object-fit:contain;
+    .qr-payment-title {
+        margin: 13px auto 7px;
+        max-width: 330px;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 900;
+        line-height: 1.3;
     }
 
-    .open-gcash-btn{
-      width:100%;
-      max-width:330px;
-      height:50px;
-      margin:0 auto 10px;
-      border:0;
-      border-radius:25px;
-      background:#0969ed;
-      color:#fff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      font-size:14px;
-      font-weight:900;
-      cursor:pointer;
-      box-shadow:
-        0 9px 20px rgba(9,105,237,.20);
+    .qr-payment-note {
+        margin: 0 auto 13px;
+        max-width: 330px;
+        color: #94a3b8;
+        font-size: 12px;
+        line-height: 1.45;
     }
 
-    .open-gcash-btn:active{
-      transform:scale(.98);
+    #qrCodeContainer {
+        width: 250px;
+        max-width: 100%;
+        min-height: 250px;
+        margin: 0 auto 14px;
+        padding: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border: 1px solid rgba(0, 242, 254, 0.3);
+        border-radius: 16px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.5);
     }
 
-    .open-gcash-icon{
-      width:23px;
-      height:23px;
-      border:2px solid rgba(255,255,255,.9);
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      font-size:10px;
-      font-weight:900;
+    #qrCodeContainer img {
+        display: block;
+        width: 230px;
+        height: 230px;
+        max-width: 100%;
+        object-fit: contain;
     }
 
-    .qr-expire{
-      color:#7888a0;
-      font-size:10px;
-      line-height:1.4;
-      margin-top:4px;
+    .open-gcash-btn {
+        width: 100%;
+        max-width: 330px;
+        height: 50px;
+        margin: 0 auto 10px;
+        border: 0;
+        border-radius: 25px;
+        background: #007dfe;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0,125,254,0.4);
     }
 
-    .qr-order{
-      margin-top:4px;
-      color:#91a0b4;
-      font-size:9px;
-      word-break:break-all;
+    .open-gcash-btn:active {
+        transform: scale(.98);
     }
 
-    .qr-help{
-      margin-top:8px;
-      color:#728198;
-      font-size:10px;
-      line-height:1.45;
+    .open-gcash-icon {
+        width: 23px;
+        height: 23px;
+        border: 2px solid rgba(255,255,255,.9);
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 10px;
+        font-weight: 900;
     }
 
-    /* STATUS */
-
-    .payment-status{
-      display:none;
-      align-items:center;
-      gap:10px;
-      margin-top:14px;
-      padding:12px 14px;
-      border:1px solid #dbe7f5;
-      border-radius:13px;
-      background:#f7fbff;
-      color:#31516f;
-      font-size:12px;
-      font-weight:700;
-      line-height:1.4;
+    .qr-expire {
+        color: #94a3b8;
+        font-size: 10px;
+        line-height: 1.4;
+        margin-top: 4px;
     }
 
-    .payment-status.show{
-      display:flex;
+    .qr-order {
+        margin-top: 4px;
+        color: #64748b;
+        font-size: 9px;
+        word-break: break-all;
+        font-family: 'JetBrains Mono', monospace;
     }
 
-    .payment-status-dot{
-      width:9px;
-      height:9px;
-      flex:none;
-      border-radius:50%;
-      background:#2563eb;
-      box-shadow:
-        0 0 0 4px rgba(37,99,235,.10);
+    .qr-help {
+        margin-top: 8px;
+        color: #94a3b8;
+        font-size: 10px;
+        line-height: 1.45;
     }
 
-    .payment-status.success{
-      border-color:#ccefe2;
-      background:#f2fcf8;
-      color:#147b63;
+    .payment-status {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        margin-top: 14px;
+        padding: 12px 14px;
+        border: 1px solid rgba(0, 242, 254, 0.2);
+        border-radius: 14px;
+        background: rgba(0, 0, 0, 0.4);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.4;
     }
 
-    .payment-status.success .payment-status-dot{
-      background:#14a889;
-      box-shadow:
-        0 0 0 4px rgba(20,168,137,.10);
+    .payment-status.show {
+        display: flex;
     }
 
-    .payment-status.error{
-      border-color:#f1d8dd;
-      background:#fff8f9;
-      color:#b53d50;
+    .payment-status-dot {
+        width: 9px;
+        height: 9px;
+        flex: none;
+        border-radius: 50%;
+        background: #00f2fe;
+        box-shadow: 0 0 0 4px rgba(0,242,254,0.2);
     }
 
-    .payment-status.error .payment-status-dot{
-      background:#d84a5b;
-      box-shadow:
-        0 0 0 4px rgba(216,74,91,.10);
+    .payment-status.success {
+        border-color: rgba(0, 230, 118, 0.3);
+        background: rgba(0, 230, 118, 0.1);
+        color: #00e676;
     }
 
-    /* BACK */
-
-    .back-link{
-      width:100%;
-      height:49px;
-      margin-top:14px;
-      border:1px solid #dfeaf1;
-      border-radius:15px;
-      background:#fff;
-      color:#526b7d;
-      font-size:13px;
-      font-weight:800;
-      cursor:pointer;
+    .payment-status.success .payment-status-dot {
+        background: #00e676;
+        box-shadow: 0 0 0 4px rgba(0,230,118,0.2);
     }
 
-    .back-link:active{
-      transform:scale(.985);
+    .payment-status.error {
+        border-color: rgba(255, 82, 82, 0.3);
+        background: rgba(255, 82, 82, 0.1);
+        color: #ff5252;
     }
 
-    .footer{
-      text-align:center;
-      margin:18px 0;
-      color:#9aabb8;
-      font-size:9px;
-      letter-spacing:.8px;
+    .payment-status.error .payment-status-dot {
+        background: #ff5252;
+        box-shadow: 0 0 0 4px rgba(255,82,82,0.2);
     }
 
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:25px;
-      transform:
-        translateX(-50%)
-        translateY(15px);
-      max-width:calc(100% - 30px);
-      padding:11px 16px;
-      border-radius:13px;
-      background:#10261c;
-      color:#fff;
-      font-size:12px;
-      font-weight:700;
-      opacity:0;
-      pointer-events:none;
-      transition:.2s ease;
-      z-index:110000;
-      text-align:center;
+    .back-link {
+        width: 100%;
+        height: 49px;
+        margin-top: 16px;
+        border: 1px solid rgba(0, 242, 254, 0.3);
+        border-radius: 16px;
+        background: rgba(4, 8, 20, 0.8);
+        color: #00f2fe;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
 
-    .toast.show{
-      opacity:1;
-      transform:
-        translateX(-50%)
-        translateY(0);
+    .back-link:hover {
+        background: rgba(0, 242, 254, 0.1);
     }
 
-    @media(max-width:390px){
-      .content{
-        margin-left:11px;
-        margin-right:11px;
-      }
+    .footer {
+        text-align: center;
+        margin: 20px 0;
+        color: #64748b;
+        font-size: 9px;
+        letter-spacing: .8px;
+        font-family: 'JetBrains Mono', monospace;
+    }
 
-      .card{
-        padding:17px 13px;
-      }
+    .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 25px;
+        transform: translateX(-50%) translateY(15px);
+        max-width: calc(100% - 30px);
+        padding: 11px 18px;
+        border-radius: 9999px;
+        background: #00f2fe;
+        color: #040814;
+        font-size: 12px;
+        font-weight: 900;
+        font-family: 'JetBrains Mono', monospace;
+        opacity: 0;
+        pointer-events: none;
+        transition: .25s ease;
+        z-index: 110000;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(0,242,254,0.6);
+    }
 
-      .qr-payment-box{
-        padding:15px 10px 14px;
-      }
-
-      .qr-gcash-brand{
-        font-size:23px;
-      }
-
-      #qrCodeContainer{
-        width:238px;
-        min-height:238px;
-      }
-
-      #qrCodeContainer img{
-        width:218px;
-        height:218px;
-      }
-
-      .qr-payment-title{
-        font-size:15px;
-      }
+    .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
     }
   </style>
 </head>
 
 <body>
 
-<div class="app">
+  <!-- BACKGROUND CANDLESTICK CHART & OVERLAY -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+      <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
+  </div>
 
-  <header class="top">
-
-    <div class="topbar">
-
-      <button
-        class="back-btn"
-        id="backBtn"
-        type="button"
-        aria-label="Back"
-      >‹</button>
-
-      <div class="brand">
-
-        <div class="brand-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none">
-            <path
-              d="M8 31.5C12.2 15.2 23.7 8.8 39.5 8.5C39.2 24.3 32.8 35.8 16.5 40"
-              stroke="#B4D51A"
-              stroke-width="4.2"
-              stroke-linecap="round"
-            />
-            <path
-              d="M10 38C16.2 28.8 23.5 22.2 33.5 16.5"
-              stroke="#08A5E3"
-              stroke-width="4.2"
-              stroke-linecap="round"
-            />
-            <path
-              d="M25.8 12.2C30.7 14.4 34.1 18.1 35.8 23"
-              stroke="#fff"
-              stroke-width="2.2"
-              stroke-linecap="round"
-              opacity=".85"
-            />
-          </svg>
-        </div>
-
-        <div>
-          <strong>Novarise</strong>
-          <small>BUILD • INVEST • GROW</small>
-        </div>
-
+  <!-- MARKET TICKER HEADER -->
+  <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-2">
+      <div class="flex items-center text-xs font-mono">
+          <div class="px-4 py-1 bg-nexora-cyan/10 border-r border-nexora-cyan/30 text-nexora-cyan font-bold flex items-center shrink-0 z-10 shadow-lg">
+              <span class="w-2 h-2 rounded-full bg-nexora-accent animate-ping mr-2"></span>
+              <span>NEXORA TAPE</span>
+          </div>
+          <div class="overflow-hidden whitespace-nowrap flex w-full">
+              <div class="inline-flex animate-marquee space-x-10 items-center pl-6">
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">BTC/USD</span>
+                      <span class="text-white font-semibold">$96,420.00</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +3.2%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">ETH/USD</span>
+                      <span class="text-white font-semibold">$3,520.80</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +2.4%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">NEX/USD</span>
+                      <span class="text-nexora-cyan font-bold">$18.95</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +18.4%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">GOLD/OUNCE</span>
+                      <span class="text-white font-semibold">$2,658.18</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +0.85%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">24H VOLUME</span>
+                      <span class="text-nexora-gold font-semibold">$2.84 BILLION</span>
+                  </div>
+              </div>
+          </div>
       </div>
+  </header>
 
+<div class="app relative z-10">
+
+  <!-- TOP BRANDING & HEADER SECTION -->
+  <div class="px-4 pt-6 pb-8">
+    <div class="flex items-center justify-between mb-4">
+      <button class="w-11 h-11 border border-nexora-cyan/30 rounded-xl bg-nexora-card/80 text-nexora-cyan flex items-center justify-center cursor-pointer hover:bg-nexora-cyan/20 transition-all text-xl" id="backBtn" type="button" aria-label="Back">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div class="flex items-center space-x-3">
+        <div class="relative w-10 h-10 flex items-center justify-center animate-pulse-cyan">
+            <div class="absolute inset-0 rounded-full border border-dashed border-nexora-cyan/50 animate-orbit"></div>
+            <svg class="w-8 h-8 drop-shadow-[0_0_10px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+                <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+                <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
+            </svg>
+        </div>
+      </div>
     </div>
 
-    <h1 class="page-title">GCash Recharge</h1>
-
-    <p class="page-subtitle">
-      Add funds securely using GCash.
-    </p>
-
-  </header>
+    <h1 class="text-2xl sm:text-3xl font-black text-white font-mono tracking-wide">GCash Recharge</h1>
+    <p class="text-xs text-gray-400 font-mono mt-1">Add funds securely using GCash.</p>
+  </div>
 
   <main class="content">
 
     <section class="card">
 
       <div class="gcash-box">
-
-        <div class="gcash-logo">
-          GCash
-        </div>
-
+        <div class="gcash-logo">GCash</div>
         <h3>GCash QR Payment</h3>
-
-        <p>
-          Enter the amount you want to add to your Novarise balance,
-          then generate your secure payment QR.
-        </p>
-
+        <p>Enter the amount you want to add to your Nexora balance, then generate your secure payment QR.</p>
       </div>
 
       <div class="field">
-
-        <label for="moneyAmount">
-          RECHARGE AMOUNT
-        </label>
-
+        <label for="moneyAmount">RECHARGE AMOUNT</label>
         <div class="amount-wrap">
-
           <span class="amount-symbol">₱</span>
-
-          <input
-            id="moneyAmount"
-            type="number"
-            min="1"
-            step="1"
-            inputmode="decimal"
-            placeholder="Enter amount"
-            autocomplete="off"
-          >
-
+          <input id="moneyAmount" type="number" min="1" step="1" inputmode="decimal" placeholder="Enter amount" autocomplete="off">
         </div>
-
       </div>
 
       <div class="steps">
-
         <strong>How to recharge:</strong><br>
-
-        1. The minimum top-up amount is 300 PHP.<br>
+        1. The minimum top-up amount is ₱300.<br>
         2. Tap <strong>Pay with GCash</strong>.<br>
         3. Wait for the secure QR code.<br>
         4. Scan the QR code using GCash.<br>
         5. Complete the payment in GCash.<br>
-        6. Keep this page open while Novarise confirms your payment.
-
+        6. Keep this page open while Nexora confirms your payment.
       </div>
 
-      <button
-        class="pay-btn"
-        id="payBtn"
-        type="button"
-      >
+      <button class="pay-btn" id="payBtn" type="button">
         <span class="pay-icon">G</span>
         <span id="payBtnText">Pay with GCash</span>
       </button>
 
-      <div
-        class="qr-payment-box"
-        id="qrPaymentBox"
-      >
-
+      <div class="qr-payment-box" id="qrPaymentBox">
         <div class="qr-gcash-brand">
           <span class="qr-gcash-mark">G</span>
           <span>GCash</span>
         </div>
-
-        <div class="qr-secure">
-          ✓ Secure Payment
-        </div>
-
-        <div class="qr-payment-title">
-          Scan the QR code below with your GCash app to complete your payment.
-        </div>
-
-        <div class="qr-payment-note">
-          Use the GCash QR Scanner and complete the payment shown in your GCash app.
-        </div>
+        <div class="qr-secure">✓ Secure Payment</div>
+        <div class="qr-payment-title">Scan the QR code below with your GCash app to complete your payment.</div>
+        <div class="qr-payment-note">Use the GCash QR Scanner and complete the payment shown in your GCash app.</div>
 
         <div id="qrCodeContainer"></div>
 
-        <button
-          class="open-gcash-btn"
-          id="openGcashBtn"
-          type="button"
-        >
+        <button class="open-gcash-btn" id="openGcashBtn" type="button">
           <span class="open-gcash-icon">G</span>
           <span>Go to GCash</span>
         </button>
 
-        <div
-          class="qr-expire"
-          id="qrExpireText"
-        >
-          QR payment expiration will appear here.
-        </div>
-
-        <div
-          class="qr-order"
-          id="qrOrderText"
-        ></div>
-
-        <div class="qr-help">
-          After you complete the payment, Novarise will verify
-          the payment status before updating your balance.
-        </div>
-
+        <div class="qr-expire" id="qrExpireText">QR payment expiration will appear here.</div>
+        <div class="qr-order" id="qrOrderText"></div>
+        <div class="qr-help">After you complete the payment, Nexora will verify the payment status before updating your balance.</div>
       </div>
 
-      <div
-        class="payment-status"
-        id="paymentStatusBox"
-      >
-
+      <div class="payment-status" id="paymentStatusBox">
         <span class="payment-status-dot"></span>
-
-        <span id="paymentStatusText">
-          Preparing payment…
-        </span>
-
+        <span id="paymentStatusText">Preparing payment…</span>
       </div>
 
-      <button
-        class="back-link"
-        id="backBottomBtn"
-        type="button"
-      >
+      <button class="back-link" id="backBottomBtn" type="button">
         Back to My Account
       </button>
 
     </section>
 
     <div class="footer">
-      Novarise • BUILD • INVEST • GROW
+      NEXORA INVESTMENT TERMINAL • ALL RIGHTS RESERVED
     </div>
 
   </main>
@@ -892,1254 +664,324 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- Candlestick Chart Background Script -->
+<script>
+    const canvas = document.getElementById('chartCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let candles = [];
+    const candleWidth = 14;
+    const spacing = 22;
+
+    function initCandles() {
+        candles = [];
+        const count = Math.ceil(canvas.width / spacing) + 5;
+        let currentPrice = canvas.height * 0.55;
+
+        for (let i = 0; i < count; i++) {
+            const open = currentPrice;
+            const close = open + (Math.random() - 0.48) * 35;
+            const high = Math.max(open, close) + Math.random() * 15;
+            const low = Math.min(open, close) - Math.random() * 15;
+            candles.push({ open, close, high, low, x: i * spacing });
+            currentPrice = close;
+        }
+    }
+
+    function drawChart() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < candles.length; i++) {
+            const c = candles[i];
+            const isBullish = c.close <= c.open;
+            ctx.strokeStyle = isBullish ? '#00e676' : '#ff5252';
+            ctx.fillStyle = isBullish ? 'rgba(0, 230, 118, 0.5)' : 'rgba(255, 82, 82, 0.5)';
+
+            ctx.beginPath();
+            ctx.moveTo(c.x + candleWidth / 2, c.high);
+            ctx.lineTo(c.x + candleWidth / 2, c.low);
+            ctx.stroke();
+
+            const bodyY = Math.min(c.open, c.close);
+            const bodyHeight = Math.max(Math.abs(c.open - c.close), 2);
+            ctx.fillRect(c.x, bodyY, candleWidth, bodyHeight);
+
+            c.x -= 0.4;
+        }
+
+        if (candles.length > 0 && candles[0].x < -spacing) {
+            const last = candles[candles.length - 1];
+            const open = last.close;
+            const close = open + (Math.random() - 0.48) * 35;
+            const high = Math.max(open, close) + Math.random() * 15;
+            const low = Math.min(open, close) - Math.random() * 15;
+            candles.shift();
+            candles.push({ open, close, high, low, x: last.x + spacing });
+        }
+
+        requestAnimationFrame(drawChart);
+    }
+
+    initCandles();
+    drawChart();
+</script>
+
 <script type="module">
-
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-  import {
-  getAuth,
-  onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-  getFirestore,
-  doc,
-  runTransaction
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  /*
-   * Firebase configuration
-   * Same Firebase project used by my.html
-   */
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
-
-    apiKey:
-      "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
-
-    authDomain:
-      "investpro-2dafb.firebaseapp.com",
-
-    projectId:
-  "investpro-2dafb",
-
-    storageBucket:
-      "investpro-2dafb.firebasestorage.app",
-
-    messagingSenderId:
-      "135092039764",
-
-    appId:
-      "1:135092039764:web:c4c71eef0c904346a77dc1"
-
+    apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+    authDomain: "investpro-2dafb.firebaseapp.com",
+    projectId: "investpro-2dafb",
+    storageBucket: "investpro-2dafb.firebasestorage.app",
+    messagingSenderId: "135092039764",
+    appId: "1:135092039764:web:c4c71eef0c904346a77dc1"
   };
 
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  const app =
-    initializeApp(firebaseConfig);
-
-  const auth =
-    getAuth(app);
-  
-  const db =
-    getFirestore(app);
-
-  /*
-   * PayMongo Worker
-   *
-   * Same Worker URL can remain.
-   * The Worker itself now handles PayMongo.
-   */
-
-  const PAYMONGO_WORKER_URL =
-    "https://novarise-payermax.kantisamuel3.workers.dev";
-
-
+  const PAYMONGO_WORKER_URL = "https://novarise-payermax.kantisamuel3.workers.dev";
   let currentUser = null;
-
   let paymentPollToken = 0;
-
-
-  const $ =
-    id => document.getElementById(id);
-
-
-  /*
-   * Toast
-   */
+  const $ = id => document.getElementById(id);
 
   function toast(message){
-
     const el = $("toast");
-
     el.textContent = message;
-
     el.classList.add("show");
-
-    clearTimeout(
-      window.__novariseToastTimer
-    );
-
-    window.__novariseToastTimer =
-      setTimeout(
-        () => el.classList.remove("show"),
-        2600
-      );
-
+    clearTimeout(window.__novariseToastTimer);
+    window.__novariseToastTimer = setTimeout(() => el.classList.remove("show"), 2600);
   }
-
-
-  /*
-   * Back navigation
-   */
 
   function goBack(){
-
     window.location.href = "my.html";
-
   }
 
-
-  $("backBtn")
-    .addEventListener(
-      "click",
-      goBack
-    );
-
-
-  $("backBottomBtn")
-    .addEventListener(
-      "click",
-      goBack
-    );
-
-
-  /*
-   * Create PayMongo payment
-   */
+  $("backBtn").addEventListener("click", goBack);
+  $("backBottomBtn").addEventListener("click", goBack);
 
   async function createRechargePayment(amount){
-
     if(!currentUser){
-
-      throw new Error(
-        "Please log in again."
-      );
-
+      throw new Error("Please log in again.");
     }
-
-
-    const idToken =
-      await currentUser.getIdToken(true);
-
-
-    const response =
-      await fetch(
-        `${PAYMONGO_WORKER_URL}/create-paymongo-payment`,
-        {
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-              "application/json",
-
-            "Authorization":
-              `Bearer ${idToken}`
-          },
-
-          body:
-            JSON.stringify({
-              amount:Number(amount)
-            })
-        }
-      );
-
-
-    const data =
-      await response
-        .json()
-        .catch(() => ({}));
-
-
+    const idToken = await currentUser.getIdToken(true);
+    const response = await fetch(`${PAYMONGO_WORKER_URL}/create-paymongo-payment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${idToken}`
+      },
+      body: JSON.stringify({ amount: Number(amount) })
+    });
+    const data = await response.json().catch(() => ({}));
     if(!response.ok){
-
-      throw new Error(
-        data.message ||
-        data.error ||
-        "Unable to create payment."
-      );
-
+      throw new Error(data.message || data.error || "Unable to create payment.");
     }
-
-
     if(!data.qrCode || !data.orderId){
-
-      throw new Error(
-        "Missing payment QR information."
-      );
-
+      throw new Error("Missing payment QR information.");
     }
-
-
     return data;
-
   }
-
-
-  /*
-   * Check payment status
-   */
 
   async function getRechargePaymentStatus(orderId){
-
     if(!currentUser){
-
-      throw new Error(
-        "Please log in again."
-      );
-
+      throw new Error("Please log in again.");
     }
-
-
-    const idToken =
-      await currentUser.getIdToken(true);
-
-
-    const response =
-      await fetch(
-        `${PAYMONGO_WORKER_URL}/recharge-status?orderId=${encodeURIComponent(orderId)}`,
-        {
-          method:"GET",
-
-          headers:{
-            "Authorization":
-              `Bearer ${idToken}`
-          }
-        }
-      );
-
-
-    const data =
-      await response
-        .json()
-        .catch(() => ({}));
-
-
+    const idToken = await currentUser.getIdToken(true);
+    const response = await fetch(`${PAYMONGO_WORKER_URL}/recharge-status?orderId=${encodeURIComponent(orderId)}`, {
+      method: "GET",
+      headers: { "Authorization": `Bearer ${idToken}` }
+    });
+    const data = await response.json().catch(() => ({}));
     if(!response.ok){
-
-      throw new Error(
-        data.message ||
-        data.error ||
-        "Unable to check payment status."
-      );
-
+      throw new Error(data.message || data.error || "Unable to check payment status.");
     }
-
-
     return data;
-
   }
-
-
-  /*
-   * Reset QR interface
-   */
 
   function resetRechargeQR(){
-
     paymentPollToken++;
-
-
-    $("qrPaymentBox")
-      .classList
-      .remove("show");
-
-
-    $("qrCodeContainer")
-      .innerHTML = "";
-
-
-    $("qrOrderText")
-      .textContent = "";
-
-
-    $("qrExpireText")
-      .textContent =
-        "QR payment expiration will appear here.";
-
-
-    $("paymentStatusBox")
-      .classList
-      .remove(
-        "show",
-        "success",
-        "error"
-      );
-
-
-    $("paymentStatusText")
-      .textContent =
-        "Preparing payment…";
-
+    $("qrPaymentBox").classList.remove("show");
+    $("qrCodeContainer").innerHTML = "";
+    $("qrOrderText").textContent = "";
+    $("qrExpireText").textContent = "QR payment expiration will appear here.";
+    $("paymentStatusBox").classList.remove("show", "success", "error");
+    $("paymentStatusText").textContent = "Preparing payment…";
   }
-
-
-  /*
-   * Payment polling
-   *
-   * 60 attempts × 2.5 seconds
-   * = approximately 2.5 minutes
-   */
 
   async function pollRechargePayment(orderId){
-
-    const myToken =
-      ++paymentPollToken;
-
-
+    const myToken = ++paymentPollToken;
     for(let i = 0; i < 60; i++){
-
-      if(myToken !== paymentPollToken){
-
-        return;
-
-      }
-
-
+      if(myToken !== paymentPollToken) return;
       try{
-
-        const result =
-          await getRechargePaymentStatus(
-            orderId
-          );
-
-
-        const status =
-          String(
-            result.status ||
-            result.data?.status ||
-            "PENDING"
-          ).toUpperCase();
-
+        const result = await getRechargePaymentStatus(orderId);
+        const status = String(result.status || result.data?.status || "PENDING").toUpperCase();
 
         if(status === "SUCCESS"){
-
-          $("paymentStatusBox")
-            .classList
-            .remove("error");
-
-
-          $("paymentStatusBox")
-            .classList
-            .add(
-              "show",
-              "success"
-            );
-
-
-          $("paymentStatusText")
-            .textContent =
-              "Payment successful. Your balance has been updated.";
-
-
-          $("payBtn")
-            .disabled = false;
-
-
-          $("payBtnText")
-            .textContent =
-              "Payment Successful";
-
-
-          sessionStorage.removeItem(
-            "novariseRechargeOrder"
-          );
-
-
-          toast(
-            "GCash payment successful."
-          );
-
-
+          $("paymentStatusBox").classList.remove("error");
+          $("paymentStatusBox").classList.add("show", "success");
+          $("paymentStatusText").textContent = "Payment successful. Your balance has been updated.";
+          $("payBtn").disabled = false;
+          $("payBtnText").textContent = "Payment Successful";
+          sessionStorage.removeItem("novariseRechargeOrder");
+          toast("GCash payment successful.");
           return;
-
         }
 
-
-        if(
-          status === "FAILED" ||
-          status === "CANCELLED" ||
-          status === "EXPIRED" ||
-          status === "CLOSED"
-        ){
-
-          $("paymentStatusBox")
-            .classList
-            .remove("success");
-
-
-          $("paymentStatusBox")
-            .classList
-            .add(
-              "show",
-              "error"
-            );
-
-
-          $("paymentStatusText")
-            .textContent =
-              "Payment was not completed. No balance was added.";
-
-
-          $("payBtn")
-            .disabled = false;
-
-
-          $("payBtnText")
-            .textContent =
-              "Try Again";
-
-
+        if(["FAILED", "CANCELLED", "EXPIRED", "CLOSED"].includes(status)){
+          $("paymentStatusBox").classList.remove("success");
+          $("paymentStatusBox").classList.add("show", "error");
+          $("paymentStatusText").textContent = "Payment was not completed. No balance was added.";
+          $("payBtn").disabled = false;
+          $("payBtnText").textContent = "Try Again";
           return;
-
         }
 
-
-        $("paymentStatusBox")
-          .classList
-          .remove(
-            "error",
-            "success"
-          );
-
-
-        $("paymentStatusBox")
-          .classList
-          .add("show");
-
-
-        $("paymentStatusText")
-          .textContent =
-          "Waiting for GCash payment confirmation…";
-
+        $("paymentStatusBox").classList.remove("error", "success");
+        $("paymentStatusBox").classList.add("show");
+        $("paymentStatusText").textContent = "Waiting for GCash payment confirmation…";
       }catch(error){
-
-        console.error(
-          "Payment status error:",
-          error
-        );
-
-
-        $("paymentStatusBox")
-          .classList
-          .remove(
-            "error",
-            "success"
-          );
-
-
-        $("paymentStatusBox")
-          .classList
-          .add("show");
-
-
-        $("paymentStatusText")
-          .textContent =
-          "Waiting for payment confirmation…";
-
+        console.error("Payment status error:", error);
       }
-
-
-      await new Promise(
-        resolve =>
-          setTimeout(
-            resolve,
-            2500
-          )
-      );
-
+      await new Promise(resolve => setTimeout(resolve, 2500));
     }
-
 
     if(myToken === paymentPollToken){
-
-      $("paymentStatusBox")
-        .classList
-        .add("show");
-
-
-      $("paymentStatusText")
-        .textContent =
-        "Payment is still pending. Keep the QR open or check again later.";
-
-
-      $("payBtn")
-        .disabled = false;
-
-
-      $("payBtnText")
-        .textContent =
-        "Check Payment Again";
-
+      $("paymentStatusBox").classList.add("show");
+      $("paymentStatusText").textContent = "Payment is still pending. Keep the QR open or check again later.";
+      $("payBtn").disabled = false;
+      $("payBtnText").textContent = "Check Payment Again";
     }
-
   }
 
-
-  /*
-   * Display PayMongo QR image
-   *
-   * PayMongo already gives us the QR image URL.
-   * We do NOT generate another QR from that URL.
-   */
-
-  async function displayPaymentQR(qrCode){
-
-  const qrContainer =
-    $("qrCodeContainer");
-
-  qrContainer.innerHTML = "";
-
-  const loadScript = (src, check, message) => {
-
-    if(check()){
-      return Promise.resolve();
-    }
-
-    return new Promise((resolve, reject) => {
-
-      const existing =
-        document.querySelector(
-          `script[src="${src}"]`
-        );
-
-      if(existing){
-
-        existing.addEventListener(
-          "load",
-          resolve,
-          {once:true}
-        );
-
-        existing.addEventListener(
-          "error",
-          () => reject(
-            new Error(message)
-          ),
-          {once:true}
-        );
-
-        return;
-      }
-
-      const script =
-        document.createElement("script");
-
-      script.src = src;
-      script.async = true;
-
-      script.onload = resolve;
-
-      script.onerror = () => {
-        reject(
-          new Error(message)
-        );
-      };
-
-      document.head.appendChild(
-        script
-      );
-
-    });
-
-  };
-
-  try{
-
-    await loadScript(
-      "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js",
-      () => !!window.jsQR,
-      "Unable to load QR decoder."
-    );
-
-    await loadScript(
-      "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js",
-      () => !!window.QRCode,
-      "Unable to load QR generator."
-    );
-
-    const image =
-      new Image();
-
-    image.crossOrigin =
-      "anonymous";
-
-    image.src =
-      String(qrCode);
-
-    await new Promise(
-      (resolve, reject) => {
-
-        image.onload =
-          resolve;
-
-        image.onerror =
-          () => reject(
-            new Error(
-              "Unable to read PayMongo QR image."
-            )
-          );
-
-      }
-    );
-
-    const canvas =
-      document.createElement("canvas");
-
-    const width =
-      image.naturalWidth ||
-      image.width;
-
-    const height =
-      image.naturalHeight ||
-      image.height;
-
-    canvas.width =
-      width;
-
-    canvas.height =
-      height;
-
-    const context =
-      canvas.getContext(
-        "2d",
-        {
-          willReadFrequently:true
-        }
-      );
-
-    context.drawImage(
-      image,
-      0,
-      0,
-      width,
-      height
-    );
-
-    const imageData =
-      context.getImageData(
-        0,
-        0,
-        width,
-        height
-      );
-
-    const decoded =
-      window.jsQR(
-        imageData.data,
-        width,
-        height,
-        {
-          inversionAttempts:
-            "attemptBoth"
-        }
-      );
-
-    /*
-     * If decoding fails,
-     * keep the original PayMongo QR
-     * so the payment flow is not broken.
-     */
-
-    if(!decoded || !decoded.data){
-
-      const fallback =
-        document.createElement("img");
-
-      fallback.src =
-        String(qrCode);
-
-      fallback.alt =
-        "GCash payment QR";
-
-      fallback.width =
-        230;
-
-      fallback.height =
-        230;
-
-      fallback.style.display =
-        "block";
-
-      fallback.style.width =
-        "230px";
-
-      fallback.style.height =
-        "230px";
-
-      fallback.style.maxWidth =
-        "100%";
-
-      fallback.style.objectFit =
-        "contain";
-
-      qrContainer.appendChild(
-        fallback
-      );
-
-      console.warn(
-        "QR decoder could not read the PayMongo QR. Original QR retained."
-      );
-
-      return;
-    }
-
-    /*
-     * Rebuild a clean QR from the
-     * decoded PayMongo payment data.
-     * No logo is added.
-     */
-
-    const cleanQR =
-      document.createElement("div");
-
-    cleanQR.style.width =
-      "230px";
-
-    cleanQR.style.height =
-      "230px";
-
-    cleanQR.style.display =
-      "flex";
-
-    cleanQR.style.alignItems =
-      "center";
-
-    cleanQR.style.justifyContent =
-      "center";
-
-    cleanQR.style.background =
-      "#fff";
-
-    qrContainer.appendChild(
-      cleanQR
-    );
-
-    new window.QRCode(
-      cleanQR,
-      {
-        text:
-          decoded.data,
-
-        width:
-          230,
-
-        height:
-          230,
-
-        correctLevel:
-          window.QRCode.CorrectLevel.M
-      }
-    );
-
-  }catch(error){
-
-    console.error(
-      "QR rebuild error:",
-      error
-    );
-
-    /*
-     * Safety fallback:
-     * show the original PayMongo QR.
-     */
-
-    qrContainer.innerHTML = "";
-
-    const fallback =
-      document.createElement("img");
-
-    fallback.src =
-      String(qrCode);
-
-    fallback.alt =
-      "GCash payment QR";
-
-    fallback.width =
-      230;
-
-    fallback.height =
-      230;
-
-    fallback.style.display =
-      "block";
-
-    fallback.style.width =
-      "230px";
-
-    fallback.style.height =
-      "230px";
-
-    fallback.style.maxWidth =
-      "100%";
-
-    fallback.style.objectFit =
-      "contain";
-
-    qrContainer.appendChild(
-      fallback
-    );
-
-  }
-
-}
-
-/*
- * Generate QR
- */
-  
   async function generatePaymentQR(){
-
     if(!currentUser){
-
-      toast(
-        "Please log in first."
-      );
-
+      toast("Please log in first.");
       return;
-
     }
 
-
-    const amount =
-      Number(
-        $("moneyAmount").value
-      );
-
-
-    if(
-      !Number.isFinite(amount) ||
-      amount <= 0
-    ){
-
-      toast(
-        "Enter a valid recharge amount."
-      );
-
+    const amount = Number($("moneyAmount").value);
+    if(!Number.isFinite(amount) || amount <= 0){
+      toast("Enter a valid recharge amount.");
       $("moneyAmount").focus();
-
       return;
-
+    }
+    if(amount < 300){
+      toast("Minimum recharge amount is ₱300.");
+      $("moneyAmount").focus();
+      return;
     }
 
-
-    if(amount < 300){
-
-  toast(
-    "Minimum recharge amount is ₱300."
-  );
-
-  $("moneyAmount").focus();
-
-  return;
-
-}
-
-
-    const button =
-      $("payBtn");
-
-
-    const buttonText =
-      $("payBtnText");
-
-
+    const button = $("payBtn");
+    const buttonText = $("payBtnText");
     resetRechargeQR();
 
-
     button.disabled = true;
-
-    buttonText.textContent =
-      "Creating Secure QR…";
-
-
-    $("paymentStatusBox")
-      .classList
-      .add("show");
-
-
-    $("paymentStatusText")
-      .textContent =
-      "Creating secure payment…";
-
+    buttonText.textContent = "Creating Secure QR…";
+    $("paymentStatusBox").classList.add("show");
+    $("paymentStatusText").textContent = "Creating secure payment…";
 
     try{
+      const result = await createRechargePayment(amount);
+      const qrCode = result.qrCode || result.qrCodeImageUrl;
+      const orderId = result.orderId;
 
-      const result =
-        await createRechargePayment(
-          amount
-        );
+      if(!qrCode) throw new Error("PayMongo did not return a QR image.");
+      if(!orderId) throw new Error("Payment order ID was not returned.");
 
+      const userRef = doc(db, "Users", currentUser.uid);
+      await runTransaction(db, async transaction => {
+        const snap = await transaction.get(userRef);
+        const data = snap.exists() ? snap.data() : {};
+        const transactions = Array.isArray(data.transactions) ? [...data.transactions] : [];
+        transactions.push({
+          type: "Recharge",
+          status: "PENDING",
+          amount: Number(amount),
+          method: "GCash",
+          orderId: orderId,
+          date: new Date().toISOString()
+        });
+        transaction.set(userRef, { transactions }, { merge: true });
+      });
 
-      const qrCode =
-        result.qrCode ||
-        result.qrCodeImageUrl;
+      sessionStorage.setItem("novariseRechargeOrder", orderId);
+      sessionStorage.setItem("novariseRechargePayment", JSON.stringify({
+        qrCode: qrCode,
+        orderId: orderId,
+        amount: amount,
+        contentExpireTime: result.contentExpireTime || ""
+      }));
 
-
-      const orderId =
-        result.orderId;
-
-
-      if(!qrCode){
-
-        throw new Error(
-          "PayMongo did not return a QR image."
-        );
-
-      }
-
-
-      if(!orderId){
-
-  throw new Error(
-    "Payment order ID was not returned."
-  );
-
-}
-
-
-/*
- * Save Recharge as PENDING
- *
- * No balance is added here.
- * Admin approval will handle the balance later.
- */
-
-const userRef =
-  doc(
-    db,
-    "Users",
-    currentUser.uid
-  );
-
-await runTransaction(
-  db,
-  async transaction => {
-
-    const snap =
-      await transaction.get(
-        userRef
-      );
-
-    const data =
-      snap.exists()
-        ? snap.data()
-        : {};
-
-    const transactions =
-      Array.isArray(
-        data.transactions
-      )
-        ? [...data.transactions]
-        : [];
-
-    transactions.push({
-
-      type:
-        "Recharge",
-
-      status:
-        "PENDING",
-
-      amount:
-        Number(amount),
-
-      method:
-        "GCash",
-
-      orderId:
-        orderId,
-
-      date:
-        new Date().toISOString()
-
-    });
-
-    transaction.set(
-      userRef,
-      {
-        transactions
-      },
-      {
-        merge:true
-      }
-    );
-
-  }
-);
-
-
-sessionStorage.setItem(
-  "novariseRechargeOrder",
-  orderId
-);
-
-
-sessionStorage.setItem(
-  "novariseRechargePayment",
-  JSON.stringify({
-    qrCode: qrCode,
-    orderId: orderId,
-    amount: amount,
-    contentExpireTime:
-      result.contentExpireTime || ""
-  })
-);
-
-
-/*
- * Open the separate GCash payment page.
- */
-
-window.location.href =
-  "gcash-payment.html";
-
-return;
+      window.location.href = "gcash-payment.html";
+      return;
     }catch(error){
-
-      console.error(
-        "Recharge creation error:",
-        error
-      );
-
-
-      $("paymentStatusBox")
-        .classList
-        .remove(
-          "show",
-          "success"
-        );
-
-
-      $("paymentStatusBox")
-        .classList
-        .add(
-          "show",
-          "error"
-        );
-
-
-      $("paymentStatusText")
-        .textContent =
-        "Unable to create the payment QR.";
-
-
-      $("qrPaymentBox")
-        .classList
-        .remove("show");
-
-
-      $("qrCodeContainer")
-        .innerHTML = "";
-
-
+      console.error("Recharge creation error:", error);
+      $("paymentStatusBox").classList.remove("show", "success");
+      $("paymentStatusBox").classList.add("show", "error");
+      $("paymentStatusText").textContent = "Unable to create the payment QR.";
       button.disabled = false;
-
-      buttonText.textContent =
-        "Pay with GCash";
-
-
-      toast(
-        error?.message ||
-        "GCash QR payment is not available yet."
-      );
-
+      buttonText.textContent = "Pay with GCash";
+      toast(error?.message || "GCash QR payment is not available yet.");
     }
-
   }
 
+  $("payBtn").addEventListener("click", generatePaymentQR);
 
-  $("payBtn")
-    .addEventListener(
-      "click",
-      generatePaymentQR
-    );
+  $("openGcashBtn").addEventListener("click", () => {
+    window.location.href = "https://payments.gcash.com/";
+  });
 
-
-  /*
-   * Go to GCash
-   *
-   * The QR remains the primary payment method.
-   */
-
-  $("openGcashBtn")
-    .addEventListener(
-      "click",
-      () => {
-
-        window.location.href =
-          "https://payments.gcash.com/";
-
-      }
-    );
-
-
-  /*
-   * Prevent accidental duplicate submit
-   */
-
-  $("moneyAmount")
-    .addEventListener(
-      "keydown",
-      event => {
-
-        if(event.key === "Enter"){
-
-          event.preventDefault();
-
-          generatePaymentQR();
-
-        }
-
-      }
-    );
-
-
-  /*
-   * Restore an existing pending order
-   *
-   * If user refreshes the page after a QR
-   * was generated, continue checking it.
-   */
+  $("moneyAmount").addEventListener("keydown", event => {
+    if(event.key === "Enter"){
+      event.preventDefault();
+      generatePaymentQR();
+    }
+  });
 
   async function restorePendingPayment(){
-
-    const orderId =
-      sessionStorage.getItem(
-        "novariseRechargeOrder"
-      );
-
-
-    if(!orderId || !currentUser){
-
-      return;
-
-    }
-
-
+    const orderId = sessionStorage.getItem("novariseRechargeOrder");
+    if(!orderId || !currentUser) return;
     try{
-
-      const result =
-        await getRechargePaymentStatus(
-          orderId
-        );
-
-
-      const status =
-        String(
-          result.status ||
-          result.data?.status ||
-          "PENDING"
-        ).toUpperCase();
-
-
+      const result = await getRechargePaymentStatus(orderId);
+      const status = String(result.status || result.data?.status || "PENDING").toUpperCase();
       if(status === "SUCCESS"){
-
-        sessionStorage.removeItem(
-          "novariseRechargeOrder"
-        );
-
-
-        $("paymentStatusBox")
-          .classList
-          .add(
-            "show",
-            "success"
-          );
-
-
-        $("paymentStatusText")
-          .textContent =
-          "This recharge was already completed successfully.";
-
-
+        sessionStorage.removeItem("novariseRechargeOrder");
+        $("paymentStatusBox").classList.add("show", "success");
+        $("paymentStatusText").textContent = "This recharge was already completed successfully.";
         return;
-
       }
-
-
-      if(
-        status === "FAILED" ||
-        status === "CANCELLED" ||
-        status === "EXPIRED" ||
-        status === "CLOSED"
-      ){
-
-        sessionStorage.removeItem(
-          "novariseRechargeOrder"
-        );
-
+      if(["FAILED", "CANCELLED", "EXPIRED", "CLOSED"].includes(status)){
+        sessionStorage.removeItem("novariseRechargeOrder");
         return;
-
       }
-
-
-      $("paymentStatusBox")
-        .classList
-        .add("show");
-
-
-      $("paymentStatusText")
-        .textContent =
-        "A previous payment is still pending. Checking its status…";
-
-
-      pollRechargePayment(
-        orderId
-      );
-
+      $("paymentStatusBox").classList.add("show");
+      $("paymentStatusText").textContent = "A previous payment is still pending. Checking its status…";
+      pollRechargePayment(orderId);
     }catch(error){
-
-      console.error(
-        "Pending payment restore error:",
-        error
-      );
-
+      console.error("Pending payment restore error:", error);
     }
-
   }
 
-
-  /*
-   * Firebase authentication
-   */
-
-  onAuthStateChanged(
-    auth,
-    async user => {
-
-      if(!user){
-
-        window.location.href =
-          "login.html";
-
-        return;
-
-      }
-
-
-      currentUser =
-        user;
-
-
-      await restorePendingPayment();
-
+  onAuthStateChanged(auth, async user => {
+    if(!user){
+      window.location.href = "login.html";
+      return;
     }
-  );
-
+    currentUser = user;
+    await restorePendingPayment();
+  });
 </script>
 
 </body>
