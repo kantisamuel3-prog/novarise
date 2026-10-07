@@ -478,206 +478,1027 @@
 
     <!-- FIREBASE & REGISTRATION LOGIC -->
     <script>
-        // FIREBASE INITIALIZATION
-        const firebaseConfig = {
-            apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
-            authDomain: "investpro-2dafb.firebaseapp.com",
-            projectId: "investpro-2dafb",
-            storageBucket: "investpro-2dafb.firebasestorage.app",
-            messagingSenderId: "135092039764",
-            appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
-            measurementId: "G-0L77SFTC4F"
-        };
+    // =====================================================
+    // FIREBASE INITIALIZATION
+    // =====================================================
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+    const firebaseConfig = {
+        apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+        authDomain: "investpro-2dafb.firebaseapp.com",
+        projectId: "investpro-2dafb",
+        storageBucket: "investpro-2dafb.firebasestorage.app",
+        messagingSenderId: "135092039764",
+        appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
+        measurementId: "G-0L77SFTC4F"
+    };
+
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+
+    // =====================================================
+    // UI ELEMENTS
+    // =====================================================
+
+    const phoneInput =
+        document.getElementById("phone");
+
+    const referralCodeInput =
+        document.getElementById("referralCode");
+
+    const referralHint =
+        document.getElementById("referralHint");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const confirmPasswordInput =
+        document.getElementById("confirmPassword");
+
+    const registerBtn =
+        document.getElementById("registerBtn");
+
+    const messageDiv =
+        document.getElementById("message");
+
+
+    // =====================================================
+    // MESSAGE
+    // =====================================================
+
+    function showMessage(
+        msg,
+        isError = true
+    ) {
+
+        if (!messageDiv) {
+            return;
         }
 
-        const auth = firebase.auth();
-        const db = firebase.firestore();
 
-        // UI HELPERS
-        const phoneInput = document.getElementById('phone');
-        const referralCodeInput = document.getElementById('referralCode');
-        const referralHint = document.getElementById('referralHint');
-        const passwordInput = document.getElementById('password');
-        const confirmPasswordInput = document.getElementById('confirmPassword');
-        const registerBtn = document.getElementById('registerBtn');
-        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = msg;
 
-        function showMessage(msg, isError = true) {
-            if (!messageDiv) return;
-            messageDiv.textContent = msg;
-            messageDiv.classList.remove('hidden', 'bg-red-500/20', 'text-red-300', 'border-red-500/40', 'bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40');
-            
-            if (isError) {
-                messageDiv.classList.add('bg-red-500/20', 'text-red-300', 'border-red-500/40');
-            } else {
-                messageDiv.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40');
+
+        messageDiv.classList.remove(
+            "hidden",
+            "bg-red-500/20",
+            "text-red-300",
+            "border-red-500/40",
+            "bg-emerald-500/20",
+            "text-emerald-300",
+            "border-emerald-500/40"
+        );
+
+
+        if (isError) {
+
+            messageDiv.classList.add(
+                "bg-red-500/20",
+                "text-red-300",
+                "border-red-500/40"
+            );
+
+        } else {
+
+            messageDiv.classList.add(
+                "bg-emerald-500/20",
+                "text-emerald-300",
+                "border-emerald-500/40"
+            );
+
+        }
+
+    }
+
+
+    function clearMessage() {
+
+        if (messageDiv) {
+            messageDiv.classList.add("hidden");
+        }
+
+    }
+
+
+    // =====================================================
+    // REFERRAL CODE FROM URL
+    // =====================================================
+
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const referralFromUrl =
+        (
+            urlParams.get("ref") ||
+            urlParams.get("referral") ||
+            urlParams.get("code") ||
+            ""
+        )
+        .trim()
+        .toUpperCase();
+
+
+    if (
+        referralFromUrl &&
+        referralCodeInput
+    ) {
+
+        referralCodeInput.value =
+            referralFromUrl;
+
+
+        if (referralHint) {
+
+            referralHint.textContent =
+                "Invitation code detected from referral link.";
+
+
+            referralHint.className =
+                "text-[10px] text-nexora-accent font-mono text-left pl-4 mt-1";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // PASSWORD TOGGLE
+    // =====================================================
+
+    const togglePassword =
+        document.getElementById(
+            "togglePassword"
+        );
+
+
+    if (togglePassword) {
+
+        togglePassword.addEventListener(
+            "click",
+            function () {
+
+                const isPassword =
+                    passwordInput.type === "password";
+
+
+                passwordInput.type =
+                    isPassword
+                        ? "text"
+                        : "password";
+
+
+                const eyeIcon =
+                    document.getElementById(
+                        "eyeIcon1"
+                    );
+
+
+                if (eyeIcon) {
+
+                    eyeIcon.className =
+                        isPassword
+                            ? "fa-solid fa-eye-slash text-sm"
+                            : "fa-solid fa-eye text-sm";
+
+                }
+
             }
-        }
+        );
 
-        function clearMessage() {
-            if (messageDiv) messageDiv.classList.add('hidden');
-        }
+    }
 
-        // DETECT REFERRAL FROM URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const referralFromUrl = (urlParams.get("ref") || urlParams.get("referral") || urlParams.get("code") || "").trim().toUpperCase();
 
-        if (referralFromUrl) {
-            referralCodeInput.value = referralFromUrl;
-            referralHint.textContent = "Invitation code detected from referral link.";
-            referralHint.className = "text-[10px] text-nexora-accent font-mono text-left pl-4 mt-1";
-        }
+    // =====================================================
+    // CONFIRM PASSWORD TOGGLE
+    // =====================================================
 
-        // PASSWORD TOGGLES
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const isPassword = passwordInput.type === 'password';
-            passwordInput.type = isPassword ? 'text' : 'password';
-            document.getElementById('eyeIcon1').className = isPassword ? 'fa-solid fa-eye-slash text-sm' : 'fa-solid fa-eye text-sm';
-        });
+    const toggleConfirmPassword =
+        document.getElementById(
+            "toggleConfirmPassword"
+        );
 
-        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
-            const isPassword = confirmPasswordInput.type === 'password';
-            confirmPasswordInput.type = isPassword ? 'text' : 'password';
-            document.getElementById('eyeIcon2').className = isPassword ? 'fa-solid fa-eye-slash text-sm' : 'fa-solid fa-eye text-sm';
-        });
 
-        // INPUT SANITIZATION
-        phoneInput.addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '');
-            if (this.value.length > 10) this.value = this.value.slice(0, 10);
-            clearMessage();
-        });
+    if (toggleConfirmPassword) {
 
-        referralCodeInput.addEventListener('input', function() {
-            this.value = this.value.toUpperCase().replace(/\s/g, '');
-            clearMessage();
-        });
+        toggleConfirmPassword.addEventListener(
+            "click",
+            function () {
 
-        // FIND REFERRER IN FIRESTORE
-        async function findUserByReferralCode(code) {
-            const cleanCode = String(code || "").trim().toUpperCase();
-            if (!cleanCode) return null;
+                const isPassword =
+                    confirmPasswordInput.type === "password";
 
-            const usersRef = db.collection("Users");
 
-            let snap = await usersRef.where("referralCode", "==", cleanCode).get();
-            if (!snap.empty) return { uid: snap.docs[0].id, data: snap.docs[0].data() };
+                confirmPasswordInput.type =
+                    isPassword
+                        ? "text"
+                        : "password";
 
-            snap = await usersRef.where("invitationCode", "==", cleanCode).get();
-            if (!snap.empty) return { uid: snap.docs[0].id, data: snap.docs[0].data() };
 
-            snap = await usersRef.where("inviteCode", "==", cleanCode).get();
-            if (!snap.empty) return { uid: snap.docs[0].id, data: snap.docs[0].data() };
+                const eyeIcon =
+                    document.getElementById(
+                        "eyeIcon2"
+                    );
+
+
+                if (eyeIcon) {
+
+                    eyeIcon.className =
+                        isPassword
+                            ? "fa-solid fa-eye-slash text-sm"
+                            : "fa-solid fa-eye text-sm";
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // PHONE INPUT
+    // =====================================================
+
+    if (phoneInput) {
+
+        phoneInput.addEventListener(
+            "input",
+            function () {
+
+                this.value =
+                    this.value.replace(
+                        /\D/g,
+                        ""
+                    );
+
+
+                if (
+                    this.value.length > 10
+                ) {
+
+                    this.value =
+                        this.value.slice(
+                            0,
+                            10
+                        );
+
+                }
+
+
+                clearMessage();
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // REFERRAL INPUT
+    // =====================================================
+
+    if (referralCodeInput) {
+
+        referralCodeInput.addEventListener(
+            "input",
+            function () {
+
+                this.value =
+                    this.value
+                        .toUpperCase()
+                        .replace(
+                            /\s/g,
+                            ""
+                        );
+
+
+                clearMessage();
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // FIND REFERRER
+    //
+    // IMPORTANT:
+    //
+    // This function is called ONLY AFTER
+    // createUserWithEmailAndPassword().
+    //
+    // Therefore request.auth is already available
+    // and your current Firestore rule:
+    //
+    // allow read: if request.auth != null;
+    //
+    // will allow this lookup.
+    // =====================================================
+
+    async function findUserByReferralCode(
+        code
+    ) {
+
+        const cleanCode =
+            String(code || "")
+                .trim()
+                .toUpperCase();
+
+
+        if (!cleanCode) {
 
             return null;
+
         }
 
-        // FORM SUBMIT HANDLER
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
 
-            const phone = phoneInput.value.trim();
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
-            const referralCode = referralCodeInput.value.trim().toUpperCase();
+        const usersRef =
+            db.collection(
+                "Users"
+            );
 
-            clearMessage();
 
-            if (!/^9\d{9}$/.test(phone)) {
-                showMessage('Please enter a valid 10-digit mobile number starting with 9.');
-                return;
-            }
+        // -------------------------------------------------
+        // CHECK referralCode
+        // -------------------------------------------------
 
-            if (password.length < 6) {
-                showMessage('Password must be at least 6 characters long.');
-                return;
-            }
+        let snap =
+            await usersRef
+                .where(
+                    "referralCode",
+                    "==",
+                    cleanCode
+                )
+                .limit(1)
+                .get();
 
-            if (password !== confirmPassword) {
-                showMessage('Passwords do not match.');
-                return;
-            }
 
-            registerBtn.disabled = true;
-            registerBtn.innerHTML = '<span>CREATING ACCOUNT...</span><i class="fa-solid fa-circle-notch animate-spin text-nexora-cyan"></i>';
+        if (!snap.empty) {
 
-            try {
-                let referrer = null;
-                if (referralCode) {
-                    referrer = await findUserByReferralCode(referralCode);
-                    if (!referrer) {
-                        showMessage('Invalid referral/invite code. Please check and try again.');
-                        registerBtn.disabled = false;
-                        registerBtn.innerHTML = '<span>REGISTER NOW</span><i class="fa-solid fa-arrow-right text-nexora-cyan"></i>';
-                        return;
-                    }
+            return {
+
+                uid:
+                    snap.docs[0].id,
+
+                data:
+                    snap.docs[0].data()
+
+            };
+
+        }
+
+
+        // -------------------------------------------------
+        // CHECK invitationCode
+        // -------------------------------------------------
+
+        snap =
+            await usersRef
+                .where(
+                    "invitationCode",
+                    "==",
+                    cleanCode
+                )
+                .limit(1)
+                .get();
+
+
+        if (!snap.empty) {
+
+            return {
+
+                uid:
+                    snap.docs[0].id,
+
+                data:
+                    snap.docs[0].data()
+
+            };
+
+        }
+
+
+        // -------------------------------------------------
+        // CHECK inviteCode
+        // -------------------------------------------------
+
+        snap =
+            await usersRef
+                .where(
+                    "inviteCode",
+                    "==",
+                    cleanCode
+                )
+                .limit(1)
+                .get();
+
+
+        if (!snap.empty) {
+
+            return {
+
+                uid:
+                    snap.docs[0].id,
+
+                data:
+                    snap.docs[0].data()
+
+            };
+
+        }
+
+
+        return null;
+
+    }
+
+
+    // =====================================================
+    // REGISTRATION
+    // =====================================================
+
+    document
+        .getElementById("registerForm")
+        .addEventListener(
+            "submit",
+            async function (e) {
+
+                e.preventDefault();
+
+
+                const phone =
+                    phoneInput.value.trim();
+
+
+                const password =
+                    passwordInput.value;
+
+
+                const confirmPassword =
+                    confirmPasswordInput.value;
+
+
+                const referralCode =
+                    referralCodeInput.value
+                        .trim()
+                        .toUpperCase();
+
+
+                clearMessage();
+
+
+                // -------------------------------------------------
+                // PHONE VALIDATION
+                // -------------------------------------------------
+
+                if (
+                    !/^9\d{9}$/.test(
+                        phone
+                    )
+                ) {
+
+                    showMessage(
+                        "Please enter a valid 10-digit mobile number starting with 9."
+                    );
+
+                    return;
+
                 }
 
-                const email = '63' + phone + '@nexora.local';
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
 
-                await user.updateProfile({
-                    displayName: "User " + phone.slice(-4)
-                });
+                // -------------------------------------------------
+                // PASSWORD VALIDATION
+                // -------------------------------------------------
 
-                const myReferralCode = "NEXORA-" + user.uid.substring(0, 8).toUpperCase();
-                const batch = db.batch();
-                const userDocRef = db.collection("Users").doc(user.uid);
+                if (
+                    password.length < 6
+                ) {
 
-                batch.set(userDocRef, {
-                    uid: user.uid,
-                    phone: "0" + phone,
-                    rawPhone: phone,
-                    normalizedPhone: "63" + phone,
-                    email: email,
-                    referralCode: myReferralCode,
-                    invitationCode: myReferralCode,
-                    inviteCode: myReferralCode,
-                    referredBy: referrer ? referrer.uid : null,
-                    referredByCode: referralCode || null,
-                    balance: 0,
-                    totalEarnings: 0,
-                    totalRecharge: 0,
-                    totalWithdrawal: 0,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                    showMessage(
+                        "Password must be at least 6 characters long."
+                    );
 
-                if (referrer) {
-                    const referrerDocRef = db.collection("Users").doc(referrer.uid);
-                    batch.update(referrerDocRef, {
-                        teamCount: firebase.firestore.FieldValue.increment(1),
-                        directReferralsCount: firebase.firestore.FieldValue.increment(1),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    return;
+
+                }
+
+
+                // -------------------------------------------------
+                // CONFIRM PASSWORD
+                // -------------------------------------------------
+
+                if (
+                    password !==
+                    confirmPassword
+                ) {
+
+                    showMessage(
+                        "Passwords do not match."
+                    );
+
+                    return;
+
+                }
+
+
+                // -------------------------------------------------
+                // DISABLE BUTTON
+                // -------------------------------------------------
+
+                registerBtn.disabled =
+                    true;
+
+
+                registerBtn.innerHTML =
+                    `
+                    <span>CREATING ACCOUNT...</span>
+                    <i class="fa-solid fa-circle-notch animate-spin text-nexora-cyan"></i>
+                    `;
+
+
+                let newlyCreatedUser =
+                    null;
+
+
+                try {
+
+                    // =================================================
+                    // STEP 1
+                    // CREATE FIREBASE AUTH ACCOUNT FIRST
+                    // =================================================
+
+                    const email =
+                        "63" +
+                        phone +
+                        "@nexora.local";
+
+
+                    const userCredential =
+                        await auth
+                            .createUserWithEmailAndPassword(
+                                email,
+                                password
+                            );
+
+
+                    const user =
+                        userCredential.user;
+
+
+                    newlyCreatedUser =
+                        user;
+
+
+                    // -------------------------------------------------
+                    // SET DISPLAY NAME
+                    // -------------------------------------------------
+
+                    await user.updateProfile({
+
+                        displayName:
+                            "User " +
+                            phone.slice(-4)
+
                     });
+
+
+                    // =================================================
+                    // STEP 2
+                    // NOW CHECK REFERRAL CODE
+                    //
+                    // User is authenticated at this point.
+                    // =================================================
+
+                    let referrer =
+                        null;
+
+
+                    if (referralCode) {
+
+                        referrer =
+                            await findUserByReferralCode(
+                                referralCode
+                            );
+
+
+                        // ---------------------------------------------
+                        // INVALID REFERRAL
+                        // ---------------------------------------------
+
+                        if (!referrer) {
+
+                            try {
+
+                                await user.delete();
+
+                            } catch (
+                                deleteError
+                            ) {
+
+                                console.warn(
+                                    "Could not delete temporary Auth account:",
+                                    deleteError
+                                );
+
+                            }
+
+
+                            showMessage(
+                                "Invalid referral/invite code. Please check and try again."
+                            );
+
+
+                            registerBtn.disabled =
+                                false;
+
+
+                            registerBtn.innerHTML =
+                                `
+                                <span>REGISTER NOW</span>
+                                <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>
+                                `;
+
+
+                            return;
+
+                        }
+
+
+                        // ---------------------------------------------
+                        // SELF REFERRAL PROTECTION
+                        // ---------------------------------------------
+
+                        if (
+                            referrer.uid ===
+                            user.uid
+                        ) {
+
+                            try {
+
+                                await user.delete();
+
+                            } catch (
+                                deleteError
+                            ) {
+
+                                console.warn(
+                                    "Could not delete temporary Auth account:",
+                                    deleteError
+                                );
+
+                            }
+
+
+                            showMessage(
+                                "You cannot use your own referral code."
+                            );
+
+
+                            registerBtn.disabled =
+                                false;
+
+
+                            registerBtn.innerHTML =
+                                `
+                                <span>REGISTER NOW</span>
+                                <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>
+                                `;
+
+
+                            return;
+
+                        }
+
+                    }
+
+
+                    // =================================================
+                    // STEP 3
+                    // CREATE USER DOCUMENT
+                    // + UPDATE REFERRER
+                    // IN ONE ATOMIC BATCH
+                    // =================================================
+
+                    const myReferralCode =
+                        "NEXORA-" +
+                        user.uid
+                            .substring(
+                                0,
+                                8
+                            )
+                            .toUpperCase();
+
+
+                    const batch =
+                        db.batch();
+
+
+                    const userDocRef =
+                        db
+                            .collection("Users")
+                            .doc(user.uid);
+
+
+                    // -------------------------------------------------
+                    // NEW USER
+                    // -------------------------------------------------
+
+                    batch.set(
+                        userDocRef,
+                        {
+
+                            uid:
+                                user.uid,
+
+                            phone:
+                                "0" +
+                                phone,
+
+                            rawPhone:
+                                phone,
+
+                            normalizedPhone:
+                                "63" +
+                                phone,
+
+                            email:
+                                email,
+
+
+                            // Own referral codes
+                            referralCode:
+                                myReferralCode,
+
+                            invitationCode:
+                                myReferralCode,
+
+                            inviteCode:
+                                myReferralCode,
+
+
+                            // Direct referrer
+                            referredBy:
+                                referrer
+                                    ? referrer.uid
+                                    : null,
+
+                            sponsorId:
+                                referrer
+                                    ? referrer.uid
+                                    : null,
+
+                            referredByCode:
+                                referralCode ||
+                                null,
+
+
+                            // Balances
+                            balance:
+                                0,
+
+                            usdBalance:
+                                0,
+
+
+                            // Earnings
+                            totalEarnings:
+                                0,
+
+                            totalRecharge:
+                                0,
+
+                            totalWithdrawal:
+                                0,
+
+
+                            // Team
+                            teamSize:
+                                0,
+
+                            directReferralsCount:
+                                0,
+
+
+                            // Commission
+                            totalCommission:
+                                0,
+
+
+                            // Transactions
+                            transactions:
+                                [],
+
+
+                            createdAt:
+                                firebase.firestore.FieldValue
+                                    .serverTimestamp(),
+
+                            updatedAt:
+                                firebase.firestore.FieldValue
+                                    .serverTimestamp()
+
+                        }
+                    );
+
+
+                    // =================================================
+                    // STEP 4
+                    // UPDATE REFERRER
+                    //
+                    // IMPORTANT:
+                    //
+                    // Your current Firestore Rules allow an external
+                    // user update ONLY when:
+                    //
+                    // affectedKeys = ['teamSize']
+                    //
+                    // and teamSize increases exactly by 1.
+                    //
+                    // Therefore DO NOT add:
+                    // directReferralsCount
+                    // updatedAt
+                    // teamCount
+                    //
+                    // here.
+                    // =================================================
+
+                    if (referrer) {
+
+                        const referrerDocRef =
+                            db
+                                .collection("Users")
+                                .doc(
+                                    referrer.uid
+                                );
+
+
+                        batch.update(
+                            referrerDocRef,
+                            {
+
+                                teamSize:
+                                    firebase.firestore
+                                        .FieldValue
+                                        .increment(1)
+
+                            }
+                        );
+
+                    }
+
+
+                    // =================================================
+                    // STEP 5
+                    // COMMIT
+                    // =================================================
+
+                    await batch.commit();
+
+
+                    // =================================================
+                    // STEP 6
+                    // SUCCESS
+                    // =================================================
+
+                    document
+                        .getElementById(
+                            "registerContainer"
+                        )
+                        .classList
+                        .add(
+                            "hidden"
+                        );
+
+
+                    document
+                        .getElementById(
+                            "successScreen"
+                        )
+                        .classList
+                        .remove(
+                            "hidden"
+                        );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Registration Error:",
+                        error
+                    );
+
+
+                    let errorMsg =
+                        "Registration failed. Please try again.";
+
+
+                    // -------------------------------------------------
+                    // AUTH ERRORS
+                    // -------------------------------------------------
+
+                    if (
+                        error.code ===
+                        "auth/email-already-in-use"
+                    ) {
+
+                        errorMsg =
+                            "This phone number is already registered.";
+
+                    }
+
+                    else if (
+                        error.code ===
+                        "auth/weak-password"
+                    ) {
+
+                        errorMsg =
+                            "Password is too weak. Choose a stronger password.";
+
+                    }
+
+                    else if (
+                        error.code ===
+                        "auth/network-request-failed"
+                    ) {
+
+                        errorMsg =
+                            "Network error. Please check your connection.";
+
+                    }
+
+                    else if (
+                        error.code ===
+                        "permission-denied" ||
+                        error.code ===
+                        "firestore/permission-denied"
+                    ) {
+
+                        errorMsg =
+                            "Registration permission was denied. Please try again.";
+
+                    }
+
+
+                    // =================================================
+                    // CLEAN UP ORPHAN AUTH ACCOUNT
+                    //
+                    // If Auth was created but Firestore failed,
+                    // remove the Auth account so the same phone
+                    // can register again.
+                    // =================================================
+
+                    if (
+                        newlyCreatedUser
+                    ) {
+
+                        try {
+
+                            await newlyCreatedUser.delete();
+
+                        } catch (
+                            deleteError
+                        ) {
+
+                            console.warn(
+                                "Could not clean up Auth account after failed registration:",
+                                deleteError
+                            );
+
+                        }
+
+                    }
+
+
+                    showMessage(
+                        errorMsg
+                    );
+
+
+                    registerBtn.disabled =
+                        false;
+
+
+                    registerBtn.innerHTML =
+                        `
+                        <span>REGISTER NOW</span>
+                        <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>
+                        `;
+
                 }
 
-                await batch.commit();
-
-                document.getElementById('registerContainer').classList.add('hidden');
-                document.getElementById('successScreen').classList.remove('hidden');
-
-            } catch (error) {
-                console.error("Registration Error:", error);
-                let errorMsg = "Registration failed. Please try again.";
-
-                if (error.code === "auth/email-already-in-use") {
-                    errorMsg = "This phone number is already registered.";
-                } else if (error.code === "auth/weak-password") {
-                    errorMsg = "Password is too weak. Choose a stronger password.";
-                } else if (error.code === "auth/network-request-failed") {
-                    errorMsg = "Network error. Please check your connection.";
-                }
-
-                showMessage(errorMsg);
-                registerBtn.disabled = false;
-                registerBtn.innerHTML = '<span>REGISTER NOW</span><i class="fa-solid fa-arrow-right text-nexora-cyan"></i>';
             }
-        });
-    </script>
+        );
+
+</script>
 </body>
 </html>
