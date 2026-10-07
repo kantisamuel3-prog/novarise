@@ -352,9 +352,9 @@
             <i class="fa-solid fa-mobile-screen-button mb-1 text-nexora-cyan block text-base"></i>
             GCash
           </div>
-          <div class="method-option" data-method="Bank">
-            <i class="fa-solid fa-building-columns mb-1 text-nexora-cyan block text-base"></i>
-            Bank Transfer
+          <div class="method-option" data-method="Maya">
+            <i class="fa-solid fa-wallet mb-1 text-nexora-cyan block text-base"></i>
+            Maya
           </div>
         </div>
       </div>
@@ -375,7 +375,7 @@
       </div>
 
       <div class="field">
-        <label for="accountNumber">ACCOUNT / GCASH NUMBER</label>
+        <label for="accountNumber" id="accountLabel">GCASH NUMBER</label>
         <div class="input-wrap">
           <input id="accountNumber" class="nexora-input !pl-3.5" type="text" placeholder="e.g., 09171234567" autocomplete="off">
         </div>
@@ -513,6 +513,13 @@
       document.querySelectorAll(".method-option").forEach(o => o.classList.remove("active"));
       opt.classList.add("active");
       selectedMethod = opt.getAttribute("data-method");
+      
+      // Dynamic label update
+      if(selectedMethod === "Maya") {
+        $("accountLabel").textContent = "MAYA NUMBER";
+      } else {
+        $("accountLabel").textContent = "GCASH NUMBER";
+      }
     });
   });
 
@@ -552,7 +559,7 @@
       return;
     }
     if(!number){
-      toast("Please enter your account/GCash number.");
+      toast(`Please enter your ${selectedMethod} number.`);
       $("accountNumber").focus();
       return;
     }
