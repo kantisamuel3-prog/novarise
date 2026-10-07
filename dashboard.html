@@ -36,34 +36,41 @@ body {
   min-height: 100vh;
 }
 
+/* Ticker Bar na may Marquee Animation */
 .ticker-bar {
   background: #03050a;
   border-bottom: 1px solid rgba(0, 212, 255, 0.15);
   font-family: monospace;
   font-size: 10px;
-  padding: 4px 10px;
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
+  padding: 6px 0;
+  overflow: hidden;
   white-space: nowrap;
   color: #64748b;
   position: relative;
+  width: 100%;
 }
 
-/* Ticker Fade Animation para sa live ads effect */
-.ticker-fade-item {
-  opacity: 1;
-  transition: opacity 0.6s ease-in-out;
+.ticker-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marqueeTicker 25s linear infinite;
+  will-change: transform;
 }
 
-.ticker-fade-item.fade-out {
-  opacity: 0;
+.ticker-bar:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeTicker {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
 }
 
 .ticker-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
+  margin-right: 32px;
 }
 
 .ticker-symbol {
@@ -471,11 +478,20 @@ canvas#liveChart {
 
 <body>
 
-<div class="ticker-bar" id="tickerBarContent">
-  <div class="ticker-item ticker-fade-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up" id="tickNex">$18.95 (+18.4%)</span></div>
-  <div class="ticker-item ticker-fade-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up" id="tickBtc">$96,420.00 (+3.2%)</span></div>
-  <div class="ticker-item ticker-fade-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>
-  <div class="ticker-item ticker-fade-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>
+<!-- Live Marquee Ticker Bar sa Itaas -->
+<div class="ticker-bar">
+  <div class="ticker-track">
+    <!-- Unang set ng mga items -->
+    <div class="ticker-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up" id="tickNex">$18.95 (+18.4%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up" id="tickBtc">$96,420.00 (+3.2%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>
+    <!-- Pangalawang kopya para sa tuluy-tuloy na loop animation -->
+    <div class="ticker-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up">$18.95 (+18.4%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up" id="tickBtc2">$96,420.00 (+3.2%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>
+    <div class="ticker-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>
+  </div>
 </div>
 
 <header>
@@ -785,35 +801,6 @@ canvas#liveChart {
   let balanceDataLoaded = false;
   let legacyBalanceUnsubscribe = null;
   let newBalanceUnsubscribe = null;
-
-  // Live Ticker Ads / Text Fade Effect Script
-  const tickerMessages = [
-    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">NEX/USD</span> <span class="ticker-price up">$18.95 (+18.4%)</span></div>',
-    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">BTC/USD</span> <span class="ticker-price up">$96,420.00 (+3.2%)</span></div>',
-    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">ETH/USD</span> <span class="ticker-price up">$3,520.80 (+2.4%)</span></div>',
-    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">USD/PHP</span> <span class="ticker-price up">₱60.00</span></div>',
-    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">PROMO</span> <span class="ticker-price" style="color:#00d4ff;">💎 VIP Withdrawal Fee Discount Active for 31+ Days Accounts!</span></div>',
-    '<div class="ticker-item ticker-fade-item"><span class="ticker-symbol">SYSTEM</span> <span class="ticker-price" style="color:#10b981;">🚀 Algorithmic Execution Engine Running Smoothly.</span></div>'
-  ];
-
-  let currentTickerIndex = 0;
-  function initLiveTickerAds() {
-    const tickerBar = document.getElementById('tickerBarContent');
-    if (!tickerBar) return;
-
-    setInterval(() => {
-      tickerBar.classList.add('fade-out');
-      setTimeout(() => {
-        currentTickerIndex = (currentTickerIndex + 1) % tickerMessages.length;
-        tickerBar.innerHTML = tickerMessages[currentTickerIndex];
-        tickerBar.classList.remove('fade-out');
-      }, 600);
-    }, 4000);
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    initLiveTickerAds();
-  });
 
   auth.onAuthStateChanged((user) => {
     if (!user) {
