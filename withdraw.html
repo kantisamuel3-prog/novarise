@@ -1,1 +1,636 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full select-none">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+  <title>NEXORA — Withdraw</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  fontFamily: {
+                      sans: ['Inter', 'sans-serif'],
+                      mono: ['JetBrains Mono', 'monospace'],
+                      brand: ['Montserrat', 'sans-serif']
+                  },
+                  colors: {
+                      nexora: {
+                          navy: '#0a1628',
+                          deep: '#040814',
+                          card: '#0d1d35',
+                          cyan: '#00f2fe',
+                          blue: '#1890ff',
+                          gold: '#dfb248',
+                          goldGlow: '#ffd700',
+                          accent: '#00e676'
+                      }
+                  },
+                  animation: {
+                      'marquee': 'marquee 25s linear infinite',
+                      'pulse-cyan': 'pulseCyan 3s ease-in-out infinite',
+                      'orbit': 'orbit 10s linear infinite',
+                  },
+                  keyframes: {
+                      marquee: {
+                          '0%': { transform: 'translateX(0%)' },
+                          '100%': { transform: 'translateX(-50%)' }
+                      },
+                      pulseCyan: {
+                          '0%, 100%': { filter: 'drop-shadow(0 0 15px rgba(0,242,254,0.4))' },
+                          '50%': { filter: 'drop-shadow(0 0 35px rgba(0,242,254,0.9)) drop-shadow(0 0 60px rgba(0,242,254,0.4))' }
+                      },
+                      orbit: {
+                          '0%': { transform: 'rotate(0deg)' },
+                          '100%': { transform: 'rotate(360deg)' }
+                      }
+                  }
+              }
+          }
+      }
+  </script>
+
+  <style>
+    body {
+        background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
+        color: #f1f5f9;
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+        min-height: 100vh;
+        padding-bottom: 40px;
+    }
+
+    .brushed-metal-overlay {
+        background: repeating-radial-gradient(
+            circle at 50% 40%,
+            rgba(255, 255, 255, 0.015) 0px,
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    }
+
+    .app {
+        width: 100%;
+        max-width: 560px;
+        margin: 0 auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content {
+        position: relative;
+        z-index: 5;
+        padding: 0 16px;
+        margin-top: 16px;
+    }
+
+    .card {
+        background: rgba(13, 29, 53, 0.9);
+        border: 1px solid rgba(0, 242, 254, 0.25);
+        border-radius: 24px;
+        padding: 22px;
+        box-shadow: 0 18px 45px rgba(0,0,0,0.6);
+        backdrop-filter: blur(12px);
+    }
+
+    .balance-box {
+        padding: 16px;
+        border: 1px solid rgba(0, 242, 254, 0.2);
+        border-radius: 18px;
+        background: rgba(0, 0, 0, 0.3);
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .field {
+        margin-top: 16px;
+    }
+
+    .field label {
+        display: block;
+        margin-bottom: 7px;
+        color: #00f2fe;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: .8px;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .input-wrap {
+        position: relative;
+    }
+
+    .input-symbol {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #00f2fe;
+        font-size: 18px;
+        font-weight: 900;
+        pointer-events: none;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .nexora-input {
+        width: 100%;
+        height: 52px;
+        padding: 0 15px 0 40px;
+        border: 1.5px solid rgba(0, 242, 254, 0.3);
+        border-radius: 16px;
+        outline: none;
+        background: rgba(4, 8, 20, 0.8);
+        color: #fff;
+        font: inherit;
+        font-size: 16px;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .nexora-input:focus {
+        border-color: #00f2fe;
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+    }
+
+    .method-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .method-option {
+        padding: 14px;
+        border: 1.5px solid rgba(0, 242, 254, 0.2);
+        border-radius: 16px;
+        background: rgba(4, 8, 20, 0.6);
+        color: #fff;
+        font-weight: 700;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .method-option.active {
+        border-color: #00f2fe;
+        background: rgba(0, 242, 254, 0.15);
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+    }
+
+    .withdraw-btn {
+        width: 100%;
+        height: 53px;
+        margin-top: 22px;
+        border: 0;
+        border-radius: 9999px;
+        background: linear-gradient(135deg, #00f2fe, #1890ff);
+        color: #040814;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        font-size: 15px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .withdraw-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 30px rgba(0, 242, 254, 0.7);
+    }
+
+    .withdraw-btn:active {
+        transform: scale(.985);
+    }
+
+    .back-link {
+        width: 100%;
+        height: 49px;
+        margin-top: 14px;
+        border: 1px solid rgba(0, 242, 254, 0.3);
+        border-radius: 16px;
+        background: rgba(4, 8, 20, 0.8);
+        color: #00f2fe;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .back-link:hover {
+        background: rgba(0, 242, 254, 0.1);
+    }
+
+    .footer {
+        text-align: center;
+        margin: 20px 0;
+        color: #64748b;
+        font-size: 9px;
+        letter-spacing: .8px;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 25px;
+        transform: translateX(-50%) translateY(15px);
+        max-width: calc(100% - 30px);
+        padding: 11px 18px;
+        border-radius: 9999px;
+        background: #00f2fe;
+        color: #040814;
+        font-size: 12px;
+        font-weight: 900;
+        font-family: 'JetBrains Mono', monospace;
+        opacity: 0;
+        pointer-events: none;
+        transition: .25s ease;
+        z-index: 110000;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(0,242,254,0.6);
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- BACKGROUND CANDLESTICK CHART & OVERLAY -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+      <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
+  </div>
+
+  <!-- MARKET TICKER HEADER -->
+  <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-2">
+      <div class="flex items-center text-xs font-mono">
+          <div class="px-4 py-1 bg-nexora-cyan/10 border-r border-nexora-cyan/30 text-nexora-cyan font-bold flex items-center shrink-0 z-10 shadow-lg">
+              <span class="w-2 h-2 rounded-full bg-nexora-accent animate-ping mr-2"></span>
+              <span>NEXORA TAPE</span>
+          </div>
+          <div class="overflow-hidden whitespace-nowrap flex w-full">
+              <div class="inline-flex animate-marquee space-x-10 items-center pl-6">
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">BTC/USD</span>
+                      <span class="text-white font-semibold">$96,420.00</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +3.2%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">ETH/USD</span>
+                      <span class="text-white font-semibold">$3,520.80</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +2.4%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">NEX/USD</span>
+                      <span class="text-nexora-cyan font-bold">$18.95</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +18.4%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">GOLD/OUNCE</span>
+                      <span class="text-white font-semibold">$2,658.18</span>
+                      <span class="text-nexora-accent text-[11px]"><i class="fa-solid fa-caret-up"></i> +0.85%</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                      <span class="text-gray-400">24H VOLUME</span>
+                      <span class="text-nexora-gold font-semibold">$2.84 BILLION</span>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </header>
+
+<div class="app relative z-10">
+
+  <!-- TOP BRANDING & HEADER SECTION -->
+  <div class="px-4 pt-6 pb-8">
+    <div class="flex items-center justify-between mb-4">
+      <button class="w-11 h-11 border border-nexora-cyan/30 rounded-xl bg-nexora-card/80 text-nexora-cyan flex items-center justify-center cursor-pointer hover:bg-nexora-cyan/20 transition-all text-xl" id="backBtn" type="button" aria-label="Back">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div class="flex flex-col items-center">
+        <div class="relative w-10 h-10 flex items-center justify-center animate-pulse-cyan">
+            <div class="absolute inset-0 rounded-full border border-dashed border-nexora-cyan/50 animate-orbit"></div>
+            <svg class="w-8 h-8 drop-shadow-[0_0_10px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+                <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+                <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
+            </svg>
+        </div>
+        <span class="text-[9px] font-bold tracking-widest text-nexora-cyan uppercase font-mono mt-1">Nexora</span>
+      </div>
+    </div>
+
+    <h1 class="text-2xl sm:text-3xl font-black text-white font-mono tracking-wide">Fund Withdrawal</h1>
+    <p class="text-xs text-gray-400 font-mono mt-1">Transfer funds securely to your account.</p>
+  </div>
+
+  <main class="content">
+
+    <section class="card">
+
+      <div class="balance-box">
+        <div>
+          <span class="text-xs text-gray-400 font-mono block">AVAILABLE BALANCE</span>
+          <span class="text-xl font-bold text-white font-mono" id="userBalance">₱0.00</span>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan">
+          <i class="fa-solid fa-wallet"></i>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>WITHDRAWAL METHOD</label>
+        <div class="method-grid">
+          <div class="method-option active" data-method="GCash">
+            <i class="fa-solid fa-mobile-screen-button mb-1 text-nexora-cyan block text-lg"></i>
+            GCash
+          </div>
+          <div class="method-option" data-method="Bank">
+            <i class="fa-solid fa-building-columns mb-1 text-nexora-cyan block text-lg"></i>
+            Bank Transfer
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="withdrawAmount">WITHDRAWAL AMOUNT</label>
+        <div class="input-wrap">
+          <span class="input-symbol">₱</span>
+          <input id="withdrawAmount" class="nexora-input" type="number" min="100" step="1" inputmode="decimal" placeholder="Enter amount" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="accountName">ACCOUNT NAME</label>
+        <div class="input-wrap">
+          <input id="accountName" class="nexora-input !pl-4" type="text" placeholder="e.g., Juan Dela Cruz" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="accountNumber">ACCOUNT / GCASH NUMBER</label>
+        <div class="input-wrap">
+          <input id="accountNumber" class="nexora-input !pl-4" type="text" placeholder="e.g., 09171234567" autocomplete="off">
+        </div>
+      </div>
+
+      <button class="withdraw-btn" id="withdrawBtn" type="button">
+        <i class="fa-solid fa-paper-plane"></i>
+        <span>Submit Withdrawal</span>
+      </button>
+
+      <button class="back-link" id="backBottomBtn" type="button">
+        Back to My Account
+      </button>
+
+    </section>
+
+    <div class="footer">
+      NEXORA INVESTMENT TERMINAL • ALL RIGHTS RESERVED
+    </div>
+
+  </main>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Background Candlestick Animation Script -->
+<script>
+    const canvas = document.getElementById('chartCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let candles = [];
+    const candleWidth = 14;
+    const spacing = 22;
+
+    function initCandles() {
+        candles = [];
+        const count = Math.ceil(canvas.width / spacing) + 5;
+        let currentPrice = canvas.height * 0.55;
+
+        for (let i = 0; i < count; i++) {
+            const open = currentPrice;
+            const close = open + (Math.random() - 0.48) * 35;
+            const high = Math.max(open, close) + Math.random() * 15;
+            const low = Math.min(open, close) - Math.random() * 15;
+            candles.push({ open, close, high, low, x: i * spacing });
+            currentPrice = close;
+        }
+    }
+
+    function drawChart() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < candles.length; i++) {
+            const c = candles[i];
+            const isBullish = c.close <= c.open;
+            ctx.strokeStyle = isBullish ? '#00e676' : '#ff5252';
+            ctx.fillStyle = isBullish ? 'rgba(0, 230, 118, 0.5)' : 'rgba(255, 82, 82, 0.5)';
+
+            ctx.beginPath();
+            ctx.moveTo(c.x + candleWidth / 2, c.high);
+            ctx.lineTo(c.x + candleWidth / 2, c.low);
+            ctx.stroke();
+
+            const bodyY = Math.min(c.open, c.close);
+            const bodyHeight = Math.max(Math.abs(c.open - c.close), 2);
+            ctx.fillRect(c.x, bodyY, candleWidth, bodyHeight);
+
+            c.x -= 0.4;
+        }
+
+        if (candles.length > 0 && candles[0].x < -spacing) {
+            const last = candles[candles.length - 1];
+            const open = last.close;
+            const close = open + (Math.random() - 0.48) * 35;
+            const high = Math.max(open, close) + Math.random() * 15;
+            const low = Math.min(open, close) - Math.random() * 15;
+            candles.shift();
+            candles.push({ open, close, high, low, x: last.x + spacing });
+        }
+
+        requestAnimationFrame(drawChart);
+    }
+
+    initCandles();
+    drawChart();
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+    authDomain: "investpro-2dafb.firebaseapp.com",
+    projectId: "investpro-2dafb",
+    storageBucket: "investpro-2dafb.firebasestorage.app",
+    messagingSenderId: "135092039764",
+    appId: "1:135092039764:web:c4c71eef0c904346a77dc1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let currentUser = null;
+  let selectedMethod = "GCash";
+  const $ = id => document.getElementById(id);
+
+  function toast(message){
+    const el = $("toast");
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(window.__nexoraToastTimer);
+    window.__nexoraToastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+  }
+
+  function goBack(){
+    window.location.href = "account.html";
+  }
+
+  $("backBtn").addEventListener("click", goBack);
+  $("backBottomBtn").addEventListener("click", goBack);
+
+  // Method selector toggles
+  document.querySelectorAll(".method-option").forEach(opt => {
+    opt.addEventListener("click", () => {
+      document.querySelectorAll(".method-option").forEach(o => o.classList.remove("active"));
+      opt.classList.add("active");
+      selectedMethod = opt.getAttribute("data-method");
+    });
+  });
+
+  async function loadUserData(user){
+    try {
+      const userRef = doc(db, "Users", user.uid);
+      const snap = await getDoc(userRef);
+      if(snap.exists()){
+        const data = snap.data();
+        const bal = Number(data.balance || data.wallet || 0);
+        $("userBalance").textContent = `₱${bal.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      }
+    } catch(e) {
+      console.error("Error loading balance:", e);
+    }
+  }
+
+  async function submitWithdrawal(){
+    if(!currentUser) return;
+    const amount = Number($("withdrawAmount").value);
+    const name = $("accountName").value.trim();
+    const number = $("accountNumber").value.trim();
+
+    if(!Number.isFinite(amount) || amount <= 0){
+      toast("Please enter a valid withdrawal amount.");
+      $("withdrawAmount").focus();
+      return;
+    }
+    if(amount < 100){
+      toast("Minimum withdrawal amount is ₱100.");
+      $("withdrawAmount").focus();
+      return;
+    }
+    if(!name){
+      toast("Please enter your account name.");
+      $("accountName").focus();
+      return;
+    }
+    if(!number){
+      toast("Please enter your account/GCash number.");
+      $("accountNumber").focus();
+      return;
+    }
+
+    const btn = $("withdrawBtn");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+
+    try {
+      const userRef = doc(db, "Users", currentUser.uid);
+      await runTransaction(db, async transaction => {
+        const snap = await transaction.get(userRef);
+        const data = snap.exists() ? snap.data() : {};
+        const currentBal = Number(data.balance || data.wallet || 0);
+
+        if(currentBal < amount){
+          throw new Error("Insufficient balance for this withdrawal.");
+        }
+
+        const transactions = Array.isArray(data.transactions) ? [...data.transactions] : [];
+        transactions.push({
+          type: "Withdrawal",
+          status: "PENDING",
+          amount: amount,
+          method: selectedMethod,
+          accountName: name,
+          accountNumber: number,
+          date: new Date().toISOString()
+        });
+
+        transaction.update(userRef, {
+          balance: currentBal - amount,
+          transactions: transactions
+        });
+      });
+
+      toast("Withdrawal request submitted successfully!");
+      setTimeout(() => {
+        window.location.href = "account.html";
+      }, 1500);
+
+    } catch(err) {
+      console.error("Withdrawal error:", err);
+      toast(err.message || "Failed to submit withdrawal request.");
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Withdrawal`;
+    }
+  }
+
+  $("withdrawBtn").addEventListener("click", submitWithdrawal);
+
+  onAuthStateChanged(auth, async user => {
+    if(!user){
+      window.location.href = "login.html";
+      return;
+    }
+    currentUser = user;
+    await loadUserData(user);
+  });
+</script>
+
+</body>
+</html>
