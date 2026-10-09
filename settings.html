@@ -84,7 +84,7 @@
             </div>
             
             <h3 id="alertTitle" class="text-sm font-black font-mono tracking-wider text-white mb-2 uppercase">NOTIFICATION</h3>
-            <p id="alertMessage" class="text-xs text-gray-300 font-mono mb-6 leading-relaxed">Ito ang mensahe ng alert.</p>
+            <p id="alertMessage" class="text-xs text-gray-300 font-mono mb-6 leading-relaxed">Alert message goes here.</p>
             
             <button onclick="closeCustomAlert()" class="w-full py-3 bg-gradient-to-r from-nexora-cyan/20 to-blue-500/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
                 OKAY
@@ -178,7 +178,7 @@
                                 <i id="eyePin" class="fa-solid fa-eye text-xs"></i>
                             </button>
                         </div>
-                        <p class="text-[9px] text-gray-400 font-mono mt-1 text-center">Kakailanganin ang PIN na ito kapag magwi-withdraw ka ng pondo.</p>
+                        <p class="text-[9px] text-gray-400 font-mono mt-1 text-center">This PIN will be required when withdrawing funds.</p>
                     </div>
 
                     <button id="savePinBtn" class="w-full mt-1 py-3 bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 border border-emerald-500/40 text-emerald-400 text-xs font-black font-mono rounded-xl hover:bg-emerald-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
@@ -206,7 +206,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Custom Alert Function para mapalitan ang default browser alert
+        // Custom Alert Function
         function showAlert(message, title = "SECURITY NOTICE") {
             document.getElementById("alertMessage").textContent = message;
             document.getElementById("alertTitle").textContent = title;
@@ -336,11 +336,11 @@
             const newPass = document.getElementById("newPassword").value.trim();
 
             if(!currentPass) {
-                showAlert("Mangyaring ilagay ang iyong kasalukuyang password.");
+                showAlert("Please enter your current password.");
                 return;
             }
             if(newPass.length < 6) {
-                showAlert("Ang bagong password ay dapat hindi bababa sa 6 na karakter.");
+                showAlert("The new password must be at least 6 characters long.");
                 return;
             }
 
@@ -352,15 +352,15 @@
                 await user.reauthenticateWithCredential(credential);
                 await user.updatePassword(newPass);
 
-                showAlert("Matagumpay na na-update ang iyong password!", "SUCCESS");
+                showAlert("Your password has been successfully updated!", "SUCCESS");
                 document.getElementById("currentPassword").value = "";
                 document.getElementById("newPassword").value = "";
             } catch(err) {
                 console.error(err);
                 if(err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-                    showAlert("Mali ang inilagay mong kasalukuyang password.");
+                    showAlert("The current password you entered is incorrect.");
                 } else {
-                    showAlert("Nabigo sa pag-update ng password: " + err.message);
+                    showAlert("Failed to update password: " + err.message);
                 }
             }
         });
@@ -369,7 +369,7 @@
             const newPin = document.getElementById("withdrawalPinInput").value.trim();
             
             if(!/^\d{4}$/.test(newPin)) {
-                showAlert("Ang Withdrawal PIN ay dapat eksaktong 4 na numero.");
+                showAlert("The Withdrawal PIN must be exactly 4 digits.");
                 return;
             }
 
@@ -383,11 +383,11 @@
                 if(userDoc.exists && userDoc.data().withdrawalPin) {
                     const currentPinInput = document.getElementById("currentPinInput").value.trim();
                     if(!currentPinInput) {
-                        showAlert("Mangyaring ilagay ang iyong kasalukuyang Withdrawal PIN.");
+                        showAlert("Please enter your current Withdrawal PIN.");
                         return;
                     }
                     if(currentPinInput !== userDoc.data().withdrawalPin) {
-                        showAlert("Mali ang inilagay mong kasalukuyang Withdrawal PIN.");
+                        showAlert("The current Withdrawal PIN you entered is incorrect.");
                         return;
                     }
                 }
@@ -396,7 +396,7 @@
                     withdrawalPin: newPin
                 });
 
-                showAlert("Matagumpay na na-save/na-update ang iyong 4-digit Withdrawal PIN!", "SUCCESS");
+                showAlert("Your 4-digit Withdrawal PIN has been successfully saved/updated!", "SUCCESS");
                 
                 document.getElementById("currentPinWrapper").style.display = "block";
                 document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
@@ -406,7 +406,7 @@
                 document.getElementById("withdrawalPinInput").value = "";
             } catch(err) {
                 console.error(err);
-                showAlert("Nabigo sa pag-save ng PIN.");
+                showAlert("Failed to save PIN.");
             }
         });
     </script>
