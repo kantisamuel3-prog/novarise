@@ -1642,7 +1642,7 @@ async function approveWithdrawal(
 
 
 /* -----------------------------------------
-   APPROVE RECHARGE
+   APPROVE RECHARGE (WITH TIERED REFERRAL COMMISSION)
 ----------------------------------------- */
 
 async function approveRecharge(
@@ -1793,6 +1793,7 @@ async function approveRecharge(
         };
 
 
+        // 1. I-update ang balanse at transactions ng mismong nag-recharge
         transaction.update(
           userRef,
           {
@@ -1806,6 +1807,38 @@ async function approveRecharge(
           }
         );
 
+
+        // 2. Suriin ang Upline / Inviter para sa Tiered Commission kung ₱11,500 pataas
+        const uplineId = data.referredBy || data.sponsorId;
+        
+        if (uplineId && rechargeAmount >= 11500) {
+          let commissionPercentage = 0;
+          
+          if (rechargeAmount >= 23500) {
+            commissionPercentage = 0.10; // 10% para sa ₱23,500 pataas
+          } else if (rechargeAmount >= 11500) {
+            commissionPercentage = 0.05; // 5% para sa ₱11,500 hanggang ₱23,499
+          }
+
+          if (commissionPercentage > 0) {
+            const commissionAmount = rechargeAmount * commissionPercentage;
+            const uplineRef = db.collection("Users").doc(uplineId);
+            const uplineSnap = await transaction.get(uplineRef);
+
+            if (uplineSnap.exists) {
+              const uplineData = uplineSnap.data() || {};
+              const currentUplineBalance = Number(uplineData.balance || 0);
+              const currentTotalCommission = Number(uplineData.totalCommission || uplineData.commission || 0);
+
+              // Idagdag ang komisyon sa balance at totalCommission ng upline
+              transaction.update(uplineRef, {
+                balance: currentUplineBalance + commissionAmount,
+                totalCommission: currentTotalCommission + commissionAmount
+              });
+            }
+          }
+        }
+
       }
     );
 
@@ -1814,7 +1847,7 @@ async function approveRecharge(
 
 
     alert(
-      "Recharge approved successfully."
+      "Recharge approved and referral commission credited successfully."
     );
 
 
@@ -1864,7 +1897,6 @@ async function approveRecharge(
   }
 
 }
-
 /* -----------------------------------------
    REJECT RECHARGE
 ----------------------------------------- */
