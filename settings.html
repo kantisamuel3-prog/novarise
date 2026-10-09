@@ -74,6 +74,24 @@
         <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px]"></div>
     </div>
 
+    <!-- CUSTOM NEXORA ALERT MODAL -->
+    <div id="customAlertModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden px-4">
+        <div class="w-full max-w-sm rounded-2xl border border-nexora-cyan/30 bg-[#0a1628] p-6 shadow-2xl text-center relative overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-nexora-cyan to-blue-500"></div>
+            
+            <div id="alertIconContainer" class="w-12 h-12 rounded-xl bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan text-lg mx-auto mb-4">
+                <i id="alertIcon" class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            
+            <h3 id="alertTitle" class="text-sm font-black font-mono tracking-wider text-white mb-2 uppercase">NOTIFICATION</h3>
+            <p id="alertMessage" class="text-xs text-gray-300 font-mono mb-6 leading-relaxed">Ito ang mensahe ng alert.</p>
+            
+            <button onclick="closeCustomAlert()" class="w-full py-3 bg-gradient-to-r from-nexora-cyan/20 to-blue-500/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
+                OKAY
+            </button>
+        </div>
+    </div>
+
     <!-- MAIN CONTAINER -->
     <main class="relative z-10 w-full max-w-md px-4 py-6">
         
@@ -142,7 +160,6 @@
                 </div>
 
                 <div class="space-y-3">
-                    <!-- Current PIN Field (Lalabas lamang kapag may naka-save nang PIN) -->
                     <div id="currentPinWrapper" style="display: none;">
                         <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">CURRENT 4-DIGIT PIN</label>
                         <div class="relative flex items-center">
@@ -188,6 +205,17 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // Custom Alert Function para mapalitan ang default browser alert
+        function showAlert(message, title = "SECURITY NOTICE") {
+            document.getElementById("alertMessage").textContent = message;
+            document.getElementById("alertTitle").textContent = title;
+            document.getElementById("customAlertModal").classList.remove("hidden");
+        }
+
+        function closeCustomAlert() {
+            document.getElementById("customAlertModal").classList.add("hidden");
+        }
 
         // Canvas Background Animation
         const canvas = document.getElementById('tradingBgCanvas');
@@ -258,7 +286,6 @@
         }
         animateTradingBackground();
 
-        // Toggle visibility function para sa password at PIN
         function toggleVisibility(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
@@ -277,7 +304,6 @@
             window.location.href = "account.html";
         });
 
-        // Suriin ang Database kung may existing PIN na ang user
         auth.onAuthStateChanged(async (user) => {
             if(!user){
                 window.location.href = "login.html";
@@ -289,13 +315,11 @@
                 if(userDoc.exists){
                     const data = userDoc.data();
                     if(data.withdrawalPin){
-                        // Kapag may PIN na: Ipakita ang Current PIN at New PIN, baguhin ang mga label
                         document.getElementById("currentPinWrapper").style.display = "block";
                         document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
                         document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
                         document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
                     } else {
-                        // Kapag wala pang PIN: I-tago ang Current PIN, ipakita lang ang paggawa ng PIN
                         document.getElementById("currentPinWrapper").style.display = "none";
                         document.getElementById("pinCardTitle").textContent = "WITHDRAWAL PIN";
                         document.getElementById("newPinLabelText").textContent = "ENTER 4-DIGIT PIN";
@@ -307,17 +331,16 @@
             }
         });
 
-        // Update Password Logic
         document.getElementById("updatePasswordBtn").addEventListener("click", async () => {
             const currentPass = document.getElementById("currentPassword").value.trim();
             const newPass = document.getElementById("newPassword").value.trim();
 
             if(!currentPass) {
-                alert("Mangyaring ilagay ang iyong kasalukuyang password.");
+                showAlert("Mangyaring ilagay ang iyong kasalukuyang password.");
                 return;
             }
             if(newPass.length < 6) {
-                alert("Ang bagong password ay dapat hindi bababa sa 6 na karakter.");
+                showAlert("Ang bagong password ay dapat hindi bababa sa 6 na karakter.");
                 return;
             }
 
@@ -329,25 +352,24 @@
                 await user.reauthenticateWithCredential(credential);
                 await user.updatePassword(newPass);
 
-                alert("Matagumpay na na-update ang iyong password!");
+                showAlert("Matagumpay na na-update ang iyong password!", "SUCCESS");
                 document.getElementById("currentPassword").value = "";
                 document.getElementById("newPassword").value = "";
             } catch(err) {
                 console.error(err);
                 if(err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-                    alert("Mali ang inilagay mong kasalukuyang password.");
+                    showAlert("Mali ang inilagay mong kasalukuyang password.");
                 } else {
-                    alert("Nabigo sa pag-update ng password: " + err.message);
+                    showAlert("Nabigo sa pag-update ng password: " + err.message);
                 }
             }
         });
 
-        // Save / Update PIN Logic
         document.getElementById("savePinBtn").addEventListener("click", async () => {
             const newPin = document.getElementById("withdrawalPinInput").value.trim();
             
             if(!/^\d{4}$/.test(newPin)) {
-                alert("Ang Withdrawal PIN ay dapat eksaktong 4 na numero.");
+                showAlert("Ang Withdrawal PIN ay dapat eksaktong 4 na numero.");
                 return;
             }
 
@@ -358,15 +380,14 @@
                 const userRef = db.collection("Users").doc(user.uid);
                 const userDoc = await userRef.get();
 
-                // Kung may existing PIN na, i-verify muna ang Current PIN bago payagang palitan
                 if(userDoc.exists && userDoc.data().withdrawalPin) {
                     const currentPinInput = document.getElementById("currentPinInput").value.trim();
                     if(!currentPinInput) {
-                        alert("Mangyaring ilagay ang iyong kasalukuyang Withdrawal PIN.");
+                        showAlert("Mangyaring ilagay ang iyong kasalukuyang Withdrawal PIN.");
                         return;
                     }
                     if(currentPinInput !== userDoc.data().withdrawalPin) {
-                        alert("Mali ang inilagay mong kasalukuyang Withdrawal PIN.");
+                        showAlert("Mali ang inilagay mong kasalukuyang Withdrawal PIN.");
                         return;
                     }
                 }
@@ -375,9 +396,8 @@
                     withdrawalPin: newPin
                 });
 
-                alert("Matagumpay na na-save/na-update ang iyong 4-digit Withdrawal PIN!");
+                showAlert("Matagumpay na na-save/na-update ang iyong 4-digit Withdrawal PIN!", "SUCCESS");
                 
-                // I-update ang UI para maging Change PIN view na pagkatapos i-save
                 document.getElementById("currentPinWrapper").style.display = "block";
                 document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
                 document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
@@ -386,7 +406,7 @@
                 document.getElementById("withdrawalPinInput").value = "";
             } catch(err) {
                 console.error(err);
-                alert("Nabigo sa pag-save ng PIN.");
+                showAlert("Nabigo sa pag-save ng PIN.");
             }
         });
     </script>
