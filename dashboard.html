@@ -1729,15 +1729,12 @@ canvas#liveChart {
       const codeRef = db.collection('TradingCodes').doc(codeInput);
       const userRef = db.collection('Users').doc(currentUser.uid);
       const usageRef = codeRef.collection('Usage').doc(currentUser.uid);
-      const memberUsageRef = userRef.collection('TradingCodeUsage').doc('one-time');
-
-
+     
       const executionResult = await db.runTransaction(async (transaction) => {
         // All reads are done before writes.
           const codeSnap = await transaction.get(codeRef);
           const userSnap = await transaction.get(userRef);
           const usageSnap = await transaction.get(usageRef);
-          const memberUsageSnap = await transaction.get(memberUsageRef);
 
 
         if (!codeSnap.exists) {
@@ -1746,12 +1743,6 @@ canvas#liveChart {
 
         if (!userSnap.exists) {
           return { ok: false, reason: 'user_not_found' };
-        }
-          if (memberUsageSnap.exists) {
-          return {
-          ok: false,
-        reason: 'member_already_used_any_code'
-        };
         }
 
 
@@ -1798,13 +1789,6 @@ canvas#liveChart {
          usedAt: executionStartedAt,
          status: 'RUNNING'
         });
-          
-          transaction.set(memberUsageRef, {
-          userId: currentUser.uid,
-          firstCode: codeInput,
-          usedAt: executionStartedAt,
-          status: 'RUNNING'
-         });
 
 
         // Save the trading execution at the same time.
