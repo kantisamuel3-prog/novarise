@@ -1696,6 +1696,7 @@ async function approveRecharge(
     await db.runTransaction(
       async transaction => {
 
+        // 1. BASAHIN muna ang mismong user (Reads)
         const snap =
           await transaction.get(
             userRef
@@ -1771,12 +1772,31 @@ async function approveRecharge(
         }
 
 
-        const currentBalance =
-          Number(
-            data.balance || 0
-          );
+        // 2. Kuhanin ang Upline ID at BASAHIN din ang upline document kung sakaling may komisyon (Reads)
+        const uplineId = data.referredBy || data.sponsorId;
+        let uplineRef = null;
+        let uplineSnap = null;
+        let commissionPercentage = 0;
+        let commissionAmount = 0;
+
+        if (uplineId && rechargeAmount >= 11500) {
+          if (rechargeAmount >= 23500) {
+            commissionPercentage = 0.10; // 10% para sa ₱23,500 pataas
+          } else if (rechargeAmount >= 11500) {
+            commissionPercentage = 0.05; // 5% para sa ₱11,500 hanggang ₱23,499
+          }
+
+          if (commissionPercentage > 0) {
+            commissionAmount = rechargeAmount * commissionPercentage;
+            uplineRef = db.collection("Users").doc(uplineId);
+            uplineSnap = await transaction.get(uplineRef); // Kailangan munang basahin bago ang writes
+          }
+        }
 
 
+        // 3. PAGKATAPOS NG LAHAT NG READS, GAWIN NA ANG LAHAT NG WRITES (Updates)
+        
+        // I-update ang status ng recharge sa loob ng transactions array
         transactions[
           rechargeIndex
         ] = {
@@ -1793,7 +1813,12 @@ async function approveRecharge(
         };
 
 
-        // 1. I-update ang balanse at transactions ng mismong nag-recharge
+        const currentBalance =
+          Number(
+            data.balance || 0
+          );
+
+        // I-update ang balance ng mismong nag-recharge
         transaction.update(
           userRef,
           {
@@ -1808,35 +1833,16 @@ async function approveRecharge(
         );
 
 
-        // 2. Suriin ang Upline / Inviter para sa Tiered Commission kung ₱11,500 pataas
-        const uplineId = data.referredBy || data.sponsorId;
-        
-        if (uplineId && rechargeAmount >= 11500) {
-          let commissionPercentage = 0;
-          
-          if (rechargeAmount >= 23500) {
-            commissionPercentage = 0.10; // 10% para sa ₱23,500 pataas
-          } else if (rechargeAmount >= 11500) {
-            commissionPercentage = 0.05; // 5% para sa ₱11,500 hanggang ₱23,499
-          }
+        // Kung may valid na upline at umabot sa commission, i-update din ang upline
+        if (uplineRef && uplineSnap && uplineSnap.exists) {
+          const uplineData = uplineSnap.data() || {};
+          const currentUplineBalance = Number(uplineData.balance || 0);
+          const currentTotalCommission = Number(uplineData.totalCommission || uplineData.commission || 0);
 
-          if (commissionPercentage > 0) {
-            const commissionAmount = rechargeAmount * commissionPercentage;
-            const uplineRef = db.collection("Users").doc(uplineId);
-            const uplineSnap = await transaction.get(uplineRef);
-
-            if (uplineSnap.exists) {
-              const uplineData = uplineSnap.data() || {};
-              const currentUplineBalance = Number(uplineData.balance || 0);
-              const currentTotalCommission = Number(uplineData.totalCommission || uplineData.commission || 0);
-
-              // Idagdag ang komisyon sa balance at totalCommission ng upline
-              transaction.update(uplineRef, {
-                balance: currentUplineBalance + commissionAmount,
-                totalCommission: currentTotalCommission + commissionAmount
-              });
-            }
-          }
+          transaction.update(uplineRef, {
+            balance: currentUplineBalance + commissionAmount,
+            totalCommission: currentTotalCommission + commissionAmount
+          });
         }
 
       }
@@ -1895,6 +1901,8 @@ async function approveRecharge(
     }
 
   }
+
+}
 
 }
 /* -----------------------------------------
