@@ -2,8 +2,8 @@
 <html lang="en" class="h-full select-none">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXORA — Account Settings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEXORA — Security Settings</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -52,6 +52,7 @@
             color: #f1f5f9;
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
+            padding-bottom: 50px;
         }
         .trading-grid {
             background-image: 
@@ -64,22 +65,22 @@
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen relative overflow-x-hidden">
+<body class="flex flex-col items-center relative overflow-x-hidden">
 
-    <!-- LIVE TRADING BACKGROUND -->
+    <!-- LIVE MOVING TRADING CHART BACKGROUND -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden trading-grid">
-        <canvas id="tradingBgCanvas" class="absolute inset-0 w-full h-full opacity-30"></canvas>
+        <canvas id="tradingBgCanvas" class="absolute inset-0 w-full h-full opacity-35"></canvas>
         <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-nexora-cyan/10 rounded-full blur-[120px]"></div>
         <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px]"></div>
     </div>
 
     <!-- CUSTOM NEXORA ALERT MODAL -->
     <div id="customAlertModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden px-4">
-        <div class="w-full max-w-sm rounded-2xl border border-nexora-cyan/30 bg-[#0a1628] p-6 shadow-2xl text-center relative overflow-hidden">
+        <div class="w-full max-w-sm rounded-2xl border border-nexora-cyan/30 bg-[#0a1628] p-6 shadow-2xl text-center relative overflow-hidden animate-in fade-in zoom-in duration-200">
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-nexora-cyan to-blue-500"></div>
             
             <div id="alertIconContainer" class="w-12 h-12 rounded-xl bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan text-lg mx-auto mb-4">
-                <i id="alertIcon" class="fa-solid fa-circle-info"></i>
+                <i id="alertIcon" class="fa-solid fa-triangle-exclamation"></i>
             </div>
             
             <h3 id="alertTitle" class="text-sm font-black font-mono tracking-wider text-white mb-2 uppercase">NOTIFICATION</h3>
@@ -91,73 +92,134 @@
         </div>
     </div>
 
-    <!-- HEADER -->
-    <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <a href="dashboard.html" class="w-8 h-8 rounded-lg bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan hover:bg-nexora-cyan/20 transition-all">
-                <i class="fa-solid fa-arrow-left text-xs"></i>
-            </a>
-            <h1 class="text-sm font-black font-brand tracking-widest text-white uppercase">ACCOUNT <span class="text-nexora-cyan">SETTINGS</span></h1>
-        </div>
-        <div class="text-[10px] font-mono text-nexora-cyan bg-nexora-cyan/10 border border-nexora-cyan/30 px-2.5 py-1 rounded-lg">
-            SECURE TERMINAL
-        </div>
-    </header>
-
     <!-- MAIN CONTAINER -->
-    <main class="relative z-10 w-full max-w-xl mx-auto p-4 space-y-6 my-auto">
+    <main class="relative z-10 w-full max-w-md px-4 py-6">
+        
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-6">
+            <button id="backBtn" class="w-11 h-11 border border-nexora-cyan/30 rounded-xl bg-nexora-card/90 text-nexora-cyan flex items-center justify-center cursor-pointer hover:bg-nexora-cyan/20 transition-all shadow-lg active:scale-95">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </button>
+            <div class="text-center">
+                <h1 class="text-sm font-black tracking-widest text-white font-mono uppercase">SECURITY SETTINGS</h1>
+                <p class="text-[10px] text-nexora-cyan/70 font-mono tracking-wider">PROTECT YOUR ACCOUNT</p>
+            </div>
+            <div class="w-11"></div>
+        </div>
 
-        <!-- BIND GMAIL FOR ACCOUNT RECOVERY SECTION -->
-        <div class="rounded-2xl border border-nexora-cyan/25 bg-nexora-card/85 p-6 glow-box backdrop-blur-xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-nexora-cyan to-blue-500"></div>
-            
-            <div class="flex items-center space-x-2.5 mb-4">
-                <div class="w-8 h-8 rounded-lg bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan text-xs">
-                    <i class="fa-solid fa-envelope-circle-check"></i>
+        <!-- SETTINGS WRAPPER -->
+        <div class="space-y-4">
+
+            <!-- CHANGE PASSWORD CARD -->
+            <div class="rounded-2xl border border-nexora-cyan/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden transition-all hover:border-nexora-cyan/50">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-nexora-cyan to-blue-500"></div>
+                
+                <div class="flex items-center space-x-2.5 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan text-xs">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h2 class="text-xs font-black font-mono tracking-wider text-white">CHANGE PASSWORD</h2>
                 </div>
-                <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND GMAIL FOR RECOVERY</h2>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">CURRENT PASSWORD</label>
+                        <div class="relative flex items-center">
+                            <input id="currentPassword" type="password" placeholder="Enter current password" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan transition-all">
+                            <button type="button" onclick="toggleVisibility('currentPassword', 'eyeCurrent')" class="absolute right-3 text-gray-400 hover:text-nexora-cyan cursor-pointer p-1">
+                                <i id="eyeCurrent" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">NEW PASSWORD</label>
+                        <div class="relative flex items-center">
+                            <input id="newPassword" type="password" placeholder="At least 6 characters" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan transition-all">
+                            <button type="button" onclick="toggleVisibility('newPassword', 'eyeNew')" class="absolute right-3 text-gray-400 hover:text-nexora-cyan cursor-pointer p-1">
+                                <i id="eyeNew" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button id="updatePasswordBtn" class="w-full mt-1 py-3 bg-gradient-to-r from-nexora-cyan/20 to-blue-500/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
+                        UPDATE PASSWORD
+                    </button>
+                </div>
             </div>
 
-            <p class="text-xs text-gray-400 font-mono mb-4 leading-relaxed">
-                Link your personal Gmail address to receive security alerts and instant password recovery verification codes.
-            </p>
+            <!-- BIND GMAIL FOR RECOVERY CARD (Maliit at malinis na seksyon) -->
+            <div class="rounded-2xl border border-blue-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden transition-all hover:border-blue-500/50">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-blue-400 to-indigo-600"></div>
+                
+                <div class="flex items-center space-x-2.5 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-xs">
+                        <i class="fa-solid fa-envelope-circle-check"></i>
+                    </div>
+                    <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND GMAIL FOR RECOVERY</h2>
+                </div>
 
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">GMAIL ADDRESS</label>
-                    <div class="relative flex items-center">
-                        <input id="bindEmailInput" type="email" placeholder="yourname@gmail.com" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan transition-all">
-                        <span class="absolute right-3 text-gray-400">
-                            <i class="fa-brands fa-google text-xs"></i>
-                        </span>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">GMAIL ADDRESS</label>
+                        <div class="relative flex items-center">
+                            <input id="bindEmailInput" type="email" placeholder="yourname@gmail.com" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-blue-500/25 rounded-xl text-white text-xs font-mono outline-none focus:border-blue-500 transition-all">
+                            <span class="absolute right-3 text-gray-400">
+                                <i class="fa-brands fa-google text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-2">
+                        <button id="saveGmailBtn" class="flex-1 py-2.5 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/40 text-blue-400 text-xs font-black font-mono rounded-xl hover:bg-blue-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
+                            Save Gmail
+                        </button>
+                        <button id="sendRecoveryCodeBtn" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-black font-mono rounded-xl hover:bg-emerald-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
+                            Send Recovery Code
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="flex space-x-3">
-                    <button id="saveGmailBtn" class="flex-1 py-3 bg-gradient-to-r from-nexora-cyan/20 to-blue-500/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
-                        SAVE GMAIL
-                    </button>
-                    <button id="sendRecoveryCodeBtn" class="flex-1 py-3 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-black font-mono rounded-xl hover:bg-emerald-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
-                        SEND RECOVERY CODE
+            <!-- WITHDRAWAL PIN CARD -->
+            <div class="rounded-2xl border border-emerald-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden transition-all hover:border-emerald-500/50">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-emerald-400 to-emerald-600"></div>
+                
+                <div class="flex items-center space-x-2.5 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xs">
+                        <i class="fa-solid fa-shield-keyhole"></i>
+                    </div>
+                    <h2 class="text-xs font-black font-mono tracking-wider text-white" id="pinCardTitle">WITHDRAWAL PIN</h2>
+                </div>
+
+                <div class="space-y-3">
+                    <div id="currentPinWrapper" style="display: none;">
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">CURRENT 4-DIGIT PIN</label>
+                        <div class="relative flex items-center">
+                            <input id="currentPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-emerald-500/25 rounded-xl text-white text-sm tracking-widest font-mono text-center outline-none focus:border-emerald-500 transition-all">
+                            <button type="button" onclick="toggleVisibility('currentPinInput', 'eyeCurrentPin')" class="absolute right-3 text-gray-400 hover:text-emerald-400 cursor-pointer p-1">
+                                <i id="eyeCurrentPin" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="newPinLabelText">4-DIGIT PIN</label>
+                        <div class="relative flex items-center">
+                            <input id="withdrawalPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-emerald-500/25 rounded-xl text-white text-sm tracking-widest font-mono text-center outline-none focus:border-emerald-500 transition-all">
+                            <button type="button" onclick="toggleVisibility('withdrawalPinInput', 'eyePin')" class="absolute right-3 text-gray-400 hover:text-emerald-400 cursor-pointer p-1">
+                                <i id="eyePin" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                        <p class="text-[9px] text-gray-400 font-mono mt-1 text-center">This PIN will be required when withdrawing funds.</p>
+                    </div>
+
+                    <button id="savePinBtn" class="w-full mt-1 py-3 bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 border border-emerald-500/40 text-emerald-400 text-xs font-black font-mono rounded-xl hover:bg-emerald-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
+                        Create Withdrawal PIN
                     </button>
                 </div>
             </div>
-        </div>
 
-        <!-- WITHDRAWAL PIN MANAGEMENT SECTION -->
-        <div class="rounded-2xl border border-nexora-cyan/25 bg-nexora-card/85 p-6 glow-box backdrop-blur-xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-nexora-cyan to-blue-500"></div>
-            
-            <div class="flex items-center space-x-2.5 mb-4">
-                <div class="w-8 h-8 rounded-lg bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan text-xs">
-                    <i class="fa-solid fa-shield-keyhole"></i>
-                </div>
-                <h2 id="pinSectionTitle" class="text-xs font-black font-mono tracking-wider text-white">WITHDRAWAL PIN MANAGEMENT</h2>
-            </div>
-
-            <div id="pinFormContainer" class="space-y-4">
-                <!-- Dynamically adjusted via JS depending on whether user has an existing PIN -->
-            </div>
         </div>
 
     </main>
@@ -257,116 +319,174 @@
         }
         animateTradingBackground();
 
-        // Check Auth and Load User Data
+        function toggleVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+
+        document.getElementById("backBtn").addEventListener("click", () => {
+            window.location.href = "account.html";
+        });
+
         auth.onAuthStateChanged(async (user) => {
-            if (!user) {
+            if(!user){
                 window.location.href = "login.html";
                 return;
             }
 
-            const userRef = db.collection("users").doc(user.uid);
-            const doc = await userRef.get();
+            try {
+                const userRef = db.collection("Users").doc(user.uid);
+                const userDoc = await userRef.get();
+                if(userDoc.exists){
+                    const data = userDoc.data();
+                    
+                    // Load Recovery Email kung mayroon na
+                    if(data.recoveryEmail) {
+                        document.getElementById("bindEmailInput").value = data.recoveryEmail;
+                    }
 
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.recoveryEmail) {
-                    document.getElementById("bindEmailInput").value = data.recoveryEmail;
+                    if(data.withdrawalPin){
+                        document.getElementById("currentPinWrapper").style.display = "block";
+                        document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
+                        document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
+                        document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
+                    } else {
+                        document.getElementById("currentPinWrapper").style.display = "none";
+                        document.getElementById("pinCardTitle").textContent = "WITHDRAWAL PIN";
+                        document.getElementById("newPinLabelText").textContent = "ENTER 4-DIGIT PIN";
+                        document.getElementById("savePinBtn").textContent = "Create Withdrawal PIN";
+                    }
                 }
-
-                // Setup Withdrawal PIN UI (Creation vs Update)
-                const pinContainer = document.getElementById("pinFormContainer");
-                if (!data.withdrawalPin) {
-                    pinContainer.innerHTML = `
-                        <p class="text-xs text-gray-400 font-mono mb-3">You have not created a withdrawal PIN yet. Set your 6-digit PIN below.</p>
-                        <div>
-                            <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">NEW 6-DIGIT PIN</label>
-                            <input id="newPin" type="password" maxlength="6" placeholder="******" class="w-full h-11 px-3.5 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan mb-3">
-                        </div>
-                        <button id="savePinBtn" class="w-full py-3 bg-gradient-to-r from-nexora-cyan/20 to-blue-500/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer shadow-md">
-                            CREATE WITHDRAWAL PIN
-                        </button>
-                    `;
-                    document.getElementById("savePinBtn").addEventListener("click", async () => {
-                        const pin = document.getElementById("newPin").value.trim();
-                        if (pin.length !== 6 || isNaN(pin)) {
-                            showAlert("Withdrawal PIN must be exactly 6 digits.");
-                            return;
-                        }
-                        await userRef.update({ withdrawalPin: pin });
-                        showAlert("Withdrawal PIN created successfully!", "SUCCESS");
-                        setTimeout(() => location.reload(), 1500);
-                    });
-                } else {
-                    pinContainer.innerHTML = `
-                        <p class="text-xs text-gray-400 font-mono mb-3">Update your current withdrawal PIN by entering your current and new PIN.</p>
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">CURRENT PIN</label>
-                                <input id="currentPin" type="password" maxlength="6" placeholder="******" class="w-full h-11 px-3.5 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">NEW PIN</label>
-                                <input id="updateNewPin" type="password" maxlength="6" placeholder="******" class="w-full h-11 px-3.5 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan">
-                            </div>
-                        </div>
-                        <button id="updatePinBtn" class="w-full mt-4 py-3 bg-gradient-to-r from-nexora-cyan/20 to-blue-500/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer shadow-md">
-                            UPDATE WITHDRAWAL PIN
-                        </button>
-                    `;
-                    document.getElementById("updatePinBtn").addEventListener("click", async () => {
-                        const curr = document.getElementById("currentPin").value.trim();
-                        const next = document.getElementById("updateNewPin").value.trim();
-                        if (curr !== data.withdrawalPin) {
-                            showAlert("Current withdrawal PIN is incorrect.");
-                            return;
-                        }
-                        if (next.length !== 6 || isNaN(next)) {
-                            showAlert("New withdrawal PIN must be exactly 6 digits.");
-                            return;
-                        }
-                        await userRef.update({ withdrawalPin: next });
-                        showAlert("Withdrawal PIN updated successfully!", "SUCCESS");
-                        setTimeout(() => location.reload(), 1500);
-                    });
-                }
+            } catch(e) {
+                console.error("Error loading user status:", e);
             }
         });
 
         // Save Gmail Logic
         document.getElementById("saveGmailBtn").addEventListener("click", async () => {
             const email = document.getElementById("bindEmailInput").value.trim();
-            if (!email || !email.includes("@") || !email.endsWith("@gmail.com")) {
+            if(!email || !email.includes("@") || !email.endsWith("@gmail.com")) {
                 showAlert("Please enter a valid Gmail address ending with @gmail.com.");
                 return;
             }
 
-            const user = auth.currentUser;
-            if (user) {
-                try {
-                    await db.collection("users").doc(user.uid).update({ recoveryEmail: email });
-                    showAlert("Gmail address successfully bound to your account!", "SUCCESS");
-                } catch (err) {
-                    console.error(err);
-                    showAlert("Failed to bind Gmail: " + err.message);
-                }
+            try {
+                const user = auth.currentUser;
+                if(!user) return;
+
+                await db.collection("Users").doc(user.uid).set({
+                    recoveryEmail: email
+                }, { merge: true });
+
+                showAlert("Your Gmail address has been successfully bound to your account!", "SUCCESS");
+            } catch(err) {
+                console.error(err);
+                showAlert("Failed to bind Gmail: " + err.message);
             }
         });
 
         // Send Recovery Code Logic
         document.getElementById("sendRecoveryCodeBtn").addEventListener("click", async () => {
             const email = document.getElementById("bindEmailInput").value.trim();
-            if (!email) {
+            if(!email) {
                 showAlert("Please save or enter a Gmail address first.");
                 return;
             }
 
             try {
-                // Trigger Firebase password reset email as the recovery verification flow
                 await auth.sendPasswordResetEmail(email);
-                showAlert("A secure recovery code/link has been sent to your bound Gmail address.", "SUCCESS");
-            } catch (err) {
+                showAlert("A secure recovery verification code/link has been sent to your bound Gmail address.", "SUCCESS");
+            } catch(err) {
                 console.error(err);
                 showAlert("Failed to send recovery code: " + err.message);
+            }
+        });
+
+        document.getElementById("updatePasswordBtn").addEventListener("click", async () => {
+            const currentPass = document.getElementById("currentPassword").value.trim();
+            const newPass = document.getElementById("newPassword").value.trim();
+
+            if(!currentPass) {
+                showAlert("Please enter your current password.");
+                return;
+            }
+            if(newPass.length < 6) {
+                showAlert("The new password must be at least 6 characters long.");
+                return;
+            }
+
+            try {
+                const user = auth.currentUser;
+                if(!user || !user.email) return;
+
+                const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
+                await user.reauthenticateWithCredential(credential);
+                await user.updatePassword(newPass);
+
+                showAlert("Your password has been successfully updated!", "SUCCESS");
+                document.getElementById("currentPassword").value = "";
+                document.getElementById("newPassword").value = "";
+            } catch(err) {
+                console.error(err);
+                if(err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    showAlert("The current password you entered is incorrect.");
+                } else {
+                    showAlert("Failed to update password: " + err.message);
+                }
+            }
+        });
+
+        document.getElementById("savePinBtn").addEventListener("click", async () => {
+            const newPin = document.getElementById("withdrawalPinInput").value.trim();
+            
+            if(!/^\d{4}$/.test(newPin)) {
+                showAlert("The Withdrawal PIN must be exactly 4 digits.");
+                return;
+            }
+
+            try {
+                const user = auth.currentUser;
+                if(!user) return;
+
+                const userRef = db.collection("Users").doc(user.uid);
+                const userDoc = await userRef.get();
+
+                if(userDoc.exists && userDoc.data().withdrawalPin) {
+                    const currentPinInput = document.getElementById("currentPinInput").value.trim();
+                    if(!currentPinInput) {
+                        showAlert("Please enter your current Withdrawal PIN.");
+                        return;
+                    }
+                    if(currentPinInput !== userDoc.data().withdrawalPin) {
+                        showAlert("The current Withdrawal PIN you entered is incorrect.");
+                        return;
+                    }
+                }
+
+                await userRef.update({
+                    withdrawalPin: newPin
+                });
+
+                showAlert("Your 4-digit Withdrawal PIN has been successfully saved/updated!", "SUCCESS");
+                
+                document.getElementById("currentPinWrapper").style.display = "block";
+                document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
+                document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
+                document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
+                document.getElementById("currentPinInput").value = "";
+                document.getElementById("withdrawalPinInput").value = "";
+            } catch(err) {
+                console.error(err);
+                showAlert("Failed to save PIN.");
             }
         });
     </script>
