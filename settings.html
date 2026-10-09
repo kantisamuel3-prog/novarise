@@ -40,27 +40,6 @@
                             gold: '#dfb248',
                             accent: '#00e676'
                         }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 8s ease-in-out infinite',
-                        'float-delayed': 'float 10s ease-in-out 4s infinite',
-                        'grid-move': 'gridMove 20s linear infinite',
-                        'chart-pulse': 'chartPulse 4s ease-in-out infinite'
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '50%': { transform: 'translate(30px, -40px) scale(1.1)' },
-                        },
-                        gridMove: {
-                            '0%': { backgroundPosition: '0 0' },
-                            '100%': { backgroundPosition: '40px 40px' }
-                        },
-                        chartPulse: {
-                            '0%, 100%': { opacity: '0.15' },
-                            '50%': { opacity: '0.35' }
-                        }
                     }
                 }
             }
@@ -75,12 +54,12 @@
             min-height: 100vh;
             padding-bottom: 50px;
         }
-        /* Live Trading Grid Background Pattern */
+        /* Grid lines para sa trading monitor look */
         .trading-grid {
             background-image: 
-                linear-gradient(to right, rgba(0, 242, 254, 0.04) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0, 242, 254, 0.04) 1px, transparent 1px);
-            background-size: 40px 40px;
+                linear-gradient(to right, rgba(0, 242, 254, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 242, 254, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
         }
         .glow-box {
             box-shadow: 0 0 30px rgba(0, 242, 254, 0.06);
@@ -89,25 +68,14 @@
 </head>
 <body class="flex flex-col items-center relative overflow-x-hidden">
 
-    <!-- LIVE TRADING BACKGROUND EFFECT -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden trading-grid animate-grid-move">
-        <!-- Glowing Orbs -->
-        <div class="absolute -top-20 -left-20 w-80 h-80 bg-nexora-cyan/15 rounded-full blur-[100px] animate-float"></div>
-        <div class="absolute top-1/2 -right-20 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] animate-float-delayed"></div>
+    <!-- LIVE MOVING TRADING CHART BACKGROUND -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden trading-grid">
+        <!-- Canvas para sa mabagal at pataas-pababang live trading line -->
+        <canvas id="tradingBgCanvas" class="absolute inset-0 w-full h-full opacity-35"></canvas>
         
-        <!-- Subtle Trading Chart SVG Line sa Background -->
-        <div class="absolute inset-0 flex items-center justify-center opacity-20 animate-chart-pulse">
-            <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 500">
-                <path d="M0,400 Q150,300 300,350 T600,200 T900,100 L1000,50 L1000,500 L0,500 Z" fill="url(#grad)" opacity="0.2"/>
-                <path d="M0,400 Q150,300 300,350 T600,200 T900,100 L1000,50" fill="none" stroke="#00f2fe" stroke-width="2"/>
-                <defs>
-                    <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.5"/>
-                        <stop offset="100%" stop-color="#040814" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-            </svg>
-        </div>
+        <!-- Malambot na glowing orbs sa background -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-nexora-cyan/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px]"></div>
     </div>
 
     <!-- MAIN CONTAINER -->
@@ -201,7 +169,7 @@
 
     </main>
 
-    <!-- FIREBASE & LOGIC -->
+    <!-- FIREBASE & TRADING BACKGROUND ANIMATION LOGIC -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
@@ -216,7 +184,83 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Function para i-toggle ang view/hide ng password at PIN
+        // -------------------------------------------------------------
+        // LIVE SLOW TRADING CHART BACKGROUND SCRIPT
+        // -------------------------------------------------------------
+        const canvas = document.getElementById('tradingBgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let points = [];
+        let totalPoints = Math.floor(window.innerWidth / 80) + 5;
+        let stepX = window.innerWidth / (totalPoints - 1);
+
+        for (let i = 0; i < totalPoints; i++) {
+            points.push({
+                x: i * stepX,
+                y: canvas.height / 2 + (Math.random() * 120 - 60),
+                targetY: canvas.height / 2 + (Math.random() * 120 - 60),
+                speed: 0.015 + Math.random() * 0.01 // Mabagal na galaw
+            });
+        }
+
+        function animateTradingBackground() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update points para sa mabagal na paggalaw pataas/pababa
+            for (let i = 0; i < points.length; i++) {
+                let p = points[i];
+                p.y += (p.targetY - p.y) * p.speed;
+
+                if (Math.abs(p.targetY - p.y) < 1) {
+                    p.targetY = canvas.height / 2 + (Math.random() * 200 - 100);
+                }
+            }
+
+            // Gumuhit ng gradient area sa ilalim ng linya
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, canvas.height);
+            ctx.lineTo(points[0].x, points[0].y);
+            
+            for (let i = 0; i < points.length - 1; i++) {
+                let xc = (points[i].x + points[i + 1].x) / 2;
+                let yc = (points[i].y + points[i + 1].y) / 2;
+                ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+            }
+            ctx.lineTo(points[points.length - 1].x, canvas.height);
+            ctx.closePath();
+
+            let bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            bgGrad.addColorStop(0, 'rgba(0, 242, 254, 0.12)');
+            bgGrad.addColorStop(1, 'rgba(4, 8, 20, 0)');
+            ctx.fillStyle = bgGrad;
+            ctx.fill();
+
+            // Gumuhit ng mismong kumikinang na live trading line
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 0; i < points.length - 1; i++) {
+                let xc = (points[i].x + points[i + 1].x) / 2;
+                let yc = (points[i].y + points[i + 1].y) / 2;
+                ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+            }
+            ctx.strokeStyle = '#00f2fe';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            requestAnimationFrame(animateTradingBackground);
+        }
+        animateTradingBackground();
+
+        // -------------------------------------------------------------
+        // UI & FIREBASE FUNCTIONS
+        // -------------------------------------------------------------
         function toggleVisibility(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
