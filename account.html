@@ -239,7 +239,7 @@
             <div class="h-[1px] flex-1 ml-3 bg-gradient-to-r from-nexora-cyan/40 to-transparent"></div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2.5 mb-5">
+        <div class="grid grid-cols-4 gap-2 mb-5">
             <button id="rechargeButton" class="flex flex-col items-center justify-center p-3 rounded-xl bg-nexora-card/90 border border-nexora-cyan/20 hover:border-nexora-cyan/60 transition-all cursor-pointer shadow-md group">
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center text-nexora-cyan bg-nexora-cyan/10 border border-nexora-cyan/20 font-black text-base mb-1.5 group-hover:scale-110 transition-transform">+</div>
                 <span class="text-[9px] font-black tracking-wider text-gray-300 font-mono">RECHARGE</span>
@@ -252,6 +252,30 @@
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center text-amber-400 bg-amber-500/10 border border-amber-500/20 font-black text-base mb-1.5 group-hover:scale-110 transition-transform">≡</div>
                 <span class="text-[9px] font-black tracking-wider text-gray-300 font-mono">HISTORY</span>
             </button>
+            <button id="settingsButton" class="flex flex-col items-center justify-center p-3 rounded-xl bg-nexora-card/90 border border-cyan-500/20 hover:border-cyan-500/60 transition-all cursor-pointer shadow-md group">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 font-black text-base mb-1.5 group-hover:scale-110 transition-transform"><i class="fa-solid fa-gear text-xs"></i></div>
+                <span class="text-[9px] font-black tracking-wider text-gray-300 font-mono">SETTINGS</span>
+            </button>
+        </div>
+
+        <div id="securitySettingsSection" class="rounded-xl border border-nexora-cyan/25 bg-nexora-card/90 p-4 shadow-xl mb-5 space-y-4">
+            <!-- Change Password Form -->
+            <div>
+                <label class="block text-[10px] font-black text-nexora-cyan font-mono mb-1">CHANGE PASSWORD</label>
+                <input id="newPassword" type="password" placeholder="Enter new password (min. 6 chars)" class="w-full h-10 px-3 bg-slate-950/80 border border-nexora-cyan/30 rounded-lg text-white text-xs font-mono outline-none focus:border-nexora-cyan mb-2">
+                <button id="updatePasswordBtn" class="w-full py-2 bg-nexora-cyan/20 border border-nexora-cyan/40 text-nexora-cyan text-[11px] font-black font-mono rounded-lg hover:bg-nexora-cyan/30 transition-all cursor-pointer">
+                    Update Password
+                </button>
+            </div>
+
+            <!-- Withdrawal PIN Form -->
+            <div class="border-t border-white/10 pt-3">
+                <label class="block text-[10px] font-black text-nexora-cyan font-mono mb-1" id="pinLabelText">WITHDRAWAL PIN (4 DIGITS)</label>
+                <input id="withdrawalPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="Enter 4-digit PIN" class="w-full h-10 px-3 bg-slate-950/80 border border-nexora-cyan/30 rounded-lg text-white text-xs font-mono outline-none focus:border-nexora-cyan mb-2">
+                <button id="savePinBtn" class="w-full py-2 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[11px] font-black font-mono rounded-lg hover:bg-emerald-500/30 transition-all cursor-pointer">
+                    Create Withdrawal PIN
+                </button>
+            </div>
         </div>
 
         <!-- ACCOUNT INFORMATION -->
@@ -470,6 +494,12 @@
         document.getElementById("historyButton").addEventListener("click", () => {
             window.location.href = "history.html";
         });
+
+        document.getElementById("settingsButton").addEventListener("click", () => {
+            // Maaari mo itong i-scroll patungo sa security settings section o ilagay sa hiwalay na modal/pahina
+            document.getElementById("securitySettingsSection").scrollIntoView({ behavior: 'smooth' });
+        });
+        
     </script>
 </body>
 </html>
