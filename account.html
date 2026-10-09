@@ -111,6 +111,47 @@
         <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
     </div>
 
+    <!-- ABOUT MODAL POPUP -->
+    <div id="aboutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden px-4">
+        <div class="w-full max-w-md rounded-2xl border border-nexora-cyan/30 bg-[#0a1628] p-6 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-nexora-cyan to-blue-500"></div>
+            
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan text-sm">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </div>
+                    <h3 class="text-sm font-black font-mono tracking-wider text-white uppercase">ABOUT NEXORA</h3>
+                </div>
+                <button onclick="closeAboutModal()" class="text-gray-400 hover:text-white p-1 cursor-pointer">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs text-gray-300 font-mono leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
+                <p>
+                    Ang <strong class="text-nexora-cyan">NEXORA</strong> ay isang makabagong digital trading at financial growth platform na nilikha upang magbigay ng ligtas, mabilis, at maaasahang oportunidad sa bawat miyembro pagdating sa digital assets at pamamahala ng yaman.
+                </p>
+                <div>
+                    <h4 class="text-white font-bold mb-1 text-[11px]">Bakit ito nag-exist?</h4>
+                    <p>
+                        Itinatag ang Nexora upang tulay ang agwat sa pagitan ng mga tradisyunal na pinansyal na merkado at ng digital-first generation. Layunin nitong bigyang-kapangyarihan ang mga indibidwal na lumago pinansyal sa pamamagitan ng transparent, matatag, at komunidad-sentrikong ekosistema kung saan ang bawat isa ay may pagkakataong magtagumpay.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-1 text-[11px]">Ang Aming Pananaw</h4>
+                    <p>
+                        "Trade. Grow. Together." — Naniniwala kami na ang tunay na tagumpay sa pinansya ay nakakamit kapag sabay-sabay na lumalago ang komunidad sa pamamagitan ng tiwala, tamang kaalaman, at makabagong teknolohiya.
+                    </p>
+                </div>
+            </div>
+
+            <button onclick="closeAboutModal()" class="w-full mt-5 py-3 bg-gradient-to-r from-nexora-cyan/20 to-blue-500/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
+                NAUNAWAAN KO
+            </button>
+        </div>
+    </div>
+
     <!-- =====================================================
          MARKET TICKER
     ===================================================== -->
@@ -199,7 +240,7 @@
             </div>
         </section>
 
-        <!-- ACCOUNT BALANCES (SIDE BY SIDE SA CELLPHONE) -->
+        <!-- ACCOUNT BALANCES -->
         <div class="flex items-center justify-between mb-2.5 px-1">
             <h2 class="text-[11px] font-black tracking-widest text-gray-400 font-mono">ACCOUNT BALANCES</h2>
             <div class="h-[1px] flex-1 ml-3 bg-gradient-to-r from-nexora-cyan/40 to-transparent"></div>
@@ -233,28 +274,32 @@
             </div>
         </div>
 
-        <!-- QUICK ACTIONS -->
+        <!-- QUICK ACTIONS (Ginawang 5 items para maisama ang ABOUT) -->
         <div class="flex items-center justify-between mb-2.5 px-1">
             <h2 class="text-[11px] font-black tracking-widest text-gray-400 font-mono">QUICK ACTIONS</h2>
             <div class="h-[1px] flex-1 ml-3 bg-gradient-to-r from-nexora-cyan/40 to-transparent"></div>
         </div>
 
-        <div class="grid grid-cols-4 gap-2 mb-5">
-            <button id="rechargeButton" class="flex flex-col items-center justify-center p-3 rounded-xl bg-nexora-card/90 border border-nexora-cyan/20 hover:border-nexora-cyan/60 transition-all cursor-pointer shadow-md group">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-nexora-cyan bg-nexora-cyan/10 border border-nexora-cyan/20 font-black text-base mb-1.5 group-hover:scale-110 transition-transform">+</div>
-                <span class="text-[9px] font-black tracking-wider text-gray-300 font-mono">RECHARGE</span>
+        <div class="grid grid-cols-5 gap-2 mb-5">
+            <button id="rechargeButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-nexora-cyan/20 hover:border-nexora-cyan/60 transition-all cursor-pointer shadow-md group">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-nexora-cyan bg-nexora-cyan/10 border border-nexora-cyan/20 font-black text-sm mb-1 group-hover:scale-110 transition-transform">+</div>
+                <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">RECHARGE</span>
             </button>
-            <button id="withdrawButton" class="flex flex-col items-center justify-center p-3 rounded-xl bg-nexora-card/90 border border-emerald-500/20 hover:border-emerald-500/60 transition-all cursor-pointer shadow-md group">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-black text-base mb-1.5 group-hover:scale-110 transition-transform">₱</div>
-                <span class="text-[9px] font-black tracking-wider text-gray-300 font-mono">WITHDRAW</span>
+            <button id="withdrawButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-emerald-500/20 hover:border-emerald-500/60 transition-all cursor-pointer shadow-md group">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-black text-sm mb-1 group-hover:scale-110 transition-transform">₱</div>
+                <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">WITHDRAW</span>
             </button>
-            <button id="historyButton" class="flex flex-col items-center justify-center p-3 rounded-xl bg-nexora-card/90 border border-amber-500/20 hover:border-amber-500/60 transition-all cursor-pointer shadow-md group">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-amber-400 bg-amber-500/10 border border-amber-500/20 font-black text-base mb-1.5 group-hover:scale-110 transition-transform">≡</div>
-                <span class="text-[9px] font-black tracking-wider text-gray-300 font-mono">HISTORY</span>
+            <button id="historyButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-amber-500/20 hover:border-amber-500/60 transition-all cursor-pointer shadow-md group">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-amber-400 bg-amber-500/10 border border-amber-500/20 font-black text-sm mb-1 group-hover:scale-110 transition-transform">≡</div>
+                <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">HISTORY</span>
             </button>
-            <button id="settingsButton" class="flex flex-col items-center justify-center p-3 rounded-xl bg-nexora-card/90 border border-cyan-500/20 hover:border-cyan-500/60 transition-all cursor-pointer shadow-md group">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 font-black text-base mb-1.5 group-hover:scale-110 transition-transform"><i class="fa-solid fa-gear text-xs"></i></div>
-                <span class="text-[9px] font-black tracking-wider text-gray-300 font-mono">SETTINGS</span>
+            <button id="settingsButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-cyan-500/20 hover:border-cyan-500/60 transition-all cursor-pointer shadow-md group">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 font-black text-xs mb-1 group-hover:scale-110 transition-transform"><i class="fa-solid fa-gear"></i></div>
+                <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">SETTINGS</span>
+            </button>
+            <button id="aboutButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-blue-500/20 hover:border-blue-500/60 transition-all cursor-pointer shadow-md group">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-blue-400 bg-blue-500/10 border border-blue-500/20 font-black text-xs mb-1 group-hover:scale-110 transition-transform"><i class="fa-solid fa-circle-info"></i></div>
+                <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">ABOUT</span>
             </button>
         </div>
         
@@ -383,7 +428,7 @@
     </script>
 
     <!-- =====================================================
-         FIREBASE INTEGRATION LOGIC
+         FIREBASE INTEGRATION & UI LOGIC
     ===================================================== -->
     <script>
         const firebaseConfig = {
@@ -405,6 +450,15 @@
         const profilePhone = document.getElementById("profilePhone");
         const profileName = document.getElementById("profileName");
         const logoutButton = document.getElementById("logoutButton");
+
+        // About Modal Control Functions
+        function openAboutModal() {
+            document.getElementById("aboutModal").classList.remove("hidden");
+        }
+
+        function closeAboutModal() {
+            document.getElementById("aboutModal").classList.add("hidden");
+        }
 
         function formatUSD(value){
             const number = Number(value) || 0;
@@ -478,7 +532,10 @@
         document.getElementById("settingsButton").addEventListener("click", () => {
             window.location.href = "settings.html";
         });
-        
+
+        document.getElementById("aboutButton").addEventListener("click", () => {
+            openAboutModal();
+        });
     </script>
 </body>
 </html>
