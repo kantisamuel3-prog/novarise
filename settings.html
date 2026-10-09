@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXORA — Settings</title>
+    <title>NEXORA — Security Settings</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -48,54 +48,101 @@
 
     <style>
         body {
-            background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
+            background: radial-gradient(circle at 50% 30%, #0e2243 0%, #071328 50%, #030712 100%);
             color: #f1f5f9;
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
-            padding-bottom: 40px;
+            padding-bottom: 50px;
         }
         .brushed-metal-overlay {
-            background: repeating-radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 3px);
+            background: repeating-radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 4px);
+        }
+        .glow-box {
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.07);
         }
     </style>
 </head>
 <body class="flex flex-col items-center relative overflow-x-hidden">
 
+    <!-- Background Decoration -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+        <div class="absolute -top-32 -left-32 w-72 h-72 bg-nexora-cyan/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 -right-32 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl"></div>
     </div>
 
     <!-- MAIN CONTAINER -->
-    <main class="relative z-10 w-full max-w-xl px-4 py-6">
+    <main class="relative z-10 w-full max-w-md px-4 py-6">
         
         <!-- HEADER -->
         <div class="flex items-center justify-between mb-6">
-            <button id="backBtn" class="w-10 h-10 border border-nexora-cyan/30 rounded-xl bg-nexora-card/80 text-nexora-cyan flex items-center justify-center cursor-pointer hover:bg-nexora-cyan/20 transition-all text-lg">
-                <i class="fa-solid fa-chevron-left"></i>
+            <button id="backBtn" class="w-11 h-11 border border-nexora-cyan/30 rounded-xl bg-nexora-card/90 text-nexora-cyan flex items-center justify-center cursor-pointer hover:bg-nexora-cyan/20 transition-all shadow-lg active:scale-95">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
             </button>
-            <h1 class="text-base font-black tracking-widest text-white font-mono">SECURITY SETTINGS</h1>
-            <div class="w-10"></div> <!-- Spacer -->
+            <div class="text-center">
+                <h1 class="text-sm font-black tracking-widest text-white font-mono uppercase">SECURITY SETTINGS</h1>
+                <p class="text-[10px] text-nexora-cyan/70 font-mono tracking-wider">PROTECT YOUR ACCOUNT</p>
+            </div>
+            <div class="w-11"></div> <!-- Spacer for balance -->
         </div>
 
-        <!-- SECURITY FORMS CARD -->
-        <div class="rounded-xl border border-nexora-cyan/25 bg-nexora-card/90 p-4 shadow-xl mb-5 space-y-5">
-            
-            <!-- Change Password Section -->
-            <div>
-                <label class="block text-[10px] font-black text-nexora-cyan font-mono mb-1.5">CHANGE PASSWORD</label>
-                <input id="newPassword" type="password" placeholder="Enter new password (min. 6 chars)" class="w-full h-11 px-3 bg-slate-950/80 border border-nexora-cyan/30 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan mb-2.5">
-                <button id="updatePasswordBtn" class="w-full py-2.5 bg-nexora-cyan/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer">
-                    Update Password
-                </button>
+        <!-- SETTINGS WRAPPER -->
+        <div class="space-y-4">
+
+            <!-- CHANGE PASSWORD CARD -->
+            <div class="rounded-2xl border border-nexora-cyan/25 bg-nexora-card/90 p-5 glow-box backdrop-blur-md relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-nexora-cyan to-blue-500"></div>
+                
+                <div class="flex items-center space-x-2.5 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan text-xs">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h2 class="text-xs font-black font-mono tracking-wider text-white">CHANGE PASSWORD</h2>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">CURRENT PASSWORD</label>
+                        <div class="relative">
+                            <input id="currentPassword" type="password" placeholder="Enter current password" class="w-full h-11 px-3.5 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">NEW PASSWORD</label>
+                        <div class="relative">
+                            <input id="newPassword" type="password" placeholder="At least 6 characters" class="w-full h-11 px-3.5 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan transition-all">
+                        </div>
+                    </div>
+
+                    <button id="updatePasswordBtn" class="w-full mt-1 py-3 bg-gradient-to-r from-nexora-cyan/20 to-blue-500/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
+                        UPDATE PASSWORD
+                    </button>
+                </div>
             </div>
 
-            <!-- Withdrawal PIN Section -->
-            <div class="border-t border-white/10 pt-4">
-                <label class="block text-[10px] font-black text-nexora-cyan font-mono mb-1.5" id="pinLabelText">WITHDRAWAL PIN (4 DIGITS)</label>
-                <input id="withdrawalPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="Enter 4-digit PIN" class="w-full h-11 px-3 bg-slate-950/80 border border-nexora-cyan/30 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan mb-2.5">
-                <button id="savePinBtn" class="w-full py-2.5 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-black font-mono rounded-xl hover:bg-emerald-500/30 transition-all cursor-pointer">
-                    Create Withdrawal PIN
-                </button>
+            <!-- WITHDRAWAL PIN CARD -->
+            <div class="rounded-2xl border border-emerald-500/25 bg-nexora-card/90 p-5 glow-box backdrop-blur-md relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-emerald-400 to-emerald-600"></div>
+                
+                <div class="flex items-center space-x-2.5 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xs">
+                        <i class="fa-solid fa-shield-keyhole"></i>
+                    </div>
+                    <h2 class="text-xs font-black font-mono tracking-wider text-white" id="pinCardTitle">WITHDRAWAL PIN</h2>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="pinLabelText">4-DIGIT WITHDRAWAL PIN</label>
+                        <input id="withdrawalPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full h-11 px-3.5 bg-slate-950/90 border border-emerald-500/25 rounded-xl text-white text-sm tracking-widest font-mono text-center outline-none focus:border-emerald-500 transition-all">
+                        <p class="text-[9px] text-gray-400 font-mono mt-1 text-center">Kakailanganin ang PIN na ito kapag magwi-withdraw ka ng pondo.</p>
+                    </div>
+
+                    <button id="savePinBtn" class="w-full mt-1 py-3 bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 border border-emerald-500/40 text-emerald-400 text-xs font-black font-mono rounded-xl hover:bg-emerald-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
+                        Create Withdrawal PIN
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -127,13 +174,14 @@
                 return;
             }
 
-            // Check kung may existing PIN na ang user para dynamic ang label
+            // Check kung may existing PIN na ang user para dynamic ang labels at button text
             try {
                 const userDoc = await db.collection("Users").doc(user.uid).get();
                 if(userDoc.exists){
                     const data = userDoc.data();
                     if(data.withdrawalPin){
-                        document.getElementById("pinLabelText").textContent = "CHANGE WITHDRAWAL PIN";
+                        document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
+                        document.getElementById("pinLabelText").textContent = "ENTER NEW 4-DIGIT PIN";
                         document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
                     }
                 }
@@ -142,22 +190,41 @@
             }
         });
 
-        // Update Password Logic
+        // Update Password Logic na may kasamang Re-authentication
         document.getElementById("updatePasswordBtn").addEventListener("click", async () => {
+            const currentPass = document.getElementById("currentPassword").value.trim();
             const newPass = document.getElementById("newPassword").value.trim();
-            if(newPass.length < 6) {
-                alert("Ang password ay dapat hindi bababa sa 6 na karakter.");
+
+            if(!currentPass) {
+                alert("Mangyaring ilagay ang iyong kasalukuyang password.");
                 return;
             }
+            if(newPass.length < 6) {
+                alert("Ang bagong password ay dapat hindi bababa sa 6 na karakter.");
+                return;
+            }
+
             try {
                 const user = auth.currentUser;
-                if(!user) return;
+                if(!user || !user.email) return;
+
+                // Re-authenticate ang user gamit ang kasalukuyang password bago mag-update
+                const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
+                await user.reauthenticateWithCredential(credential);
+
+                // Pagkatapos ma-verify, i-update na ang password
                 await user.updatePassword(newPass);
+
                 alert("Matagumpay na na-update ang iyong password!");
+                document.getElementById("currentPassword").value = "";
                 document.getElementById("newPassword").value = "";
             } catch(err) {
                 console.error(err);
-                alert("Nabigo sa pag-update ng password. Mag-login ulit at subukan muli.");
+                if(err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    alert("Mali ang inilagay mong kasalukuyang password.");
+                } else {
+                    alert("Nabigo sa pag-update ng password: " + err.message);
+                }
             }
         });
 
@@ -175,7 +242,8 @@
                     withdrawalPin: pin
                 });
                 alert("Matagumpay na na-save/na-update ang iyong 4-digit Withdrawal PIN!");
-                document.getElementById("pinLabelText").textContent = "CHANGE WITHDRAWAL PIN";
+                document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
+                document.getElementById("pinLabelText").textContent = "ENTER NEW 4-DIGIT PIN";
                 document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
                 document.getElementById("withdrawalPinInput").value = "";
             } catch(err) {
