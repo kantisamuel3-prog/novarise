@@ -1,265 +1,380 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full select-none">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nexora — Transaction History</title>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;min-height:100%;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#030712;color:#f3f4f6}
-body{padding-bottom:90px}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>NEXORA — History</title>
 
-/* Live Trading Ticker Tape sa Itaas */
-.ticker-tape{background:#07111e;border-bottom:1px solid #112240;padding:8px 12px;font-size:11px;font-weight:700;color:#94a3b8;white-space:nowrap;overflow-x:auto;scrollbar-width:none;display:flex;gap:24px;align-items:center}
-.ticker-tape::-webkit-scrollbar{display:none}
-.ticker-item{display:inline-flex;align-items:center;gap:6px}
-.ticker-item span.green{color:#4ade80}
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-.container{width:100%;max-width:980px;margin:0 auto;padding:16px 14px}
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-/* Brand Logo Section katulad ng account.html[cite: 1] */
-.brand-section{text-align:center;padding:24px 0 20px;animation:fadeInDown 0.6s ease-out}
-.logo-circle{width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg,#0a192f,#0f2d53);border:2px solid #38bdf8;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(56,189,248,0.4), inset 0 0 15px rgba(56,189,248,0.2);animation:pulseGlowLogo 3s infinite}
-.logo-circle span{font-size:28px;font-weight:900;color:#38bdf8;text-shadow:0 0 10px rgba(56,189,248,0.6)}
-.brand-title{font-size:24px;font-weight:900;letter-spacing:2px;color:#fff;margin-bottom:4px;text-shadow:0 0 15px rgba(255,255,255,0.2)}
-.brand-subtitle{font-size:10px;font-weight:700;letter-spacing:3px;color:#facc15;text-transform:uppercase}
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
-/* Trading Filter Tabs */
-.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:none;animation:fadeIn 0.8s ease-out}
-.tabs::-webkit-scrollbar{display:none}
-.tab-btn{background:#0b192c;border:1px solid #1e3a8a;color:#94a3b8;padding:10px 16px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.3s}
-.tab-btn.active{background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;border-color:#38bdf8;box-shadow:0 0 15px rgba(2,132,199,0.4);transform:translateY(-1px)}
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  fontFamily: {
+                      sans: ['Inter', 'sans-serif'],
+                      mono: ['JetBrains Mono', 'monospace'],
+                      brand: ['Montserrat', 'sans-serif']
+                  },
+                  colors: {
+                      nexora: {
+                          navy: '#0a1628',
+                          deep: '#040814',
+                          card: '#0d1d35',
+                          cyan: '#00f2fe',
+                          blue: '#1890ff',
+                          gold: '#dfb248',
+                          goldGlow: '#ffd700',
+                          accent: '#00e676'
+                      }
+                  },
+                  animation: {
+                      'marquee': 'marquee 25s linear infinite',
+                      'pulse-cyan': 'pulseCyan 3s ease-in-out infinite',
+                      'orbit': 'orbit 10s linear infinite',
+                  },
+                  keyframes: {
+                      marquee: {
+                          '0%': { transform: 'translateX(0%)' },
+                          '100%': { transform: 'translateX(-50%)' }
+                      },
+                      pulseCyan: {
+                          '0%, 100%': { filter: 'drop-shadow(0 0 15px rgba(0,242,254,0.4))' },
+                          '50%': { filter: 'drop-shadow(0 0 35px rgba(0,242,254,0.9)) drop-shadow(0 0 60px rgba(0,242,254,0.4))' }
+                      },
+                      orbit: {
+                          '0%': { transform: 'rotate(0deg)' },
+                          '100%': { transform: 'rotate(360deg)' }
+                      }
+                  }
+              }
+          }
+      }
+  </script>
 
-/* Section */
-.section{background:#07111e;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,0.4);border:1px solid #112240;animation:fadeInUp 0.8s ease-out}
-.section-title{font-size:15px;font-weight:800;margin-bottom:14px;color:#38bdf8;display:flex;align-items:center;gap:8px}
-.section-title::before{content:'';display:inline-block;width:4px;height:14px;background:#38bdf8;border-radius:2px;box-shadow:0 0 8px #38bdf8}
-
-/* Card Entry Animation */
-.card{border:1px solid #1e293b;border-radius:14px;padding:16px;margin-bottom:12px;background:linear-gradient(145deg,#0a1628,#08101d);box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:all 0.3s ease;animation:cardPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both}
-.card:hover{border-color:#2563eb;transform:translateY(-2px);box-shadow:0 6px 20px rgba(37,99,235,0.15)}
-.card:last-child{margin-bottom:0}
-
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #112240}
-.amount-wrapper{display:flex;flex-direction:column;gap:2px}
-.amount{font-size:19px;font-weight:900;color:#f8fafc;letter-spacing:0.3px}
-.amount.positive{color:#4ade80;text-shadow:0 0 10px rgba(74,222,128,0.2)}
-.amount.negative{color:#f87171;text-shadow:0 0 10px rgba(248,113,113,0.2)}
-
-/* Status Badges */
-.status{display:inline-flex;align-items:center;justify-content:center;padding:5px 10px;border-radius:8px;font-size:10px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase}
-.status.approved,.status.success{background:rgba(22,163,74,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.3);box-shadow:0 0 8px rgba(74,222,128,0.1)}
-.status.pending{background:rgba(234,179,8,0.15);color:#facc15;border:1px solid rgba(250,204,21,0.3);animation:pulseGlow 2s infinite}
-.status.rejected{background:rgba(220,38,38,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3)}
-
-/* Details Grid */
-.info{display:grid;gap:8px;font-size:12px;color:#94a3b8}
-.info-row{display:flex;justify-content:space-between;gap:12px}
-.info-row span:first-child{color:#64748b;font-weight:500}
-.info-row strong{color:#e2e8f0;text-align:right;word-break:break-word;font-weight:600}
-
-/* Back Button styling */
-.back-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#38bdf8;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;text-decoration:none;margin-bottom:10px;transition:all 0.2s}
-.back-btn:hover{background:rgba(56,189,248,0.15);border-color:#38bdf8}
-
-/* Keyframes */
-@keyframes pulseGlowLogo {
-  0% { box-shadow: 0 0 15px rgba(56,189,248,0.3), inset 0 0 10px rgba(56,189,248,0.2); }
-  50% { box-shadow: 0 0 30px rgba(56,189,248,0.7), inset 0 0 20px rgba(56,189,248,0.4); }
-  100% { box-shadow: 0 0 15px rgba(56,189,248,0.3), inset 0 0 10px rgba(56,189,248,0.2); }
-}
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes cardPop {
-  from { opacity: 0; transform: scale(0.96) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-@keyframes pulseGlow {
-  0% { box-shadow: 0 0 0 0 rgba(250,204,21,0.2); }
-  70% { box-shadow: 0 0 0 6px rgba(250,204,21,0); }
-  100% { box-shadow: 0 0 0 0 rgba(250,204,21,0); }
-}
-
-.empty{text-align:center;padding:30px 15px;color:#64748b;font-size:13px;font-weight:500}
-.loading{text-align:center;padding:30px 15px;color:#38bdf8;font-size:13px;font-weight:600}
-.error{background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.3);color:#f87171;border-radius:12px;padding:14px;text-align:center;font-size:13px}
-</style>
+  <style>
+      body {
+          background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
+          color: #f1f5f9;
+          font-family: 'Inter', sans-serif;
+          overflow-x: hidden;
+          min-height: 100vh;
+          padding-bottom: 92px;
+      }
+      .brushed-metal-overlay {
+          background: repeating-radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 3px);
+      }
+      .text-chrome-3d {
+          background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 35%, #94a3b8 65%, #64748b 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.9));
+      }
+      .gold-ring-accent {
+          background: radial-gradient(circle, #ffe380 0%, #d4af37 60%, #996515 100%);
+          box-shadow: 0 0 12px rgba(212, 175, 55, 0.8), inset 0 0 4px rgba(255, 255, 255, 0.8);
+      }
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: #020712; }
+      ::-webkit-scrollbar-thumb { background: #00f2fe; border-radius: 2px; }
+  </style>
 </head>
-<body>
 
-<!-- Live Ticker Tape sa pinakataas[cite: 1] -->
-<div class="ticker-tape">
-  <div class="ticker-item">🟢 NEXORA TAPE <span class="green">+4.12%</span></div>
-  <div class="ticker-item">ETH/USD <strong>$3,520.80</strong> <span class="green">+2.45%</span></div>
-  <div class="ticker-item">NEX/USD <strong>$18.95</strong> <span class="green">+18.46%</span></div>
-  <div class="ticker-item">GOLD/OUNCE <strong>$2,650.10</strong> <span class="green">+0.85%</span></div>
-  <div class="ticker-item">24H VOLUME <strong>$2.84 BILLION</strong></div>
-</div>
+<body class="flex flex-col justify-between relative overflow-x-hidden selection:bg-nexora-cyan selection:text-black">
 
-<div class="container">
-  <a href="account.html" class="back-btn">← Back to Account</a>
-
-  <!-- Brand Header na may Umiilaw na N Circle at Tagline[cite: 1] -->
-  <div class="brand-section">
-    <div class="logo-circle">
-      <span>N</span>
-    </div>
-    <div class="brand-title">NEXORA</div>
-    <div class="brand-subtitle">Trade. Grow. Together</div>
+  <!-- BACKGROUND EFFECTS & CANDLESTICK CHART -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+      <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
   </div>
 
-  <!-- Trading Filter Tabs -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="filterHistory('all')">All Records</button>
-    <button class="tab-btn" onclick="filterHistory('Recharge')">Recharge</button>
-    <button class="tab-btn" onclick="filterHistory('Withdrawal Request')">Withdrawal</button>
-    <button class="tab-btn" onclick="filterHistory('Convert')">Convert</button>
-  </div>
-
-  <div class="section">
-    <div class="section-title" id="sectionTitle">Transaction Logs</div>
-    <div id="transactionHistory"><div class="loading">Loading trading history...</div></div>
-  </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script>
-const firebaseConfig={apiKey:"AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDgKqGk",authDomain:"investpro-2dafb.firebaseapp.com",projectId:"investpro-2dafb",storageBucket:"investpro-2dafb.firebasestorage.app",messagingSenderId:"135092039764",appId:"1:135092039764:web:c4c71eef0c904346a77dc1",measurementId:"G-0L77SFTC4F"};
-firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth(),db=firebase.firestore();
-const $=id=>document.getElementById(id);
-
-let allTransactions = [];
-
-function money(v){
-  const num = Number(v||0);
-  return "₱" + num.toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-
-function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
-function dateText(v){if(!v)return"—";const d=new Date(v);return isNaN(d)?"—":d.toLocaleString("en-PH")}
-
-function renderCard(r, index = 0){
-  const type = String(r.type || "Transaction");
-  const s = String(r.status || "SUCCESS").toUpperCase();
-  let statusClass = "success";
-  if(s === "APPROVED") statusClass = "approved";
-  else if(s === "PENDING") statusClass = "pending";
-  else if(s === "REJECTED") statusClass = "rejected";
-
-  let amountClass = "";
-  if(type === "Recharge") amountClass = "positive";
-  else if(type === "Withdrawal Request") amountClass = "negative";
-
-  let displayAmount = money(r.amount);
-  let extraDetails = "";
-
-  if(type === "Recharge"){
-    extraDetails = `
-      <div class="info-row"><span>Gateway</span><strong>${esc(r.method || "GCash")}</strong></div>
-      <div class="info-row"><span>Order ID</span><strong>${esc(r.orderId ||"—")}</strong></div>
-    `;
-  } else if(type === "Withdrawal Request"){
-    extraDetails = `
-      <div class="info-row"><span>Account Name</span><strong>${esc(r.accountName ||"—")}</strong></div>
-      <div class="info-row"><span>Account Number</span><strong>${esc(r.accountNumber ||"—")}</strong></div>
-    `;
-  } else if(type.toLowerCase().includes("convert")){
-    extraDetails = `
-      <div class="info-row"><span>Conversion Info</span><strong>${esc(r.details || type)}</strong></div>
-    `;
-  } else {
-    extraDetails = `
-      <div class="info-row"><span>Category</span><strong>${esc(type)}</strong></div>
-    `;
-  }
-
-  const animDelay = (index * 0.05) + "s";
-
-  return `
-    <div class="card" style="animation-delay: ${animDelay};">
-      <div class="card-top">
-        <div class="amount-wrapper">
-          <span style="font-size:10px; color:#64748b; font-weight:700; text-transform:uppercase;">${esc(type)}</span>
-          <div class="amount ${amountClass}">${displayAmount}</div>
-        </div>
-        <div class="status ${statusClass}">${esc(s)}</div>
+  <!-- MARKET TICKER -->
+  <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-1.5">
+      <div class="flex items-center text-[11px] font-mono">
+          <div class="px-3 py-0.5 bg-nexora-cyan/10 border-r border-nexora-cyan/30 text-nexora-cyan font-bold flex items-center shrink-0 z-10 shadow-lg">
+              <span class="w-1.5 h-1.5 rounded-full bg-nexora-accent animate-ping mr-1.5"></span>
+              <span>NEXORA TAPE</span>
+          </div>
+          <div class="overflow-hidden whitespace-nowrap flex w-full">
+              <div class="inline-flex animate-marquee space-x-8 items-center pl-4">
+                  <div class="flex items-center space-x-1.5">
+                      <span class="text-gray-400">BTC/USD</span>
+                      <span class="text-white font-semibold">$96,420.00</span>
+                      <span class="text-nexora-accent text-[10px]"><i class="fa-solid fa-caret-up"></i> +3.2%</span>
+                  </div>
+                  <div class="flex items-center space-x-1.5">
+                      <span class="text-gray-400">ETH/USD</span>
+                      <span class="text-white font-semibold">$3,520.80</span>
+                      <span class="text-nexora-accent text-[10px]"><i class="fa-solid fa-caret-up"></i> +2.4%</span>
+                  </div>
+                  <div class="flex items-center space-x-1.5">
+                      <span class="text-gray-400">NEX/USD</span>
+                      <span class="text-nexora-cyan font-bold">$18.95</span>
+                      <span class="text-nexora-accent text-[10px]"><i class="fa-solid fa-caret-up"></i> +18.4%</span>
+                  </div>
+              </div>
+          </div>
       </div>
-      <div class="info">
-        ${extraDetails}
-        <div class="info-row"><span>Timestamp</span><strong>${esc(dateText(r.date || r.timestamp))}</strong></div>
-        ${r.approvedAt ? `<div class="info-row"><span>Processed At</span><strong>${esc(dateText(r.approvedAt))}</strong></div>` : ""}
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="relative z-10 w-full max-w-md mx-auto px-3 py-4 space-y-3">
+
+      <!-- COMPACT HEADER WITH SMALL LOGO ON SIDE -->
+      <div class="flex items-center justify-between bg-nexora-card/90 border border-nexora-cyan/30 rounded-xl p-3 shadow-lg backdrop-blur-md">
+          <div class="flex items-center space-x-2.5">
+              <div class="relative w-9 h-9 flex items-center justify-center animate-pulse-cyan shrink-0">
+                  <div class="absolute inset-0 rounded-full border border-dashed border-nexora-cyan/50 animate-orbit"></div>
+                  <svg class="w-6 h-6 drop-shadow-[0_0_8px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+                      <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+                      <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
+                  </svg>
+              </div>
+              <div>
+                  <div class="flex items-center space-x-1 tracking-wider text-sm font-black font-brand">
+                      <span class="text-chrome-3d">NEX</span>
+                      <span class="relative inline-flex items-center justify-center w-3.5 h-3.5 mx-0.2 border border-nexora-gold rounded-full gold-ring-accent">
+                          <span class="w-1 h-1 rounded-full bg-slate-900 border border-nexora-gold"></span>
+                      </span>
+                      <span class="text-chrome-3d">RA</span>
+                  </div>
+                  <p class="text-[7px] font-bold tracking-[0.15em] text-nexora-gold uppercase font-mono">TRADE. GROW. TOGETHER</p>
+              </div>
+          </div>
+          <a href="account.html" class="text-xs font-mono font-bold text-nexora-cyan bg-nexora-cyan/10 border border-nexora-cyan/30 px-2.5 py-1.5 rounded-lg hover:bg-nexora-cyan/20 transition-all">
+              <i class="fa-solid fa-arrow-left mr-1"></i> Back
+          </a>
       </div>
-    </div>
-  `;
-}
 
-function filterHistory(type){
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
+      <!-- PAGE TITLE -->
+      <div class="px-1 text-center sm:text-left">
+          <h1 class="text-base font-bold text-white font-mono">Transaction History</h1>
+          <p class="text-[11px] text-gray-400 font-mono">Monitor your recharges, withdrawals, and conversions.</p>
+      </div>
 
-  let filtered = allTransactions;
-  if(type !== 'all'){
-    filtered = allTransactions.filter(item => {
-      const t = String(item.type || "");
-      if(type === 'Convert') return t.toLowerCase().includes('convert');
-      return t === type;
-    });
-    $("sectionTitle").innerText = (type === 'Convert' ? "Convert" : type) + " History Logs";
-  } else {
-    $("sectionTitle").innerText = "Transaction Logs";
-  }
+      <!-- FILTER TABS -->
+      <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          <button onclick="filterHistory('all')" class="tab-btn active px-3 py-1.5 rounded-lg bg-nexora-cyan text-slate-950 text-xs font-bold font-mono shrink-0 shadow-[0_0_10px_rgba(0,242,254,0.4)] cursor-pointer">All</button>
+          <button onclick="filterHistory('Recharge')" class="tab-btn px-3 py-1.5 rounded-lg bg-nexora-card border border-nexora-cyan/30 text-gray-300 text-xs font-bold font-mono shrink-0 hover:bg-nexora-cyan/10 cursor-pointer">Recharge</button>
+          <button onclick="filterHistory('Withdrawal Request')" class="tab-btn px-3 py-1.5 rounded-lg bg-nexora-card border border-nexora-cyan/30 text-gray-300 text-xs font-bold font-mono shrink-0 hover:bg-nexora-cyan/10 cursor-pointer">Withdrawal</button>
+          <button onclick="filterHistory('Convert')" class="tab-btn px-3 py-1.5 rounded-lg bg-nexora-card border border-nexora-cyan/30 text-gray-300 text-xs font-bold font-mono shrink-0 hover:bg-nexora-cyan/10 cursor-pointer">Convert</button>
+      </div>
 
-  $("transactionHistory").innerHTML = filtered.length
-    ? filtered.map((r, i) => renderCard(r, i)).join("")
-    : '<div class="empty">No trading records found in this category.</div>';
-}
+      <!-- HISTORY LIST CONTAINER -->
+      <div class="space-y-2.5" id="transactionHistory">
+          <div class="text-center py-8 text-gray-400 text-xs font-mono">Loading history...</div>
+      </div>
 
-async function loadUserHistory(){
-  auth.onAuthStateChanged(async user => {
-    if(!user){
-      $("transactionHistory").innerHTML = '<div class="error">Please log in to access your portfolio history.</div>';
-      return;
-    }
+  </main>
 
-    try {
-      const userDoc = await db.collection("Users").doc(user.uid).get();
-      if(!userDoc.exists){
-        $("transactionHistory").innerHTML = '<div class="empty">Member profile not found.</div>';
-        return;
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="fixed bottom-0 left-0 right-0 h-20 bg-[#030b17]/95 border-t border-nexora-cyan/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
+      <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold">
+          <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
+          <span>Home</span>
+      </a>
+      <a href="team.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold">
+          <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>Team</span>
+      </a>
+      <a href="account.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-nexora-cyan transition-colors text-xs font-bold">
+          <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+          <span>Account</span>
+      </a>
+  </nav>
+
+  <!-- BACKGROUND CHART SCRIPT -->
+  <script>
+      const canvas = document.getElementById('chartCanvas');
+      const ctx = canvas.getContext('2d');
+      function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      let candles = [];
+      const candleWidth = 14, spacing = 22;
+      function initCandles() {
+          candles = [];
+          const count = Math.ceil(canvas.width / spacing) + 5;
+          let currentPrice = canvas.height * 0.55;
+          for (let i = 0; i < count; i++) {
+              const open = currentPrice;
+              const close = open + (Math.random() - 0.48) * 35;
+              const high = Math.max(open, close) + Math.random() * 15;
+              const low = Math.min(open, close) - Math.random() * 15;
+              candles.push({ open, close, high, low, x: i * spacing });
+              currentPrice = close;
+          }
+      }
+      function drawChart() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (let i = 0; i < candles.length; i++) {
+              const c = candles[i];
+              const isBullish = c.close <= c.open;
+              ctx.strokeStyle = isBullish ? '#00e676' : '#ff5252';
+              ctx.fillStyle = isBullish ? 'rgba(0, 230, 118, 0.5)' : 'rgba(255, 82, 82, 0.5)';
+              ctx.beginPath();
+              ctx.moveTo(c.x + candleWidth / 2, c.high);
+              ctx.lineTo(c.x + candleWidth / 2, c.low);
+              ctx.stroke();
+              const bodyY = Math.min(c.open, c.close);
+              const bodyHeight = Math.max(Math.abs(c.open - c.close), 2);
+              ctx.fillRect(c.x, bodyY, candleWidth, bodyHeight);
+              c.x -= 0.4;
+          }
+          if (candles.length > 0 && candles[0].x < -spacing) {
+              const last = candles[candles.length - 1];
+              const open = last.close;
+              const close = open + (Math.random() - 0.48) * 35;
+              const high = Math.max(open, close) + Math.random() * 15;
+              const low = Math.min(open, close) - Math.random() * 15;
+              candles.shift();
+              candles.push({ open, close, high, low, x: last.x + spacing });
+          }
+          requestAnimationFrame(drawChart);
+      }
+      initCandles();
+      drawChart();
+  </script>
+
+  <!-- FIREBASE DATA LOADING & FILTERING -->
+  <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+      import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+          apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+          authDomain: "investpro-2dafb.firebaseapp.com",
+          projectId: "investpro-2dafb",
+          storageBucket: "investpro-2dafb.firebasestorage.app",
+          messagingSenderId: "135092039764",
+          appId: "1:135092039764:web:c4c71eef0c904346a77dc1"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      let allTransactions = [];
+      const historyContainer = document.getElementById("transactionHistory");
+
+      function formatMoney(amount) {
+          return "₱" + Number(amount || 0).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }
 
-      const data = userDoc.data() || {};
-      const txs = Array.isArray(data.transactions) ? data.transactions : [];
-      const conversions = Array.isArray(data.conversions) ? data.conversions : [];
-      
-      allTransactions = [...txs, ...conversions];
-      allTransactions.sort((a, b) => new Date(b.date || b.timestamp || 0) - new Date(a.date || a.timestamp || 0));
+      function formatDate(timestamp) {
+          if (!timestamp) return "—";
+          const d = new Date(timestamp);
+          return isNaN(d) ? "—" : d.toLocaleString("en-PH");
+      }
 
-      $("transactionHistory").innerHTML = allTransactions.length
-        ? allTransactions.map((r, i) => renderCard(r, i)).join("")
-        : '<div class="empty">No transaction history recorded yet.</div>';
+      function esc(str) {
+          return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
 
-    } catch(err){
-      console.error("Load history error:", err);
-      $("transactionHistory").innerHTML = '<div class="error">Failed to load history data. Please try again.</div>';
-    }
-  });
-}
+      window.filterHistory = function(type) {
+          document.querySelectorAll('.tab-btn').forEach(btn => {
+              btn.classList.remove('bg-nexora-cyan', 'text-slate-950', 'shadow-[0_0_10px_rgba(0,242,254,0.4)]');
+              btn.classList.add('bg-nexora-card', 'border', 'border-nexora-cyan/30', 'text-gray-300');
+          });
+          event.currentTarget.classList.remove('bg-nexora-card', 'border', 'border-nexora-cyan/30', 'text-gray-300');
+          event.currentTarget.classList.add('bg-nexora-cyan', 'text-slate-950', 'shadow-[0_0_10px_rgba(0,242,254,0.4)]');
 
-loadUserHistory();
-</script>
+          let filtered = allTransactions;
+          if (type !== 'all') {
+              filtered = allTransactions.filter(item => {
+                  const t = String(item.type || "");
+                  if (type === 'Convert') return t.toLowerCase().includes('convert');
+                  return t === type;
+              });
+          }
+
+          renderTransactions(filtered);
+      }
+
+      function renderTransactions(list) {
+          if (!list || list.length === 0) {
+              historyContainer.innerHTML = '<div class="text-center py-8 text-gray-400 text-xs font-mono">No transaction records found.</div>';
+              return;
+          }
+
+          historyContainer.innerHTML = list.map(r => {
+              const type = esc(r.type || "Transaction");
+              const status = esc(String(r.status || "SUCCESS").toUpperCase());
+              
+              let statusColor = "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
+              if (status === "PENDING") statusColor = "bg-yellow-500/15 text-yellow-400 border-yellow-500/30";
+              if (status === "REJECTED") statusColor = "bg-red-500/15 text-red-400 border-red-500/30";
+
+              let detailsHTML = "";
+              if (type === "Recharge") {
+                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Gateway</span><span class="text-white">${esc(r.method || "GCash")}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Order ID</span><span class="text-white">${esc(r.orderId || "—")}</span></div>`;
+              } else if (type === "Withdrawal Request") {
+                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Account Name</span><span class="text-white">${esc(r.accountName || "—")}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Account No.</span><span class="text-white">${esc(r.accountNumber || "—")}</span></div>`;
+              } else {
+                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Details</span><span class="text-white">${esc(r.details || type)}</span></div>`;
+              }
+
+              return `
+                  <div class="rounded-xl p-3.5 bg-nexora-card/90 border border-nexora-cyan/20 shadow-lg backdrop-blur-md space-y-2">
+                      <div class="flex items-center justify-between pb-2 border-b border-white/5">
+                          <div>
+                              <span class="text-[9px] font-bold text-gray-400 uppercase font-mono">${type}</span>
+                              <div class="text-base font-black text-white font-mono">${formatMoney(r.amount)}</div>
+                          </div>
+                          <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border font-mono ${statusColor}">${status}</span>
+                      </div>
+                      <div class="space-y-1">
+                          ${detailsHTML}
+                          <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Timestamp</span><span class="text-gray-300">${esc(formatDate(r.date || r.timestamp))}</span></div>
+                      </div>
+                  </div>
+              `;
+          }).join("");
+      }
+
+      onAuthStateChanged(auth, async user => {
+          if (!user) {
+              window.location.href = "login.html";
+              return;
+          }
+
+          try {
+              const userRef = doc(db, "Users", user.uid);
+              const userSnap = await getDoc(userRef);
+
+              if (userSnap.exists()) {
+                  const data = userSnap.data();
+                  const txs = Array.isArray(data.transactions) ? data.transactions : [];
+                  const conversions = Array.isArray(data.conversions) ? data.conversions : [];
+                  
+                  allTransactions = [...txs, ...conversions];
+                  allTransactions.sort((a, b) => new Date(b.date || b.timestamp || 0) - new Date(a.date || a.timestamp || 0));
+
+                  renderTransactions(allTransactions);
+              } else {
+                  historyContainer.innerHTML = '<div class="text-center py-8 text-gray-400 text-xs font-mono">User data not found.</div>';
+              }
+          } catch (err) {
+              console.error("Error loading history:", err);
+              historyContainer.innerHTML = '<div class="text-center py-8 text-red-400 text-xs font-mono">Failed to load transaction history.</div>';
+          }
+      });
+  </script>
+
 </body>
 </html>
