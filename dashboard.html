@@ -1768,7 +1768,7 @@ canvas#liveChart {
          return { ok: false, reason: 'already_used_by_member' };
         }
 
-        if (liveUsdBalance <= 100) {
+        if (liveUsdBalance < 100) {
           return { ok: false, reason: 'insufficient_balance' };
         }
 
