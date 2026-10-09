@@ -1729,12 +1729,16 @@ canvas#liveChart {
       const codeRef = db.collection('TradingCodes').doc(codeInput);
       const userRef = db.collection('Users').doc(currentUser.uid);
       const usageRef = codeRef.collection('Usage').doc(currentUser.uid);
+      const memberUsageRef = userRef.collection('TradingCodeUsage').doc('one-time');
+
 
       const executionResult = await db.runTransaction(async (transaction) => {
         // All reads are done before writes.
-        const codeSnap = await transaction.get(codeRef);
-        const userSnap = await transaction.get(userRef);
-        const usageSnap = await transaction.get(usageRef);
+          const codeSnap = await transaction.get(codeRef);
+          const userSnap = await transaction.get(userRef);
+          const usageSnap = await transaction.get(usageRef);
+          const memberUsageSnap = await transaction.get(memberUsageRef);
+
 
         if (!codeSnap.exists) {
           return { ok: false, reason: 'not_found' };
@@ -1743,6 +1747,13 @@ canvas#liveChart {
         if (!userSnap.exists) {
           return { ok: false, reason: 'user_not_found' };
         }
+          if (memberUsageSnap.exists) {
+          return {
+          ok: false,
+        reason: 'member_already_used_any_code'
+        };
+        }
+
 
         const codeData = codeSnap.data() || {};
         const userData = userSnap.data() || {};
@@ -1757,7 +1768,7 @@ canvas#liveChart {
          return { ok: false, reason: 'already_used_by_member' };
         }
 
-        if (liveUsdBalance <= 0) {
+        if (liveUsdBalance <= 100) {
           return { ok: false, reason: 'insufficient_balance' };
         }
 
@@ -1787,6 +1798,14 @@ canvas#liveChart {
          usedAt: executionStartedAt,
          status: 'RUNNING'
         });
+          
+          transaction.set(memberUsageRef, {
+          userId: currentUser.uid,
+          firstCode: codeInput,
+          usedAt: executionStartedAt,
+          status: 'RUNNING'
+         });
+
 
         // Save the trading execution at the same time.
         transaction.set(userRef, {
@@ -1808,10 +1827,13 @@ canvas#liveChart {
         let icon = '✕';
         let type = 'error';
 
-        
-        if (executionResult.reason === 'already_used_by_member') {
-          title = 'You Already Used This Code';
-          message = 'You have already used this code. Please use another active trading code.';
+         if (executionResult.reason === 'member_already_used_any_code') {
+         title = 'Trading Code Already Used';
+         message = 'You have already used a trading code. Each member is allowed to use only one code.';
+          icon = '🔒';
+        } else if (executionResult.reason === 'already_used_by_member') {
+          title = 'Trading Code Already Used';
+          message = 'You have already used this trading code.';
           icon = '🔒';
         } else if (executionResult.reason === 'inactive') {
           title = 'Trading Code Inactive';
@@ -1819,7 +1841,7 @@ canvas#liveChart {
           icon = '🔒';
         } else if (executionResult.reason === 'insufficient_balance') {
           title = 'Insufficient Balance';
-          message = 'Your USD balance is $0.00. Please recharge or convert PHP to USD before executing a trading code.';
+          message = 'You must have a USD balance greater than $100.00 to execute a trading code. Please recharge or convert PHP to USD.';
           icon = '⚠️';
           type = 'warning';
         } else if (executionResult.reason === 'user_not_found') {
