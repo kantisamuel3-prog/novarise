@@ -1728,11 +1728,13 @@ canvas#liveChart {
       */
       const codeRef = db.collection('TradingCodes').doc(codeInput);
       const userRef = db.collection('Users').doc(currentUser.uid);
+      const usageRef = codeRef.collection('Usage').doc(currentUser.uid);
 
       const executionResult = await db.runTransaction(async (transaction) => {
         // All reads are done before writes.
         const codeSnap = await transaction.get(codeRef);
         const userSnap = await transaction.get(userRef);
+        const usageSnap = await transaction.get(usageRef);
 
         if (!codeSnap.exists) {
           return { ok: false, reason: 'not_found' };
@@ -1748,7 +1750,11 @@ canvas#liveChart {
 
         // The code MUST explicitly be active.
         if (codeData.active !== true) {
-          return { ok: false, reason: 'used' };
+         return { ok: false, reason: 'inactive' };
+        }
+
+        if (usageSnap.exists) {
+         return { ok: false, reason: 'already_used_by_member' };
         }
 
         if (liveUsdBalance <= 0) {
@@ -1773,12 +1779,13 @@ canvas#liveChart {
           lastKnownPercent: 0
         };
 
-        // CONSUME THE CODE PERMANENTLY.
-        transaction.update(codeRef, {
-          active: false,
-          used: true,
-          usedBy: currentUser.uid,
-          usedAt: executionStartedAt
+        // Record usage for this member only.
+        // Keep the shared trading code active.
+        transaction.set(usageRef, {
+         code: codeInput,
+         userId: currentUser.uid,
+         usedAt: executionStartedAt,
+         status: 'RUNNING'
         });
 
         // Save the trading execution at the same time.
@@ -1801,9 +1808,14 @@ canvas#liveChart {
         let icon = '✕';
         let type = 'error';
 
-        if (executionResult.reason === 'used') {
-          title = 'Trading Code Already Used';
-          message = 'This trading code has already been used. Each valid trading code can only be executed once.';
+        
+        if (executionResult.reason === 'already_used_by_member') {
+          title = 'You Already Used This Code';
+          message = 'You have already used this code. Please use another active trading code.';
+          icon = '🔒';
+        } else if (executionResult.reason === 'inactive') {
+          title = 'Trading Code Inactive';
+          message = 'This code is not active. Please use another valid trading code.';
           icon = '🔒';
         } else if (executionResult.reason === 'insufficient_balance') {
           title = 'Insufficient Balance';
@@ -1813,7 +1825,7 @@ canvas#liveChart {
         } else if (executionResult.reason === 'user_not_found') {
           title = 'Account Error';
           message = 'Your account data could not be found. Please log in again.';
-          icon = '⚠️';
+         icon = '⚠️';
         }
 
         openTradingCodeNoticeModal(title, message, icon, type);
@@ -1838,7 +1850,7 @@ canvas#liveChart {
 
       isTradingRunning = true;
       setTradingUIRunning(true);
-      addLog(`<span class="action">[ACCEPTED]</span> Code <b>${codeInput}</b> activated and consumed. This code cannot be used again.`);
+      addLog(`<span class="action">[ACCEPTED]</span> Code <b>${codeInput}</b> executed for this member. Other members may use it once if it remains active.`);
 
       runPersistentTrading(state);
 
