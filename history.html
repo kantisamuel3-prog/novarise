@@ -160,15 +160,15 @@
       <!-- PAGE TITLE -->
       <div class="px-1 text-center sm:text-left">
           <h1 class="text-base font-bold text-white font-mono">Transaction History</h1>
-          <p class="text-[11px] text-gray-400 font-mono">Monitor your recharges, withdrawals, and conversions.</p>
+          <p class="text-[11px] text-gray-400 font-mono">Monitor your recharges, withdrawals, and commissions[cite: 2].</p>
       </div>
 
-      <!-- FILTER TABS -->
+      <!-- FILTER TABS (Pinalitan ang Convert ng Commission) -->
       <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           <button onclick="filterHistory('all')" class="tab-btn active px-3 py-1.5 rounded-lg bg-nexora-cyan text-slate-950 text-xs font-bold font-mono shrink-0 shadow-[0_0_10px_rgba(0,242,254,0.4)] cursor-pointer">All</button>
           <button onclick="filterHistory('Recharge')" class="tab-btn px-3 py-1.5 rounded-lg bg-nexora-card border border-nexora-cyan/30 text-gray-300 text-xs font-bold font-mono shrink-0 hover:bg-nexora-cyan/10 cursor-pointer">Recharge</button>
           <button onclick="filterHistory('Withdrawal Request')" class="tab-btn px-3 py-1.5 rounded-lg bg-nexora-card border border-nexora-cyan/30 text-gray-300 text-xs font-bold font-mono shrink-0 hover:bg-nexora-cyan/10 cursor-pointer">Withdrawal</button>
-          <button onclick="filterHistory('Convert')" class="tab-btn px-3 py-1.5 rounded-lg bg-nexora-card border border-nexora-cyan/30 text-gray-300 text-xs font-bold font-mono shrink-0 hover:bg-nexora-cyan/10 cursor-pointer">Convert</button>
+          <button onclick="filterHistory('Commission')" class="tab-btn px-3 py-1.5 rounded-lg bg-nexora-card border border-nexora-cyan/30 text-gray-300 text-xs font-bold font-mono shrink-0 hover:bg-nexora-cyan/10 cursor-pointer">Commission</button>
       </div>
 
       <!-- HISTORY LIST CONTAINER -->
@@ -295,9 +295,9 @@
           let filtered = allTransactions;
           if (type !== 'all') {
               filtered = allTransactions.filter(item => {
-                  const t = String(item.type || "");
-                  if (type === 'Convert') return t.toLowerCase().includes('convert');
-                  return t === type;
+                  const t = String(item.type || "").toLowerCase();
+                  if (type === 'Commission') return t.includes('commission') || t.includes('referral');
+                  return String(item.type || "") === type;
               });
           }
 
