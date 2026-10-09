@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full select-none">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEXORA — Settings</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDKs (v10 Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        brand: ['Montserrat', 'sans-serif']
+                    },
+                    colors: {
+                        nexora: {
+                            navy: '#0a1628',
+                            deep: '#040814',
+                            card: '#0d1d35',
+                            cyan: '#00f2fe',
+                            blue: '#1890ff',
+                            gold: '#dfb248',
+                            accent: '#00e676'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        .brushed-metal-overlay {
+            background: repeating-radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 3px);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center relative overflow-x-hidden">
+
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="relative z-10 w-full max-w-xl px-4 py-6">
+        
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-6">
+            <button id="backBtn" class="w-10 h-10 border border-nexora-cyan/30 rounded-xl bg-nexora-card/80 text-nexora-cyan flex items-center justify-center cursor-pointer hover:bg-nexora-cyan/20 transition-all text-lg">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <h1 class="text-base font-black tracking-widest text-white font-mono">SECURITY SETTINGS</h1>
+            <div class="w-10"></div> <!-- Spacer -->
+        </div>
+
+        <!-- SECURITY FORMS CARD -->
+        <div class="rounded-xl border border-nexora-cyan/25 bg-nexora-card/90 p-4 shadow-xl mb-5 space-y-5">
+            
+            <!-- Change Password Section -->
+            <div>
+                <label class="block text-[10px] font-black text-nexora-cyan font-mono mb-1.5">CHANGE PASSWORD</label>
+                <input id="newPassword" type="password" placeholder="Enter new password (min. 6 chars)" class="w-full h-11 px-3 bg-slate-950/80 border border-nexora-cyan/30 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan mb-2.5">
+                <button id="updatePasswordBtn" class="w-full py-2.5 bg-nexora-cyan/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer">
+                    Update Password
+                </button>
+            </div>
+
+            <!-- Withdrawal PIN Section -->
+            <div class="border-t border-white/10 pt-4">
+                <label class="block text-[10px] font-black text-nexora-cyan font-mono mb-1.5" id="pinLabelText">WITHDRAWAL PIN (4 DIGITS)</label>
+                <input id="withdrawalPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="Enter 4-digit PIN" class="w-full h-11 px-3 bg-slate-950/80 border border-nexora-cyan/30 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan mb-2.5">
+                <button id="savePinBtn" class="w-full py-2.5 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-black font-mono rounded-xl hover:bg-emerald-500/30 transition-all cursor-pointer">
+                    Create Withdrawal PIN
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FIREBASE & LOGIC -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+            authDomain: "investpro-2dafb.firebaseapp.com",
+            projectId: "investpro-2dafb",
+            storageBucket: "investpro-2dafb.firebasestorage.app",
+            messagingSenderId: "135092039764",
+            appId: "1:135092039764:web:c4c71eef0c904346a77dc1"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        document.getElementById("backBtn").addEventListener("click", () => {
+            window.location.href = "account.html";
+        });
+
+        auth.onAuthStateChanged(async (user) => {
+            if(!user){
+                window.location.href = "login.html";
+                return;
+            }
+
+            // Check kung may existing PIN na ang user para dynamic ang label
+            try {
+                const userDoc = await db.collection("Users").doc(user.uid).get();
+                if(userDoc.exists){
+                    const data = userDoc.data();
+                    if(data.withdrawalPin){
+                        document.getElementById("pinLabelText").textContent = "CHANGE WITHDRAWAL PIN";
+                        document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
+                    }
+                }
+            } catch(e) {
+                console.error("Error loading pin status:", e);
+            }
+        });
+
+        // Update Password Logic
+        document.getElementById("updatePasswordBtn").addEventListener("click", async () => {
+            const newPass = document.getElementById("newPassword").value.trim();
+            if(newPass.length < 6) {
+                alert("Ang password ay dapat hindi bababa sa 6 na karakter.");
+                return;
+            }
+            try {
+                const user = auth.currentUser;
+                if(!user) return;
+                await user.updatePassword(newPass);
+                alert("Matagumpay na na-update ang iyong password!");
+                document.getElementById("newPassword").value = "";
+            } catch(err) {
+                console.error(err);
+                alert("Nabigo sa pag-update ng password. Mag-login ulit at subukan muli.");
+            }
+        });
+
+        // Save / Update PIN Logic
+        document.getElementById("savePinBtn").addEventListener("click", async () => {
+            const pin = document.getElementById("withdrawalPinInput").value.trim();
+            if(!/^\d{4}$/.test(pin)) {
+                alert("Ang Withdrawal PIN ay dapat eksaktong 4 na numero.");
+                return;
+            }
+            try {
+                const user = auth.currentUser;
+                if(!user) return;
+                await db.collection("Users").doc(user.uid).update({
+                    withdrawalPin: pin
+                });
+                alert("Matagumpay na na-save/na-update ang iyong 4-digit Withdrawal PIN!");
+                document.getElementById("pinLabelText").textContent = "CHANGE WITHDRAWAL PIN";
+                document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
+                document.getElementById("withdrawalPinInput").value = "";
+            } catch(err) {
+                console.error(err);
+                alert("Nabigo sa pag-save ng PIN.");
+            }
+        });
+    </script>
+</body>
+</html>
