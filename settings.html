@@ -107,11 +107,64 @@
             <div class="w-11"></div>
         </div>
 
-        <!-- SETTINGS WRAPPER -->
-        <div class="space-y-4">
+        <!-- MENU SELECTION (Kapareho sa Transaction style - mamimili dito) -->
+        <div id="settingsMenu" class="space-y-3">
+            
+            <!-- Option 1: Change Password -->
+            <button onclick="openSection('passwordSection')" class="w-full p-4 rounded-2xl border border-nexora-cyan/25 bg-nexora-card/85 flex items-center justify-between glow-box hover:border-nexora-cyan/60 transition-all cursor-pointer">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan text-sm">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div class="text-left">
+                        <h2 class="text-xs font-black font-mono tracking-wider text-white">CHANGE PASSWORD</h2>
+                        <p class="text-[10px] text-gray-400 font-mono">Update login password</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-nexora-cyan text-xs"></i>
+            </button>
 
-            <!-- CHANGE PASSWORD CARD -->
-            <div class="rounded-2xl border border-nexora-cyan/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden transition-all hover:border-nexora-cyan/50">
+            <!-- Option 2: Bind Gmail -->
+            <button onclick="openSection('gmailSection')" class="w-full p-4 rounded-2xl border border-blue-500/25 bg-nexora-card/85 flex items-center justify-between glow-box hover:border-blue-500/60 transition-all cursor-pointer">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-sm">
+                        <i class="fa-solid fa-envelope-circle-check"></i>
+                    </div>
+                    <div class="text-left">
+                        <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND GMAIL FOR RECOVERY</h2>
+                        <p class="text-[10px] text-gray-400 font-mono">Link email for safety & recovery</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-blue-400 text-xs"></i>
+            </button>
+
+            <!-- Option 3: Withdrawal PIN -->
+            <button onclick="openSection('pinSection')" class="w-full p-4 rounded-2xl border border-emerald-500/25 bg-nexora-card/85 flex items-center justify-between glow-box hover:border-emerald-500/60 transition-all cursor-pointer">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-sm">
+                        <i class="fa-solid fa-shield-keyhole"></i>
+                    </div>
+                    <div class="text-left">
+                        <h2 class="text-xs font-black font-mono tracking-wider text-white" id="menuPinTitle">WITHDRAWAL PIN</h2>
+                        <p class="text-[10px] text-gray-400 font-mono">Manage transaction security PIN</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-emerald-400 text-xs"></i>
+            </button>
+
+        </div>
+
+        <!-- FORMS CONTAINER (Nakatago sa simula, lalabas lang kapag pinili sa menu) -->
+        <div id="settingsFormsContainer" class="hidden space-y-4">
+            
+            <!-- Back to Menu Button -->
+            <button onclick="backToMenu()" class="flex items-center space-x-2 text-xs font-mono text-nexora-cyan mb-2 cursor-pointer hover:underline">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Settings Menu</span>
+            </button>
+
+            <!-- CHANGE PASSWORD FORM -->
+            <div id="passwordSection" class="form-panel hidden rounded-2xl border border-nexora-cyan/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-nexora-cyan to-blue-500"></div>
                 
                 <div class="flex items-center space-x-2.5 mb-4">
@@ -148,8 +201,8 @@
                 </div>
             </div>
 
-            <!-- BIND GMAIL FOR RECOVERY CARD (Maliit at malinis na seksyon) -->
-            <div class="rounded-2xl border border-blue-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden transition-all hover:border-blue-500/50">
+            <!-- BIND GMAIL FORM -->
+            <div id="gmailSection" class="form-panel hidden rounded-2xl border border-blue-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-blue-400 to-indigo-600"></div>
                 
                 <div class="flex items-center space-x-2.5 mb-4">
@@ -175,14 +228,14 @@
                             Save Gmail
                         </button>
                         <button id="sendRecoveryCodeBtn" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-black font-mono rounded-xl hover:bg-emerald-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
-                            Send Recovery Code
+                            Send Code
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- WITHDRAWAL PIN CARD -->
-            <div class="rounded-2xl border border-emerald-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden transition-all hover:border-emerald-500/50">
+            <!-- WITHDRAWAL PIN FORM -->
+            <div id="pinSection" class="form-panel hidden rounded-2xl border border-emerald-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-emerald-400 to-emerald-600"></div>
                 
                 <div class="flex items-center space-x-2.5 mb-4">
@@ -238,6 +291,22 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // Navigation Functions between Menu and Forms
+        function openSection(sectionId) {
+            document.getElementById("settingsMenu").classList.add("hidden");
+            document.getElementById("settingsFormsContainer").classList.remove("hidden");
+            
+            document.querySelectorAll(".form-panel").forEach(panel => {
+                panel.classList.add("hidden");
+            });
+            document.getElementById(sectionId).classList.remove("hidden");
+        }
+
+        function backToMenu() {
+            document.getElementById("settingsFormsContainer").classList.add("hidden");
+            document.getElementById("settingsMenu").classList.remove("hidden");
+        }
 
         // Custom Alert Function
         function showAlert(message, title = "SECURITY NOTICE") {
@@ -349,7 +418,6 @@
                 if(userDoc.exists){
                     const data = userDoc.data();
                     
-                    // Load Recovery Email kung mayroon na
                     if(data.recoveryEmail) {
                         document.getElementById("bindEmailInput").value = data.recoveryEmail;
                     }
@@ -357,11 +425,13 @@
                     if(data.withdrawalPin){
                         document.getElementById("currentPinWrapper").style.display = "block";
                         document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
+                        document.getElementById("menuPinTitle").textContent = "CHANGE WITHDRAWAL PIN";
                         document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
                         document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
                     } else {
                         document.getElementById("currentPinWrapper").style.display = "none";
                         document.getElementById("pinCardTitle").textContent = "WITHDRAWAL PIN";
+                        document.getElementById("menuPinTitle").textContent = "WITHDRAWAL PIN";
                         document.getElementById("newPinLabelText").textContent = "ENTER 4-DIGIT PIN";
                         document.getElementById("savePinBtn").textContent = "Create Withdrawal PIN";
                     }
@@ -480,6 +550,7 @@
                 
                 document.getElementById("currentPinWrapper").style.display = "block";
                 document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
+                document.getElementById("menuPinTitle").textContent = "CHANGE WITHDRAWAL PIN";
                 document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
                 document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
                 document.getElementById("currentPinInput").value = "";
