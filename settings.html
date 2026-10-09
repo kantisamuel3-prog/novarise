@@ -142,9 +142,9 @@
                 </div>
 
                 <div class="space-y-3">
-                    <!-- Current PIN Field (Hidden by default kung wala pang PIN, ipapakita o i-a-adjust via script) -->
-                    <div id="currentPinWrapper">
-                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="currentPinLabelText">CURRENT 4-DIGIT PIN</label>
+                    <!-- Current PIN Field (Lalabas lamang kapag may naka-save nang PIN) -->
+                    <div id="currentPinWrapper" style="display: none;">
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">CURRENT 4-DIGIT PIN</label>
                         <div class="relative flex items-center">
                             <input id="currentPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-emerald-500/25 rounded-xl text-white text-sm tracking-widest font-mono text-center outline-none focus:border-emerald-500 transition-all">
                             <button type="button" onclick="toggleVisibility('currentPinInput', 'eyeCurrentPin')" class="absolute right-3 text-gray-400 hover:text-emerald-400 cursor-pointer p-1">
@@ -154,7 +154,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="newPinLabelText">NEW 4-DIGIT PIN</label>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="newPinLabelText">4-DIGIT PIN</label>
                         <div class="relative flex items-center">
                             <input id="withdrawalPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-emerald-500/25 rounded-xl text-white text-sm tracking-widest font-mono text-center outline-none focus:border-emerald-500 transition-all">
                             <button type="button" onclick="toggleVisibility('withdrawalPinInput', 'eyePin')" class="absolute right-3 text-gray-400 hover:text-emerald-400 cursor-pointer p-1">
@@ -258,7 +258,7 @@
         }
         animateTradingBackground();
 
-        // Toggle visibility function
+        // Toggle visibility function para sa password at PIN
         function toggleVisibility(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
@@ -277,8 +277,7 @@
             window.location.href = "account.html";
         });
 
-        let hasExistingPin = false;
-
+        // Suriin ang Database kung may existing PIN na ang user
         auth.onAuthStateChanged(async (user) => {
             if(!user){
                 window.location.href = "login.html";
@@ -290,13 +289,13 @@
                 if(userDoc.exists){
                     const data = userDoc.data();
                     if(data.withdrawalPin){
-                        hasExistingPin = true;
+                        // Kapag may PIN na: Ipakita ang Current PIN at New PIN, baguhin ang mga label
+                        document.getElementById("currentPinWrapper").style.display = "block";
                         document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
                         document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
                         document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
-                        document.getElementById("currentPinWrapper").style.display = "block";
                     } else {
-                        hasExistingPin = false;
+                        // Kapag wala pang PIN: I-tago ang Current PIN, ipakita lang ang paggawa ng PIN
                         document.getElementById("currentPinWrapper").style.display = "none";
                         document.getElementById("pinCardTitle").textContent = "WITHDRAWAL PIN";
                         document.getElementById("newPinLabelText").textContent = "ENTER 4-DIGIT PIN";
@@ -343,7 +342,7 @@
             }
         });
 
-        // Save / Update PIN Logic na may kasamang Current PIN verification kung meron na
+        // Save / Update PIN Logic
         document.getElementById("savePinBtn").addEventListener("click", async () => {
             const newPin = document.getElementById("withdrawalPinInput").value.trim();
             
@@ -359,6 +358,7 @@
                 const userRef = db.collection("Users").doc(user.uid);
                 const userDoc = await userRef.get();
 
+                // Kung may existing PIN na, i-verify muna ang Current PIN bago payagang palitan
                 if(userDoc.exists && userDoc.data().withdrawalPin) {
                     const currentPinInput = document.getElementById("currentPinInput").value.trim();
                     if(!currentPinInput) {
@@ -376,11 +376,12 @@
                 });
 
                 alert("Matagumpay na na-save/na-update ang iyong 4-digit Withdrawal PIN!");
-                hasExistingPin = true;
+                
+                // I-update ang UI para maging Change PIN view na pagkatapos i-save
+                document.getElementById("currentPinWrapper").style.display = "block";
                 document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
                 document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
                 document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
-                document.getElementById("currentPinWrapper").style.display = "block";
                 document.getElementById("currentPinInput").value = "";
                 document.getElementById("withdrawalPinInput").value = "";
             } catch(err) {
