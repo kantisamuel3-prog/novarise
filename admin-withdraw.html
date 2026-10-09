@@ -1833,15 +1833,26 @@ async function approveRecharge(
         );
 
 
-        // Kung may valid na upline at umabot sa commission, i-update din ang upline
+        // Kung may valid na upline at umabot sa commission, i-update din ang upline at isave sa transactions history
         if (uplineRef && uplineSnap && uplineSnap.exists) {
           const uplineData = uplineSnap.data() || {};
           const currentUplineBalance = Number(uplineData.balance || 0);
           const currentTotalCommission = Number(uplineData.totalCommission || uplineData.commission || 0);
+          const uplineTransactions = Array.isArray(uplineData.transactions) ? [...uplineData.transactions] : [];
+
+          // Bagong commission transaction record para sa history.html
+          const newCommissionRecord = {
+            type: "Commission",
+            amount: commissionAmount,
+            status: "SUCCESS",
+            details: `Referral Commission (${commissionPercentage * 100}%)`,
+            date: new Date().toISOString()
+          };
 
           transaction.update(uplineRef, {
             balance: currentUplineBalance + commissionAmount,
-            totalCommission: currentTotalCommission + commissionAmount
+            totalCommission: currentTotalCommission + commissionAmount,
+            transactions: [newCommissionRecord, ...uplineTransactions]
           });
         }
 
