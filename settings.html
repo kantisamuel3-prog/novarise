@@ -465,4 +465,101 @@
         });
 
         // Send Recovery Code Logic
-        document
+        document.getElementById("sendRecoveryCodeBtn").addEventListener("click", async () => {
+            const email = document.getElementById("bindEmailInput").value.trim();
+            if(!email) {
+                showAlert("Please save or enter a Gmail address first.");
+                return;
+            }
+
+            try {
+                await auth.sendPasswordResetEmail(email);
+                showAlert("A secure recovery verification code/link has been sent to your bound Gmail address.", "SUCCESS");
+            } catch(err) {
+                console.error(err);
+                showAlert("Failed to send recovery code: " + err.message);
+            }
+        });
+
+        document.getElementById("updatePasswordBtn").addEventListener("click", async () => {
+            const currentPass = document.getElementById("currentPassword").value.trim();
+            const newPass = document.getElementById("newPassword").value.trim();
+
+            if(!currentPass) {
+                showAlert("Please enter your current password.");
+                return;
+            }
+            if(newPass.length < 6) {
+                showAlert("The new password must be at least 6 characters long.");
+                return;
+            }
+
+            try {
+                const user = auth.currentUser;
+                if(!user || !user.email) return;
+
+                const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
+                await user.reauthenticateWithCredential(credential);
+                await user.updatePassword(newPass);
+
+                showAlert("Your password has been successfully updated!", "SUCCESS");
+                document.getElementById("currentPassword").value = "";
+                document.getElementById("newPassword").value = "";
+            } catch(err) {
+                console.error(err);
+                if(err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    showAlert("The current password you entered is incorrect.");
+                } else {
+                    showAlert("Failed to update password: " + err.message);
+                }
+            }
+        });
+
+        document.getElementById("savePinBtn").addEventListener("click", async () => {
+            const newPin = document.getElementById("withdrawalPinInput").value.trim();
+            
+            if(!/^\d{4}$/.test(newPin)) {
+                showAlert("The Withdrawal PIN must be exactly 4 digits.");
+                return;
+            }
+
+            try {
+                const user = auth.currentUser;
+                if(!user) return;
+
+                const userRef = db.collection("Users").doc(user.uid);
+                const userDoc = await userRef.get();
+
+                if(userDoc.exists && userDoc.data().withdrawalPin) {
+                    const currentPinInput = document.getElementById("currentPinInput").value.trim();
+                    if(!currentPinInput) {
+                        showAlert("Please enter your current Withdrawal PIN.");
+                        return;
+                    }
+                    if(currentPinInput !== userDoc.data().withdrawalPin) {
+                        showAlert("The current Withdrawal PIN you entered is incorrect.");
+                        return;
+                    }
+                }
+
+                await userRef.update({
+                    withdrawalPin: newPin
+                });
+
+                showAlert("Your 4-digit Withdrawal PIN has been successfully saved/updated!", "SUCCESS");
+                
+                document.getElementById("currentPinWrapper").style.display = "block";
+                document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
+                document.getElementById("menuPinTitle").textContent = "CHANGE WITHDRAWAL PIN";
+                document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
+                document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
+                document.getElementById("currentPinInput").value = "";
+                document.getElementById("withdrawalPinInput").value = "";
+            } catch(err) {
+                console.error(err);
+                showAlert("Failed to save PIN.");
+            }
+        });
+    </script>
+</body>
+</html>
