@@ -160,10 +160,10 @@
       <!-- PAGE TITLE -->
       <div class="px-1 text-center sm:text-left">
           <h1 class="text-base font-bold text-white font-mono">Transaction History</h1>
-          <p class="text-[11px] text-gray-400 font-mono">Monitor your recharges, withdrawals, and commissions[cite: 2].</p>
+          <p class="text-[11px] text-gray-400 font-mono">Monitor your recharges, withdrawals, and commissions.</p>
       </div>
 
-      <!-- FILTER TABS (Pinalitan ang Convert ng Commission) -->
+      <!-- FILTER TABS -->
       <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           <button onclick="filterHistory('all')" class="tab-btn active px-3 py-1.5 rounded-lg bg-nexora-cyan text-slate-950 text-xs font-bold font-mono shrink-0 shadow-[0_0_10px_rgba(0,242,254,0.4)] cursor-pointer">All</button>
           <button onclick="filterHistory('Recharge')" class="tab-btn px-3 py-1.5 rounded-lg bg-nexora-card border border-nexora-cyan/30 text-gray-300 text-xs font-bold font-mono shrink-0 hover:bg-nexora-cyan/10 cursor-pointer">Recharge</button>
@@ -296,8 +296,10 @@
           if (type !== 'all') {
               filtered = allTransactions.filter(item => {
                   const t = String(item.type || "").toLowerCase();
-                  if (type === 'Commission') return t.includes('commission') || t.includes('referral');
-                  return String(item.type || "") === type;
+                  if (type === 'Commission') {
+                      return t.includes('commission') || t.includes('referral') || t.includes('bonus');
+                  }
+                  return String(item.type || "").toLowerCase() === type.toLowerCase();
               });
           }
 
@@ -319,14 +321,14 @@
               if (status === "REJECTED") statusColor = "bg-red-500/15 text-red-400 border-red-500/30";
 
               let detailsHTML = "";
-              if (type === "Recharge") {
+              if (type.toLowerCase().includes("recharge")) {
                   detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Gateway</span><span class="text-white">${esc(r.method || "GCash")}</span></div>
                                  <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Order ID</span><span class="text-white">${esc(r.orderId || "—")}</span></div>`;
-              } else if (type === "Withdrawal Request") {
+              } else if (type.toLowerCase().includes("withdrawal")) {
                   detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Account Name</span><span class="text-white">${esc(r.accountName || "—")}</span></div>
                                  <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Account No.</span><span class="text-white">${esc(r.accountNumber || "—")}</span></div>`;
               } else {
-                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Details</span><span class="text-white">${esc(r.details || type)}</span></div>`;
+                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Details</span><span class="text-white">${esc(r.details || r.description || type)}</span></div>`;
               }
 
               return `
@@ -360,9 +362,11 @@
               if (userSnap.exists()) {
                   const data = userSnap.data();
                   const txs = Array.isArray(data.transactions) ? data.transactions : [];
-                  const conversions = Array.isArray(data.conversions) ? data.conversions : [];
+                  const commissions = Array.isArray(data.commissions) ? data.commissions : [];
+                  const referralBonuses = Array.isArray(data.referralBonuses) ? data.referralBonuses : [];
                   
-                  allTransactions = [...txs, ...conversions];
+                  // Pagsamahin ang lahat ng uri ng transaksyon at komisyon
+                  allTransactions = [...txs, ...commissions, ...referralBonuses];
                   allTransactions.sort((a, b) => new Date(b.date || b.timestamp || 0) - new Date(a.date || a.timestamp || 0));
 
                   renderTransactions(allTransactions);
