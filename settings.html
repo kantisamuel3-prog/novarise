@@ -54,7 +54,6 @@
             min-height: 100vh;
             padding-bottom: 50px;
         }
-        /* Grid lines para sa trading monitor look */
         .trading-grid {
             background-image: 
                 linear-gradient(to right, rgba(0, 242, 254, 0.03) 1px, transparent 1px),
@@ -70,10 +69,7 @@
 
     <!-- LIVE MOVING TRADING CHART BACKGROUND -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden trading-grid">
-        <!-- Canvas para sa mabagal at pataas-pababang live trading line -->
         <canvas id="tradingBgCanvas" class="absolute inset-0 w-full h-full opacity-35"></canvas>
-        
-        <!-- Malambot na glowing orbs sa background -->
         <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-nexora-cyan/10 rounded-full blur-[120px]"></div>
         <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px]"></div>
     </div>
@@ -108,7 +104,6 @@
                 </div>
 
                 <div class="space-y-3">
-                    <!-- Current Password -->
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">CURRENT PASSWORD</label>
                         <div class="relative flex items-center">
@@ -119,7 +114,6 @@
                         </div>
                     </div>
 
-                    <!-- New Password -->
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">NEW PASSWORD</label>
                         <div class="relative flex items-center">
@@ -148,8 +142,19 @@
                 </div>
 
                 <div class="space-y-3">
+                    <!-- Current PIN Field (Hidden by default kung wala pang PIN, ipapakita o i-a-adjust via script) -->
+                    <div id="currentPinWrapper">
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="currentPinLabelText">CURRENT 4-DIGIT PIN</label>
+                        <div class="relative flex items-center">
+                            <input id="currentPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-emerald-500/25 rounded-xl text-white text-sm tracking-widest font-mono text-center outline-none focus:border-emerald-500 transition-all">
+                            <button type="button" onclick="toggleVisibility('currentPinInput', 'eyeCurrentPin')" class="absolute right-3 text-gray-400 hover:text-emerald-400 cursor-pointer p-1">
+                                <i id="eyeCurrentPin" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="pinLabelText">4-DIGIT WITHDRAWAL PIN</label>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="newPinLabelText">NEW 4-DIGIT PIN</label>
                         <div class="relative flex items-center">
                             <input id="withdrawalPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-emerald-500/25 rounded-xl text-white text-sm tracking-widest font-mono text-center outline-none focus:border-emerald-500 transition-all">
                             <button type="button" onclick="toggleVisibility('withdrawalPinInput', 'eyePin')" class="absolute right-3 text-gray-400 hover:text-emerald-400 cursor-pointer p-1">
@@ -169,7 +174,7 @@
 
     </main>
 
-    <!-- FIREBASE & TRADING BACKGROUND ANIMATION LOGIC -->
+    <!-- FIREBASE & LOGIC -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
@@ -184,9 +189,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // -------------------------------------------------------------
-        // LIVE SLOW TRADING CHART BACKGROUND SCRIPT
-        // -------------------------------------------------------------
+        // Canvas Background Animation
         const canvas = document.getElementById('tradingBgCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -206,14 +209,13 @@
                 x: i * stepX,
                 y: canvas.height / 2 + (Math.random() * 120 - 60),
                 targetY: canvas.height / 2 + (Math.random() * 120 - 60),
-                speed: 0.015 + Math.random() * 0.01 // Mabagal na galaw
+                speed: 0.015 + Math.random() * 0.01
             });
         }
 
         function animateTradingBackground() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Update points para sa mabagal na paggalaw pataas/pababa
             for (let i = 0; i < points.length; i++) {
                 let p = points[i];
                 p.y += (p.targetY - p.y) * p.speed;
@@ -223,7 +225,6 @@
                 }
             }
 
-            // Gumuhit ng gradient area sa ilalim ng linya
             ctx.beginPath();
             ctx.moveTo(points[0].x, canvas.height);
             ctx.lineTo(points[0].x, points[0].y);
@@ -242,7 +243,6 @@
             ctx.fillStyle = bgGrad;
             ctx.fill();
 
-            // Gumuhit ng mismong kumikinang na live trading line
             ctx.beginPath();
             ctx.moveTo(points[0].x, points[0].y);
             for (let i = 0; i < points.length - 1; i++) {
@@ -258,9 +258,7 @@
         }
         animateTradingBackground();
 
-        // -------------------------------------------------------------
-        // UI & FIREBASE FUNCTIONS
-        // -------------------------------------------------------------
+        // Toggle visibility function
         function toggleVisibility(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
@@ -279,6 +277,8 @@
             window.location.href = "account.html";
         });
 
+        let hasExistingPin = false;
+
         auth.onAuthStateChanged(async (user) => {
             if(!user){
                 window.location.href = "login.html";
@@ -290,9 +290,17 @@
                 if(userDoc.exists){
                     const data = userDoc.data();
                     if(data.withdrawalPin){
+                        hasExistingPin = true;
                         document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
-                        document.getElementById("pinLabelText").textContent = "ENTER NEW 4-DIGIT PIN";
+                        document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
                         document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
+                        document.getElementById("currentPinWrapper").style.display = "block";
+                    } else {
+                        hasExistingPin = false;
+                        document.getElementById("currentPinWrapper").style.display = "none";
+                        document.getElementById("pinCardTitle").textContent = "WITHDRAWAL PIN";
+                        document.getElementById("newPinLabelText").textContent = "ENTER 4-DIGIT PIN";
+                        document.getElementById("savePinBtn").textContent = "Create Withdrawal PIN";
                     }
                 }
             } catch(e) {
@@ -300,6 +308,7 @@
             }
         });
 
+        // Update Password Logic
         document.getElementById("updatePasswordBtn").addEventListener("click", async () => {
             const currentPass = document.getElementById("currentPassword").value.trim();
             const newPass = document.getElementById("newPassword").value.trim();
@@ -334,22 +343,45 @@
             }
         });
 
+        // Save / Update PIN Logic na may kasamang Current PIN verification kung meron na
         document.getElementById("savePinBtn").addEventListener("click", async () => {
-            const pin = document.getElementById("withdrawalPinInput").value.trim();
-            if(!/^\d{4}$/.test(pin)) {
+            const newPin = document.getElementById("withdrawalPinInput").value.trim();
+            
+            if(!/^\d{4}$/.test(newPin)) {
                 alert("Ang Withdrawal PIN ay dapat eksaktong 4 na numero.");
                 return;
             }
+
             try {
                 const user = auth.currentUser;
                 if(!user) return;
-                await db.collection("Users").doc(user.uid).update({
-                    withdrawalPin: pin
+
+                const userRef = db.collection("Users").doc(user.uid);
+                const userDoc = await userRef.get();
+
+                if(userDoc.exists && userDoc.data().withdrawalPin) {
+                    const currentPinInput = document.getElementById("currentPinInput").value.trim();
+                    if(!currentPinInput) {
+                        alert("Mangyaring ilagay ang iyong kasalukuyang Withdrawal PIN.");
+                        return;
+                    }
+                    if(currentPinInput !== userDoc.data().withdrawalPin) {
+                        alert("Mali ang inilagay mong kasalukuyang Withdrawal PIN.");
+                        return;
+                    }
+                }
+
+                await userRef.update({
+                    withdrawalPin: newPin
                 });
+
                 alert("Matagumpay na na-save/na-update ang iyong 4-digit Withdrawal PIN!");
+                hasExistingPin = true;
                 document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
-                document.getElementById("pinLabelText").textContent = "ENTER NEW 4-DIGIT PIN";
+                document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
                 document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
+                document.getElementById("currentPinWrapper").style.display = "block";
+                document.getElementById("currentPinInput").value = "";
                 document.getElementById("withdrawalPinInput").value = "";
             } catch(err) {
                 console.error(err);
