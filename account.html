@@ -274,32 +274,41 @@
             </div>
         </div>
 
-        <!-- QUICK ACTIONS (Ginawang 5 items para maisama ang ABOUT) -->
+        <!-- QUICK ACTIONS (Recharge, Withdraw, About, History, Settings) -->
         <div class="flex items-center justify-between mb-2.5 px-1">
             <h2 class="text-[11px] font-black tracking-widest text-gray-400 font-mono">QUICK ACTIONS</h2>
             <div class="h-[1px] flex-1 ml-3 bg-gradient-to-r from-nexora-cyan/40 to-transparent"></div>
         </div>
 
         <div class="grid grid-cols-5 gap-2 mb-5">
+            <!-- 1. Recharge -->
             <button id="rechargeButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-nexora-cyan/20 hover:border-nexora-cyan/60 transition-all cursor-pointer shadow-md group">
                 <div class="w-7 h-7 rounded-lg flex items-center justify-center text-nexora-cyan bg-nexora-cyan/10 border border-nexora-cyan/20 font-black text-sm mb-1 group-hover:scale-110 transition-transform">+</div>
                 <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">RECHARGE</span>
             </button>
+            
+            <!-- 2. Withdraw -->
             <button id="withdrawButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-emerald-500/20 hover:border-emerald-500/60 transition-all cursor-pointer shadow-md group">
                 <div class="w-7 h-7 rounded-lg flex items-center justify-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-black text-sm mb-1 group-hover:scale-110 transition-transform">₱</div>
                 <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">WITHDRAW</span>
             </button>
+
+            <!-- 3. About (Katabi at sumunod sa Withdraw) -->
+            <button id="aboutButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-blue-500/20 hover:border-blue-500/60 transition-all cursor-pointer shadow-md group">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-blue-400 bg-blue-500/10 border border-blue-500/20 font-black text-xs mb-1 group-hover:scale-110 transition-transform"><i class="fa-solid fa-circle-info"></i></div>
+                <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">ABOUT</span>
+            </button>
+
+            <!-- 4. History -->
             <button id="historyButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-amber-500/20 hover:border-amber-500/60 transition-all cursor-pointer shadow-md group">
                 <div class="w-7 h-7 rounded-lg flex items-center justify-center text-amber-400 bg-amber-500/10 border border-amber-500/20 font-black text-sm mb-1 group-hover:scale-110 transition-transform">≡</div>
                 <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">HISTORY</span>
             </button>
+
+            <!-- 5. Settings -->
             <button id="settingsButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-cyan-500/20 hover:border-cyan-500/60 transition-all cursor-pointer shadow-md group">
                 <div class="w-7 h-7 rounded-lg flex items-center justify-center text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 font-black text-xs mb-1 group-hover:scale-110 transition-transform"><i class="fa-solid fa-gear"></i></div>
                 <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">SETTINGS</span>
-            </button>
-            <button id="aboutButton" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-nexora-card/90 border border-blue-500/20 hover:border-blue-500/60 transition-all cursor-pointer shadow-md group">
-                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-blue-400 bg-blue-500/10 border border-blue-500/20 font-black text-xs mb-1 group-hover:scale-110 transition-transform"><i class="fa-solid fa-circle-info"></i></div>
-                <span class="text-[8px] font-black tracking-wider text-gray-300 font-mono">ABOUT</span>
             </button>
         </div>
         
