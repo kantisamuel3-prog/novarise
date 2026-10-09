@@ -45,11 +45,21 @@
                         'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'float': 'float 8s ease-in-out infinite',
                         'float-delayed': 'float 10s ease-in-out 4s infinite',
+                        'grid-move': 'gridMove 20s linear infinite',
+                        'chart-pulse': 'chartPulse 4s ease-in-out infinite'
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
                             '50%': { transform: 'translate(30px, -40px) scale(1.1)' },
+                        },
+                        gridMove: {
+                            '0%': { backgroundPosition: '0 0' },
+                            '100%': { backgroundPosition: '40px 40px' }
+                        },
+                        chartPulse: {
+                            '0%, 100%': { opacity: '0.15' },
+                            '50%': { opacity: '0.35' }
                         }
                     }
                 }
@@ -65,21 +75,39 @@
             min-height: 100vh;
             padding-bottom: 50px;
         }
-        .animated-bg {
-            background: radial-gradient(circle at 50% 30%, #0d2247 0%, #061124 50%, #020712 100%);
+        /* Live Trading Grid Background Pattern */
+        .trading-grid {
+            background-image: 
+                linear-gradient(to right, rgba(0, 242, 254, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 242, 254, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
         }
         .glow-box {
             box-shadow: 0 0 30px rgba(0, 242, 254, 0.06);
         }
     </style>
 </head>
-<body class="flex flex-col items-center relative overflow-x-hidden animated-bg">
+<body class="flex flex-col items-center relative overflow-x-hidden">
 
-    <!-- Animated Background Glowing Orbs -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <!-- LIVE TRADING BACKGROUND EFFECT -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden trading-grid animate-grid-move">
+        <!-- Glowing Orbs -->
         <div class="absolute -top-20 -left-20 w-80 h-80 bg-nexora-cyan/15 rounded-full blur-[100px] animate-float"></div>
         <div class="absolute top-1/2 -right-20 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] animate-float-delayed"></div>
-        <div class="absolute -bottom-20 left-1/3 w-80 h-80 bg-emerald-500/10 rounded-full blur-[100px] animate-pulse-slow"></div>
+        
+        <!-- Subtle Trading Chart SVG Line sa Background -->
+        <div class="absolute inset-0 flex items-center justify-center opacity-20 animate-chart-pulse">
+            <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 500">
+                <path d="M0,400 Q150,300 300,350 T600,200 T900,100 L1000,50 L1000,500 L0,500 Z" fill="url(#grad)" opacity="0.2"/>
+                <path d="M0,400 Q150,300 300,350 T600,200 T900,100 L1000,50" fill="none" stroke="#00f2fe" stroke-width="2"/>
+                <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.5"/>
+                        <stop offset="100%" stop-color="#040814" stop-opacity="0"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
     </div>
 
     <!-- MAIN CONTAINER -->
@@ -112,14 +140,26 @@
                 </div>
 
                 <div class="space-y-3">
+                    <!-- Current Password -->
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">CURRENT PASSWORD</label>
-                        <input id="currentPassword" type="password" placeholder="Enter current password" class="w-full h-11 px-3.5 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan transition-all">
+                        <div class="relative flex items-center">
+                            <input id="currentPassword" type="password" placeholder="Enter current password" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan transition-all">
+                            <button type="button" onclick="toggleVisibility('currentPassword', 'eyeCurrent')" class="absolute right-3 text-gray-400 hover:text-nexora-cyan cursor-pointer p-1">
+                                <i id="eyeCurrent" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- New Password -->
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">NEW PASSWORD</label>
-                        <input id="newPassword" type="password" placeholder="At least 6 characters" class="w-full h-11 px-3.5 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan transition-all">
+                        <div class="relative flex items-center">
+                            <input id="newPassword" type="password" placeholder="At least 6 characters" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-nexora-cyan/25 rounded-xl text-white text-xs font-mono outline-none focus:border-nexora-cyan transition-all">
+                            <button type="button" onclick="toggleVisibility('newPassword', 'eyeNew')" class="absolute right-3 text-gray-400 hover:text-nexora-cyan cursor-pointer p-1">
+                                <i id="eyeNew" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <button id="updatePasswordBtn" class="w-full mt-1 py-3 bg-gradient-to-r from-nexora-cyan/20 to-blue-500/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
@@ -142,7 +182,12 @@
                 <div class="space-y-3">
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="pinLabelText">4-DIGIT WITHDRAWAL PIN</label>
-                        <input id="withdrawalPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full h-11 px-3.5 bg-slate-950/90 border border-emerald-500/25 rounded-xl text-white text-sm tracking-widest font-mono text-center outline-none focus:border-emerald-500 transition-all">
+                        <div class="relative flex items-center">
+                            <input id="withdrawalPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full h-11 pl-3.5 pr-10 bg-slate-950/90 border border-emerald-500/25 rounded-xl text-white text-sm tracking-widest font-mono text-center outline-none focus:border-emerald-500 transition-all">
+                            <button type="button" onclick="toggleVisibility('withdrawalPinInput', 'eyePin')" class="absolute right-3 text-gray-400 hover:text-emerald-400 cursor-pointer p-1">
+                                <i id="eyePin" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
                         <p class="text-[9px] text-gray-400 font-mono mt-1 text-center">Kakailanganin ang PIN na ito kapag magwi-withdraw ka ng pondo.</p>
                     </div>
 
@@ -170,6 +215,21 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // Function para i-toggle ang view/hide ng password at PIN
+        function toggleVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
 
         document.getElementById("backBtn").addEventListener("click", () => {
             window.location.href = "account.html";
