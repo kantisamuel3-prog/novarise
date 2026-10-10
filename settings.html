@@ -601,8 +601,8 @@
 
                 let bAcc = data.bankAccount || {};
                 if(bAcc.number && !bAcc.gcash && !bAcc.maya) {
-                    const legacyMeth = bAcc.method === "Maya" ? "maya" : "gcash";
-                    bAcc = { [legacyMeth]: { name: bAcc.name, number: bAcc.number } };
+                    const legacyMethod = bAcc.method === "Maya" ? "maya" : "gcash";
+                    bAcc = { [legacyMethod]: { name: bAcc.name, number: bAcc.number } };
                 }
 
                 if((bAcc.gcash && bAcc.gcash.number) || (bAcc.maya && bAcc.maya.number)) {
@@ -729,6 +729,12 @@
         });
 
         document.getElementById("updatePasswordBtn").addEventListener("click", async () => {
+            const userUid = localStorage.getItem("nexora_user_uid");
+            if(!userUid) {
+                window.location.href = "login.html";
+                return;
+            }
+
             const currentPass = document.getElementById("currentPassword").value.trim();
             const newPass = document.getElementById("newPassword").value.trim();
 
@@ -742,26 +748,33 @@
             }
 
             try {
-                const user = auth.currentUser;
-                if(!user || !user.email) {
-                    showAlert("Please log in again via regular session to update your password.");
+                const userRef = db.collection("Users").doc(userUid);
+                const userDoc = await userRef.get();
+
+                if(!userDoc.exists) {
+                    showAlert("User account was not found.");
                     return;
                 }
 
-                const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
-                await user.reauthenticateWithCredential(credential);
-                await user.updatePassword(newPass);
+                const userData = userDoc.data();
+                
+                // I-verify kung tugma ang current password sa database
+                if(userData.password && userData.password !== currentPass) {
+                    showAlert("The current password you entered is incorrect.");
+                    return;
+                }
+
+                // I-update ang password sa Firestore database
+                await userRef.update({
+                    password: newPass
+                });
 
                 showAlert("Your password has been successfully updated!", "SUCCESS");
                 document.getElementById("currentPassword").value = "";
                 document.getElementById("newPassword").value = "";
             } catch(err) {
                 console.error(err);
-                if(err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-                    showAlert("The current password you entered is incorrect.");
-                } else {
-                    showAlert("Failed to update password: " + err.message);
-                }
+                showAlert("Failed to update password: " + err.message);
             }
         });
 
