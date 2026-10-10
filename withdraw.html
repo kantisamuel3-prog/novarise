@@ -175,25 +175,6 @@
         margin-top: 6px;
     }
 
-    .method-option {
-        padding: 10px;
-        border: 1.5px solid rgba(0, 242, 254, 0.2);
-        border-radius: 12px;
-        background: rgba(4, 8, 20, 0.6);
-        color: #fff;
-        font-weight: 700;
-        font-size: 13px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .method-option.active {
-        border-color: #00f2fe;
-        background: rgba(0, 242, 254, 0.15);
-        box-shadow: 0 0 12px rgba(0, 242, 254, 0.3);
-    }
-
     .withdraw-btn {
         width: 100%;
         height: 48px;
@@ -373,14 +354,16 @@
       <div class="field">
         <label>WITHDRAWAL METHOD</label>
         <div class="method-grid">
-          <div class="method-option active" data-method="GCash" id="optionGcash">
-            <i class="fa-solid fa-mobile-screen-button mb-1 text-nexora-cyan block text-base"></i>
-            GCash
-          </div>
-          <div class="method-option" data-method="Maya" id="optionMaya">
-            <i class="fa-solid fa-wallet mb-1 text-nexora-cyan block text-base"></i>
-            Maya
-          </div>
+          <!-- GCash Button -->
+          <button type="button" id="optionGcash" data-method="GCash" class="method-option h-12 px-3 rounded-xl border border-blue-500/40 bg-[#007dfc] text-white transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2">
+              <span class="w-6 h-6 rounded-full bg-white text-[#007dfc] font-black text-xs flex items-center justify-center shadow-inner pointer-events-none">G</span>
+              <span class="font-extrabold text-sm tracking-tight text-white font-sans pointer-events-none">GCash</span>
+          </button>
+
+          <!-- Maya Button -->
+          <button type="button" id="optionMaya" data-method="Maya" class="method-option h-12 px-3 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 transition-all cursor-pointer flex items-center justify-center space-x-1.5">
+              <span class="font-black text-lg tracking-tighter lowercase text-[#50e3a4] font-sans pointer-events-none">maya</span>
+          </button>
         </div>
       </div>
 
@@ -534,24 +517,34 @@
   $("backBtn").addEventListener("click", goBack);
   $("backBottomBtn").addEventListener("click", goBack);
 
-  // Switch Method UI Selection
+  // Switch Method UI Selection and styling
   document.querySelectorAll(".method-option").forEach(opt => {
     opt.addEventListener("click", () => {
       const method = opt.getAttribute("data-method");
       
-      // I-check kung may bind account ba ang pinindot na method
       if(!boundAccounts[method.toLowerCase()] || !boundAccounts[method.toLowerCase()].number) {
         toast(`Please bind your ${method} account in Settings first.`);
         return;
       }
 
-      document.querySelectorAll(".method-option").forEach(o => o.classList.remove("active"));
-      opt.classList.add("active");
       selectedMethod = method;
-      
+      updateMethodUIStyles();
       populateAccountFields(selectedMethod);
     });
   });
+
+  function updateMethodUIStyles() {
+    const gcashBtn = $("optionGcash");
+    const mayaBtn = $("optionMaya");
+
+    if(selectedMethod === "GCash") {
+      gcashBtn.className = "method-option h-12 px-3 rounded-xl border border-blue-500/40 bg-[#007dfc] text-white transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2";
+      mayaBtn.className = "method-option h-12 px-3 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 transition-all cursor-pointer flex items-center justify-center space-x-1.5";
+    } else {
+      mayaBtn.className = "method-option h-12 px-3 rounded-xl border border-emerald-500/40 bg-black text-[#50e3a4] transition-all cursor-pointer shadow-md flex items-center justify-center space-x-1.5";
+      gcashBtn.className = "method-option h-12 px-3 rounded-xl border border-blue-500/20 bg-slate-950/90 text-gray-400 transition-all cursor-pointer flex items-center justify-center space-x-2";
+    }
+  }
 
   function populateAccountFields(method){
     const accData = boundAccounts[method.toLowerCase()];
@@ -574,7 +567,6 @@
         const bal = Number(data.balance || data.wallet || 0);
         $("userBalance").textContent = `₱${bal.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-        // Kunin ang nakaband na bank accounts
         let bAcc = data.bankAccount || {};
         if(bAcc.number && !bAcc.gcash && !bAcc.maya) {
             const legacyMeth = bAcc.method === "Maya" ? "maya" : "gcash";
@@ -593,17 +585,13 @@
           return;
         }
 
-        // Auto select available method
         if(hasGcash) {
           selectedMethod = "GCash";
-          $("optionGcash").classList.add("active");
-          $("optionMaya").classList.remove("active");
         } else if(hasMaya) {
           selectedMethod = "Maya";
-          $("optionMaya").classList.add("active");
-          $("optionGcash").classList.remove("active");
         }
 
+        updateMethodUIStyles();
         populateAccountFields(selectedMethod);
       }
     } catch(e) {
@@ -611,7 +599,6 @@
     }
   }
 
-  // Step 1: Validate form fields when Submit Withdrawal is clicked, then show PIN Modal
   $("withdrawBtn").addEventListener("click", () => {
     if(!currentUser) return;
     const amount = Number($("withdrawAmount").value);
@@ -637,7 +624,6 @@
       return;
     }
 
-    // Open PIN Modal
     $("modalWithdrawalPin").value = "";
     $("pinModal").classList.remove("hidden");
     $("modalWithdrawalPin").focus();
@@ -647,7 +633,6 @@
     $("pinModal").classList.add("hidden");
   });
 
-  // Step 2: Confirm PIN and Process Transaction
   $("confirmPinBtn").addEventListener("click", async () => {
     const enteredPin = $("modalWithdrawalPin").value.trim();
     if(!enteredPin || enteredPin.length !== 4){
