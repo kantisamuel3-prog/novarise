@@ -17,6 +17,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Firebase SDKs (v10 Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
   <script>
       tailwind.config = {
           theme: {
@@ -737,8 +742,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, runTransaction, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
@@ -766,7 +771,6 @@
     window.__novariseToastTimer = setTimeout(() => el.classList.remove("show"), 2600);
   }
 
-  // Naayos ang pagbabalik patungo sa account.html
   function goBack(){
     window.location.href = "account.html";
   }
@@ -977,13 +981,41 @@
     }
   }
 
-  onAuthStateChanged(auth, async user => {
-    if(!user){
+  document.addEventListener("DOMContentLoaded", async () => {
+    const userUid = localStorage.getItem("nexora_user_uid");
+    
+    if(!userUid){
       window.location.href = "login.html";
       return;
     }
-    currentUser = user;
-    await restorePendingPayment();
+
+    try {
+      const userRef = doc(db, "Users", userUid);
+      const docSnap = await getDoc(userRef);
+
+      if(!docSnap.exists()){
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUser = {
+        uid: userUid,
+        getIdToken: async () => {
+          // Fallback para sa token kung kinakailangan ng PayMongo worker
+          return auth.currentUser ? await auth.currentUser.getIdToken(true) : "local-session-token";
+        }
+      };
+
+      // Kung sakaling naka-login din sa Firebase Auth background
+      if(auth.currentUser) {
+        currentUser = auth.currentUser;
+      }
+
+      await restorePendingPayment();
+    } catch (error) {
+      console.error("Recharge auth initialization error:", error);
+      window.location.href = "login.html";
+    }
   });
 </script>
 
