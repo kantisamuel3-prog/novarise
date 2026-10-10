@@ -511,44 +511,53 @@
             return "₱" + number.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        auth.onAuthStateChanged((user) => {
-            if(!user){
+        document.addEventListener("DOMContentLoaded", async () => {
+            const userUid = localStorage.getItem("nexora_user_uid");
+            
+            if(!userUid){
                 window.location.href = "login.html";
                 return;
             }
 
-            profilePhone.textContent = user.email || "Member account";
-            profileName.textContent = "Welcome Member!";
+            try {
+                const userRef = db.collection("Users").doc(userUid);
+                const docSnapshot = await userRef.get();
 
-            const userRef = db.collection("Users").doc(user.uid);
-
-            userRef.onSnapshot((docSnapshot) => {
                 if(!docSnapshot.exists){
-                    dollarBalance.textContent = "$0.00";
-                    pesoBalance.textContent = "₱0.00";
-                    dollarBalance.classList.remove("loading");
-                    pesoBalance.classList.remove("loading");
+                    window.location.href = "login.html";
                     return;
                 }
 
                 const data = docSnapshot.data() || {};
-                const phpBalance = Number(data.balance) || 0;
-                const usdBalance = Number(data.usdBalance) || 0;
+                profilePhone.textContent = data.email || data.phone || "Member account";
+                profileName.textContent = "Welcome Member!";
 
-                dollarBalance.textContent = formatUSD(usdBalance);
-                pesoBalance.textContent = formatPeso(phpBalance);
+                userRef.onSnapshot((docSnap) => {
+                    if(!docSnap.exists) return;
+                    const liveData = docSnap.data() || {};
+                    const phpBalance = Number(liveData.balance) || 0;
+                    const usdBalance = Number(liveData.usdBalance) || 0;
 
-                dollarBalance.classList.remove("loading");
-                pesoBalance.classList.remove("loading");
-            }, (error) => {
-                console.error("ACCOUNT FIRESTORE ERROR:", error);
-            });
+                    dollarBalance.textContent = formatUSD(usdBalance);
+                    pesoBalance.textContent = formatPeso(phpBalance);
+
+                    dollarBalance.classList.remove("loading");
+                    pesoBalance.classList.remove("loading");
+                }, (error) => {
+                    console.error("ACCOUNT FIRESTORE ERROR:", error);
+                });
+
+            } catch (error) {
+                console.error("Auth error:", error);
+                window.location.href = "login.html";
+            }
         });
 
         logoutButton.addEventListener("click", async () => {
             try{
                 logoutButton.disabled = true;
                 logoutButton.textContent = "LOGGING OUT...";
+                localStorage.removeItem("nexora_user_uid");
                 await auth.signOut();
                 window.location.href = "login.html";
             }catch(error){
