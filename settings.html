@@ -246,7 +246,7 @@
                 </div>
             </div>
 
-            <!-- BIND BANK ACCOUNT FORM (GCash / Maya with Proper Colors) -->
+            <!-- BIND BANK ACCOUNT FORM (GCash / Maya with Logo Branding) -->
             <div id="bankSection" class="form-panel hidden rounded-2xl border border-amber-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-amber-400 to-amber-600"></div>
                 
@@ -264,8 +264,14 @@
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">SELECT METHOD</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <button type="button" id="methodGcash" class="py-2.5 rounded-xl border border-blue-500/40 bg-blue-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md">GCash</button>
-                            <button type="button" id="methodMaya" class="py-2.5 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer">Maya</button>
+                            <button type="button" id="methodGcash" class="py-2.5 px-3 rounded-xl border border-blue-500/40 bg-blue-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2">
+                                <span class="w-5 h-5 rounded-full bg-white text-blue-600 flex items-center justify-center text-[10px] font-bold shadow">G</span>
+                                <span>GCash</span>
+                            </button>
+                            <button type="button" id="methodMaya" class="py-2.5 px-3 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer flex items-center justify-center space-x-2">
+                                <span class="w-5 h-5 rounded-full bg-emerald-500 text-black flex items-center justify-center text-[10px] font-bold shadow">M</span>
+                                <span>Maya</span>
+                            </button>
                         </div>
                     </div>
 
@@ -345,20 +351,20 @@
 
         let selectedBankMethod = "GCash";
 
-        // Bank Selection Logic with GCash Blue and Maya Green Branding
+        // Bank Selection Logic with GCash Blue and Maya Green Branding & Logo Elements
         document.getElementById("methodGcash").addEventListener("click", () => {
             if(document.getElementById("saveBankBtn").disabled) return;
             selectedBankMethod = "GCash";
-            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-blue-500/40 bg-blue-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md";
-            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+            document.getElementById("methodGcash").className = "py-2.5 px-3 rounded-xl border border-blue-500/40 bg-blue-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2";
+            document.getElementById("methodMaya").className = "py-2.5 px-3 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer flex items-center justify-center space-x-2";
             document.getElementById("bankNumberLabel").textContent = "GCASH NUMBER";
         });
 
         document.getElementById("methodMaya").addEventListener("click", () => {
             if(document.getElementById("saveBankBtn").disabled) return;
             selectedBankMethod = "Maya";
-            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-emerald-500/40 bg-emerald-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md";
-            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-blue-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+            document.getElementById("methodMaya").className = "py-2.5 px-3 rounded-xl border border-emerald-500/40 bg-emerald-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2";
+            document.getElementById("methodGcash").className = "py-2.5 px-3 rounded-xl border border-blue-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer flex items-center justify-center space-x-2";
             document.getElementById("bankNumberLabel").textContent = "MAYA NUMBER";
         });
 
@@ -517,13 +523,13 @@
                         
                         if(data.bankAccount.method === "Maya") {
                             selectedBankMethod = "Maya";
-                            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-emerald-500/40 bg-emerald-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md";
-                            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-blue-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+                            document.getElementById("methodMaya").className = "py-2.5 px-3 rounded-xl border border-emerald-500/40 bg-emerald-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2";
+                            document.getElementById("methodGcash").className = "py-2.5 px-3 rounded-xl border border-blue-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer flex items-center justify-center space-x-2";
                             document.getElementById("bankNumberLabel").textContent = "MAYA NUMBER";
                         } else {
                             selectedBankMethod = "GCash";
-                            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-blue-500/40 bg-blue-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md";
-                            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+                            document.getElementById("methodGcash").className = "py-2.5 px-3 rounded-xl border border-blue-500/40 bg-blue-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2";
+                            document.getElementById("methodMaya").className = "py-2.5 px-3 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer flex items-center justify-center space-x-2";
                             document.getElementById("bankNumberLabel").textContent = "GCASH NUMBER";
                         }
 
