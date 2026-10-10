@@ -737,7 +737,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -774,15 +774,23 @@
   $("backBottomBtn").addEventListener("click", goBack);
 
   async function getAuthToken() {
-    if (currentUser && typeof currentUser.getIdToken === "function") {
+    if (auth.currentUser) {
       try {
-        return await currentUser.getIdToken(true);
+        return await auth.currentUser.getIdToken(true);
       } catch (e) {
         console.warn("Token fetch fallback:", e);
       }
     }
+    try {
+      const cred = await signInAnonymously(auth);
+      if (cred && cred.user) {
+        return await cred.user.getIdToken(true);
+      }
+    } catch (err) {
+      console.warn("Anonymous sign-in failed:", err);
+    }
     const localUid = localStorage.getItem("nexora_user_uid");
-    return "nexora-session-token-" + (localUid || "guest");
+    throw new Error("Invalid or expired Firebase ID token.");
   }
 
   async function createRechargePayment(amount){
@@ -991,6 +999,11 @@
     if(!user && !localUid){
       window.location.href = "login.html";
       return;
+    }
+    if(!user && localUid) {
+      try {
+        await signInAnonymously(auth);
+      } catch(e) {}
     }
     await restorePendingPayment();
   });
