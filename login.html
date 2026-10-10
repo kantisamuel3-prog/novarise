@@ -466,17 +466,17 @@
 
                 try {
                     const usersRef = db.collection("Users");
-                    let querySnapshot = await usersRef.where("phone", "==", phoneVal).get();
-                    
-                    if (querySnapshot.empty) {
-                        querySnapshot = await usersRef.where("phoneNumber", "==", phoneVal).get();
-                    }
-                    if (querySnapshot.empty) {
-                        querySnapshot = await usersRef.where("mobile", "==", phoneVal).get();
-                    }
-                    if (querySnapshot.empty) {
-                        querySnapshot = await usersRef.where("phone", "==", "0" + phoneVal).get();
-                    }
+                 let querySnapshot = await usersRef.where("phone", "==", phoneVal).get();
+
+                 if (querySnapshot.empty) {
+                     querySnapshot = await usersRef.where("phone", "==", "0" + phoneVal).get();
+                 }
+                 if (querySnapshot.empty) {
+                   querySnapshot = await usersRef.where("normalizedPhone", "==", "63" + phoneVal).get();
+                 }
+                 if (querySnapshot.empty) {
+                    querySnapshot = await usersRef.where("phoneNumber", "==", phoneVal).get();
+                 }
 
                     if (querySnapshot.empty) {
                         showMessage("Incorrect phone number or password.", true);
