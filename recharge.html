@@ -17,11 +17,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDKs (v10 Compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
   <script>
       tailwind.config = {
           theme: {
@@ -742,8 +737,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, runTransaction, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
@@ -759,7 +754,7 @@
   const db = getFirestore(app);
 
   const PAYMONGO_WORKER_URL = "https://novarise-payermax.kantisamuel3.workers.dev";
-  let currentUserId = null;
+  let currentUser = null;
   let paymentPollToken = 0;
   const $ = id => document.getElementById(id);
 
@@ -779,21 +774,18 @@
   $("backBottomBtn").addEventListener("click", goBack);
 
   async function getAuthToken() {
-    if (auth.currentUser) {
+    if (currentUser && typeof currentUser.getIdToken === "function") {
       try {
-        return await auth.currentUser.getIdToken(true);
+        return await currentUser.getIdToken(true);
       } catch (e) {
-        console.warn("Could not get Firebase Auth token directly:", e);
+        console.warn("Token fetch fallback:", e);
       }
     }
-    // Fallback ID token para gumana kahit naka-localStorage lang
-    return "nexora-session-" + (currentUserId || "guest");
+    const localUid = localStorage.getItem("nexora_user_uid");
+    return "nexora-session-token-" + (localUid || "guest");
   }
 
   async function createRechargePayment(amount){
-    if(!currentUserId){
-      throw new Error("Please log in again.");
-    }
     const idToken = await getAuthToken();
     const response = await fetch(`${PAYMONGO_WORKER_URL}/create-paymongo-payment`, {
       method: "POST",
@@ -814,9 +806,6 @@
   }
 
   async function getRechargePaymentStatus(orderId){
-    if(!currentUserId){
-      throw new Error("Please log in again.");
-    }
     const idToken = await getAuthToken();
     const response = await fetch(`${PAYMONGO_WORKER_URL}/recharge-status?orderId=${encodeURIComponent(orderId)}`, {
       method: "GET",
@@ -885,8 +874,10 @@
   }
 
   async function generatePaymentQR(){
-    if(!currentUserId){
+    const activeUid = currentUser ? currentUser.uid : localStorage.getItem("nexora_user_uid");
+    if(!activeUid){
       toast("Please log in first.");
+      window.location.href = "login.html";
       return;
     }
 
@@ -919,7 +910,7 @@
       if(!qrCode) throw new Error("PayMongo did not return a QR image.");
       if(!orderId) throw new Error("Payment order ID was not returned.");
 
-      const userRef = doc(db, "Users", currentUserId);
+      const userRef = doc(db, "Users", activeUid);
       await runTransaction(db, async transaction => {
         const snap = await transaction.get(userRef);
         const data = snap.exists() ? snap.data() : {};
@@ -971,7 +962,8 @@
 
   async function restorePendingPayment(){
     const orderId = sessionStorage.getItem("novariseRechargeOrder");
-    if(!orderId || !currentUserId) return;
+    const activeUid = currentUser ? currentUser.uid : localStorage.getItem("nexora_user_uid");
+    if(!orderId || !activeUid) return;
     try{
       const result = await getRechargePaymentStatus(orderId);
       const status = String(result.status || result.data?.status || "PENDING").toUpperCase();
@@ -993,29 +985,14 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", async () => {
-    const userUid = localStorage.getItem("nexora_user_uid");
-    
-    if(!userUid){
+  onAuthStateChanged(auth, async user => {
+    currentUser = user;
+    const localUid = localStorage.getItem("nexora_user_uid");
+    if(!user && !localUid){
       window.location.href = "login.html";
       return;
     }
-
-    try {
-      const userRef = doc(db, "Users", userUid);
-      const docSnap = await getDoc(userRef);
-
-      if(!docSnap.exists()){
-        window.location.href = "login.html";
-        return;
-      }
-
-      currentUserId = userUid;
-      await restorePendingPayment();
-    } catch (error) {
-      console.error("Recharge auth initialization error:", error);
-      window.location.href = "login.html";
-    }
+    await restorePendingPayment();
   });
 </script>
 
