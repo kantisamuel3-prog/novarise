@@ -276,6 +276,31 @@
       <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
   </div>
 
+  <!-- PIN VERIFICATION MODAL -->
+  <div id="pinModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden px-4">
+      <div class="w-full max-w-sm rounded-2xl border border-nexora-cyan/30 bg-[#0a1628] p-6 shadow-2xl text-center relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-nexora-cyan to-blue-500"></div>
+          
+          <div class="w-12 h-12 rounded-xl bg-nexora-cyan/10 border border-nexora-cyan/30 flex items-center justify-center text-nexora-cyan text-lg mx-auto mb-4">
+              <i class="fa-solid fa-shield-alt"></i>
+          </div>
+          
+          <h3 class="text-sm font-black font-mono tracking-wider text-white mb-2 uppercase">ENTER WITHDRAWAL PIN</h3>
+          <p class="text-xs text-gray-300 font-mono mb-4">Please input your 4-digit security PIN to authorize this withdrawal.</p>
+          
+          <input id="modalWithdrawalPin" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full h-12 bg-slate-950/90 border border-nexora-cyan/40 rounded-xl text-white text-lg tracking-widest font-mono text-center outline-none focus:border-nexora-cyan mb-5">
+          
+          <div class="flex space-x-2">
+              <button id="cancelPinBtn" class="flex-1 py-3 bg-gray-500/10 border border-gray-500/30 text-gray-300 text-xs font-black font-mono rounded-xl hover:bg-gray-500/20 transition-all cursor-pointer">
+                  CANCEL
+              </button>
+              <button id="confirmPinBtn" class="flex-1 py-3 bg-gradient-to-r from-nexora-cyan/20 to-blue-500/20 border border-nexora-cyan/40 text-nexora-cyan text-xs font-black font-mono rounded-xl hover:bg-nexora-cyan/30 transition-all cursor-pointer shadow-md">
+                  CONFIRM
+              </button>
+          </div>
+      </div>
+  </div>
+
   <!-- MARKET TICKER HEADER -->
   <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-1.5">
       <div class="flex items-center text-xs font-mono">
@@ -328,7 +353,7 @@
     </div>
 
     <h1 class="text-xl font-black text-white font-mono tracking-wide">Fund Withdrawal</h1>
-    <p class="text-[11px] text-gray-400 font-mono mt-0.5">Transfer funds securely to your account[cite: 2].</p>
+    <p class="text-[11px] text-gray-400 font-mono mt-0.5">Transfer funds securely to your account.</p>
   </div>
 
   <main class="content">
@@ -378,14 +403,6 @@
         <label for="accountNumber" id="accountLabel">GCASH NUMBER</label>
         <div class="input-wrap">
           <input id="accountNumber" class="nexora-input !pl-3.5" type="text" placeholder="Enter number" autocomplete="off">
-        </div>
-      </div>
-
-      <!-- WITHDRAWAL PIN FIELD -->
-      <div class="field">
-        <label for="withdrawalPin">4-DIGIT WITHDRAWAL PIN</label>
-        <div class="input-wrap">
-          <input id="withdrawalPin" class="nexora-input !pl-3.5 text-center tracking-widest text-base" type="password" maxlength="4" inputmode="numeric" placeholder="••••" autocomplete="off">
         </div>
       </div>
 
@@ -522,7 +539,6 @@
       opt.classList.add("active");
       selectedMethod = opt.getAttribute("data-method");
       
-      // Dynamic label update
       if(selectedMethod === "Maya") {
         $("accountLabel").textContent = "MAYA NUMBER";
       } else {
@@ -545,12 +561,12 @@
     }
   }
 
-  async function submitWithdrawal(){
+  // Step 1: Validate form fields when Submit Withdrawal is clicked, then show PIN Modal
+  $("withdrawBtn").addEventListener("click", () => {
     if(!currentUser) return;
     const amount = Number($("withdrawAmount").value);
     const name = $("accountName").value.trim();
     const number = $("accountNumber").value.trim();
-    const enteredPin = $("withdrawalPin").value.trim();
 
     if(!Number.isFinite(amount) || amount <= 0){
       toast("Please enter a valid withdrawal amount.");
@@ -572,11 +588,31 @@
       $("accountNumber").focus();
       return;
     }
+
+    // Open PIN Modal
+    $("modalWithdrawalPin").value = "";
+    $("pinModal").classList.remove("hidden");
+    $("modalWithdrawalPin").focus();
+  });
+
+  $("cancelPinBtn").addEventListener("click", () => {
+    $("pinModal").classList.add("hidden");
+  });
+
+  // Step 2: Confirm PIN and Process Transaction
+  $("confirmPinBtn").addEventListener("click", async () => {
+    const enteredPin = $("modalWithdrawalPin").value.trim();
     if(!enteredPin || enteredPin.length !== 4){
-      toast("Please enter your 4-digit Withdrawal PIN.");
-      $("withdrawalPin").focus();
+      toast("Please enter your valid 4-digit Withdrawal PIN.");
+      $("modalWithdrawalPin").focus();
       return;
     }
+
+    $("pinModal").classList.add("hidden");
+
+    const amount = Number($("withdrawAmount").value);
+    const name = $("accountName").value.trim();
+    const number = $("accountNumber").value.trim();
 
     const btn = $("withdrawBtn");
     btn.disabled = true;
@@ -591,7 +627,6 @@
         const currentBal = Number(data.balance || data.wallet || 0);
         const savedPin = data.withdrawalPin;
 
-        // Check if Withdrawal PIN matches the one in settings
         if(!savedPin){
           throw new Error("Please set up your Withdrawal PIN in Settings first.");
         }
@@ -647,9 +682,7 @@
       btn.disabled = false;
       btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Withdrawal`;
     }
-  }
-
-  $("withdrawBtn").addEventListener("click", submitWithdrawal);
+  });
 
   onAuthStateChanged(auth, async user => {
     if(!user){
