@@ -90,7 +90,7 @@
   </style>
 </head>
 
-<body class="flex flex-col justify-between relative overflow-x-hidden selection:bg-nexora-cyan selection:text-black">
+<body class="flex flex-col justify-start relative overflow-x-hidden selection:bg-nexora-cyan selection:text-black min-h-screen">
 
   <!-- BACKGROUND EFFECTS & CANDLESTICK CHART -->
   <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -99,7 +99,7 @@
   </div>
 
   <!-- MARKET TICKER -->
-  <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-1.5">
+  <header class="relative z-20 w-full bg-[#030914]/90 backdrop-blur-md border-b border-nexora-cyan/20 py-1.5 shrink-0">
       <div class="flex items-center text-[11px] font-mono">
           <div class="px-3 py-0.5 bg-nexora-cyan/10 border-r border-nexora-cyan/30 text-nexora-cyan font-bold flex items-center shrink-0 z-10 shadow-lg">
               <span class="w-1.5 h-1.5 rounded-full bg-nexora-accent animate-ping mr-1.5"></span>
@@ -128,7 +128,7 @@
   </header>
 
   <!-- MAIN CONTENT -->
-  <main class="relative z-10 w-full max-w-md mx-auto px-3 py-4 space-y-3">
+  <main class="relative z-10 w-full max-w-md mx-auto px-3 pt-3 pb-6 space-y-3 flex-1">
 
       <!-- COMPACT HEADER WITH SMALL LOGO ON SIDE -->
       <div class="flex items-center justify-between bg-nexora-card/90 border border-nexora-cyan/30 rounded-xl p-3 shadow-lg backdrop-blur-md">
@@ -365,7 +365,6 @@
                   const commissions = Array.isArray(data.commissions) ? data.commissions : [];
                   const referralBonuses = Array.isArray(data.referralBonuses) ? data.referralBonuses : [];
                   
-                  // Pagsamahin ang lahat ng uri ng transaksyon at komisyon
                   allTransactions = [...txs, ...commissions, ...referralBonuses];
                   allTransactions.sort((a, b) => new Date(b.date || b.timestamp || 0) - new Date(a.date || a.timestamp || 0));
 
