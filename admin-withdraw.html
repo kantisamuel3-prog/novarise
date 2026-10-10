@@ -339,17 +339,6 @@ button:disabled{
     <div class="logo">Novarise</div>
     <div class="subtitle">Withdrawal Administration</div>
   </div>
-
-<!-- ADMIN LOGIN SECTION (Ipapakita kung hindi pa naka-login) -->
-  <div id="adminLoginSection" class="section" style="margin-bottom: 18px; display: none;">
-    <div class="section-title">Admin Authentication Required</div>
-    <div style="font-size: 13px; color: #596579; margin-bottom: 12px;">Please enter admin credentials to access withdrawal controls.</div>
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-      <input type="tel" id="adminPhone" placeholder="Admin Mobile Number (e.g. 9999999999)" style="padding: 12px; border: 1px solid #cbdaf0; border-radius: 11px; font-size: 13px; outline: none;" maxlength="10">
-      <input type="password" id="adminPassword" placeholder="Admin Password" style="padding: 12px; border: 1px solid #cbdaf0; border-radius: 11px; font-size: 13px; outline: none;">
-      <button type="button" id="adminLoginBtn" class="approve-btn" style="padding: 12px; font-size: 13px; font-weight: 800; cursor: pointer;">LOGIN AS ADMIN</button>
-    </div>
-  </div>
       
   <div class="history-toolbar">
     <a href="history.html" class="history-toggle" onclick="openHistory(); return false;">
@@ -464,10 +453,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-
-const ADMIN_EMAIL =
-  "639999999999@nexora.local";
-
+const ADMIN_EMAIL = "639999999999@nexora.local";
 
 const $ = id =>
   document.getElementById(id);
@@ -495,99 +481,44 @@ function formatMoney(value){
 
 
 /* -----------------------------------------
-   AUTH CHECK
+   AUTH CHECK (GINAMIT ANG LOCALSTORAGE NG SYSTEM MO)
 ----------------------------------------- */
 
 (async function(){
 
   try{
 
-    await auth.setPersistence(
-      firebase.auth.Auth.Persistence.LOCAL
-    );
+    const userUid = localStorage.getItem("nexora_user_uid");
 
-    let user = auth.currentUser;
-
-    if(!user){
-
-      user = await new Promise(resolve => {
-
-        let finished = false;
-
-        const unsubscribe =
-          auth.onAuthStateChanged(
-            currentUser => {
-
-              if(finished) return;
-
-              finished = true;
-
-              unsubscribe();
-
-              resolve(
-                currentUser || null
-              );
-
-            }
-          );
-
-        setTimeout(() => {
-
-          if(finished) return;
-
-          finished = true;
-
-          unsubscribe();
-
-          resolve(
-            auth.currentUser || null
-          );
-
-        },8000);
-
-      });
-
-    }
-
-    console.log(
-      "ADMIN AUTH USER:",
-      user
-    );
-
-    if(!user){
-
+    if(!userUid){
       $("withdrawals").innerHTML = `
         <div class="error">
           Please login first using the existing Novarise login page.
         </div>
       `;
-
       $("recharges").innerHTML = `
         <div class="error">
           Please login first using the existing Novarise login page.
         </div>
       `;
-
-      $("pendingCount").textContent = "0";
-      $("pendingAmount").textContent = "₱0.00";
-      $("totalCount").textContent = "0";
-
+      window.location.href = "login.html";
       return;
-
     }
 
-    await user.getIdToken(true);
+    const userDoc = await db.collection("Users").doc(userUid).get();
 
-    console.log(
-      "ADMIN EMAIL:",
-      user.email
-    );
+    if(!userDoc.exists){
+      $("withdrawals").innerHTML = '<div class="error">Access denied. User not found.</div>';
+      $("recharges").innerHTML = '<div class="error">Access denied.</div>';
+      return;
+    }
 
-    if(
-      user.email !==
-      ADMIN_EMAIL
-    ){
+    const userData = userDoc.data() || {};
+    const email = userData.email || "";
+    const phone = userData.phone || "";
 
+    // I-check kung ito ang admin account base sa email o phone number sa Firestore
+    if(email !== ADMIN_EMAIL && phone !== "09999999999" && userData.rawPhone !== "9999999999"){
       $("withdrawals").innerHTML = `
         <div class="error">
           Access denied.<br><br>
@@ -606,32 +537,28 @@ function formatMoney(value){
       $("totalCount").textContent = "0";
 
       return;
-
     }
 
-    console.log(
-      "ADMIN VERIFIED"
-    );
-
+    console.log("ADMIN VERIFIED");
     await loadWithdrawals();
 
   }catch(error){
 
     console.error(
-      "Firebase Auth restore error:",
+      "Auth check error:",
       error
     );
 
     $("withdrawals").innerHTML = `
       <div class="error">
-        Unable to restore the administrator login session.
+        Unable to verify administrator session.
         Please refresh the page.
       </div>
     `;
 
     $("recharges").innerHTML = `
       <div class="error">
-        Unable to restore the administrator login session.
+        Unable to verify administrator session.
         Please refresh the page.
       </div>
     `;
