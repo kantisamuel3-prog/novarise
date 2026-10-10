@@ -138,7 +138,21 @@
                 <i class="fa-solid fa-chevron-right text-blue-400 text-xs"></i>
             </button>
 
-            <!-- Option 3: Withdrawal PIN -->
+            <!-- Option 3: Bind Bank Account (GCash / Maya) -->
+            <button onclick="openSection('bankSection')" class="w-full p-4 rounded-2xl border border-amber-500/25 bg-nexora-card/85 flex items-center justify-between glow-box hover:border-amber-500/60 transition-all cursor-pointer">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-sm">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div class="text-left">
+                        <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND BANK ACCOUNT</h2>
+                        <p class="text-[10px] text-gray-400 font-mono">Link GCash or Maya for payouts</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-amber-400 text-xs"></i>
+            </button>
+
+            <!-- Option 4: Withdrawal PIN -->
             <button onclick="openSection('pinSection')" class="w-full p-4 rounded-2xl border border-emerald-500/25 bg-nexora-card/85 flex items-center justify-between glow-box hover:border-emerald-500/60 transition-all cursor-pointer">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-sm">
@@ -232,6 +246,45 @@
                 </div>
             </div>
 
+            <!-- BIND BANK ACCOUNT FORM (GCash / Maya) -->
+            <div id="bankSection" class="form-panel hidden rounded-2xl border border-amber-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-amber-400 to-amber-600"></div>
+                
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND BANK ACCOUNT</h2>
+                    </div>
+                    <span id="bankStatusBadge" class="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-400 border border-gray-500/20">UNBOUND</span>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">SELECT METHOD</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" id="methodGcash" class="py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/20 text-white font-black text-xs font-mono transition-all cursor-pointer">GCash</button>
+                            <button type="button" id="methodMaya" class="py-2.5 rounded-xl border border-amber-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer">Maya</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">ACCOUNT NAME</label>
+                        <input id="bankAccountName" type="text" placeholder="Full name on account" class="w-full h-11 px-3.5 bg-slate-950/90 border border-amber-500/25 rounded-xl text-white text-xs font-mono outline-none focus:border-amber-500 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="bankNumberLabel">GCASH NUMBER</label>
+                        <input id="bankAccountNumber" type="text" placeholder="Enter mobile number" class="w-full h-11 px-3.5 bg-slate-950/90 border border-amber-500/25 rounded-xl text-white text-xs font-mono outline-none focus:border-amber-500 transition-all">
+                    </div>
+
+                    <button id="saveBankBtn" class="w-full py-3 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/40 text-amber-400 text-xs font-black font-mono rounded-xl hover:bg-amber-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
+                        Save Bank Account
+                    </button>
+                </div>
+            </div>
+
             <!-- WITHDRAWAL PIN FORM -->
             <div id="pinSection" class="form-panel hidden rounded-2xl border border-emerald-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-emerald-400 to-emerald-600"></div>
@@ -289,6 +342,25 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        let selectedBankMethod = "GCash";
+
+        // Bank Selection Logic
+        document.getElementById("methodGcash").addEventListener("click", () => {
+            if(document.getElementById("saveBankBtn").disabled) return;
+            selectedBankMethod = "GCash";
+            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/20 text-white font-black text-xs font-mono transition-all cursor-pointer";
+            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-amber-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+            document.getElementById("bankNumberLabel").textContent = "GCASH NUMBER";
+        });
+
+        document.getElementById("methodMaya").addEventListener("click", () => {
+            if(document.getElementById("saveBankBtn").disabled) return;
+            selectedBankMethod = "Maya";
+            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/20 text-white font-black text-xs font-mono transition-all cursor-pointer";
+            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-amber-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+            document.getElementById("bankNumberLabel").textContent = "MAYA NUMBER";
+        });
 
         // Navigation Functions between Menu and Forms
         function openSection(sectionId) {
@@ -433,6 +505,36 @@
                         badge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
                     }
 
+                    // Check Bank Account Binding (GCash / Maya)
+                    if(data.bankAccount && data.bankAccount.number) {
+                        const bankNameInput = document.getElementById("bankAccountName");
+                        const bankNumberInput = document.getElementById("bankAccountNumber");
+                        const saveBankBtn = document.getElementById("saveBankBtn");
+                        const bankBadge = document.getElementById("bankStatusBadge");
+
+                        bankNameInput.value = data.bankAccount.name || "";
+                        bankNumberInput.value = data.bankAccount.number || "";
+                        
+                        if(data.bankAccount.method === "Maya") {
+                            selectedBankMethod = "Maya";
+                            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/20 text-white font-black text-xs font-mono transition-all cursor-pointer";
+                            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-amber-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+                            document.getElementById("bankNumberLabel").textContent = "MAYA NUMBER";
+                        }
+
+                        bankNameInput.disabled = true;
+                        bankNameInput.classList.add("opacity-60", "cursor-not-allowed");
+                        bankNumberInput.disabled = true;
+                        bankNumberInput.classList.add("opacity-60", "cursor-not-allowed");
+
+                        saveBankBtn.disabled = true;
+                        saveBankBtn.textContent = `LOCKED / BOUND (${selectedBankMethod})`;
+                        saveBankBtn.className = "w-full py-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
+
+                        bankBadge.textContent = "LOCKED";
+                        bankBadge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+                    }
+
                     if(data.withdrawalPin){
                         document.getElementById("currentPinWrapper").style.display = "block";
                         document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
@@ -452,7 +554,7 @@
             }
         });
 
-        // Save Gmail Logic with Permanent Lock Feature
+        // Save Gmail Logic
         document.getElementById("saveGmailBtn").addEventListener("click", async () => {
             const emailInput = document.getElementById("bindEmailInput");
             const email = emailInput.value.trim();
@@ -485,6 +587,57 @@
             } catch(err) {
                 console.error(err);
                 showAlert("Failed to bind Gmail: " + err.message);
+            }
+        });
+
+        // Save Bank Account Logic (GCash / Maya)
+        document.getElementById("saveBankBtn").addEventListener("click", async () => {
+            const nameInput = document.getElementById("bankAccountName");
+            const numberInput = document.getElementById("bankAccountNumber");
+            const name = nameInput.value.trim();
+            const number = numberInput.value.trim();
+
+            if(!name) {
+                showAlert("Please enter the account holder name.");
+                return;
+            }
+            if(!number || number.length < 10) {
+                showAlert("Please enter a valid mobile number.");
+                return;
+            }
+
+            try {
+                const user = auth.currentUser;
+                if(!user) return;
+
+                const bankData = {
+                    method: selectedBankMethod,
+                    name: name,
+                    number: number
+                };
+
+                await db.collection("Users").doc(user.uid).set({
+                    bankAccount: bankData
+                }, { merge: true });
+
+                nameInput.disabled = true;
+                nameInput.classList.add("opacity-60", "cursor-not-allowed");
+                numberInput.disabled = true;
+                numberInput.classList.add("opacity-60", "cursor-not-allowed");
+
+                const saveBtn = document.getElementById("saveBankBtn");
+                saveBtn.disabled = true;
+                saveBtn.textContent = `LOCKED / BOUND (${selectedBankMethod})`;
+                saveBtn.className = "w-full py-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
+
+                const badge = document.getElementById("bankStatusBadge");
+                badge.textContent = "LOCKED";
+                badge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+
+                showAlert(`Your ${selectedBankMethod} account has been successfully bound and locked!`, "SUCCESS");
+            } catch(err) {
+                console.error(err);
+                showAlert("Failed to bind bank account: " + err.message);
             }
         });
 
