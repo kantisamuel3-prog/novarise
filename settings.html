@@ -138,7 +138,7 @@
                 <i class="fa-solid fa-chevron-right text-blue-400 text-xs"></i>
             </button>
 
-            <!-- Option 3: Withdrawal PIN (Fixed Icon to fa-shield-alt) -->
+            <!-- Option 3: Withdrawal PIN -->
             <button onclick="openSection('pinSection')" class="w-full p-4 rounded-2xl border border-emerald-500/25 bg-nexora-card/85 flex items-center justify-between glow-box hover:border-emerald-500/60 transition-all cursor-pointer">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-sm">
@@ -205,11 +205,14 @@
             <div id="gmailSection" class="form-panel hidden rounded-2xl border border-blue-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-blue-400 to-indigo-600"></div>
                 
-                <div class="flex items-center space-x-2.5 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-xs">
-                        <i class="fa-solid fa-envelope-circle-check"></i>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-xs">
+                            <i class="fa-solid fa-envelope-circle-check"></i>
+                        </div>
+                        <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND GMAIL FOR RECOVERY</h2>
                     </div>
-                    <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND GMAIL FOR RECOVERY</h2>
+                    <span id="bindStatusBadge" class="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-400 border border-gray-500/20">UNBOUND</span>
                 </div>
 
                 <div class="space-y-3">
@@ -419,7 +422,20 @@
                     const data = userDoc.data();
                     
                     if(data.recoveryEmail) {
-                        document.getElementById("bindEmailInput").value = data.recoveryEmail;
+                        const emailInput = document.getElementById("bindEmailInput");
+                        const saveBtn = document.getElementById("saveGmailBtn");
+                        const badge = document.getElementById("bindStatusBadge");
+                        
+                        emailInput.value = data.recoveryEmail;
+                        emailInput.disabled = true;
+                        emailInput.classList.add("opacity-60", "cursor-not-allowed");
+
+                        saveBtn.disabled = true;
+                        saveBtn.textContent = "LOCKED / BOUND";
+                        saveBtn.className = "flex-1 py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
+
+                        badge.textContent = "LOCKED";
+                        badge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
                     }
 
                     if(data.withdrawalPin){
@@ -441,9 +457,10 @@
             }
         });
 
-        // Save Gmail Logic
+        // Save Gmail Logic with Permanent Lock Feature
         document.getElementById("saveGmailBtn").addEventListener("click", async () => {
-            const email = document.getElementById("bindEmailInput").value.trim();
+            const emailInput = document.getElementById("bindEmailInput");
+            const email = emailInput.value.trim();
             if(!email || !email.includes("@") || !email.endsWith("@gmail.com")) {
                 showAlert("Please enter a valid Gmail address ending with @gmail.com.");
                 return;
@@ -457,7 +474,19 @@
                     recoveryEmail: email
                 }, { merge: true });
 
-                showAlert("Your Gmail address has been successfully bound to your account!", "SUCCESS");
+                emailInput.disabled = true;
+                emailInput.classList.add("opacity-60", "cursor-not-allowed");
+
+                const saveBtn = document.getElementById("saveGmailBtn");
+                saveBtn.disabled = true;
+                saveBtn.textContent = "LOCKED / BOUND";
+                saveBtn.className = "flex-1 py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
+
+                const badge = document.getElementById("bindStatusBadge");
+                badge.textContent = "LOCKED";
+                badge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+
+                showAlert("Your Gmail address has been successfully bound and permanently locked!", "SUCCESS");
             } catch(err) {
                 console.error(err);
                 showAlert("Failed to bind Gmail: " + err.message);
