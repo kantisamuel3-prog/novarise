@@ -541,13 +541,31 @@
           }
       }
 
-      onAuthStateChanged(auth, async User => {
-          if (!User) {
-              window.location.href = "login.html";
-              return;
-          }
-          await loadTeam(User);
-      });
+      document.addEventListener("DOMContentLoaded", async () => {
+    const userUid = localStorage.getItem("nexora_user_uid");
+    
+    if (!userUid) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const userDocRef = db.collection("Users").doc(userUid);
+      const userDoc = await userDocRef.get();
+
+      if (!userDoc.exists) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Ilagay dito ang initialization o data loading para sa pahinang ito gamit ang userUid
+      console.log("User authenticated via localStorage:", userUid);
+
+    } catch (error) {
+      console.error("Auth error:", error);
+      window.location.href = "login.html";
+    }
+  });
 
       document.getElementById("copyCodeButton").addEventListener("click", () => {
           const code = referralCodeElement.textContent;
