@@ -340,7 +340,7 @@ button:disabled{
     <div class="subtitle">Withdrawal Administration</div>
   </div>
 
-<!-- ADMIN LOGIN SECTION (Ipapakita kung hindi pa naka-login) -->
+<!-- ADMIN LOGIN SECTION (Direktang tinitingnan sa Firestore database ang password) -->
   <div id="adminLoginSection" class="section" style="margin-bottom: 18px; display: none;">
     <div class="section-title">Admin Authentication Required</div>
     <div style="font-size: 13px; color: #596579; margin-bottom: 12px;">Please enter admin credentials to access withdrawal controls.</div>
@@ -464,11 +464,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-
-const ADMIN_EMAIL =
-  "639999999999@nexora.local";
-
-
 const $ = id =>
   document.getElementById(id);
 
@@ -495,119 +490,90 @@ function formatMoney(value){
 
 
 /* -----------------------------------------
-   AUTH CHECK (NAINTO SAINUKSAN SA LOCALSTORAGE UID)
+   AUTH CHECK (FIRESTORE DATABASE LOOKUP)
 ----------------------------------------- */
 
-(async function(){
+async function verifyAndLoadAdmin(){
+  const userUid = localStorage.getItem("nexora_user_uid");
 
-  try{
+  if(!userUid){
+    $("adminLoginSection").style.display = "block";
+    $("withdrawals").innerHTML = '<div class="empty">Please login using the admin credentials above.</div>';
+    $("recharges").innerHTML = '<div class="empty">Please login using the admin credentials above.</div>';
+    return;
+  }
 
-    const userUid = localStorage.getItem("nexora_user_uid");
-
-    if(!userUid){
-
-      $("withdrawals").innerHTML = `
-        <div class="error">
-          Please login first using the existing Novarise login page.
-        </div>
-      `;
-
-      $("recharges").innerHTML = `
-        <div class="error">
-          Please login first using the existing Novarise login page.
-        </div>
-      `;
-
-      $("pendingCount").textContent = "0";
-      $("pendingAmount").textContent = "₱0.00";
-      $("totalCount").textContent = "0";
-
-      window.location.href = "login.html";
-      return;
-
-    }
-
+  try {
     const userDoc = await db.collection("Users").doc(userUid).get();
-
     if(!userDoc.exists){
-
-      $("withdrawals").innerHTML = `
-        <div class="error">
-          Access denied.<br><br>
-          User record not found.
-        </div>
-      `;
-
-      $("recharges").innerHTML = `
-        <div class="error">
-          Access denied.
-        </div>
-      `;
-
+      $("adminLoginSection").style.display = "block";
       return;
-
     }
 
     const userData = userDoc.data() || {};
     const phone = userData.phone || userData.phoneNumber || userData.mobile || "";
-    const email = userData.email || "";
 
-    if(phone !== "9999999999" && email !== ADMIN_EMAIL && userData.rawPhone !== "9999999999"){
-
-      $("withdrawals").innerHTML = `
-        <div class="error">
-          Access denied.<br><br>
-          This page is for the withdrawal administrator only.
-        </div>
-      `;
-
-      $("recharges").innerHTML = `
-        <div class="error">
-          Access denied.
-        </div>
-      `;
-
-      $("pendingCount").textContent = "0";
-      $("pendingAmount").textContent = "₱0.00";
-      $("totalCount").textContent = "0";
-
+    if(phone !== "9999999999" && userData.email !== "639999999999@nexora.local" && userData.rawPhone !== "9999999999"){
+      $("adminLoginSection").style.display = "block";
+      $("withdrawals").innerHTML = '<div class="error">Access denied. Administrator privileges required.</div>';
+      $("recharges").innerHTML = '<div class="error">Access denied.</div>';
       return;
-
     }
 
-    console.log(
-      "ADMIN VERIFIED"
-    );
-
+    $("adminLoginSection").style.display = "none";
     await loadWithdrawals();
+  } catch(err) {
+    console.error("Auth verification error:", err);
+    $("adminLoginSection").style.display = "block";
+  }
+}
 
-  }catch(error){
+document.getElementById("adminLoginBtn").addEventListener("click", async () => {
+  const phoneVal = document.getElementById("adminPhone").value.trim();
+  const passVal = document.getElementById("adminPassword").value;
 
-    console.error(
-      "Auth check error:",
-      error
-    );
-
-    $("withdrawals").innerHTML = `
-      <div class="error">
-        Unable to verify administrator session.
-        Please refresh the page.
-      </div>
-    `;
-
-    $("recharges").innerHTML = `
-      <div class="error">
-        Unable to verify administrator session.
-        Please refresh the page.
-      </div>
-    `;
-
-    $("pendingCount").textContent = "0";
-    $("pendingAmount").textContent = "₱0.00";
-    $("totalCount").textContent = "0";
-
+  if(!phoneVal || !passVal) {
+    alert("Please enter admin phone number and password.");
+    return;
   }
 
+  try {
+    const usersRef = db.collection("Users");
+    let querySnapshot = await usersRef.where("phone", "==", phoneVal).get();
+    
+    if (querySnapshot.empty) {
+      querySnapshot = await usersRef.where("phoneNumber", "==", phoneVal).get();
+    }
+    if (querySnapshot.empty) {
+      querySnapshot = await usersRef.where("mobile", "==", phoneVal).get();
+    }
+    if (querySnapshot.empty) {
+      querySnapshot = await usersRef.where("phone", "==", "0" + phoneVal).get();
+    }
+
+    if (querySnapshot.empty) {
+      alert("Incorrect admin phone number or password.");
+      return;
+    }
+
+    const userDoc = querySnapshot.docs[0];
+    const userData = userDoc.data();
+
+    if (userData.password === passVal) {
+      localStorage.setItem("nexora_user_uid", userDoc.id);
+      $("adminLoginSection").style.display = "none";
+      await loadWithdrawals();
+    } else {
+      alert("Incorrect admin phone number or password.");
+    }
+  } catch(error) {
+    console.error("Admin login error:", error);
+    alert("An error occurred during admin login.");
+  }
+});
+
+(async function(){
+  await verifyAndLoadAdmin();
 })();
 
 /* -----------------------------------------
