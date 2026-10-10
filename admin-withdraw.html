@@ -135,7 +135,6 @@ body{
   border-radius:18px;
   padding:17px;
   box-shadow:0 5px 20px rgba(25,55,100,.07);
-  margin-bottom: 14px;
 
 }
 
@@ -328,10 +327,6 @@ button:disabled{
   .info-row span:first-child{
     flex-shrink:0;
   }
-
-  .requests-grid {
-    grid-template-columns: 1fr;
-  }
 }
 </style>
 </head>
@@ -345,7 +340,7 @@ button:disabled{
     <div class="subtitle">Withdrawal Administration</div>
   </div>
 
-  <!-- ADMIN LOGIN SECTION (Idinagdag para makapag-log in ka nang direkta) -->
+<!-- ADMIN LOGIN SECTION (Ipapakita kung hindi pa naka-login) -->
   <div id="adminLoginSection" class="section" style="margin-bottom: 18px; display: none;">
     <div class="section-title">Admin Authentication Required</div>
     <div style="font-size: 13px; color: #596579; margin-bottom: 12px;">Please enter admin credentials to access withdrawal controls.</div>
@@ -355,7 +350,7 @@ button:disabled{
       <button type="button" id="adminLoginBtn" class="approve-btn" style="padding: 12px; font-size: 13px; font-weight: 800; cursor: pointer;">LOGIN AS ADMIN</button>
     </div>
   </div>
-
+      
   <div class="history-toolbar">
     <a href="history.html" class="history-toggle" onclick="openHistory(); return false;">
       <span class="history-icon">↻</span>
@@ -500,52 +495,8 @@ function formatMoney(value){
 
 
 /* -----------------------------------------
-   AUTH CHECK & ADMIN LOGIN HANDLER
+   AUTH CHECK
 ----------------------------------------- */
-
-async function verifyAndLoadAdmin(user){
-  if(!user){
-    document.getElementById("adminLoginSection").style.display = "block";
-    $("withdrawals").innerHTML = '<div class="empty">Please login using the admin credentials above.</div>';
-    $("recharges").innerHTML = '<div class="empty">Please login using the admin credentials above.</div>';
-    return;
-  }
-
-  try {
-    await user.getIdToken(true);
-  } catch(e) {
-    console.warn("Token refresh warning:", e);
-  }
-
-  if(user.email !== ADMIN_EMAIL){
-    document.getElementById("adminLoginSection").style.display = "block";
-    $("withdrawals").innerHTML = '<div class="error">Access denied. This page is for the administrator only.</div>';
-    $("recharges").innerHTML = '<div class="error">Access denied.</div>';
-    return;
-  }
-
-  document.getElementById("adminLoginSection").style.display = "none";
-  await loadWithdrawals();
-}
-
-document.getElementById("adminLoginBtn").addEventListener("click", async () => {
-  const phone = document.getElementById("adminPhone").value.trim();
-  const password = document.getElementById("adminPassword").value;
-
-  if(!phone || !password) {
-    alert("Please enter admin phone and password.");
-    return;
-  }
-
-  try {
-    const syntheticEmail = "63" + phone.replace(/^0+/, "") + "@nexora.local";
-    const userCred = await auth.signInWithEmailAndPassword(syntheticEmail, password);
-    await verifyAndLoadAdmin(userCred.user);
-  } catch(err) {
-    console.error("Admin login error:", err);
-    alert("Invalid admin credentials.");
-  }
-});
 
 (async function(){
 
@@ -598,7 +549,71 @@ document.getElementById("adminLoginBtn").addEventListener("click", async () => {
 
     }
 
-    await verifyAndLoadAdmin(user);
+    console.log(
+      "ADMIN AUTH USER:",
+      user
+    );
+
+    if(!user){
+
+      $("withdrawals").innerHTML = `
+        <div class="error">
+          Please login first using the existing Novarise login page.
+        </div>
+      `;
+
+      $("recharges").innerHTML = `
+        <div class="error">
+          Please login first using the existing Novarise login page.
+        </div>
+      `;
+
+      $("pendingCount").textContent = "0";
+      $("pendingAmount").textContent = "₱0.00";
+      $("totalCount").textContent = "0";
+
+      return;
+
+    }
+
+    await user.getIdToken(true);
+
+    console.log(
+      "ADMIN EMAIL:",
+      user.email
+    );
+
+    if(
+      user.email !==
+      ADMIN_EMAIL
+    ){
+
+      $("withdrawals").innerHTML = `
+        <div class="error">
+          Access denied.<br><br>
+          This page is for the withdrawal administrator only.
+        </div>
+      `;
+
+      $("recharges").innerHTML = `
+        <div class="error">
+          Access denied.
+        </div>
+      `;
+
+      $("pendingCount").textContent = "0";
+      $("pendingAmount").textContent = "₱0.00";
+      $("totalCount").textContent = "0";
+
+      return;
+
+    }
+
+    console.log(
+      "ADMIN VERIFIED"
+    );
+
+    await loadWithdrawals();
 
   }catch(error){
 
@@ -607,7 +622,23 @@ document.getElementById("adminLoginBtn").addEventListener("click", async () => {
       error
     );
 
-    document.getElementById("adminLoginSection").style.display = "block";
+    $("withdrawals").innerHTML = `
+      <div class="error">
+        Unable to restore the administrator login session.
+        Please refresh the page.
+      </div>
+    `;
+
+    $("recharges").innerHTML = `
+      <div class="error">
+        Unable to restore the administrator login session.
+        Please refresh the page.
+      </div>
+    `;
+
+    $("pendingCount").textContent = "0";
+    $("pendingAmount").textContent = "₱0.00";
+    $("totalCount").textContent = "0";
 
   }
 
