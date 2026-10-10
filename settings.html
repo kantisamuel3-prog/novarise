@@ -246,7 +246,7 @@
                 </div>
             </div>
 
-            <!-- BIND BANK ACCOUNT FORM (GCash / Maya Separate or Independent Binding) -->
+            <!-- BIND BANK ACCOUNT FORM (GCash / Maya Independent Binding) -->
             <div id="bankSection" class="form-panel hidden rounded-2xl border border-amber-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-amber-400 to-amber-600"></div>
                 
@@ -291,10 +291,10 @@
                         Save Bank Account
                     </button>
 
-                    <!-- Professional English Warning Notice -->
+                    <!-- Professional Warning Notice -->
                     <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[10px] font-mono text-amber-200/90 leading-relaxed">
                         <i class="fa-solid fa-circle-exclamation mr-1 text-amber-400"></i>
-                        <strong>Important Note:</strong> Please ensure your account name and mobile number are correct before saving. Once bound and locked, account details cannot be modified directly. For updates or changes, please contact customer support.
+                        <strong>Important Note:</strong> Please carefully review and verify your account name and mobile number before saving. Once bound and locked, account details cannot be modified directly for security purposes. If you need assistance updating your bound accounts, please contact our support team.
                     </div>
                 </div>
             </div>
@@ -362,13 +362,11 @@
 
         // Bank Selection Logic
         document.getElementById("methodGcash").addEventListener("click", () => {
-            if(userDataCache.bankAccount && userDataCache.bankAccount.gcash && userDataCache.bankAccount.gcash.number) return;
             selectedBankMethod = "GCash";
             updateBankMethodUI();
         });
 
         document.getElementById("methodMaya").addEventListener("click", () => {
-            if(userDataCache.bankAccount && userDataCache.bankAccount.maya && userDataCache.bankAccount.maya.number) return;
             selectedBankMethod = "Maya";
             updateBankMethodUI();
         });
@@ -376,16 +374,26 @@
         function updateBankMethodUI() {
             const nameInput = document.getElementById("bankAccountName");
             const numberInput = document.getElementById("bankAccountNumber");
-            const saveBtn = document.getElementById("saveBankBtn");
+            const gcashBtn = document.getElementById("methodGcash");
+            const mayaBtn = document.getElementById("methodMaya");
+
+            let bankData = userDataCache.bankAccount || {};
+            
+            if(bankData.number && !bankData.gcash && !bankData.maya) {
+                const legacyMeth = bankData.method === "Maya" ? "maya" : "gcash";
+                bankData = {
+                    [legacyMeth]: { name: bankData.name, number: bankData.number }
+                };
+            }
 
             if(selectedBankMethod === "GCash") {
-                document.getElementById("methodGcash").className = "h-12 px-3 rounded-xl border border-blue-500/40 bg-[#007dfc] text-white transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2";
-                document.getElementById("methodMaya").className = "h-12 px-3 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 transition-all cursor-pointer flex items-center justify-center space-x-1.5 opacity-60";
+                gcashBtn.className = "h-12 px-3 rounded-xl border border-blue-500/40 bg-[#007dfc] text-white transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2";
+                mayaBtn.className = "h-12 px-3 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 transition-all cursor-pointer flex items-center justify-center space-x-1.5";
                 document.getElementById("bankNumberLabel").textContent = "GCASH NUMBER";
-                
-                if(userDataCache.bankAccount && userDataCache.bankAccount.gcash && userDataCache.bankAccount.gcash.number) {
-                    nameInput.value = userDataCache.bankAccount.gcash.name || "";
-                    numberInput.value = userDataCache.bankAccount.gcash.number || "";
+
+                if(bankData.gcash && bankData.gcash.number) {
+                    nameInput.value = bankData.gcash.name || "";
+                    numberInput.value = bankData.gcash.number || "";
                     setInputsLocked(true, "GCash");
                 } else {
                     nameInput.value = "";
@@ -393,13 +401,13 @@
                     setInputsLocked(false, "GCash");
                 }
             } else {
-                document.getElementById("methodMaya").className = "h-12 px-3 rounded-xl border border-emerald-500/40 bg-black text-[#50e3a4] transition-all cursor-pointer shadow-md flex items-center justify-center space-x-1.5 opacity-100";
-                document.getElementById("methodGcash").className = "h-12 px-3 rounded-xl border border-blue-500/20 bg-slate-950/90 text-gray-400 transition-all cursor-pointer flex items-center justify-center space-x-2 opacity-60";
+                mayaBtn.className = "h-12 px-3 rounded-xl border border-emerald-500/40 bg-black text-[#50e3a4] transition-all cursor-pointer shadow-md flex items-center justify-center space-x-1.5";
+                gcashBtn.className = "h-12 px-3 rounded-xl border border-blue-500/20 bg-slate-950/90 text-gray-400 transition-all cursor-pointer flex items-center justify-center space-x-2";
                 document.getElementById("bankNumberLabel").textContent = "MAYA NUMBER";
 
-                if(userDataCache.bankAccount && userDataCache.bankAccount.maya && userDataCache.bankAccount.maya.number) {
-                    nameInput.value = userDataCache.bankAccount.maya.name || "";
-                    numberInput.value = userDataCache.bankAccount.maya.number || "";
+                if(bankData.maya && bankData.maya.number) {
+                    nameInput.value = bankData.maya.name || "";
+                    numberInput.value = bankData.maya.number || "";
                     setInputsLocked(true, "Maya");
                 } else {
                     nameInput.value = "";
@@ -440,7 +448,10 @@
             document.querySelectorAll(".form-panel").forEach(panel => {
                 panel.classList.add("hidden");
             });
-            document.getElementById(sectionId).classList.remove("hidden");
+            const targetSection = document.getElementById(sectionId);
+            if(targetSection) {
+                targetSection.classList.remove("hidden");
+            }
         }
 
         function backToMenu() {
@@ -576,12 +587,13 @@
                         badge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
                     }
 
-                    // Check General Bank Status Badge
-                    if(data.bankAccount && (
-                        (data.bankAccount.gcash && data.bankAccount.gcash.number) || 
-                        (data.bankAccount.maya && data.bankAccount.maya.number) ||
-                        data.bankAccount.number // Support legacy flat format
-                    )) {
+                    let bAcc = data.bankAccount || {};
+                    if(bAcc.number && !bAcc.gcash && !bAcc.maya) {
+                        const legacyMeth = bAcc.method === "Maya" ? "maya" : "gcash";
+                        bAcc = { [legacyMeth]: { name: bAcc.name, number: bAcc.number } };
+                    }
+
+                    if((bAcc.gcash && bAcc.gcash.number) || (bAcc.maya && bAcc.maya.number)) {
                         const bankBadge = document.getElementById("bankStatusBadge");
                         bankBadge.textContent = "BOUND";
                         bankBadge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
@@ -621,7 +633,7 @@
                 const user = auth.currentUser;
                 if(!user) return;
 
-                await db.collection("Users").doc(user.uid].set({
+                await db.collection("Users").doc(user.uid).set({
                     recoveryEmail: email
                 }, { merge: true });
 
@@ -668,14 +680,10 @@
                 const docSnap = await userRef.get();
                 let existingBank = docSnap.exists && docSnap.data().bankAccount ? docSnap.data().bankAccount : {};
 
-                // If legacy format exists, convert it
                 if(existingBank.number && !existingBank.gcash && !existingBank.maya) {
                     const legacyMethod = existingBank.method === "Maya" ? "maya" : "gcash";
                     existingBank = {
-                        [legacyMethod]: {
-                            name: existingBank.name,
-                            number: existingBank.number
-                        }
+                        [legacyMethod]: { name: existingBank.name, number: existingBank.number }
                     };
                 }
 
