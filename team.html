@@ -380,11 +380,11 @@
   </script>
 
   <!-- =====================================================
-       FIREBASE & TEAM LOGIC
+       FIREBASE & TEAM LOGIC (Pinatibay gamit ang localStorage)
   ===================================================== -->
   <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-      import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+      import { getAuth } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
       import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
       const firebaseConfig = {
@@ -506,18 +506,18 @@
           return await getChildren([uid]);
       }
 
-      async function loadTeam(User) {
+      async function loadTeam(userId) {
           try {
-              const current = await getUserDocument(User.uid);
+              const current = await getUserDocument(userId);
               const currentData = current.data || {};
 
-              const myCode = currentData.referralCode || currentData.invitationCode || currentData.referral_code || createFallbackCode(User.uid);
+              const myCode = currentData.referralCode || currentData.invitationCode || currentData.referral_code || createFallbackCode(userId);
               referralCodeElement.textContent = myCode;
 
               const commission = currentData.totalCommission ?? currentData.commission ?? 0;
               totalCommissionElement.textContent = formatMoney(commission);
 
-              const level1 = await getDirectReferrals(User.uid);
+              const level1 = await getDirectReferrals(userId);
               level1Element.textContent = level1.length;
 
               const level1Ids = level1.map(item => item[0]);
@@ -532,7 +532,7 @@
               teamSizeElement.textContent = totalTeam;
           } catch (error) {
               console.error("Team loading error:", error);
-              referralCodeElement.textContent = createFallbackCode(User.uid);
+              referralCodeElement.textContent = createFallbackCode(userId);
               teamSizeElement.textContent = "0";
               level1Element.textContent = "0";
               level2Element.textContent = "0";
@@ -542,30 +542,27 @@
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
-    const userUid = localStorage.getItem("nexora_user_uid");
-    
-    if (!userUid) {
-      window.location.href = "login.html";
-      return;
-    }
+          const userUid = localStorage.getItem("nexora_user_uid");
+          
+          if (!userUid) {
+              window.location.href = "login.html";
+              return;
+          }
 
-    try {
-      const userDocRef = db.collection("Users").doc(userUid);
-      const userDoc = await userDocRef.get();
+          try {
+              const userDoc = await getUserDocument(userUid);
+              if (!userDoc.exists) {
+                  window.location.href = "login.html";
+                  return;
+              }
 
-      if (!userDoc.exists) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      // Ilagay dito ang initialization o data loading para sa pahinang ito gamit ang userUid
-      console.log("User authenticated via localStorage:", userUid);
-
-    } catch (error) {
-      console.error("Auth error:", error);
-      window.location.href = "login.html";
-    }
-  });
+              // I-load ang mga detalye ng team gamit ang localStorage UID
+              loadTeam(userUid);
+          } catch (error) {
+              console.error("Auth error:", error);
+              window.location.href = "login.html";
+          }
+      });
 
       document.getElementById("copyCodeButton").addEventListener("click", () => {
           const code = referralCodeElement.textContent;
