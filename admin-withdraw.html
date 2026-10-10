@@ -340,6 +340,17 @@ button:disabled{
     <div class="subtitle">Withdrawal Administration</div>
   </div>
 
+<!-- ADMIN LOGIN SECTION (Ipapakita kung hindi pa naka-login) -->
+  <div id="adminLoginSection" class="section" style="margin-bottom: 18px; display: none;">
+    <div class="section-title">Admin Authentication Required</div>
+    <div style="font-size: 13px; color: #596579; margin-bottom: 12px;">Please enter admin credentials to access withdrawal controls.</div>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <input type="tel" id="adminPhone" placeholder="Admin Mobile Number (e.g. 9999999999)" style="padding: 12px; border: 1px solid #cbdaf0; border-radius: 11px; font-size: 13px; outline: none;" maxlength="10">
+      <input type="password" id="adminPassword" placeholder="Admin Password" style="padding: 12px; border: 1px solid #cbdaf0; border-radius: 11px; font-size: 13px; outline: none;">
+      <button type="button" id="adminLoginBtn" class="approve-btn" style="padding: 12px; font-size: 13px; font-weight: 800; cursor: pointer;">LOGIN AS ADMIN</button>
+    </div>
+  </div>
+      
   <div class="history-toolbar">
     <a href="history.html" class="history-toggle" onclick="openHistory(); return false;">
       <span class="history-icon">↻</span>
