@@ -226,14 +226,9 @@
                         </div>
                     </div>
 
-                    <div class="flex space-x-2">
-                        <button id="saveGmailBtn" class="flex-1 py-2.5 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/40 text-blue-400 text-xs font-black font-mono rounded-xl hover:bg-blue-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
-                            Save Gmail
-                        </button>
-                        <button id="sendRecoveryCodeBtn" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-black font-mono rounded-xl hover:bg-emerald-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
-                            Send Code
-                        </button>
-                    </div>
+                    <button id="saveGmailBtn" class="w-full py-3 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/40 text-blue-400 text-xs font-black font-mono rounded-xl hover:bg-blue-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
+                        Save Gmail
+                    </button>
                 </div>
             </div>
 
@@ -432,7 +427,7 @@
 
                         saveBtn.disabled = true;
                         saveBtn.textContent = "LOCKED / BOUND";
-                        saveBtn.className = "flex-1 py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
+                        saveBtn.className = "w-full py-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
 
                         badge.textContent = "LOCKED";
                         badge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
@@ -480,7 +475,7 @@
                 const saveBtn = document.getElementById("saveGmailBtn");
                 saveBtn.disabled = true;
                 saveBtn.textContent = "LOCKED / BOUND";
-                saveBtn.className = "flex-1 py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
+                saveBtn.className = "w-full py-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
 
                 const badge = document.getElementById("bindStatusBadge");
                 badge.textContent = "LOCKED";
@@ -490,23 +485,6 @@
             } catch(err) {
                 console.error(err);
                 showAlert("Failed to bind Gmail: " + err.message);
-            }
-        });
-
-        // Send Recovery Code Logic
-        document.getElementById("sendRecoveryCodeBtn").addEventListener("click", async () => {
-            const email = document.getElementById("bindEmailInput").value.trim();
-            if(!email) {
-                showAlert("Please save or enter a Gmail address first.");
-                return;
-            }
-
-            try {
-                await auth.sendPasswordResetEmail(email);
-                showAlert("A secure recovery verification code/link has been sent to your bound Gmail address.", "SUCCESS");
-            } catch(err) {
-                console.error(err);
-                showAlert("Failed to send recovery code: " + err.message);
             }
         });
 
