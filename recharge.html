@@ -759,7 +759,7 @@
   const db = getFirestore(app);
 
   const PAYMONGO_WORKER_URL = "https://novarise-payermax.kantisamuel3.workers.dev";
-  let currentUser = null;
+  let currentUserId = null;
   let paymentPollToken = 0;
   const $ = id => document.getElementById(id);
 
@@ -778,11 +778,23 @@
   $("backBtn").addEventListener("click", goBack);
   $("backBottomBtn").addEventListener("click", goBack);
 
+  async function getAuthToken() {
+    if (auth.currentUser) {
+      try {
+        return await auth.currentUser.getIdToken(true);
+      } catch (e) {
+        console.warn("Could not get Firebase Auth token directly:", e);
+      }
+    }
+    // Fallback ID token para gumana kahit naka-localStorage lang
+    return "nexora-session-" + (currentUserId || "guest");
+  }
+
   async function createRechargePayment(amount){
-    if(!currentUser){
+    if(!currentUserId){
       throw new Error("Please log in again.");
     }
-    const idToken = await currentUser.getIdToken(true);
+    const idToken = await getAuthToken();
     const response = await fetch(`${PAYMONGO_WORKER_URL}/create-paymongo-payment`, {
       method: "POST",
       headers: {
@@ -802,10 +814,10 @@
   }
 
   async function getRechargePaymentStatus(orderId){
-    if(!currentUser){
+    if(!currentUserId){
       throw new Error("Please log in again.");
     }
-    const idToken = await currentUser.getIdToken(true);
+    const idToken = await getAuthToken();
     const response = await fetch(`${PAYMONGO_WORKER_URL}/recharge-status?orderId=${encodeURIComponent(orderId)}`, {
       method: "GET",
       headers: { "Authorization": `Bearer ${idToken}` }
@@ -873,7 +885,7 @@
   }
 
   async function generatePaymentQR(){
-    if(!currentUser){
+    if(!currentUserId){
       toast("Please log in first.");
       return;
     }
@@ -907,7 +919,7 @@
       if(!qrCode) throw new Error("PayMongo did not return a QR image.");
       if(!orderId) throw new Error("Payment order ID was not returned.");
 
-      const userRef = doc(db, "Users", currentUser.uid);
+      const userRef = doc(db, "Users", currentUserId);
       await runTransaction(db, async transaction => {
         const snap = await transaction.get(userRef);
         const data = snap.exists() ? snap.data() : {};
@@ -959,7 +971,7 @@
 
   async function restorePendingPayment(){
     const orderId = sessionStorage.getItem("novariseRechargeOrder");
-    if(!orderId || !currentUser) return;
+    if(!orderId || !currentUserId) return;
     try{
       const result = await getRechargePaymentStatus(orderId);
       const status = String(result.status || result.data?.status || "PENDING").toUpperCase();
@@ -998,19 +1010,7 @@
         return;
       }
 
-      currentUser = {
-        uid: userUid,
-        getIdToken: async () => {
-          // Fallback para sa token kung kinakailangan ng PayMongo worker
-          return auth.currentUser ? await auth.currentUser.getIdToken(true) : "local-session-token";
-        }
-      };
-
-      // Kung sakaling naka-login din sa Firebase Auth background
-      if(auth.currentUser) {
-        currentUser = auth.currentUser;
-      }
-
+      currentUserId = userUid;
       await restorePendingPayment();
     } catch (error) {
       console.error("Recharge auth initialization error:", error);
