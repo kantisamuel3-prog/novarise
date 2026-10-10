@@ -926,21 +926,37 @@ canvas#liveChart {
   let legacyBalanceUnsubscribe = null;
   let newBalanceUnsubscribe = null;
 
-  auth.onAuthStateChanged((user) => {
-    if (!user) {
+  document.addEventListener("DOMContentLoaded", async () => {
+  const userUid = localStorage.getItem("nexora_user_uid");
+  
+  if (!userUid) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const userDocRef = db.collection("Users").doc(userUid);
+    const userDoc = await userDocRef.get();
+
+    if (!userDoc.exists) {
       window.location.href = "login.html";
       return;
     }
 
-    currentUser = user;
+    const data = userDoc.data() || {};
+    currentUser = { uid: userUid, email: data.email || data.phone };
 
     const userEmailEl = document.getElementById("userEmail");
     if (userEmailEl) {
-      userEmailEl.innerText = user.email || user.phoneNumber || "User Connected";
+      userEmailEl.innerText = data.email || data.phone || "User Connected";
     }
 
-    loadUserDataFromFirestore(user.uid);
-  });
+    loadUserDataFromFirestore(userUid);
+  } catch (error) {
+    console.error("Dashboard auth error:", error);
+    window.location.href = "login.html";
+  }
+});
 
   function safeNumber(value, fallback = 0) {
     const n = Number(value);
