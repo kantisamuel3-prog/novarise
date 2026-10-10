@@ -328,7 +328,7 @@
     </div>
 
     <h1 class="text-xl font-black text-white font-mono tracking-wide">Fund Withdrawal</h1>
-    <p class="text-[11px] text-gray-400 font-mono mt-0.5">Transfer funds securely to your account.</p>
+    <p class="text-[11px] text-gray-400 font-mono mt-0.5">Transfer funds securely to your account[cite: 2].</p>
   </div>
 
   <main class="content">
@@ -378,6 +378,14 @@
         <label for="accountNumber" id="accountLabel">GCASH NUMBER</label>
         <div class="input-wrap">
           <input id="accountNumber" class="nexora-input !pl-3.5" type="text" placeholder="Enter number" autocomplete="off">
+        </div>
+      </div>
+
+      <!-- WITHDRAWAL PIN FIELD -->
+      <div class="field">
+        <label for="withdrawalPin">4-DIGIT WITHDRAWAL PIN</label>
+        <div class="input-wrap">
+          <input id="withdrawalPin" class="nexora-input !pl-3.5 text-center tracking-widest text-base" type="password" maxlength="4" inputmode="numeric" placeholder="••••" autocomplete="off">
         </div>
       </div>
 
@@ -542,6 +550,7 @@
     const amount = Number($("withdrawAmount").value);
     const name = $("accountName").value.trim();
     const number = $("accountNumber").value.trim();
+    const enteredPin = $("withdrawalPin").value.trim();
 
     if(!Number.isFinite(amount) || amount <= 0){
       toast("Please enter a valid withdrawal amount.");
@@ -563,6 +572,11 @@
       $("accountNumber").focus();
       return;
     }
+    if(!enteredPin || enteredPin.length !== 4){
+      toast("Please enter your 4-digit Withdrawal PIN.");
+      $("withdrawalPin").focus();
+      return;
+    }
 
     const btn = $("withdrawBtn");
     btn.disabled = true;
@@ -570,10 +584,20 @@
 
     try {
       const userRef = doc(db, "Users", currentUser.uid);
+      
       await runTransaction(db, async transaction => {
         const snap = await transaction.get(userRef);
         const data = snap.exists() ? snap.data() : {};
         const currentBal = Number(data.balance || data.wallet || 0);
+        const savedPin = data.withdrawalPin;
+
+        // Check if Withdrawal PIN matches the one in settings
+        if(!savedPin){
+          throw new Error("Please set up your Withdrawal PIN in Settings first.");
+        }
+        if(enteredPin !== savedPin){
+          throw new Error("Incorrect Withdrawal PIN. Access denied.");
+        }
 
         if(currentBal < amount){
           throw new Error("Insufficient balance for this withdrawal.");
