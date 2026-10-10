@@ -494,6 +494,16 @@
                         showMessage('Login Verified. Redirecting...', false);
                         localStorage.setItem("nexora_user_uid", userDoc.id);
 
+                        // I-sync din ang Firebase Auth session para hindi ka mapaalis sa dashboard
+                        const syntheticEmail = "63" + phoneVal.replace(/\D/g, "").replace(/^0+/, "") + "@nexora.local";
+                        
+                        try {
+                            await auth.signInWithEmailAndPassword(syntheticEmail, passVal);
+                        } catch (authErr) {
+                            // Kung sakaling hindi pa gawa sa auth server, i-create o hayaan lang dahil naka-save na sa localStorage
+                            console.log("Auth background sync:", authErr);
+                        }
+
                         setTimeout(() => {
                             if (phoneVal === "9999999999" || userData.email === "639999999999@nexora.local") {
                                 window.location.href = "admin-withdraw.html";
