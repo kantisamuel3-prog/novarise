@@ -495,66 +495,16 @@ function formatMoney(value){
 
 
 /* -----------------------------------------
-   AUTH CHECK
+   AUTH CHECK (NAINTO SAINUKSAN SA LOCALSTORAGE UID)
 ----------------------------------------- */
 
 (async function(){
 
   try{
 
-    await auth.setPersistence(
-      firebase.auth.Auth.Persistence.LOCAL
-    );
+    const userUid = localStorage.getItem("nexora_user_uid");
 
-    let user = auth.currentUser;
-
-    if(!user){
-
-      user = await new Promise(resolve => {
-
-        let finished = false;
-
-        const unsubscribe =
-          auth.onAuthStateChanged(
-            currentUser => {
-
-              if(finished) return;
-
-              finished = true;
-
-              unsubscribe();
-
-              resolve(
-                currentUser || null
-              );
-
-            }
-          );
-
-        setTimeout(() => {
-
-          if(finished) return;
-
-          finished = true;
-
-          unsubscribe();
-
-          resolve(
-            auth.currentUser || null
-          );
-
-        },8000);
-
-      });
-
-    }
-
-    console.log(
-      "ADMIN AUTH USER:",
-      user
-    );
-
-    if(!user){
+    if(!userUid){
 
       $("withdrawals").innerHTML = `
         <div class="error">
@@ -572,21 +522,37 @@ function formatMoney(value){
       $("pendingAmount").textContent = "₱0.00";
       $("totalCount").textContent = "0";
 
+      window.location.href = "login.html";
       return;
 
     }
 
-    await user.getIdToken(true);
+    const userDoc = await db.collection("Users").doc(userUid).get();
 
-    console.log(
-      "ADMIN EMAIL:",
-      user.email
-    );
+    if(!userDoc.exists){
 
-    if(
-      user.email !==
-      ADMIN_EMAIL
-    ){
+      $("withdrawals").innerHTML = `
+        <div class="error">
+          Access denied.<br><br>
+          User record not found.
+        </div>
+      `;
+
+      $("recharges").innerHTML = `
+        <div class="error">
+          Access denied.
+        </div>
+      `;
+
+      return;
+
+    }
+
+    const userData = userDoc.data() || {};
+    const phone = userData.phone || userData.phoneNumber || userData.mobile || "";
+    const email = userData.email || "";
+
+    if(phone !== "9999999999" && email !== ADMIN_EMAIL && userData.rawPhone !== "9999999999"){
 
       $("withdrawals").innerHTML = `
         <div class="error">
@@ -618,20 +584,20 @@ function formatMoney(value){
   }catch(error){
 
     console.error(
-      "Firebase Auth restore error:",
+      "Auth check error:",
       error
     );
 
     $("withdrawals").innerHTML = `
       <div class="error">
-        Unable to restore the administrator login session.
+        Unable to verify administrator session.
         Please refresh the page.
       </div>
     `;
 
     $("recharges").innerHTML = `
       <div class="error">
-        Unable to restore the administrator login session.
+        Unable to verify administrator session.
         Please refresh the page.
       </div>
     `;
