@@ -67,7 +67,7 @@
 </head>
 <body class="flex flex-col items-center relative overflow-x-hidden">
 
-    <!-- LIVE MOVING TRADING CHART BACKGROUND (pointer-events-none added to ensure clicks pass through) -->
+    <!-- LIVE MOVING TRADING CHART BACKGROUND -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden trading-grid">
         <canvas id="tradingBgCanvas" class="absolute inset-0 w-full h-full opacity-35 pointer-events-none"></canvas>
         <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-nexora-cyan/10 rounded-full blur-[120px] pointer-events-none"></div>
@@ -563,71 +563,83 @@
             window.location.href = "account.html";
         });
 
-        auth.onAuthStateChanged(async (user) => {
-            if(!user){
+        document.addEventListener("DOMContentLoaded", async () => {
+            const userUid = localStorage.getItem("nexora_user_uid");
+            
+            if(!userUid){
                 window.location.href = "login.html";
                 return;
             }
 
             try {
-                const userRef = db.collection("Users").doc(user.uid);
+                const userRef = db.collection("Users").doc(userUid);
                 const userDoc = await userRef.get();
-                if(userDoc.exists){
-                    const data = userDoc.data();
-                    userDataCache = data;
+                if(!userDoc.exists){
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                const data = userDoc.data() || {};
+                userDataCache = data;
+                
+                if(data.recoveryEmail) {
+                    const emailInput = document.getElementById("bindEmailInput");
+                    const saveBtn = document.getElementById("saveGmailBtn");
+                    const badge = document.getElementById("bindStatusBadge");
                     
-                    if(data.recoveryEmail) {
-                        const emailInput = document.getElementById("bindEmailInput");
-                        const saveBtn = document.getElementById("saveGmailBtn");
-                        const badge = document.getElementById("bindStatusBadge");
-                        
-                        emailInput.value = data.recoveryEmail;
-                        emailInput.disabled = true;
-                        emailInput.classList.add("opacity-60", "cursor-not-allowed");
+                    emailInput.value = data.recoveryEmail;
+                    emailInput.disabled = true;
+                    emailInput.classList.add("opacity-60", "cursor-not-allowed");
 
-                        saveBtn.disabled = true;
-                        saveBtn.textContent = "LOCKED / BOUND";
-                        saveBtn.className = "w-full py-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = "LOCKED / BOUND";
+                    saveBtn.className = "w-full py-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
 
-                        badge.textContent = "LOCKED";
-                        badge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-                    }
+                    badge.textContent = "LOCKED";
+                    badge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+                }
 
-                    let bAcc = data.bankAccount || {};
-                    if(bAcc.number && !bAcc.gcash && !bAcc.maya) {
-                        const legacyMeth = bAcc.method === "Maya" ? "maya" : "gcash";
-                        bAcc = { [legacyMeth]: { name: bAcc.name, number: bAcc.number } };
-                    }
+                let bAcc = data.bankAccount || {};
+                if(bAcc.number && !bAcc.gcash && !bAcc.maya) {
+                    const legacyMeth = bAcc.method === "Maya" ? "maya" : "gcash";
+                    bAcc = { [legacyMeth]: { name: bAcc.name, number: bAcc.number } };
+                }
 
-                    if((bAcc.gcash && bAcc.gcash.number) || (bAcc.maya && bAcc.maya.number)) {
-                        const bankBadge = document.getElementById("bankStatusBadge");
-                        bankBadge.textContent = "BOUND";
-                        bankBadge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-                    }
+                if((bAcc.gcash && bAcc.gcash.number) || (bAcc.maya && bAcc.maya.number)) {
+                    const bankBadge = document.getElementById("bankStatusBadge");
+                    bankBadge.textContent = "BOUND";
+                    bankBadge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+                }
 
-                    updateBankMethodUI();
+                updateBankMethodUI();
 
-                    if(data.withdrawalPin){
-                        document.getElementById("currentPinWrapper").style.display = "block";
-                        document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
-                        document.getElementById("menuPinTitle").textContent = "CHANGE WITHDRAWAL PIN";
-                        document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
-                        document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
-                    } else {
-                        document.getElementById("currentPinWrapper").style.display = "none";
-                        document.getElementById("pinCardTitle").textContent = "WITHDRAWAL PIN";
-                        document.getElementById("menuPinTitle").textContent = "WITHDRAWAL PIN";
-                        document.getElementById("newPinLabelText").textContent = "ENTER 4-DIGIT PIN";
-                        document.getElementById("savePinBtn").textContent = "Create Withdrawal PIN";
-                    }
+                if(data.withdrawalPin){
+                    document.getElementById("currentPinWrapper").style.display = "block";
+                    document.getElementById("pinCardTitle").textContent = "CHANGE WITHDRAWAL PIN";
+                    document.getElementById("menuPinTitle").textContent = "CHANGE WITHDRAWAL PIN";
+                    document.getElementById("newPinLabelText").textContent = "NEW 4-DIGIT PIN";
+                    document.getElementById("savePinBtn").textContent = "Update Withdrawal PIN";
+                } else {
+                    document.getElementById("currentPinWrapper").style.display = "none";
+                    document.getElementById("pinCardTitle").textContent = "WITHDRAWAL PIN";
+                    document.getElementById("menuPinTitle").textContent = "WITHDRAWAL PIN";
+                    document.getElementById("newPinLabelText").textContent = "ENTER 4-DIGIT PIN";
+                    document.getElementById("savePinBtn").textContent = "Create Withdrawal PIN";
                 }
             } catch(e) {
                 console.error("Error loading user status:", e);
+                window.location.href = "login.html";
             }
         });
 
         // Save Gmail Logic
         document.getElementById("saveGmailBtn").addEventListener("click", async () => {
+            const userUid = localStorage.getItem("nexora_user_uid");
+            if(!userUid) {
+                window.location.href = "login.html";
+                return;
+            }
+
             const emailInput = document.getElementById("bindEmailInput");
             const email = emailInput.value.trim();
             if(!email || !email.includes("@") || !email.endsWith("@gmail.com")) {
@@ -636,10 +648,7 @@
             }
 
             try {
-                const user = auth.currentUser;
-                if(!user) return;
-
-                await db.collection("Users").doc(user.uid).set({
+                await db.collection("Users").doc(userUid).set({
                     recoveryEmail: email
                 }, { merge: true });
 
@@ -664,6 +673,12 @@
 
         // Save Bank Account Logic (GCash / Maya Separately)
         document.getElementById("saveBankBtn").addEventListener("click", async () => {
+            const userUid = localStorage.getItem("nexora_user_uid");
+            if(!userUid) {
+                window.location.href = "login.html";
+                return;
+            }
+
             const nameInput = document.getElementById("bankAccountName");
             const numberInput = document.getElementById("bankAccountNumber");
             const name = nameInput.value.trim();
@@ -679,10 +694,7 @@
             }
 
             try {
-                const user = auth.currentUser;
-                if(!user) return;
-
-                const userRef = db.collection("Users").doc(user.uid);
+                const userRef = db.collection("Users").doc(userUid);
                 const docSnap = await userRef.get();
                 let existingBank = docSnap.exists && docSnap.data().bankAccount ? docSnap.data().bankAccount : {};
 
@@ -731,7 +743,10 @@
 
             try {
                 const user = auth.currentUser;
-                if(!user || !user.email) return;
+                if(!user || !user.email) {
+                    showAlert("Please log in again via regular session to update your password.");
+                    return;
+                }
 
                 const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
                 await user.reauthenticateWithCredential(credential);
@@ -751,6 +766,12 @@
         });
 
         document.getElementById("savePinBtn").addEventListener("click", async () => {
+            const userUid = localStorage.getItem("nexora_user_uid");
+            if(!userUid) {
+                window.location.href = "login.html";
+                return;
+            }
+
             const newPin = document.getElementById("withdrawalPinInput").value.trim();
             
             if(!/^\d{4}$/.test(newPin)) {
@@ -759,10 +780,7 @@
             }
 
             try {
-                const user = auth.currentUser;
-                if(!user) return;
-
-                const userRef = db.collection("Users").doc(user.uid);
+                const userRef = db.collection("Users").doc(userUid);
                 const userDoc = await userRef.get();
 
                 if(userDoc.exists && userDoc.data().withdrawalPin) {
