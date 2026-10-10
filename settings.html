@@ -246,7 +246,7 @@
                 </div>
             </div>
 
-            <!-- BIND BANK ACCOUNT FORM (GCash / Maya) -->
+            <!-- BIND BANK ACCOUNT FORM (GCash / Maya with Proper Colors) -->
             <div id="bankSection" class="form-panel hidden rounded-2xl border border-amber-500/25 bg-nexora-card/85 p-5 glow-box backdrop-blur-xl relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-amber-400 to-amber-600"></div>
                 
@@ -264,8 +264,8 @@
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">SELECT METHOD</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <button type="button" id="methodGcash" class="py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/20 text-white font-black text-xs font-mono transition-all cursor-pointer">GCash</button>
-                            <button type="button" id="methodMaya" class="py-2.5 rounded-xl border border-amber-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer">Maya</button>
+                            <button type="button" id="methodGcash" class="py-2.5 rounded-xl border border-blue-500/40 bg-blue-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md">GCash</button>
+                            <button type="button" id="methodMaya" class="py-2.5 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer">Maya</button>
                         </div>
                     </div>
 
@@ -345,20 +345,20 @@
 
         let selectedBankMethod = "GCash";
 
-        // Bank Selection Logic
+        // Bank Selection Logic with GCash Blue and Maya Green Branding
         document.getElementById("methodGcash").addEventListener("click", () => {
             if(document.getElementById("saveBankBtn").disabled) return;
             selectedBankMethod = "GCash";
-            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/20 text-white font-black text-xs font-mono transition-all cursor-pointer";
-            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-amber-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-blue-500/40 bg-blue-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md";
+            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
             document.getElementById("bankNumberLabel").textContent = "GCASH NUMBER";
         });
 
         document.getElementById("methodMaya").addEventListener("click", () => {
             if(document.getElementById("saveBankBtn").disabled) return;
             selectedBankMethod = "Maya";
-            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/20 text-white font-black text-xs font-mono transition-all cursor-pointer";
-            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-amber-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-emerald-500/40 bg-emerald-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md";
+            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-blue-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
             document.getElementById("bankNumberLabel").textContent = "MAYA NUMBER";
         });
 
@@ -517,15 +517,22 @@
                         
                         if(data.bankAccount.method === "Maya") {
                             selectedBankMethod = "Maya";
-                            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/20 text-white font-black text-xs font-mono transition-all cursor-pointer";
-                            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-amber-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+                            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-emerald-500/40 bg-emerald-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md";
+                            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-blue-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
                             document.getElementById("bankNumberLabel").textContent = "MAYA NUMBER";
+                        } else {
+                            selectedBankMethod = "GCash";
+                            document.getElementById("methodGcash").className = "py-2.5 rounded-xl border border-blue-500/40 bg-blue-600 text-white font-black text-xs font-mono transition-all cursor-pointer shadow-md";
+                            document.getElementById("methodMaya").className = "py-2.5 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 font-black text-xs font-mono transition-all cursor-pointer";
+                            document.getElementById("bankNumberLabel").textContent = "GCASH NUMBER";
                         }
 
                         bankNameInput.disabled = true;
                         bankNameInput.classList.add("opacity-60", "cursor-not-allowed");
                         bankNumberInput.disabled = true;
                         bankNumberInput.classList.add("opacity-60", "cursor-not-allowed");
+                        document.getElementById("methodGcash").style.pointerEvents = "none";
+                        document.getElementById("methodMaya").style.pointerEvents = "none";
 
                         saveBankBtn.disabled = true;
                         saveBankBtn.textContent = `LOCKED / BOUND (${selectedBankMethod})`;
@@ -624,6 +631,8 @@
                 nameInput.classList.add("opacity-60", "cursor-not-allowed");
                 numberInput.disabled = true;
                 numberInput.classList.add("opacity-60", "cursor-not-allowed");
+                document.getElementById("methodGcash").style.pointerEvents = "none";
+                document.getElementById("methodMaya").style.pointerEvents = "none";
 
                 const saveBtn = document.getElementById("saveBankBtn");
                 saveBtn.disabled = true;
