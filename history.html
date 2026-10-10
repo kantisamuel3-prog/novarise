@@ -251,7 +251,7 @@
   <!-- FIREBASE DATA LOADING & FILTERING -->
   <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-      import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+      import { getAuth } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
       import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
       const firebaseConfig = {
@@ -349,14 +349,16 @@
           }).join("");
       }
 
-      onAuthStateChanged(auth, async user => {
-          if (!user) {
+      document.addEventListener("DOMContentLoaded", async () => {
+          const userUid = localStorage.getItem("nexora_user_uid");
+          
+          if (!userUid) {
               window.location.href = "login.html";
               return;
           }
 
           try {
-              const userRef = doc(db, "Users", user.uid);
+              const userRef = doc(db, "Users", userUid);
               const userSnap = await getDoc(userRef);
 
               if (userSnap.exists()) {
