@@ -17,6 +17,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Firebase SDKs (v10 Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
   <script>
       tailwind.config = {
           theme: {
@@ -498,7 +503,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -514,7 +519,8 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  let currentUser = null;
+  let currentUserId = null;
+  let currentUserObject = null;
   let selectedMethod = "GCash";
   let boundAccounts = {};
   const $ = id => document.getElementById(id);
@@ -575,9 +581,9 @@
     }
   }
 
-  async function loadUserData(user){
+  async function loadUserData(userUid){
     try {
-      const userRef = doc(db, "Users", user.uid);
+      const userRef = doc(db, "Users", userUid);
       const snap = await getDoc(userRef);
       if(snap.exists()){
         const data = snap.data();
@@ -617,7 +623,7 @@
   }
 
   $("withdrawBtn").addEventListener("click", () => {
-    if(!currentUser) return;
+    if(!currentUserId) return;
     const amount = Number($("withdrawAmount").value);
     const name = $("accountName").value.trim();
     const number = $("accountNumber").value.trim();
@@ -669,7 +675,7 @@
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
 
     try {
-      const userRef = doc(db, "Users", currentUser.uid);
+      const userRef = doc(db, "Users", currentUserId);
       
       await runTransaction(db, async transaction => {
         const snap = await transaction.get(userRef);
@@ -709,9 +715,9 @@
             data.username ||
             data.phone ||
             data.phoneNumber ||
-            currentUser.email ||
+            (currentUserObject ? currentUserObject.email : null) ||
             "Member",
-          userId: currentUser.uid,
+          userId: currentUserId,
           date: new Date().toISOString()
         });
 
@@ -734,13 +740,30 @@
     }
   });
 
-  onAuthStateChanged(auth, async user => {
-    if(!user){
+  document.addEventListener("DOMContentLoaded", async () => {
+    const userUid = localStorage.getItem("nexora_user_uid");
+    
+    if(!userUid){
       window.location.href = "login.html";
       return;
     }
-    currentUser = user;
-    await loadUserData(user);
+
+    try {
+      const userRef = doc(db, "Users", userUid);
+      const snap = await getDoc(userRef);
+
+      if(!snap.exists()){
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUserId = userUid;
+      currentUserObject = auth.currentUser;
+      await loadUserData(userUid);
+    } catch(error) {
+      console.error("Withdrawal init error:", error);
+      window.location.href = "login.html";
+    }
   });
 </script>
 
