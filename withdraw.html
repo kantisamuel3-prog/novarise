@@ -373,11 +373,11 @@
       <div class="field">
         <label>WITHDRAWAL METHOD</label>
         <div class="method-grid">
-          <div class="method-option active" data-method="GCash">
+          <div class="method-option active" data-method="GCash" id="optionGcash">
             <i class="fa-solid fa-mobile-screen-button mb-1 text-nexora-cyan block text-base"></i>
             GCash
           </div>
-          <div class="method-option" data-method="Maya">
+          <div class="method-option" data-method="Maya" id="optionMaya">
             <i class="fa-solid fa-wallet mb-1 text-nexora-cyan block text-base"></i>
             Maya
           </div>
@@ -395,14 +395,14 @@
       <div class="field">
         <label for="accountName">ACCOUNT NAME</label>
         <div class="input-wrap">
-          <input id="accountName" class="nexora-input !pl-3.5" type="text" placeholder="Enter full name" autocomplete="off">
+          <input id="accountName" class="nexora-input !pl-3.5" type="text" placeholder="Account name (Auto-filled)" readonly autocomplete="off">
         </div>
       </div>
 
       <div class="field">
         <label for="accountNumber" id="accountLabel">GCASH NUMBER</label>
         <div class="input-wrap">
-          <input id="accountNumber" class="nexora-input !pl-3.5" type="text" placeholder="Enter number" autocomplete="off">
+          <input id="accountNumber" class="nexora-input !pl-3.5" type="text" placeholder="Account number (Auto-filled)" readonly autocomplete="off">
         </div>
       </div>
 
@@ -516,6 +516,7 @@
 
   let currentUser = null;
   let selectedMethod = "GCash";
+  let boundAccounts = {};
   const $ = id => document.getElementById(id);
 
   function toast(message){
@@ -533,19 +534,36 @@
   $("backBtn").addEventListener("click", goBack);
   $("backBottomBtn").addEventListener("click", goBack);
 
+  // Switch Method UI Selection
   document.querySelectorAll(".method-option").forEach(opt => {
     opt.addEventListener("click", () => {
+      const method = opt.getAttribute("data-method");
+      
+      // I-check kung may bind account ba ang pinindot na method
+      if(!boundAccounts[method.toLowerCase()] || !boundAccounts[method.toLowerCase()].number) {
+        toast(`Please bind your ${method} account in Settings first.`);
+        return;
+      }
+
       document.querySelectorAll(".method-option").forEach(o => o.classList.remove("active"));
       opt.classList.add("active");
-      selectedMethod = opt.getAttribute("data-method");
+      selectedMethod = method;
       
-      if(selectedMethod === "Maya") {
-        $("accountLabel").textContent = "MAYA NUMBER";
-      } else {
-        $("accountLabel").textContent = "GCASH NUMBER";
-      }
+      populateAccountFields(selectedMethod);
     });
   });
+
+  function populateAccountFields(method){
+    const accData = boundAccounts[method.toLowerCase()];
+    if(accData && accData.number) {
+      $("accountName").value = accData.name || "";
+      $("accountNumber").value = accData.number || "";
+      $("accountLabel").textContent = `${method.toUpperCase()} NUMBER`;
+    } else {
+      $("accountName").value = "";
+      $("accountNumber").value = "";
+    }
+  }
 
   async function loadUserData(user){
     try {
@@ -555,9 +573,41 @@
         const data = snap.data();
         const bal = Number(data.balance || data.wallet || 0);
         $("userBalance").textContent = `₱${bal.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+        // Kunin ang nakaband na bank accounts
+        let bAcc = data.bankAccount || {};
+        if(bAcc.number && !bAcc.gcash && !bAcc.maya) {
+            const legacyMeth = bAcc.method === "Maya" ? "maya" : "gcash";
+            bAcc = { [legacyMeth]: { name: bAcc.name, number: bAcc.number } };
+        }
+        boundAccounts = bAcc;
+
+        const hasGcash = boundAccounts.gcash && boundAccounts.gcash.number;
+        const hasMaya = boundAccounts.maya && boundAccounts.maya.number;
+
+        if(!hasGcash && !hasMaya) {
+          toast("Please bind your GCash or Maya account in Settings before withdrawing.");
+          setTimeout(() => {
+            window.location.href = "settings.html";
+          }, 2000);
+          return;
+        }
+
+        // Auto select available method
+        if(hasGcash) {
+          selectedMethod = "GCash";
+          $("optionGcash").classList.add("active");
+          $("optionMaya").classList.remove("active");
+        } else if(hasMaya) {
+          selectedMethod = "Maya";
+          $("optionMaya").classList.add("active");
+          $("optionGcash").classList.remove("active");
+        }
+
+        populateAccountFields(selectedMethod);
       }
     } catch(e) {
-      console.error("Error loading balance:", e);
+      console.error("Error loading user data:", e);
     }
   }
 
@@ -568,6 +618,10 @@
     const name = $("accountName").value.trim();
     const number = $("accountNumber").value.trim();
 
+    if(!boundAccounts[selectedMethod.toLowerCase()] || !boundAccounts[selectedMethod.toLowerCase()].number) {
+      toast(`You have not bound your ${selectedMethod} account yet.`);
+      return;
+    }
     if(!Number.isFinite(amount) || amount <= 0){
       toast("Please enter a valid withdrawal amount.");
       $("withdrawAmount").focus();
@@ -578,14 +632,8 @@
       $("withdrawAmount").focus();
       return;
     }
-    if(!name){
-      toast("Please enter your account name.");
-      $("accountName").focus();
-      return;
-    }
-    if(!number){
-      toast(`Please enter your ${selectedMethod} number.`);
-      $("accountNumber").focus();
+    if(!name || !number){
+      toast("Bound account details are missing. Please check your settings.");
       return;
     }
 
