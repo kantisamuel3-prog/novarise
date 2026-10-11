@@ -490,34 +490,51 @@
                     const storedPassword = userData.password;
 
                     // Ibinuboses nito nang tama ang bagong password mula sa database
-                    if (storedPassword === passVal) {
-                        showMessage('Login Verified. Redirecting...', false);
-                        localStorage.setItem("nexora_user_uid", userDoc.id);
+                    
+if (storedPassword === passVal) {
+    const phoneDigits = phoneVal.replace(/\D/g, "");
+    const normalizedPhone = phoneDigits.replace(/^0+/, "");
+    const syntheticEmail = "63" + normalizedPhone + "@nexora.local";
 
-                        // I-sync ang Firebase Auth session sa background para hindi ka ma-kick out sa dashboard
-                        const syntheticEmail = "63" + phoneVal.replace(/\D/g, "").replace(/^0+/, "") + "@nexora.local";
-                        
-                        try {
-                            // Subukang mag-sign in; kung sakaling wala pa sa auth server, i-create ito nang tahimik
-                            await auth.signInWithEmailAndPassword(syntheticEmail, passVal).catch(async () => {
-                                await auth.createUserWithEmailAndPassword(syntheticEmail, passVal);
-                            });
-                        } catch (authErr) {
-                            console.log("Auth sync warning:", authErr);
-                        }
+    try {
+        await auth.signInWithEmailAndPassword(
+            syntheticEmail,
+            passVal
+        );
 
-                        setTimeout(() => {
-                            if (phoneVal === "9999999999" || userData.email === "639999999999@nexora.local") {
-                                window.location.href = "admin-withdraw.html";
-                            } else {
-                                window.location.href = "dashboard.html";
-                            }
-                        }, 1000);
-                    } else {
-                        showMessage("Incorrect phone number or password.", true);
-                        loginBtn.disabled = false;
-                        loginBtn.innerHTML = '<span>ENTER</span>';
-                    }
+        localStorage.setItem("nexora_user_uid", userDoc.id);
+
+        showMessage("Login successful. Redirecting...", false);
+
+        setTimeout(() => {
+            if (
+                phoneVal === "9999999999" ||
+                userData.email === "639999999999@nexora.local"
+            ) {
+                window.location.href = "admin-withdraw.html";
+            } else {
+                window.location.href = "dashboard.html";
+            }
+        }, 700);
+
+    } catch (authErr) {
+        console.error("Firebase Authentication error:", authErr);
+
+        showMessage(
+            "Firebase login failed. Your password may not match your Firebase account. Please reset it correctly.",
+            true
+        );
+
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = "<span>ENTER</span>";
+    }
+
+} else {
+    showMessage("Incorrect phone number or password.", true);
+    loginBtn.disabled = false;
+    loginBtn.innerHTML = "<span>ENTER</span>";
+}
+
 
                 } catch (error) {
                     console.error("Login Error:", error);
