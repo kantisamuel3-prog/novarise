@@ -378,7 +378,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.firestore(); // Naayos na ang db reference para direktang gumana sa Firestore
+    const db = firebase.firestore();
 
     let isBiometricVerified = false;
 
@@ -423,9 +423,10 @@
             }
         }
 
-        // Biometric Unlock Logic
+        // Biometric Unlock Logic - Naayos na para mag-click nang maayos
         if (biometricBtn) {
-            biometricBtn.addEventListener('click', function() {
+            biometricBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 const phoneVal = phoneInput ? phoneInput.value.trim() : '';
                 const passVal = passwordInput ? passwordInput.value : '';
 
@@ -466,17 +467,17 @@
 
                 try {
                     const usersRef = db.collection("Users");
-                 let querySnapshot = await usersRef.where("phone", "==", phoneVal).get();
+                    let querySnapshot = await usersRef.where("phone", "==", phoneVal).get();
 
-                 if (querySnapshot.empty) {
-                     querySnapshot = await usersRef.where("phone", "==", "0" + phoneVal).get();
-                 }
-                 if (querySnapshot.empty) {
-                   querySnapshot = await usersRef.where("normalizedPhone", "==", "63" + phoneVal).get();
-                 }
-                 if (querySnapshot.empty) {
-                    querySnapshot = await usersRef.where("phoneNumber", "==", phoneVal).get();
-                 }
+                    if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("phone", "==", "0" + phoneVal).get();
+                    }
+                    if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("normalizedPhone", "==", "63" + phoneVal).get();
+                    }
+                    if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("phoneNumber", "==", phoneVal).get();
+                    }
 
                     if (querySnapshot.empty) {
                         showMessage("Incorrect phone number or password.", true);
@@ -489,87 +490,68 @@
                     const userData = userDoc.data();
                     const storedPassword = userData.password;
 
-                    // Ibinuboses nito nang tama ang bagong password mula sa database
-                    
-if (storedPassword === passVal) {
-    const phoneDigits = phoneVal.replace(/\D/g, "");
-    const normalizedPhone = phoneDigits.replace(/^0+/, "");
-    const syntheticEmail = "63" + normalizedPhone + "@nexora.local";
+                    if (storedPassword === passVal) {
+                        const phoneDigits = phoneVal.replace(/\D/g, "");
+                        const normalizedPhone = phoneDigits.replace(/^0+/, "");
+                        const syntheticEmail = "63" + normalizedPhone + "@nexora.local";
 
-    try {
-        // Unang subukang mag-sign in
-        await auth.signInWithEmailAndPassword(
-            syntheticEmail,
-            passVal
-        );
+                        try {
+                            await auth.signInWithEmailAndPassword(
+                                syntheticEmail,
+                                passVal
+                            );
 
-        localStorage.setItem("nexora_user_uid", userDoc.id);
-        showMessage("Login successful. Redirecting...", false);
+                            localStorage.setItem("nexora_user_uid", userDoc.id);
+                            showMessage("Login successful. Redirecting...", false);
 
-        setTimeout(() => {
-            if (
-                phoneVal === "9999999999" ||
-                userData.email === "639999999999@nexora.local"
-            ) {
-                window.location.href = "admin-withdraw.html";
-            } else {
-                window.location.href = "dashboard.html";
-            }
-        }, 700);
+                            setTimeout(() => {
+                                if (
+                                    phoneVal === "9999999999" ||
+                                    userData.email === "639999999999@nexora.local"
+                                ) {
+                                    window.location.href = "admin-withdraw.html";
+                                } else {
+                                    window.location.href = "dashboard.html";
+                                }
+                            }, 700);
 
-    } catch (authErr) {
-        console.warn("Sign-in failed, attempting to recover/create auth account...", authErr);
+                        } catch (authErr) {
+                            console.warn("Sign-in failed, attempting to recover/create auth account...", authErr);
 
-        try {
-            // Kung nag-fail ang sign-in dahil wala pa sa Auth o mali ang password doon,
-            // susubukan nating i-create ang account o i-update ang password sa Auth para mag-sync.
-            let userCredential;
-            try {
-                userCredential = await auth.createUserWithEmailAndPassword(syntheticEmail, passVal);
-            } catch (createErr) {
-                // Kung na-taon na meron na pala pero nagka-mali lang, subukang i-sign in ulit o i-update kung kailangan
-                // O kaya kung umiiral na, pwedeng direktang sabihin sa user na i-check ang credentials.
-                throw createErr;
-            }
+                            try {
+                                await auth.createUserWithEmailAndPassword(syntheticEmail, passVal);
 
-            localStorage.setItem("nexora_user_uid", userDoc.id);
-            showMessage("Account synchronized successfully. Redirecting...", false);
+                                localStorage.setItem("nexora_user_uid", userDoc.id);
+                                showMessage("Account synchronized successfully. Redirecting...", false);
 
-            setTimeout(() => {
-                if (
-                    phoneVal === "9999999999" ||
-                    userData.email === "639999999999@nexora.local"
-                ) {
-                    window.location.href = "admin-withdraw.html";
-                } else {
-                    window.location.href = "dashboard.html";
-                }
-            }, 700);
+                                setTimeout(() => {
+                                    if (
+                                        phoneVal === "9999999999" ||
+                                        userData.email === "639999999999@nexora.local"
+                                    ) {
+                                        window.location.href = "admin-withdraw.html";
+                                    } else {
+                                        window.location.href = "dashboard.html";
+                                    }
+                                }, 700);
 
-        } catch (recoveryErr) {
-            console.error("Firebase Authentication recovery error:", recoveryErr);
-            showMessage(
-                "Firebase login failed. Please check your credentials or register again.",
-                true
-            );
+                            } catch (recoveryErr) {
+                                console.error("Firebase Authentication recovery error:", recoveryErr);
+                                showMessage(
+                                    "Firebase login failed. Please check your credentials or register again.",
+                                    true
+                                );
 
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = "<span>ENTER</span>";
-        }
-    }
+                                loginBtn.disabled = false;
+                                loginBtn.innerHTML = "<span>ENTER</span>";
+                            }
+                        }
 
-} else {
-    showMessage("Incorrect phone number or password.", true);
-    loginBtn.disabled = false;
-    loginBtn.innerHTML = "<span>ENTER</span>";
-}
-
-} else {
-    showMessage("Incorrect phone number or password.", true);
-    loginBtn.disabled = false;
-    loginBtn.innerHTML = "<span>ENTER</span>";
-}
-
+                    } else {
+                        showMessage("Incorrect phone number or password.", true);
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = "<span>ENTER</span>";
+                    }
 
                 } catch (error) {
                     console.error("Login Error:", error);
