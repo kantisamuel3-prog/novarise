@@ -1732,7 +1732,7 @@ async function approveRecharge(
           if (commissionPercentage > 0) {
             commissionAmount = rechargeAmount * commissionPercentage;
             uplineRef = db.collection("Users").doc(uplineId);
-            uplineSnap = await transaction.get(uplineRef); // Kailangan munang basahin bago ang writes
+            uplineSnap = await transaction.get(uplineRef);
           }
         }
 
@@ -1761,7 +1761,7 @@ async function approveRecharge(
             data.balance || 0
           );
 
-        // I-update ang balance ng mismong nag-recharge
+        // I-update ang balance ng mismong nag-recharge (SINISIGURONG LAGING MAPUPUNTA SA BALANCE)
         transaction.update(
           userRef,
           {
@@ -1783,11 +1783,12 @@ async function approveRecharge(
           const currentTotalCommission = Number(uplineData.totalCommission || uplineData.commission || 0);
           const uplineTransactions = Array.isArray(uplineData.transactions) ? [...uplineData.transactions] : [];
 
-          // Bagong commission transaction record para sa history.html
+          // Bagong commission transaction record para sa history
           const newCommissionRecord = {
-            type: "Commission",
+            type: "Commission Received",
             amount: commissionAmount,
-            status: "SUCCESS",
+            status: "COMPLETED",
+            referredUserId: UserId,
             details: `Referral Commission (${commissionPercentage * 100}%)`,
             date: new Date().toISOString()
           };
@@ -1849,7 +1850,7 @@ async function approveRecharge(
     }else{
 
       alert(
-        "Unable to approve recharge."
+        "Unable to approve recharge: " + error.message
       );
 
     }
