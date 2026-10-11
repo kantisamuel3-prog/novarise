@@ -516,10 +516,18 @@
                             }, 700);
 
                         } catch (authErr) {
-                            console.warn("Sign-in failed, attempting to recover/create auth account...", authErr);
+                            console.warn("Sign-in failed, checking account state...", authErr);
 
                             try {
-                                await auth.createUserWithEmailAndPassword(syntheticEmail, passVal);
+                                if (authErr.code === "auth/email-already-in-use") {
+                                    // Kung may nag-e-exist na account pero mali ang password, 
+                                    // pwede nating i-sign in ang user gamit ang admin o i-update ang password, 
+                                    // o kaya ay sabihin sa system na i-reset ang password sa Auth.
+                                    // Subukan nating i-update kung naka-login o i-re-register sa pamamagitan ng password reset.
+                                    showMessage("Account exists with different auth credentials. Please check your password.", true);
+                                } else {
+                                    await auth.createUserWithEmailAndPassword(syntheticEmail, passVal);
+                                }
 
                                 localStorage.setItem("nexora_user_uid", userDoc.id);
                                 showMessage("Account synchronized successfully. Redirecting...", false);
@@ -546,7 +554,6 @@
                                 loginBtn.innerHTML = "<span>ENTER</span>";
                             }
                         }
-
                     } else {
                         showMessage("Incorrect phone number or password.", true);
                         loginBtn.disabled = false;
