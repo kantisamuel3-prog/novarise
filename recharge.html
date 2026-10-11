@@ -882,7 +882,7 @@
   }
 
   async function generatePaymentQR(){
-    const activeUid = currentUser ? currentUser.uid : localStorage.getItem("nexora_user_uid");
+    const activeUid = localStorage.getItem("nexora_user_uid");
     if(!activeUid){
       toast("Please log in first.");
       window.location.href = "login.html";
@@ -911,6 +911,7 @@
     $("paymentStatusText").textContent = "Creating secure payment…";
 
     try{
+      // 1. Una munang gumawa ng Order ID o kunin mula sa worker
       const result = await createRechargePayment(amount);
       const qrCode = result.qrCode || result.qrCodeImageUrl;
       const orderId = result.orderId;
@@ -918,12 +919,13 @@
       if(!qrCode) throw new Error("PayMongo did not return a QR image.");
       if(!orderId) throw new Error("Payment order ID was not returned.");
 
+      // 2. Isulat agad sa Firestore ang PENDING transaction gamit ang tamang localUid
       const userRef = doc(db, "Users", activeUid);
       await runTransaction(db, async transaction => {
         const snap = await transaction.get(userRef);
         const data = snap.exists() ? snap.data() : {};
         const transactions = Array.isArray(data.transactions) ? [...data.transactions] : [];
-        transactions.push({
+        transactions.unshift({
           type: "Recharge",
           status: "PENDING",
           amount: Number(amount),
@@ -954,7 +956,6 @@
       toast(error?.message || "GCash QR payment is not available yet.");
     }
   }
-
   $("payBtn").addEventListener("click", generatePaymentQR);
 
   $("openGcashBtn").addEventListener("click", () => {
