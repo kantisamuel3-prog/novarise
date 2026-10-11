@@ -1,42 +1,247 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full select-none">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>NEXORA — About</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
-  <style>
-      body {
-          background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
-          color: #f1f5f9;
-          font-family: 'Inter', sans-serif;
-          min-height: 100vh;
-      }
-  </style>
-</head>
-<body class="flex flex-col min-h-screen p-4 max-w-md mx-auto">
-  <div class="flex items-center justify-between mb-6 pt-4">
-      <a href="account.html" class="text-xs font-mono font-bold text-nexora-cyan bg-nexora-card/80 border border-nexora-cyan/30 px-3 py-2 rounded-xl">
-          <i class="fa-solid fa-arrow-left mr-1"></i> Back
-      </a>
-      <h1 class="text-lg font-bold text-white font-mono">About Nexora</h1>
-      <div class="w-10"></div>
-  </div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NEXORA — About</title>
 
-  <div class="bg-slate-900/80 border border-cyan-500/30 rounded-2xl p-5 space-y-4 backdrop-blur-md shadow-xl">
-      <div class="text-center pb-3 border-b border-white/10">
-          <h2 class="text-xl font-black text-cyan-400 font-mono">NEXORA TERMINAL</h2>
-          <p class="text-xs text-gray-400 font-mono mt-1">Version 2.4.0 Live</p>
-      </div>
-      <p class="text-xs text-gray-300 leading-relaxed font-sans">
-          Nexora is an advanced investment and trading ecosystem designed to provide secure financial growth, automated asset tracking, and robust multi-tiered referral mechanisms.
-      </p>
-      <div class="text-[11px] text-gray-400 space-y-1 font-mono pt-2">
-          <div class="flex justify-between"><span>Platform Status</span><span class="text-emerald-400">Operational</span></div>
-          <div class="flex justify-between"><span>Security Protocol</span><span class="text-white">SSL Encrypted</span></div>
-      </div>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                    mono: ['JetBrains Mono', 'monospace'],
+                    brand: ['Montserrat', 'sans-serif']
+                },
+                colors: {
+                    nexora: {
+                        navy: '#0a1628',
+                        deep: '#040814',
+                        card: '#0d1d35',
+                        cyan: '#00f2fe',
+                        blue: '#1890ff',
+                        gold: '#dfb248',
+                        goldGlow: '#ffd700',
+                        accent: '#00e676'
+                    }
+                },
+                animation: {
+                    'marquee': 'marquee 25s linear infinite',
+                    'pulse-cyan': 'pulseCyan 3s ease-in-out infinite',
+                    'orbit': 'orbit 10s linear infinite',
+                    'float': 'float 4s ease-in-out infinite',
+                },
+                keyframes: {
+                    marquee: {
+                        '0%': { transform: 'translateX(0%)' },
+                        '100%': { transform: 'translateX(-50%)' }
+                    },
+                    pulseCyan: {
+                        '0%, 100%': { filter: 'drop-shadow(0 0 15px rgba(0,242,254,0.4))' },
+                        '50%': { filter: 'drop-shadow(0 0 35px rgba(0,242,254,0.9)) drop-shadow(0 0 60px rgba(0,242,254,0.4))' }
+                    },
+                    orbit: {
+                        '0%': { transform: 'rotate(0deg)' },
+                        '100%': { transform: 'rotate(360deg)' }
+                    },
+                    float: {
+                        '0%, 100%': { transform: 'translateY(0)' },
+                        '50%': { transform: 'translateY(-6px)' }
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+body {
+    background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
+    color: #f1f5f9;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+.brushed-metal-overlay {
+    background: repeating-radial-gradient(
+        circle at 50% 40%,
+        rgba(255, 255, 255, 0.015) 0px,
+        rgba(255, 255, 255, 0.015) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+}
+
+.modal-card {
+    background: rgba(13, 29, 53, 0.95);
+    border: 1px solid rgba(0, 242, 254, 0.35);
+    box-shadow: 0 0 35px rgba(0, 242, 254, 0.15), inset 0 0 20px rgba(0, 242, 254, 0.05);
+    backdrop-filter: blur(16px);
+}
+</style>
+</head>
+
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+<!-- BACKGROUND CANDLESTICK CHART & OVERLAY -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+    <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
+</div>
+
+<div class="relative z-10 w-full max-w-md animate-float">
+  <div class="modal-card rounded-3xl p-6 relative">
+    
+    <!-- CLOSE / BACK BUTTON -->
+    <a href="account.html" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-900/80 border border-nexora-cyan/30 text-nexora-cyan flex items-center justify-center hover:bg-nexora-cyan hover:text-slate-950 transition-all cursor-pointer">
+        <i class="fa-solid fa-xmark text-sm font-bold"></i>
+    </a>
+
+    <!-- HEADER LOGO & TITLE -->
+    <div class="flex items-center space-x-3 mb-5">
+        <div class="relative w-10 h-10 flex items-center justify-center animate-pulse-cyan shrink-0">
+            <div class="absolute inset-0 rounded-full border border-dashed border-nexora-cyan/50 animate-orbit"></div>
+            <svg class="w-7 h-7 drop-shadow-[0_0_10px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+                <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+                <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
+            </svg>
+        </div>
+        <div>
+            <h2 class="text-base font-black text-white font-mono tracking-wide">ABOUT NEXORA</h2>
+            <p class="text-[10px] font-bold text-nexora-cyan uppercase font-mono tracking-wider">NEXT-GEN FINANCIAL ECOSYSTEM</p>
+        </div>
+    </div>
+
+    <!-- MAIN DESCRIPTION -->
+    <p class="text-xs text-gray-300 leading-relaxed font-sans mb-5 bg-black/30 p-3.5 rounded-xl border border-nexora-cyan/15">
+        <strong class="text-white">NEXORA</strong> is an elite digital trading and wealth growth platform engineered to empower members with secure, ultra-fast, and boundless financial opportunities in the modern digital economy.
+    </p>
+
+    <!-- WHY DO WE EXIST SECTION -->
+    <div class="mb-5">
+        <div class="flex items-center space-x-2 text-nexora-gold text-xs font-bold font-mono mb-2">
+            <i class="fa-solid fa-bolt animate-pulse"></i>
+            <span>WHY DO WE EXIST?</span>
+        </div>
+        <p class="text-[11px] text-gray-400 leading-relaxed font-sans">
+            We were founded to bridge the critical gap between traditional financial markets and the digital-first generation. Nexora dismantles complex barriers, offering a transparent, rock-solid, and community-driven ecosystem where every ambitious member is positioned to win.
+        </p>
+    </div>
+
+    <!-- GRID FEATURES (SECURITY & MARKETS) -->
+    <div class="grid grid-cols-2 gap-3 mb-5">
+        <div class="bg-black/40 border border-nexora-cyan/20 rounded-xl p-3">
+            <div class="text-nexora-cyan text-xs font-bold font-mono mb-1 flex items-center space-x-1.5">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Bank-Grade Security</span>
+            </div>
+            <p class="text-[10px] text-gray-400 leading-normal">Cutting-edge encryption protocols safeguarding your assets and transactions 24/7.</p>
+        </div>
+        <div class="bg-black/40 border border-nexora-cyan/20 rounded-xl p-3">
+            <div class="text-nexora-cyan text-xs font-bold font-mono mb-1 flex items-center space-x-1.5">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Global Markets</span>
+            </div>
+            <p class="text-[10px] text-gray-400 leading-normal">Real-time data feeds and high-performance tools designed for smart wealth generation.</p>
+        </div>
+    </div>
+
+    <!-- CORE PHILOSOPHY -->
+    <div class="text-center py-3 bg-black/50 border border-nexora-gold/30 rounded-xl mb-5 shadow-inner">
+        <span class="text-[9px] font-bold text-gray-400 uppercase font-mono tracking-widest block mb-1">Our Core Philosophy</span>
+        <span class="text-xs font-black text-nexora-gold font-mono tracking-wide">"Trade. Grow. Together."</span>
+    </div>
+
+    <!-- ACTION BUTTON -->
+    <a href="account.html" class="w-full h-12 rounded-full bg-gradient-to-r from-nexora-cyan to-nexora-blue text-slate-950 flex items-center justify-center font-black text-xs font-mono tracking-wider shadow-[0_0_20px_rgba(0,242,254,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+        GOT IT, LET'S TRADE!
+    </a>
+
   </div>
+</div>
+
+<!-- Candlestick Chart Background Script -->
+<script>
+    const canvas = document.getElementById('chartCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let candles = [];
+    const candleWidth = 14;
+    const spacing = 22;
+
+    function initCandles() {
+        candles = [];
+        const count = Math.ceil(canvas.width / spacing) + 5;
+        let currentPrice = canvas.height * 0.55;
+
+        for (let i = 0; i < count; i++) {
+            const open = currentPrice;
+            const close = open + (Math.random() - 0.48) * 35;
+            const high = Math.max(open, close) + Math.random() * 15;
+            const low = Math.min(open, close) - Math.random() * 15;
+            candles.push({ open, close, high, low, x: i * spacing });
+            currentPrice = close;
+        }
+    }
+
+    function drawChart() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < candles.length; i++) {
+            const c = candles[i];
+            const isBullish = c.close <= c.open;
+            ctx.strokeStyle = isBullish ? '#00e676' : '#ff5252';
+            ctx.fillStyle = isBullish ? 'rgba(0, 230, 118, 0.5)' : 'rgba(255, 82, 82, 0.5)';
+
+            ctx.beginPath();
+            ctx.moveTo(c.x + candleWidth / 2, c.high);
+            ctx.lineTo(c.x + candleWidth / 2, c.low);
+            ctx.stroke();
+
+            const bodyY = Math.min(c.open, c.close);
+            const bodyHeight = Math.max(Math.abs(c.open - c.close), 2);
+            ctx.fillRect(c.x, bodyY, candleWidth, bodyHeight);
+
+            c.x -= 0.4;
+        }
+
+        if (candles.length > 0 && candles[0].x < -spacing) {
+            const last = candles[candles.length - 1];
+            const open = last.close;
+            const close = open + (Math.random() - 0.48) * 35;
+            const high = Math.max(open, close) + Math.random() * 15;
+            const low = Math.min(open, close) - Math.random() * 15;
+            candles.shift();
+            candles.push({ open, close, high, low, x: last.x + spacing });
+        }
+
+        requestAnimationFrame(drawChart);
+    }
+
+    initCandles();
+    drawChart();
+</script>
+
 </body>
 </html>
