@@ -1211,7 +1211,15 @@ canvas#liveChart {
     phpBalance -= phpAmount;
     usdBalance += convertedUsd;
     startUsdBalanceTimerIfNeeded(previousUsd, usdBalance);
-    alert(`Successfully converted ₱${phpAmount.toFixed(2)} PHP to $${convertedUsd.toFixed(2)} USD for trading.`);
+    
+    // Gagamitin na ang magandang Conversion Success Modal sa halip na alert()
+    openConversionNoticeModal(
+      'Conversion Successful!',
+      `Successfully converted ₱${phpAmount.toFixed(2)} PHP to $${convertedUsd.toFixed(2)} USD for trading.`,
+      '✓',
+      'success'
+    );
+
     document.getElementById('phpInput').value = '';
     previewPhpToUsd();
     updateBalancesUI();
@@ -1316,8 +1324,16 @@ canvas#liveChart {
       calculateAccountAgeDays();
     }
 
-    alert(`USD to PHP Conversion Successful!\n\nConverted: $${usdAmount.toFixed(2)} USD\nDeduction (${feePercent * 100}%): ₱${deduction.toFixed(2)} PHP\nNet Received: ₱${finalPhp.toFixed(2)} PHP`);
     closeConversionModal();
+
+    // Gagamitin na ang magandang Conversion Success Modal sa halip na alert()
+    openConversionNoticeModal(
+      'USD to PHP Conversion Successful!',
+      `Converted: $${usdAmount.toFixed(2)} USD\nDeduction (${feePercent * 100}%): ₱${deduction.toFixed(2)} PHP\nNet Received: ₱${finalPhp.toFixed(2)} PHP`,
+      '✓',
+      'success'
+    );
+
     document.getElementById('usdInput').value = '';
     previewUsdToPhp();
     updateBalancesUI();
