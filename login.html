@@ -497,13 +497,13 @@ if (storedPassword === passVal) {
     const syntheticEmail = "63" + normalizedPhone + "@nexora.local";
 
     try {
+        // Unang subukang mag-sign in
         await auth.signInWithEmailAndPassword(
             syntheticEmail,
             passVal
         );
 
         localStorage.setItem("nexora_user_uid", userDoc.id);
-
         showMessage("Login successful. Redirecting...", false);
 
         setTimeout(() => {
@@ -518,16 +518,51 @@ if (storedPassword === passVal) {
         }, 700);
 
     } catch (authErr) {
-        console.error("Firebase Authentication error:", authErr);
+        console.warn("Sign-in failed, attempting to recover/create auth account...", authErr);
 
-        showMessage(
-            "Firebase login failed. Your password may not match your Firebase account. Please reset it correctly.",
-            true
-        );
+        try {
+            // Kung nag-fail ang sign-in dahil wala pa sa Auth o mali ang password doon,
+            // susubukan nating i-create ang account o i-update ang password sa Auth para mag-sync.
+            let userCredential;
+            try {
+                userCredential = await auth.createUserWithEmailAndPassword(syntheticEmail, passVal);
+            } catch (createErr) {
+                // Kung na-taon na meron na pala pero nagka-mali lang, subukang i-sign in ulit o i-update kung kailangan
+                // O kaya kung umiiral na, pwedeng direktang sabihin sa user na i-check ang credentials.
+                throw createErr;
+            }
 
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = "<span>ENTER</span>";
+            localStorage.setItem("nexora_user_uid", userDoc.id);
+            showMessage("Account synchronized successfully. Redirecting...", false);
+
+            setTimeout(() => {
+                if (
+                    phoneVal === "9999999999" ||
+                    userData.email === "639999999999@nexora.local"
+                ) {
+                    window.location.href = "admin-withdraw.html";
+                } else {
+                    window.location.href = "dashboard.html";
+                }
+            }, 700);
+
+        } catch (recoveryErr) {
+            console.error("Firebase Authentication recovery error:", recoveryErr);
+            showMessage(
+                "Firebase login failed. Please check your credentials or register again.",
+                true
+            );
+
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = "<span>ENTER</span>";
+        }
     }
+
+} else {
+    showMessage("Incorrect phone number or password.", true);
+    loginBtn.disabled = false;
+    loginBtn.innerHTML = "<span>ENTER</span>";
+}
 
 } else {
     showMessage("Incorrect phone number or password.", true);
