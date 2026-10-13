@@ -25,6 +25,8 @@
   <style>
     body { background:radial-gradient(circle at 50% 35%,#0d1e38 0%,#061124 52%,#020712 100%); color:#f1f5f9; font-family:Inter,sans-serif; min-height:100vh; }
     .brushed-metal-overlay { background:repeating-radial-gradient(circle at 50% 40%,rgba(255,255,255,.015) 0px,rgba(255,255,255,.015) 1px,transparent 1px,transparent 3px); }
+    .ticker-track { width:max-content; animation:tickerScroll 36s linear infinite; }
+    @keyframes tickerScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
     .logo-orbit { animation:orbit 10s linear infinite; }
     .logo-glow { animation:pulseCyan 3s ease-in-out infinite; }
     @keyframes orbit { to { transform:rotate(360deg); } }
@@ -41,24 +43,37 @@
     <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
     <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
   </div>
-  <header class="sticky top-0 z-20 border-b border-nexora-cyan/20 bg-[#030914]/95 backdrop-blur-md">
-    <div class="max-w-xl mx-auto px-4 py-1 flex items-center justify-between">
-      <a href="account.html" class="w-9 h-9 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-gray-300" aria-label="Back to account">
+  <div class="relative z-20 h-8 overflow-hidden border-b border-nexora-cyan/20 bg-[#020712]/95">
+    <div class="ticker-track flex items-center whitespace-nowrap h-full font-mono text-[10px] tracking-wide">
+      <span class="px-3 text-nexora-cyan font-bold">● NEXORA TAPE</span>
+      <span class="px-3 text-slate-400">ETH/USD <b class="text-white">$3,520.80</b> <b class="text-emerald-400">▲ +2.45%</b></span>
+      <span class="px-3 text-slate-400">NEX/USD <b class="text-nexora-cyan">$18.95</b> <b class="text-emerald-400">▲ +18.40%</b></span>
+      <span class="px-3 text-slate-400">GOLD/OUNCE <b class="text-white">$2,650.10</b> <b class="text-emerald-400">▲ +0.85%</b></span>
+      <span class="px-3 text-slate-400">24H VOLUME <b class="text-amber-300">$2.84 BILLION</b></span>
+      <span class="px-3 text-nexora-cyan font-bold">● NEXORA TAPE</span>
+      <span class="px-3 text-slate-400">ETH/USD <b class="text-white">$3,520.80</b> <b class="text-emerald-400">▲ +2.45%</b></span>
+      <span class="px-3 text-slate-400">NEX/USD <b class="text-nexora-cyan">$18.95</b> <b class="text-emerald-400">▲ +18.40%</b></span>
+      <span class="px-3 text-slate-400">GOLD/OUNCE <b class="text-white">$2,650.10</b> <b class="text-emerald-400">▲ +0.85%</b></span>
+      <span class="px-3 text-slate-400">24H VOLUME <b class="text-amber-300">$2.84 BILLION</b></span>
+    </div>
+  </div>
+  <header class="relative z-20 bg-transparent">
+    <div class="max-w-xl mx-auto px-4 pt-2 pb-1 flex items-start justify-between">
+      <a href="account.html" class="mt-1 w-9 h-9 rounded-xl border border-nexora-cyan/30 bg-[#07162b]/90 flex items-center justify-center text-nexora-cyan" aria-label="Back to account">
         <i class="fa-solid fa-arrow-left"></i>
       </a>
-      <div class="flex items-center justify-center" aria-label="N logo">
+      <div class="flex flex-col items-center justify-center pt-0.5" aria-label="Nexora logo">
         <div class="relative w-9 h-9 flex items-center justify-center logo-glow">
-          <div class="absolute inset-0 rounded-full border border-dashed border-nexora-cyan/70 logo-orbit"></div>
-          <svg class="w-6 h-6 drop-shadow-[0_0_8px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="N">
+          <div class="absolute inset-0 rounded-full border-2 border-dashed border-nexora-cyan/60 logo-orbit"></div>
+          <svg class="w-7 h-7 drop-shadow-[0_0_8px_rgba(0,242,254,.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="N">
             <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
             <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
             <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
           </svg>
         </div>
+        <span class="text-[7px] text-nexora-cyan font-black tracking-[.15em] mt-0.5">NEXORA</span>
       </div>
-      <div class="w-9 h-9 rounded-lg border border-nexora-cyan/20 bg-nexora-cyan/5 flex items-center justify-center text-nexora-cyan" aria-hidden="true">
-        <i class="fa-solid fa-shield-halved"></i>
-      </div>
+      <div class="w-9 h-9 mt-1"></div>
     </div>
   </header>
 
