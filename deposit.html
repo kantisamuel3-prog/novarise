@@ -25,8 +25,8 @@
   <style>
     body { background:radial-gradient(circle at 50% 35%,#0d1e38 0%,#061124 52%,#020712 100%); color:#f1f5f9; font-family:Inter,sans-serif; min-height:100vh; }
     .brushed-metal-overlay { background:repeating-radial-gradient(circle at 50% 40%,rgba(255,255,255,.015) 0px,rgba(255,255,255,.015) 1px,transparent 1px,transparent 3px); }
-    .ticker-track { width:max-content; animation:tickerScroll 36s linear infinite; }
-    .ticker-track span:first-child { margin-left:0; }
+    .ticker-market-track { width:max-content; animation:tickerScroll 36s linear infinite; }
+    .ticker-market-track:hover { animation-play-state:paused; }
     @keyframes tickerScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
     .logo-orbit { animation:orbit 10s linear infinite; }
     .logo-glow { animation:pulseCyan 3s ease-in-out infinite; }
@@ -44,18 +44,25 @@
     <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
     <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
   </div>
-  <div class="relative z-20 h-8 overflow-hidden border-b border-nexora-cyan/20 bg-[#020712]/95">
-    <div class="ticker-track flex items-center whitespace-nowrap h-full font-mono text-[10px] tracking-wide">
-      <span class="px-3 text-nexora-cyan font-bold border-r border-nexora-cyan/40">🟢 NEXORA TAPE</span>
-      <span class="px-3 text-slate-400">ETH/USD <b class="text-white">$3,520.80</b> <b class="text-emerald-400">▲ +2.45%</b></span>
-      <span class="px-3 text-slate-400">NEX/USD <b class="text-nexora-cyan">$18.95</b> <b class="text-emerald-400">▲ +18.40%</b></span>
-      <span class="px-3 text-slate-400">GOLD/OUNCE <b class="text-white">$2,650.10</b> <b class="text-emerald-400">▲ +0.85%</b></span>
-      <span class="px-3 text-slate-400">24H VOLUME <b class="text-amber-300">$2.84 BILLION</b></span>
-      <span class="px-3 text-nexora-cyan font-bold">● NEXORA TAPE</span>
-      <span class="px-3 text-slate-400">ETH/USD <b class="text-white">$3,520.80</b> <b class="text-emerald-400">▲ +2.45%</b></span>
-      <span class="px-3 text-slate-400">NEX/USD <b class="text-nexora-cyan">$18.95</b> <b class="text-emerald-400">▲ +18.40%</b></span>
-      <span class="px-3 text-slate-400">GOLD/OUNCE <b class="text-white">$2,650.10</b> <b class="text-emerald-400">▲ +0.85%</b></span>
-      <span class="px-3 text-slate-400">24H VOLUME <b class="text-amber-300">$2.84 BILLION</b></span>
+  <div class="relative z-20 h-8 flex border-b border-nexora-cyan/20 bg-[#020712]/95 overflow-hidden font-mono text-[10px] tracking-wide">
+    <div class="relative z-10 shrink-0 h-full flex items-center gap-1 px-3 bg-[#020712] border-r border-nexora-cyan/40 text-nexora-cyan font-bold">
+      <span class="text-emerald-500">●</span><span>NEXORA TAPE</span>
+    </div>
+    <div class="min-w-0 flex-1 overflow-hidden">
+      <div class="ticker-market-track flex items-center whitespace-nowrap h-full">
+        <div class="flex items-center">
+          <span class="px-3 text-slate-400">ETH/USD <b class="text-white">$3,520.80</b> <b class="text-emerald-400">▲ +2.45%</b></span>
+          <span class="px-3 text-slate-400">NEX/USD <b class="text-nexora-cyan">$18.95</b> <b class="text-emerald-400">▲ +18.40%</b></span>
+          <span class="px-3 text-slate-400">GOLD/OUNCE <b class="text-white">$2,650.10</b> <b class="text-emerald-400">▲ +0.85%</b></span>
+          <span class="px-3 text-slate-400">24H VOLUME <b class="text-amber-300">$2.84 BILLION</b></span>
+        </div>
+        <div class="flex items-center" aria-hidden="true">
+          <span class="px-3 text-slate-400">ETH/USD <b class="text-white">$3,520.80</b> <b class="text-emerald-400">▲ +2.45%</b></span>
+          <span class="px-3 text-slate-400">NEX/USD <b class="text-nexora-cyan">$18.95</b> <b class="text-emerald-400">▲ +18.40%</b></span>
+          <span class="px-3 text-slate-400">GOLD/OUNCE <b class="text-white">$2,650.10</b> <b class="text-emerald-400">▲ +0.85%</b></span>
+          <span class="px-3 text-slate-400">24H VOLUME <b class="text-amber-300">$2.84 BILLION</b></span>
+        </div>
+      </div>
     </div>
   </div>
   <header class="relative z-20 bg-transparent">
