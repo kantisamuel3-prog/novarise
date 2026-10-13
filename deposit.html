@@ -24,6 +24,11 @@
   </script>
   <style>
     body { background:radial-gradient(circle at 50% 35%,#0d1e38 0%,#061124 52%,#020712 100%); color:#f1f5f9; font-family:Inter,sans-serif; min-height:100vh; }
+    .brushed-metal-overlay { background:repeating-radial-gradient(circle at 50% 40%,rgba(255,255,255,.015) 0px,rgba(255,255,255,.015) 1px,transparent 1px,transparent 3px); }
+    .logo-orbit { animation:orbit 10s linear infinite; }
+    .logo-glow { animation:pulseCyan 3s ease-in-out infinite; }
+    @keyframes orbit { to { transform:rotate(360deg); } }
+    @keyframes pulseCyan { 0%,100% { filter:drop-shadow(0 0 12px rgba(0,242,254,.4)); } 50% { filter:drop-shadow(0 0 26px rgba(0,242,254,.95)) drop-shadow(0 0 40px rgba(0,242,254,.35)); } }
     .metal { background:linear-gradient(180deg,#fff 0%,#e2e8f0 35%,#94a3b8 65%,#64748b 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
     .field { width:100%; background:#030b17; color:#f8fafc; border:1px solid rgba(0,242,254,.22); border-radius:12px; padding:12px 13px; outline:none; }
     .field:focus { border-color:#00f2fe; box-shadow:0 0 0 2px rgba(0,242,254,.1); }
@@ -31,15 +36,24 @@
     .chain.active { border-color:#00f2fe; background:rgba(0,242,254,.10); box-shadow:0 0 18px rgba(0,242,254,.08); }
   </style>
 </head>
-<body class="pb-8">
+<body class="pb-8 relative overflow-x-hidden">
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+    <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
+  </div>
   <header class="sticky top-0 z-20 border-b border-nexora-cyan/20 bg-[#030914]/95 backdrop-blur-md">
     <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="account.html" class="w-10 h-10 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-gray-300" aria-label="Back to account">
         <i class="fa-solid fa-arrow-left"></i>
       </a>
-      <div class="text-center">
-        <div class="font-brand font-black tracking-[.22em] text-lg"><span class="metal">NEXORA</span></div>
-        <div class="text-[9px] tracking-[.25em] text-nexora-gold font-mono">CRYPTO DEPOSIT</div>
+      <div class="text-center flex flex-col items-center">
+        <div class="relative w-12 h-12 mb-1 flex items-center justify-center logo-glow">
+          <div class="absolute inset-0 rounded-full border-2 border-dashed border-nexora-cyan/60 logo-orbit"></div>
+          <div class="w-9 h-9 rounded-full border border-nexora-cyan/60 bg-[#0a2440] flex items-center justify-center text-3xl font-brand font-black text-blue-500" style="text-shadow:0 0 10px rgba(0,242,254,.85)">N</div>
+        </div>
+        <div class="font-brand font-black tracking-wider text-lg leading-tight"><span class="metal">NEX</span><span class="inline-flex items-center justify-center w-3 h-3 mx-0.5 rounded-full border-2 border-nexora-gold bg-gradient-to-br from-yellow-100 to-yellow-700 shadow-[0_0_12px_rgba(212,175,55,.8)]"><span class="w-1 h-1 rounded-full bg-slate-900"></span></span><span class="metal">RA</span></div>
+        <div class="text-[9px] tracking-[.22em] text-nexora-gold font-mono mt-1">TRADE. GROW. TOGETHER</div>
+        <div class="text-[8px] tracking-[.2em] text-nexora-cyan font-mono mt-1">CRYPTO DEPOSIT</div>
       </div>
       <div class="w-10 h-10 rounded-xl border border-nexora-cyan/20 bg-nexora-cyan/5 flex items-center justify-center text-nexora-cyan">
         <i class="fa-solid fa-shield-halved"></i>
@@ -118,6 +132,48 @@
       <a href="account.html" class="text-xs text-gray-400 hover:text-nexora-cyan"><i class="fa-solid fa-arrow-left mr-1"></i> Back to Account</a>
     </div>
   </main>
+
+  <script>
+    // Animated decorative candlestick background, matching account.html.
+    (() => {
+      const canvas = document.getElementById("chartCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let candles = [];
+      const candleWidth = 14, spacing = 22;
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        candles = [];
+        const count = Math.ceil(canvas.width / spacing) + 5;
+        let price = canvas.height * 0.55;
+        for (let i = 0; i < count; i++) {
+          const open = price, close = open + (Math.random() - 0.48) * 35;
+          candles.push({open, close, high:Math.max(open,close)+Math.random()*15, low:Math.min(open,close)-Math.random()*15, x:i*spacing});
+          price = close;
+        }
+      }
+      function draw() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        for (const c of candles) {
+          const up = c.close <= c.open;
+          ctx.strokeStyle = up ? "#00e676" : "#ff5252";
+          ctx.fillStyle = up ? "rgba(0,230,118,.5)" : "rgba(255,82,82,.5)";
+          ctx.beginPath(); ctx.moveTo(c.x+candleWidth/2,c.high); ctx.lineTo(c.x+candleWidth/2,c.low); ctx.stroke();
+          ctx.fillRect(c.x,Math.min(c.open,c.close),candleWidth,Math.max(Math.abs(c.open-c.close),2));
+          c.x -= .4;
+        }
+        if (candles.length && candles[0].x < -spacing) {
+          const last = candles[candles.length-1], open = last.close, close = open+(Math.random()-.48)*35;
+          candles.shift();
+          candles.push({open,close,high:Math.max(open,close)+Math.random()*15,low:Math.min(open,close)-Math.random()*15,x:last.x+spacing});
+        }
+        requestAnimationFrame(draw);
+      }
+      window.addEventListener("resize",resizeCanvas);
+      resizeCanvas(); draw();
+    })();
+  </script>
 
   <script>
     // Configure these with verified production wallet addresses before going live.
