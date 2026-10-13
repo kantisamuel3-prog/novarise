@@ -1,1 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXORA — Crypto Deposit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: { sans: ['Inter','sans-serif'], mono: ['JetBrains Mono','monospace'], brand: ['Montserrat','sans-serif'] },
+        colors: { nexora: { navy:'#0a1628', deep:'#040814', card:'#0d1d35', cyan:'#00f2fe', blue:'#1890ff', gold:'#dfb248', accent:'#00e676' } }
+      }}
+    };
+  </script>
+  <style>
+    body { background:radial-gradient(circle at 50% 35%,#0d1e38 0%,#061124 52%,#020712 100%); color:#f1f5f9; font-family:Inter,sans-serif; min-height:100vh; }
+    .metal { background:linear-gradient(180deg,#fff 0%,#e2e8f0 35%,#94a3b8 65%,#64748b 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .field { width:100%; background:#030b17; color:#f8fafc; border:1px solid rgba(0,242,254,.22); border-radius:12px; padding:12px 13px; outline:none; }
+    .field:focus { border-color:#00f2fe; box-shadow:0 0 0 2px rgba(0,242,254,.1); }
+    .chain { transition:all .18s ease; }
+    .chain.active { border-color:#00f2fe; background:rgba(0,242,254,.10); box-shadow:0 0 18px rgba(0,242,254,.08); }
+  </style>
+</head>
+<body class="pb-8">
+  <header class="sticky top-0 z-20 border-b border-nexora-cyan/20 bg-[#030914]/95 backdrop-blur-md">
+    <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="account.html" class="w-10 h-10 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-gray-300" aria-label="Back to account">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <div class="text-center">
+        <div class="font-brand font-black tracking-[.22em] text-lg"><span class="metal">NEXORA</span></div>
+        <div class="text-[9px] tracking-[.25em] text-nexora-gold font-mono">CRYPTO DEPOSIT</div>
+      </div>
+      <div class="w-10 h-10 rounded-xl border border-nexora-cyan/20 bg-nexora-cyan/5 flex items-center justify-center text-nexora-cyan">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative z-10 max-w-xl mx-auto px-4 py-6">
+    <section class="text-center mb-6">
+      <div class="mx-auto mb-3 w-16 h-16 rounded-2xl border border-nexora-cyan/30 bg-nexora-cyan/10 flex items-center justify-center text-3xl text-nexora-cyan shadow-[0_0_30px_rgba(0,242,254,.12)]">
+        <i class="fa-brands fa-bitcoin"></i>
+      </div>
+      <h1 class="font-brand font-black text-xl tracking-wider">DEPOSIT USDT</h1>
+      <p class="text-xs text-gray-400 mt-2">Choose your network, send USDT, then submit your transaction details.</p>
+    </section>
+
+    <section class="rounded-2xl border border-nexora-cyan/25 bg-nexora-card/90 p-4 mb-4 shadow-xl">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xs font-black tracking-[.16em] text-gray-300 font-mono">01 / SELECT NETWORK</h2>
+        <span class="text-[9px] text-nexora-accent font-mono">USDT ONLY</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <button type="button" id="trcBtn" class="chain active rounded-xl border border-white/10 bg-[#030b17] p-3 text-left">
+          <div class="flex items-center gap-2"><span class="w-8 h-8 rounded-lg bg-red-500/15 text-red-400 flex items-center justify-center"><i class="fa-solid fa-bolt"></i></span><span class="font-bold text-sm">TRC20</span></div>
+          <div class="text-[10px] text-gray-400 mt-2">TRON Network</div>
+        </button>
+        <button type="button" id="ercBtn" class="chain rounded-xl border border-white/10 bg-[#030b17] p-3 text-left">
+          <div class="flex items-center gap-2"><span class="w-8 h-8 rounded-lg bg-indigo-500/15 text-indigo-300 flex items-center justify-center"><i class="fa-brands fa-ethereum"></i></span><span class="font-bold text-sm">ERC20</span></div>
+          <div class="text-[10px] text-gray-400 mt-2">Ethereum Network</div>
+        </button>
+      </div>
+      <div class="mt-4 rounded-xl border border-amber-400/25 bg-amber-400/5 p-3 flex gap-2 text-[11px] leading-relaxed text-amber-100">
+        <i class="fa-solid fa-triangle-exclamation mt-0.5 text-amber-300"></i>
+        <p><b>Important:</b> The sending network must match the selected network. Sending to the wrong network may result in permanent loss. Verify the wallet address before sending.</p>
+      </div>
+    </section>
+
+    <section class="rounded-2xl border border-nexora-cyan/25 bg-nexora-card/90 p-4 mb-4 shadow-xl">
+      <h2 class="text-xs font-black tracking-[.16em] text-gray-300 font-mono mb-3">02 / SEND USDT</h2>
+      <div class="flex flex-col items-center rounded-xl border border-white/10 bg-[#030b17] p-4">
+        <div id="qrPlaceholder" class="w-44 h-44 bg-white rounded-xl p-3 flex items-center justify-center text-center text-slate-700">
+          <div><i class="fa-solid fa-qrcode text-5xl mb-2"></i><p class="text-[10px] font-semibold">Wallet QR will appear here once configured</p></div>
+        </div>
+        <div id="networkLabel" class="mt-3 text-nexora-cyan font-mono text-xs font-bold">USDT · TRC20</div>
+        <p class="text-[10px] text-gray-500 mt-1 text-center">Only send USDT on the selected network.</p>
+      </div>
+      <label class="block text-[10px] text-gray-400 font-mono tracking-wider mt-4 mb-2">OFFICIAL RECEIVING ADDRESS</label>
+      <div class="flex gap-2">
+        <div id="walletAddress" class="field text-[11px] font-mono break-all min-h-[44px] flex items-center">Wallet address not configured yet</div>
+        <button type="button" id="copyAddress" class="shrink-0 px-4 rounded-xl bg-nexora-cyan text-slate-950 font-bold text-xs" title="Copy address"><i class="fa-regular fa-copy"></i></button>
+      </div>
+      <div class="grid grid-cols-2 gap-2 mt-3">
+        <button id="saveQr" type="button" class="rounded-xl border border-white/10 bg-white/5 py-3 text-xs font-bold text-gray-300"><i class="fa-solid fa-download mr-1.5"></i> Save QR</button>
+        <button id="openWallet" type="button" class="rounded-xl border border-white/10 bg-white/5 py-3 text-xs font-bold text-gray-300"><i class="fa-solid fa-wallet mr-1.5"></i> Wallet help</button>
+      </div>
+      <p id="walletWarning" class="mt-3 text-[10px] leading-relaxed text-amber-200">Admin setup required: add and verify the correct TRC20 and ERC20 receiving addresses before accepting real deposits.</p>
+    </section>
+
+    <form id="depositForm" class="rounded-2xl border border-nexora-cyan/25 bg-nexora-card/90 p-4 shadow-xl">
+      <h2 class="text-xs font-black tracking-[.16em] text-gray-300 font-mono mb-4">03 / SUBMIT DEPOSIT</h2>
+      <label for="amount" class="block text-[10px] text-gray-400 font-mono tracking-wider mb-2">AMOUNT SENT (USDT)</label>
+      <input id="amount" class="field mb-4" type="number" min="0.000001" step="any" placeholder="e.g. 25.00" required>
+      <label for="txid" class="block text-[10px] text-gray-400 font-mono tracking-wider mb-2">TRANSACTION HASH / TXID</label>
+      <input id="txid" class="field mb-4" type="text" maxlength="180" placeholder="Paste your blockchain transaction hash" required>
+      <label for="proof" class="block text-[10px] text-gray-400 font-mono tracking-wider mb-2">PAYMENT PROOF (OPTIONAL IMAGE)</label>
+      <input id="proof" class="field mb-2 text-xs" type="file" accept="image/png,image/jpeg,image/webp">
+      <p class="text-[10px] text-gray-500 mb-4">A screenshot alone does not verify payment. The transaction must be checked on the selected blockchain.</p>
+      <button id="submitBtn" type="submit" class="w-full rounded-xl bg-gradient-to-r from-nexora-cyan via-blue-500 to-nexora-cyan text-slate-950 py-3.5 font-black text-xs tracking-[.15em] shadow-[0_0_20px_rgba(0,242,254,.15)]">
+        <i class="fa-solid fa-paper-plane mr-2"></i> SUBMIT FOR REVIEW
+      </button>
+      <p id="statusMsg" role="status" class="text-xs text-center mt-3 text-gray-300"></p>
+      <p class="text-[10px] text-gray-500 text-center mt-3">Status will remain pending until an authorized admin verifies the transaction.</p>
+    </form>
+
+    <div class="text-center mt-5">
+      <a href="account.html" class="text-xs text-gray-400 hover:text-nexora-cyan"><i class="fa-solid fa-arrow-left mr-1"></i> Back to Account</a>
+    </div>
+  </main>
+
+  <script>
+    // Configure these with verified production wallet addresses before going live.
+    // Do not use a testnet address for real customer deposits.
+    const DEPOSIT_WALLETS = {
+      TRC20: { address: "", qrImage: "" },
+      ERC20: { address: "", qrImage: "" }
+    };
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+      authDomain: "investpro-2dafb.firebaseapp.com",
+      projectId: "investpro-2dafb",
+      storageBucket: "investpro-2dafb.firebasestorage.app",
+      messagingSenderId: "135092039764",
+      appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
+      measurementId: "G-0L77SFTC4F"
+    };
+
+    let selectedNetwork = "TRC20";
+    let db = null;
+    let storage = null;
+    let currentUid = null;
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      storage = firebase.storage();
+    } catch (e) {
+      console.error("Firebase initialization failed", e);
+    }
+
+    const $ = id => document.getElementById(id);
+    function wallet() { return DEPOSIT_WALLETS[selectedNetwork]; }
+    function renderNetwork() {
+      $("trcBtn").classList.toggle("active", selectedNetwork === "TRC20");
+      $("ercBtn").classList.toggle("active", selectedNetwork === "ERC20");
+      $("networkLabel").textContent = "USDT · " + selectedNetwork;
+      $("walletAddress").textContent = wallet().address || "Wallet address not configured yet";
+      $("walletWarning").textContent = wallet().address
+        ? "Double-check the address and network in your wallet before sending."
+        : "Admin setup required: add and verify the correct " + selectedNetwork + " receiving address before accepting real deposits.";
+      const box = $("qrPlaceholder");
+      if (wallet().qrImage) {
+        box.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = wallet().qrImage;
+        img.alt = selectedNetwork + " USDT receiving QR";
+        img.className = "w-full h-full object-contain";
+        box.appendChild(img);
+      } else {
+        box.innerHTML = '<div class="text-slate-700 text-center"><i class="fa-solid fa-qrcode text-5xl mb-2"></i><p class="text-[10px] font-semibold">QR not configured</p></div>';
+      }
+    }
+    $("trcBtn").addEventListener("click", () => { selectedNetwork = "TRC20"; renderNetwork(); });
+    $("ercBtn").addEventListener("click", () => { selectedNetwork = "ERC20"; renderNetwork(); });
+
+    $("copyAddress").addEventListener("click", async () => {
+      const address = wallet().address;
+      if (!address) { alert("Hindi pa naka-configure ang receiving address."); return; }
+      try {
+        await navigator.clipboard.writeText(address);
+        $("statusMsg").textContent = "Wallet address copied.";
+      } catch (_) {
+        alert("Hindi makopya nang automatic. Paki-select at kopyahin ang address.");
+      }
+    });
+
+    $("saveQr").addEventListener("click", () => {
+      const img = wallet().qrImage;
+      if (!img) { alert("Hindi pa naka-configure ang QR image."); return; }
+      const a = document.createElement("a");
+      a.href = img; a.download = "Nexora-USDT-" + selectedNetwork + "-QR.png";
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+    $("openWallet").addEventListener("click", () => {
+      alert("Buksan ang iyong wallet, piliin ang USDT, at tiyaking pareho ang network bago magpadala. Huwag kailanman ibigay ang seed phrase o private key.");
+    });
+
+    async function loadCurrentUser() {
+      const localUid = localStorage.getItem("nexora_user_uid");
+      if (!localUid) { window.location.href = "login.html"; return; }
+      if (!db) { $("statusMsg").textContent = "Hindi makakonekta sa Firebase."; return; }
+      try {
+        const userDoc = await db.collection("Users").doc(localUid).get();
+        if (!userDoc.exists) { window.location.href = "login.html"; return; }
+        currentUid = localUid;
+      } catch (e) {
+        console.error(e);
+        $("statusMsg").textContent = "Hindi ma-verify ang account. Mag-login muli.";
+      }
+    }
+
+    $("depositForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const btn = $("submitBtn");
+      const status = $("statusMsg");
+      const amount = Number($("amount").value);
+      const txid = $("txid").value.trim();
+      const file = $("proof").files[0];
+
+      if (!currentUid || !db) { status.textContent = "Hindi pa handa ang account connection. I-refresh o mag-login muli."; return; }
+      if (!wallet().address) { status.textContent = "Hindi pa naka-configure ang receiving wallet para sa network na ito."; return; }
+      if (!Number.isFinite(amount) || amount <= 0) { status.textContent = "Maglagay ng valid na USDT amount."; return; }
+      if (txid.length < 20) { status.textContent = "Pakisuri ang transaction hash/TXID."; return; }
+      if (file && !["image/png","image/jpeg","image/webp"].includes(file.type)) { status.textContent = "PNG, JPG, o WEBP image lang ang puwede."; return; }
+      if (file && file.size > 5 * 1024 * 1024) { status.textContent = "Maximum file size ay 5 MB."; return; }
+
+      btn.disabled = true;
+      btn.textContent = "SUBMITTING...";
+      status.textContent = "Ipinapasa ang deposit request...";
+      try {
+        const duplicate = await db.collection("CryptoDeposits").where("txid", "==", txid).limit(1).get();
+        if (!duplicate.empty) throw new Error("Naisumite na ang TXID na ito. Huwag magsumite nang paulit-ulit.");
+
+        let proofUrl = "";
+        let proofPath = "";
+        if (file) {
+          const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+          proofPath = "deposit-proofs/" + currentUid + "/" + Date.now() + "-" + safeName;
+          const upload = await storage.ref(proofPath).put(file);
+          proofUrl = await upload.ref.getDownloadURL();
+        }
+
+        const ref = await db.collection("CryptoDeposits").add({
+          uid: currentUid,
+          network: selectedNetwork,
+          token: "USDT",
+          amount: amount,
+          txid: txid,
+          receivingAddress: wallet().address,
+          proofUrl: proofUrl,
+          proofPath: proofPath,
+          status: "PENDING",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        status.textContent = "Naipasa ang request. Reference: " + ref.id + ". Pending pa ito para sa admin verification.";
+        $("depositForm").reset();
+      } catch (error) {
+        console.error("Deposit submission failed", error);
+        status.textContent = error.message || "Hindi naipasa ang request. Subukan ulit.";
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> SUBMIT FOR REVIEW';
+      }
+    });
+
+    renderNetwork();
+    loadCurrentUser();
+  </script>
+</body>
+</html>
