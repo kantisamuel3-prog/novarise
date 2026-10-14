@@ -614,44 +614,28 @@ canvas#liveChart {
       </div>
     </div>
 
-    <!-- 2. DUAL CURRENCY CONVERTER CARD -->
+    <!-- 2. USD WITHDRAW TO USD TRADING CONVERTER -->
     <div class="card converter-card">
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h4 style="margin: 0; color: #00d4ff; font-size: 9px; display: flex; align-items: center; gap: 3px;"><i class="fa-solid fa-rotate"></i> Currency Converter</h4>
-          <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 7px; font-weight: 700; padding: 1px 4px; border-radius: 20px;">$1 = ₱60.00</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <h4 style="margin:0;color:#00d4ff;font-size:9px;display:flex;align-items:center;gap:3px;">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i> USD BALANCE TRANSFER
+          </h4>
+          <span style="background:rgba(0,212,255,.1);color:#00d4ff;border:1px solid rgba(0,212,255,.3);font-size:7px;font-weight:700;padding:1px 4px;border-radius:20px;">USD → USD</span>
         </div>
-
-        <!-- CONVERTER TABS -->
-        <div class="converter-tabs">
-          <button class="tab-btn active" onclick="switchConverterTab('phpToUsd', event)">PHP → USD (Deposit)</button>
-          <button class="tab-btn" onclick="switchConverterTab('usdToPhp', event)">USD → PHP (Withdraw)</button>
-        </div>
-
-        <!-- TAB 1: PHP TO USD (DEPOSIT) -->
-        <div id="phpToUsdPane" class="converter-pane active">
-          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 5px;">
-            <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">CONVERT PHP TO USD FOR TRADING</div>
-            <div class="convert-input-group">
-              <input type="number" id="phpInput" placeholder="Enter PHP (₱)" oninput="previewPhpToUsd()">
-              <button class="btn-convert-action" onclick="convertPhpToUsd()">Convert</button>
-            </div>
-            <div style="font-size: 7.5px; color: #10b981; margin-top: 3px; font-weight: 600;" id="phpToUsdPreview">You will receive: $0.00 USD</div>
+        <div style="background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:8px;">
+          <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-bottom:5px;">
+            TRANSFER USD WITHDRAW BALANCE TO USD TRADING BALANCE
           </div>
-        </div>
-
-        <!-- TAB 2: USD TO PHP (WITHDRAW) -->
-        <div id="usdToPhpPane" class="converter-pane">
-          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 5px;">
-            <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">CONVERT USD TO PHP FOR WITHDRAWAL</div>
-            <div class="convert-input-group">
-              <input type="number" id="usdInput" placeholder="Enter USD ($)" oninput="previewUsdToPhp()">
-              <button class="btn-convert-action" onclick="handleUsdToPhpAction()">Convert</button>
-            </div>
-            <div style="font-size: 7.5px; color: #10b981; margin-top: 3px; font-weight: 600;" id="usdToPhpPreview">You will receive: ₱0.00 PHP</div>
+          <div class="convert-input-group">
+            <input type="number" id="withdrawUsdInput" min="0.01" step="0.01" placeholder="Enter USD amount ($)" oninput="previewWithdrawToTrading()">
+            <button class="btn-convert-action" onclick="convertWithdrawToTrading()">Transfer</button>
           </div>
+          <div style="font-size:8px;color:#10b981;margin-top:5px;font-weight:600;" id="withdrawToTradingPreview">
+            Trading balance will receive: $0.00 USD
+          </div>
+          <div style="font-size:7px;color:#94a3b8;margin-top:4px;">No currency conversion or exchange rate is applied.</div>
         </div>
-
       </div>
     </div>
 
@@ -1130,6 +1114,47 @@ canvas#liveChart {
     if (legacyBalanceUnsubscribe) legacyBalanceUnsubscribe();
     if (newBalanceUnsubscribe) newBalanceUnsubscribe();
   });
+
+  // USD Withdraw -> USD Trading transfer.
+  // The legacy Firestore field `balance` is retained to avoid breaking existing data reads/writes.
+  function previewWithdrawToTrading() {
+    const amount = Math.max(0, parseFloat(document.getElementById('withdrawUsdInput').value) || 0);
+    const preview = document.getElementById('withdrawToTradingPreview');
+    if (preview) preview.innerText = `Trading balance will receive: $${amount.toFixed(2)} USD`;
+  }
+
+  function convertWithdrawToTrading() {
+    const input = document.getElementById('withdrawUsdInput');
+    const amount = parseFloat(input.value) || 0;
+
+    if (!balanceDataLoaded) {
+      openConversionNoticeModal('Please Wait', 'Your balances are still loading. Please try again shortly.', '!', 'warning');
+      return;
+    }
+    if (!Number.isFinite(amount) || amount <= 0) {
+      openConversionNoticeModal('Invalid Amount', 'Enter a USD amount greater than $0.00.', '!', 'warning');
+      return;
+    }
+    if (amount > phpBalance) {
+      openConversionNoticeModal('Insufficient USD Withdraw Balance', `Available USD Withdraw Balance: $${safeNumber(phpBalance).toFixed(2)}.`, '!', 'error');
+      return;
+    }
+
+    phpBalance = Math.round((phpBalance - amount) * 100) / 100;
+    const previousUsd = usdBalance;
+    usdBalance = Math.round((usdBalance + amount) * 100) / 100;
+    startUsdBalanceTimerIfNeeded(previousUsd, usdBalance);
+
+    input.value = '';
+    previewWithdrawToTrading();
+    updateBalancesUI();
+    openConversionNoticeModal(
+      'Transfer Completed',
+      `$${amount.toFixed(2)} USD was transferred from USD Withdraw Balance to USD Trading Balance.`,
+      '✓',
+      'success'
+    );
+  }
 
   function switchConverterTab(tabName, event) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
