@@ -112,7 +112,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
     if (!v) return "—";
     try { const d = typeof v.toDate === "function" ? v.toDate() : new Date(v); return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(); } catch (_) { return "—"; }
   }
-  function isAdmin(user) { return !!user && ADMIN_UIDS.includes(user.uid) && !ADMIN_UIDS.includes("o8czMuC6PnU8B4W8pS26s7iiG1l2"); }
+  function isAdmin(user) { return !!user && ADMIN_UIDS.includes(user.uid); }
   function showMessage(text, type="error") { $("message").innerHTML = `<div class="${type}">${safe(text)}</div>`; }
   function updateStats() {
     $("pendingCount").textContent = deposits.filter(d => d.status === "PENDING").length;
@@ -146,7 +146,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
     $("rejectedDeposits").innerHTML = rejected.length ? rejected.map(depositCard).join("") : '<div class="empty">No rejected deposits yet.</div>';
   }
   async function loadDeposits() {
-    $("deposits").innerHTML = '<div class="loading">Loading deposit requests…</div>';
+    $("pendingDeposits").innerHTML = '<div class="loading">Loading deposit requests…</div>';
     try {
       const snap = await db.collection("CryptoDeposits").orderBy("createdAt","desc").limit(300).get();
       deposits = snap.docs.map(doc => {
@@ -155,7 +155,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
       });
       render(); showMessage("Deposit list updated.", "success");
     } catch (e) {
-      console.error(e); $("deposits").innerHTML = '<div class="empty">Unable to load requests. Check Firestore rules and browser console.</div>';
+      console.error(e); $("pendingDeposits").innerHTML = '<div class="empty">Unable to load requests. Check Firestore rules and browser console.</div>';
       showMessage(e.message || "Failed to load deposits.");
     }
   }
@@ -228,7 +228,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
     $("historySection").hidden = true; $("pendingSection").hidden = false;
     $("historyToggle").hidden = false;
   });
-  $("deposits").addEventListener("click", e => {
+  document.addEventListener("click", e => {
     const btn = e.target.closest("button[data-action]"); if (!btn) return;
     const id = btn.dataset.id;
     if (btn.dataset.action === "approve") approveDeposit(id);
