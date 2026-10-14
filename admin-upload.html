@@ -10,55 +10,30 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-:root{--bg:#060b16;--panel:#0c1424;--panel2:#101c30;--line:#1c3450;--cyan:#00d5ff;--blue:#0866ff;--text:#eef5ff;--muted:#8fa3bd;--green:#00d49a;--red:#ff6376;--gold:#ffc857}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#10203b 0,#060b16 55%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh}
-.wrap{max-width:1250px;margin:auto;padding:28px 18px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
-.brand{font-size:22px;font-weight:800;letter-spacing:2px}.brand span{color:var(--cyan)}.sub{color:var(--muted);font-size:12px;margin-top:6px}
-button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--text);background:#17243a;cursor:pointer;font-weight:700}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-primary{background:linear-gradient(100deg,#00bde8,#075cff);border:0}.btn-approve{background:#063e35;border-color:#087a65;color:#65f4cf}.btn-reject{background:#421b29;border-color:#743043;color:#ff9aaa}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}.stat,.panel{background:linear-gradient(145deg,#0e192b,#09111f);border:1px solid var(--line);border-radius:16px;padding:18px}.stat label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.stat strong{display:block;font-size:25px;margin-top:9px}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select,.field{background:#080f1c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none}.toolbar input{flex:1;min-width:190px}
-.notice{padding:12px 14px;border-radius:10px;background:#1c1b12;border:1px solid #594b21;color:#ffe5a0;font-size:12px;line-height:1.6;margin-bottom:16px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}.deposit{background:linear-gradient(145deg,#101b2e,#0a1220);border:1px solid var(--line);border-radius:15px;padding:17px;min-width:0}.deposit h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}.meta{font-size:11px;color:var(--muted);margin-bottom:14px;overflow-wrap:anywhere}.amount{font-size:27px;font-weight:800;color:var(--cyan);margin:10px 0}.rowline{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #1a2b41;font-size:12px}.rowline span:first-child{color:var(--muted)}.rowline span:last-child{text-align:right;overflow-wrap:anywhere;max-width:65%}.pill{display:inline-block;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800;letter-spacing:.5px}.PENDING{background:#3b3016;color:#ffda76}.APPROVED{background:#083b31;color:#6af2c9}.REJECTED{background:#421b29;color:#ff9aaa}.proof{display:inline-block;color:var(--cyan);font-size:12px;margin:8px 0}.actions{display:flex;gap:8px;margin-top:14px}.actions button{flex:1}.empty,.loading{color:var(--muted);text-align:center;padding:48px 16px}.small{font-size:10px;color:var(--muted);line-height:1.5;margin-top:10px}.error{color:#ff9aaa;font-size:12px;margin:10px 0}.success{color:#6af2c9;font-size:12px;margin:10px 0}
-#loginBox{max-width:440px;margin:9vh auto}.login-fields{display:grid;gap:10px;margin-top:18px}.login-fields input{width:100%;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:13px}
-.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.modalbox{width:min(500px,100%);background:#0c1424;border:1px solid var(--line);border-radius:16px;padding:20px}.modalbox h2{margin-top:0}.modalbox textarea{width:100%;min-height:90px;margin:10px 0;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:12px}.modal-actions{display:flex;justify-content:flex-end;gap:9px}
-@media(max-width:600px){.stats{grid-template-columns:1fr}.wrap{padding:18px 12px}.actions{flex-direction:column}}
 
-.deposit-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:26px 0 15px}.deposit-heading h2{font-size:18px;margin:0}.deposit-heading p{margin:5px 0 0}.secure-tag{font-size:9px;letter-spacing:.8px;color:#7fe9cb;border:1px solid #205347;background:#0b211e;border-radius:7px;padding:8px 10px;white-space:nowrap}
-.deposit-heading{align-items:flex-start;flex-direction:column}}
-
-.history-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.history-column{min-width:0;background:linear-gradient(145deg,#0e192b,#09111f);border:1px solid var(--line);border-radius:16px;padding:16px}.history-column h3{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 14px;font-size:14px}.history-column .cards{grid-template-columns:1fr}.deposit-heading p{color:var(--muted);font-size:12px}@media(max-width:760px){.history-grid{grid-template-columns:1fr}}
-/* Layout adapted from admin-withdraw.html; deposit-only functionality remains. */
-:root{--bg:#f4f7fb;--panel:#fff;--panel2:#fff;--line:#dbe5f1;--cyan:#1557b0;--blue:#1557b0;--text:#172033;--muted:#718096;--green:#087a65;--red:#b8324b;--gold:#9a6b00}
-html,body{background:#f4f7fb!important;color:#172033!important;font-family:Arial,Helvetica,sans-serif!important}
-body{padding:20px 14px 40px!important}
-.wrap{max-width:900px!important;margin:0 auto!important;padding:0!important}
-.top{background:linear-gradient(135deg,#0b2a5b,#1557b0);color:#fff;border-radius:20px;padding:22px 20px;margin-bottom:18px;box-shadow:0 10px 30px rgba(20,65,130,.15)}
-.brand{color:#fff!important;font-size:25px!important;letter-spacing:.3px!important}.brand span{color:#b9dcff!important}
-.sub{color:#d8e6fa!important;font-size:13px!important}
-.btn{border:1px solid #cbdaf0!important;border-radius:11px!important;padding:11px 14px!important;color:#164b91!important;background:#fff!important;cursor:pointer;font-weight:800!important}
-.btn-primary{background:#1557b0!important;color:#fff!important;border-color:#1557b0!important}
-.btn-approve{background:#e7f8ef!important;border-color:#b6e6cb!important;color:#087a48!important}
-.btn-reject{background:#fff0f2!important;border-color:#f3c3cc!important;color:#b8324b!important}
-.stats{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;margin-bottom:18px!important}
-.stat,.panel{background:#fff!important;border:0!important;border-radius:16px!important;padding:16px 12px!important;box-shadow:0 5px 18px rgba(25,55,100,.07)!important}
-.stat{text-align:center}.stat label{font-size:11px!important;color:#718096!important;letter-spacing:0!important}.stat strong{font-size:20px!important;color:#123f82!important;margin-top:7px!important}
-.toolbar{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
-.toolbar input,.toolbar select,.field,.login-fields input{background:#fff!important;color:#172033!important;border:1px solid #cbdaf0!important;border-radius:11px!important;padding:12px!important}
-.toolbar input{flex:1;min-width:190px}
-.notice{background:#fff8e6!important;border:1px solid #f3dfaa!important;color:#795b12!important;border-radius:12px!important}
-.deposit-heading{margin:20px 0 14px!important;align-items:flex-start!important;flex-direction:column!important}
-.deposit-heading h2{font-size:18px!important;color:#172033!important}.deposit-heading p{color:#718096!important}
-.secure-tag{color:#164b91!important;border:1px solid #cbdaf0!important;background:#eef5ff!important}
-.cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important;gap:12px!important}
-.deposit{background:#fff!important;border:1px solid #e7edf5!important;border-radius:16px!important;padding:15px!important;box-shadow:0 5px 20px rgba(25,55,100,.05)!important}
-.deposit h3{color:#172033!important}.meta,.small{color:#718096!important}.amount{font-size:21px!important;color:#123f82!important}.rowline{border-top:1px solid #edf1f7!important}.rowline span:first-child{color:#718096!important}
-.PENDING{background:#fff4d6!important;color:#8b6500!important}.APPROVED{background:#e7f8ef!important;color:#087a48!important}.REJECTED{background:#fff0f2!important;color:#b8324b!important}
-.proof{color:#1557b0!important}.empty,.loading{color:#718096!important}
-#loginBox{max-width:440px!important;margin:9vh auto!important;background:#fff!important;border-radius:18px!important;box-shadow:0 5px 20px rgba(25,55,100,.07)!important}
-.login-fields input{width:100%}.modalbox{background:#fff!important;color:#172033!important;border:1px solid #dbe5f1!important}.modalbox textarea{background:#fff!important;color:#172033!important;border:1px solid #cbdaf0!important}
-.history-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}.history-column{background:#fff!important;border:0!important;border-radius:16px!important;padding:15px!important;box-shadow:0 5px 20px rgba(25,55,100,.07)!important}.history-column h3{color:#172033!important}.history-column .cards{grid-template-columns:1fr!important}
-@media(max-width:760px){.history-grid{grid-template-columns:1fr!important}.cards{grid-template-columns:1fr!important}}
-@media(max-width:600px){.stats{grid-template-columns:1fr!important}.wrap{padding:0!important}.actions{flex-direction:column}.top{padding:20px 16px}}
+:root{--bg:#f3f6fb;--panel:#fff;--panel2:#f8fbff;--line:#dce6f4;--blue:#1456a8;--text:#10213c;--muted:#71829b;--green:#14864b;--red:#e44848;--gold:#a66a00}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
+body{min-height:100vh}
+.wrap{max-width:1250px;margin:auto;padding:26px 18px 48px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.brand{font-size:22px;font-weight:800;letter-spacing:2px;color:#123e78}.brand span{color:#1765bf}.sub{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.5}
+button,input,select,textarea{font:inherit}.btn{border:1px solid #d2e0f2;border-radius:10px;padding:11px 14px;color:#124681;background:#fff;cursor:pointer;font-weight:800;min-height:42px}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-primary{background:linear-gradient(100deg,#123c77,#1767c4);border:0;color:#fff}.btn-approve{background:#14864b;border-color:#14864b;color:white}.btn-reject{background:#e44848;border-color:#e44848;color:white}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}.stat,.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 5px 18px #15355b0b}.stat{text-align:center}.stat label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}.stat strong{display:block;font-size:24px;margin-top:8px;color:#124681}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.toolbar input,.toolbar select,.field{background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;outline:none;min-height:44px}.toolbar input{flex:1;min-width:180px}
+.notice{padding:12px 14px;border-radius:10px;background:#fff9e8;border:1px solid #f2dfad;color:#77520b;font-size:12px;line-height:1.6;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.deposit{background:#fff;border:1px solid #dce6f4;border-radius:15px;padding:16px;min-width:0;box-shadow:0 4px 15px #18385b08}
+.deposit h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}.meta{font-size:11px;color:var(--muted);margin-bottom:12px;overflow-wrap:anywhere}.amount{font-size:25px;font-weight:800;color:#124681;margin:10px 0;overflow-wrap:anywhere}
+.rowline{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #edf1f7;font-size:12px}.rowline span:first-child{color:var(--muted);flex:0 0 35%}.rowline span:last-child{text-align:right;overflow-wrap:anywhere;word-break:break-word;min-width:0}
+.pill{display:inline-block;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800;letter-spacing:.4px;white-space:nowrap}.PENDING{background:#fff2d4;color:#986000}.APPROVED{background:#dcf7e8;color:#147a42}.REJECTED{background:#ffe3e3;color:#bd3030}.proof{display:inline-block;color:#145fb3;font-size:12px;margin:8px 0;overflow-wrap:anywhere}.actions{display:flex;gap:8px;margin-top:14px}.actions button{flex:1;min-width:0}.empty,.loading{color:var(--muted);text-align:center;padding:30px 12px;grid-column:1/-1}.small{font-size:10px;color:var(--muted);line-height:1.5;margin-top:10px}
+.error{color:#c52d3b;font-size:12px;margin:10px 0}.success{color:#147a42;font-size:12px;margin:10px 0}
+#loginBox{max-width:440px;margin:9vh auto;background:#fff}.login-fields{display:grid;gap:10px;margin-top:18px}.login-fields input{width:100%;background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:13px;min-height:45px}
+.modal{position:fixed;inset:0;background:#10213c88;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.modalbox{width:min(500px,100%);background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 20px 60px #0002}.modalbox h2{margin-top:0}.modalbox textarea{width:100%;min-height:90px;margin:10px 0;background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px}.modal-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.deposit-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 14px}.deposit-heading h2{font-size:19px;margin:0;color:#10213c}.deposit-heading p{margin:5px 0 0;color:var(--muted);font-size:12px}.secure-tag{font-size:10px;letter-spacing:.6px;color:#147a62;border:1px solid #c8e9dc;background:#ecfbf5;border-radius:7px;padding:8px 10px;white-space:nowrap}
+.history-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.history-column{min-width:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 5px 18px #15355b0b}.history-column h3{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 13px;font-size:14px;color:#123e78}.history-column .cards{grid-template-columns:1fr}
+@media(max-width:760px){.wrap{padding:16px 12px 32px}.history-grid{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:13px 8px}.stat strong{font-size:20px}.stat label{font-size:9px}.cards{grid-template-columns:1fr}.deposit-heading{align-items:flex-start}.toolbar input{flex-basis:100%;min-width:0}.toolbar .btn{flex:1}.actions{gap:8px}.actions button{padding:11px 8px;font-size:12px}}
+@media(max-width:380px){.brand{font-size:19px}.deposit{padding:13px}.rowline{font-size:11px}.amount{font-size:22px}.stats{grid-template-columns:1fr}.stat{display:flex;justify-content:space-between;align-items:center;text-align:left}.stat strong{margin-top:0}}
 
 </style>
 </head>
@@ -76,7 +51,7 @@ body{padding:20px 14px 40px!important}
 </div>
 <div id="app" class="wrap" hidden>
   <header class="top">
-    <div><div class="brand">NEXORA</div><div class="sub">Deposit Administration</div></div>
+    <div><div class="brand">NEX<span>ORA</span> <span style="color:#8fa3bd;font-size:12px;letter-spacing:1px">DEPOSIT ADMIN</span></div><div class="sub">Deposit review · Verify TXID on-chain before approving.</div></div>
     <button id="logoutBtn" class="btn">Sign out</button>
   </header>
   <div class="notice"><b>Security reminder:</b> A screenshot is not proof of on-chain payment. Verify network, token, destination address, amount, confirmations, and TXID before approving. Configure Firestore Security Rules so only admin accounts can change deposit status and user balances; a hidden page or UID check in HTML alone is not sufficient security.</div>
