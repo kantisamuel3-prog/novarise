@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXORA — Deposit Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+:root{--bg:#060b16;--panel:#0c1424;--panel2:#101c30;--line:#1c3450;--cyan:#00d5ff;--blue:#0866ff;--text:#eef5ff;--muted:#8fa3bd;--green:#00d49a;--red:#ff6376;--gold:#ffc857}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#10203b 0,#060b16 55%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh}
+.wrap{max-width:1250px;margin:auto;padding:28px 18px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.brand{font-size:22px;font-weight:800;letter-spacing:2px}.brand span{color:var(--cyan)}.sub{color:var(--muted);font-size:12px;margin-top:6px}
+button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--text);background:#17243a;cursor:pointer;font-weight:700}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-primary{background:linear-gradient(100deg,#00bde8,#075cff);border:0}.btn-approve{background:#063e35;border-color:#087a65;color:#65f4cf}.btn-reject{background:#421b29;border-color:#743043;color:#ff9aaa}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}.stat,.panel{background:linear-gradient(145deg,#0e192b,#09111f);border:1px solid var(--line);border-radius:16px;padding:18px}.stat label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.stat strong{display:block;font-size:25px;margin-top:9px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select,.field{background:#080f1c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none}.toolbar input{flex:1;min-width:190px}
+.notice{padding:12px 14px;border-radius:10px;background:#1c1b12;border:1px solid #594b21;color:#ffe5a0;font-size:12px;line-height:1.6;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}.deposit{background:linear-gradient(145deg,#101b2e,#0a1220);border:1px solid var(--line);border-radius:15px;padding:17px;min-width:0}.deposit h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}.meta{font-size:11px;color:var(--muted);margin-bottom:14px;overflow-wrap:anywhere}.amount{font-size:27px;font-weight:800;color:var(--cyan);margin:10px 0}.rowline{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #1a2b41;font-size:12px}.rowline span:first-child{color:var(--muted)}.rowline span:last-child{text-align:right;overflow-wrap:anywhere;max-width:65%}.pill{display:inline-block;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800;letter-spacing:.5px}.PENDING{background:#3b3016;color:#ffda76}.APPROVED{background:#083b31;color:#6af2c9}.REJECTED{background:#421b29;color:#ff9aaa}.proof{display:inline-block;color:var(--cyan);font-size:12px;margin:8px 0}.actions{display:flex;gap:8px;margin-top:14px}.actions button{flex:1}.empty,.loading{color:var(--muted);text-align:center;padding:48px 16px}.small{font-size:10px;color:var(--muted);line-height:1.5;margin-top:10px}.error{color:#ff9aaa;font-size:12px;margin:10px 0}.success{color:#6af2c9;font-size:12px;margin:10px 0}
+#loginBox{max-width:440px;margin:9vh auto}.login-fields{display:grid;gap:10px;margin-top:18px}.login-fields input{width:100%;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:13px}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.modalbox{width:min(500px,100%);background:#0c1424;border:1px solid var(--line);border-radius:16px;padding:20px}.modalbox h2{margin-top:0}.modalbox textarea{width:100%;min-height:90px;margin:10px 0;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:12px}.modal-actions{display:flex;justify-content:flex-end;gap:9px}
+@media(max-width:600px){.stats{grid-template-columns:1fr}.wrap{padding:18px 12px}.actions{flex-direction:column}}
+</style>
+</head>
+<body>
+<div id="loginBox" class="panel">
+  <div class="brand">NEX<span>ORA</span> <span style="color:#8fa3bd;font-size:12px;letter-spacing:1px">ADMIN</span></div>
+  <p class="sub">Sign in with your authorized admin account.</p>
+  <form id="loginForm" class="login-fields">
+    <input id="email" type="email" placeholder="Admin email" required autocomplete="username">
+    <input id="password" type="password" placeholder="Password" required autocomplete="current-password">
+    <button class="btn btn-primary" type="submit">Sign in</button>
+  </form>
+  <p id="loginMsg" class="error"></p>
+  <p class="small">Only UIDs explicitly listed in ADMIN_UIDS can open the dashboard. Set the admin UID in this file before use.</p>
+</div>
+<div id="app" class="wrap" hidden>
+  <header class="top">
+    <div><div class="brand">NEX<span>ORA</span> <span style="color:#8fa3bd;font-size:12px;letter-spacing:1px">DEPOSIT ADMIN</span></div><div class="sub">Review crypto deposit requests · Verify TXID on the correct blockchain before approving.</div></div>
+    <button id="logoutBtn" class="btn">Sign out</button>
+  </header>
+  <div class="notice"><b>Security reminder:</b> A screenshot is not proof of on-chain payment. Verify network, token, destination address, amount, confirmations, and TXID before approving. Configure Firestore Security Rules so only admin accounts can change deposit status and user balances; a hidden page or UID check in HTML alone is not sufficient security.</div>
+  <section class="stats">
+    <div class="stat"><label>Pending requests</label><strong id="pendingCount">—</strong></div>
+    <div class="stat"><label>Approved requests</label><strong id="approvedCount">—</strong></div>
+    <div class="stat"><label>Rejected requests</label><strong id="rejectedCount">—</strong></div>
+  </section>
+  <div class="toolbar">
+    <input id="searchBox" placeholder="Search TXID, UID, network, reference…">
+    <select id="statusFilter"><option value="PENDING">Pending first</option><option value="ALL">All statuses</option><option value="APPROVED">Approved</option><option value="REJECTED">Rejected</option></select>
+    <button id="refreshBtn" class="btn">Refresh</button>
+  </div>
+  <div id="message"></div>
+  <div id="deposits" class="cards"><div class="loading">Loading deposit requests…</div></div>
+</div>
+<div id="rejectModal" class="modal"><div class="modalbox"><h2>Reject deposit</h2><p class="sub">Add a reason for the user and audit trail.</p><textarea id="rejectReason" maxlength="500" placeholder="Reason for rejection (required)"></textarea><div class="modal-actions"><button id="cancelReject" class="btn">Cancel</button><button id="confirmReject" class="btn btn-reject">Confirm rejection</button></div></div></div>
+<script>
+(() => {
+  // IMPORTANT: Replace this placeholder with the exact Firebase Auth UID of your admin account.
+  // Do not use an email-only check. Never share your password or private keys.
+  const ADMIN_UIDS = ["REPLACE_WITH_YOUR_ADMIN_AUTH_UID"];
+  const firebaseConfig = {
+    apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+    authDomain: "investpro-2dafb.firebaseapp.com",
+    projectId: "investpro-2dafb",
+    storageBucket: "investpro-2dafb.firebasestorage.app",
+    messagingSenderId: "135092039764",
+    appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
+    measurementId: "G-0L77SFTC4F"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth(), db = firebase.firestore();
+  const $ = id => document.getElementById(id);
+  let deposits = [], rejectTarget = null, busy = false;
+
+  function safe(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  function money(v) { const n = Number(v); return Number.isFinite(n) ? n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:6}) : "0.00"; }
+  function dateText(v) {
+    if (!v) return "—";
+    try { const d = typeof v.toDate === "function" ? v.toDate() : new Date(v); return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(); } catch (_) { return "—"; }
+  }
+  function isAdmin(user) { return !!user && ADMIN_UIDS.includes(user.uid) && !ADMIN_UIDS.includes("REPLACE_WITH_YOUR_ADMIN_AUTH_UID"); }
+  function showMessage(text, type="error") { $("message").innerHTML = `<div class="${type}">${safe(text)}</div>`; }
+  function updateStats() {
+    $("pendingCount").textContent = deposits.filter(d => d.status === "PENDING").length;
+    $("approvedCount").textContent = deposits.filter(d => d.status === "APPROVED").length;
+    $("rejectedCount").textContent = deposits.filter(d => d.status === "REJECTED").length;
+  }
+  function render() {
+    updateStats();
+    const filter = $("statusFilter").value, q = $("searchBox").value.trim().toLowerCase();
+    let list = deposits.filter(d => (filter === "ALL" || d.status === filter) &&
+      [d.id,d.uid,d.txid,d.network,d.status,d.token].some(v => String(v || "").toLowerCase().includes(q)));
+    list.sort((a,b) => {
+      if (filter === "PENDING" && a.status !== b.status) return a.status === "PENDING" ? -1 : 1;
+      return (b.createdAtMs || 0) - (a.createdAtMs || 0);
+    });
+    if (!list.length) { $("deposits").innerHTML = '<div class="empty">No matching deposit requests.</div>'; return; }
+    $("deposits").innerHTML = list.map(d => `
+      <article class="deposit">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h3>Deposit request</h3><span class="pill ${safe(d.status)}">${safe(d.status || "UNKNOWN")}</span></div>
+        <div class="meta">Ref: ${safe(d.id)} · ${safe(dateText(d.createdAt))}</div>
+        <div class="amount">${safe(d.token || "USDT")} ${safe(money(d.amount))}</div>
+        <div class="rowline"><span>User UID</span><span>${safe(d.uid || "—")}</span></div>
+        <div class="rowline"><span>Network</span><span>${safe(d.network || "—")}</span></div>
+        <div class="rowline"><span>TXID</span><span>${safe(d.txid || "—")}</span></div>
+        <div class="rowline"><span>Receiving address</span><span>${safe(d.receivingAddress || "—")}</span></div>
+        ${d.proofUrl ? `<a class="proof" href="${safe(d.proofUrl)}" target="_blank" rel="noopener noreferrer">Open payment proof ↗</a>` : '<div class="small">No image proof attached. Verify the TXID directly on-chain.</div>'}
+        ${d.reviewNote ? `<div class="rowline"><span>Review note</span><span>${safe(d.reviewNote)}</span></div>` : ""}
+        ${d.status === "PENDING" ? `<div class="actions"><button class="btn btn-approve" data-action="approve" data-id="${safe(d.id)}">Approve & credit</button><button class="btn btn-reject" data-action="reject" data-id="${safe(d.id)}">Reject</button></div>` : ""}
+      </article>`).join("");
+  }
+  async function loadDeposits() {
+    $("deposits").innerHTML = '<div class="loading">Loading deposit requests…</div>';
+    try {
+      const snap = await db.collection("CryptoDeposits").orderBy("createdAt","desc").limit(300).get();
+      deposits = snap.docs.map(doc => {
+        const data = doc.data();
+        return {...data,id:doc.id,createdAtMs:data.createdAt && typeof data.createdAt.toMillis === "function" ? data.createdAt.toMillis() : 0,status:String(data.status || "PENDING").toUpperCase()};
+      });
+      render(); showMessage("Deposit list updated.", "success");
+    } catch (e) {
+      console.error(e); $("deposits").innerHTML = '<div class="empty">Unable to load requests. Check Firestore rules and browser console.</div>';
+      showMessage(e.message || "Failed to load deposits.");
+    }
+  }
+  async function approveDeposit(id) {
+    if (busy) return;
+    const d = deposits.find(x => x.id === id);
+    if (!d || d.status !== "PENDING") return;
+    const amount = Number(d.amount);
+    if (!Number.isFinite(amount) || amount <= 0 || !d.uid) { showMessage("Invalid amount or missing user UID. Nothing was changed."); return; }
+    if (!confirm(`Approve ${d.token || "USDT"} ${money(amount)} for UID ${d.uid}?\n\nOnly continue after independently verifying the transaction on-chain.`)) return;
+    busy = true;
+    try {
+      const depositRef = db.collection("CryptoDeposits").doc(id);
+      const userRef = db.collection("Users").doc(d.uid);
+      await db.runTransaction(async tx => {
+        const [depSnap,userSnap] = await Promise.all([tx.get(depositRef),tx.get(userRef)]);
+        if (!depSnap.exists) throw new Error("Deposit request no longer exists.");
+        if (!userSnap.exists) throw new Error("User record not found. No balance was credited.");
+        const latest = depSnap.data();
+        if (String(latest.status || "PENDING").toUpperCase() !== "PENDING") throw new Error("This request has already been reviewed.");
+        const currentBalance = Number(userSnap.data().usdBalance || 0);
+        if (!Number.isFinite(currentBalance) || currentBalance < 0) throw new Error("User USD balance is invalid.");
+        tx.update(userRef, { usdBalance: currentBalance + amount, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        tx.update(depositRef, {
+          status: "APPROVED",
+          reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          reviewedBy: auth.currentUser.uid,
+          creditedField: "usdBalance",
+          creditedAmount: amount,
+          reviewNote: "Approved by admin"
+        });
+      });
+      showMessage("Approved. USD Trading balance credited once.", "success");
+      await loadDeposits();
+    } catch(e) { console.error(e); showMessage(e.message || "Approval failed."); }
+    finally { busy = false; }
+  }
+  async function rejectDeposit(id, reason) {
+    if (busy) return;
+    const d = deposits.find(x => x.id === id);
+    if (!d || d.status !== "PENDING") return;
+    busy = true;
+    try {
+      const ref = db.collection("CryptoDeposits").doc(id);
+      await db.runTransaction(async tx => {
+        const snap = await tx.get(ref);
+        if (!snap.exists) throw new Error("Deposit request no longer exists.");
+        if (String(snap.data().status || "PENDING").toUpperCase() !== "PENDING") throw new Error("This request has already been reviewed.");
+        tx.update(ref, {status:"REJECTED", reviewedAt:firebase.firestore.FieldValue.serverTimestamp(), reviewedBy:auth.currentUser.uid, reviewNote:reason});
+      });
+      $("rejectModal").classList.remove("open"); rejectTarget = null; $("rejectReason").value = "";
+      showMessage("Deposit request rejected.", "success");
+      await loadDeposits();
+    } catch(e) { console.error(e); showMessage(e.message || "Rejection failed."); }
+    finally { busy = false; }
+  }
+  $("loginForm").addEventListener("submit", async e => {
+    e.preventDefault(); $("loginMsg").textContent = "";
+    try { await auth.signInWithEmailAndPassword($("email").value.trim(),$("password").value); }
+    catch(err) { $("loginMsg").textContent = err.message || "Sign-in failed."; }
+  });
+  $("logoutBtn").addEventListener("click", () => auth.signOut());
+  $("refreshBtn").addEventListener("click", loadDeposits);
+  $("searchBox").addEventListener("input", render);
+  $("statusFilter").addEventListener("change", render);
+  $("deposits").addEventListener("click", e => {
+    const btn = e.target.closest("button[data-action]"); if (!btn) return;
+    const id = btn.dataset.id;
+    if (btn.dataset.action === "approve") approveDeposit(id);
+    if (btn.dataset.action === "reject") { rejectTarget = id; $("rejectReason").value = ""; $("rejectModal").classList.add("open"); }
+  });
+  $("cancelReject").addEventListener("click", () => { rejectTarget = null; $("rejectModal").classList.remove("open"); });
+  $("confirmReject").addEventListener("click", () => {
+    const reason = $("rejectReason").value.trim();
+    if (!reason) { alert("Please enter a rejection reason."); return; }
+    if (rejectTarget) rejectDeposit(rejectTarget, reason);
+  });
+  auth.onAuthStateChanged(async user => {
+    if (!user) { $("app").hidden = true; $("loginBox").style.display = "block"; return; }
+    if (!isAdmin(user)) { $("loginMsg").textContent = "This account is not authorized as admin. Ask the project owner to configure the admin UID."; $("loginBox").style.display = "block"; $("app").hidden = true; await auth.signOut(); return; }
+    $("loginBox").style.display = "none"; $("app").hidden = false; await loadDeposits();
+  });
+})();
+</script>
+</body>
+</html>
