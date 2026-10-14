@@ -789,7 +789,7 @@ canvas#liveChart {
     </div>
     <h3 style="margin-top: 0; color: #fca5a5; font-size: 16px;">Insufficient Balance</h3>
     <p style="font-size: 11px; color: #cbd5e1; line-height: 1.5; margin-bottom: 16px;">
-      You have a <strong>$0.00</strong> balance! Please recharge or convert your PHP to USD before executing a trading code.
+      You have a <strong>$0.00</strong> balance! Please recharge or transfer USD Withdraw to USD Trading before executing a trading code.
     </p>
     <div style="display: flex; gap: 8px;">
       <button class="btn-close" onclick="closeZeroBalanceModal()">Close</button>
@@ -1211,12 +1211,21 @@ canvas#liveChart {
 
   function previewUsdToPhp() {
     const amount = parseFloat(document.getElementById('usdInput').value) || 0;
-    document.getElementById('usdToPhpPreview').innerText = `You will transfer: $${amount.toFixed(2)} USD to withdraw balance`;
+    if (amount <= 0) {
+      document.getElementById('usdToPhpPreview').innerText = 'You will receive: $0.00 USD';
+      return;
+    }
+    const remainingUsd = usdBalance - amount;
+    const eligible = amount <= usdBalance && isOnePercentEligible(remainingUsd);
+    const feePercent = eligible ? 0.01 : 0.25;
+    const net = amount * (1 - feePercent);
+    document.getElementById('usdToPhpPreview').innerText =
+      `You will receive: $${net.toFixed(2)} USD after ${(feePercent * 100).toFixed(0)}% deduction`;
   }
 
   function handleUsdToPhpAction() {
-    const amount = parseFloat(document.getElementById('usdInput').value) || 0;
-    if (amount <= 0) {
+    const amount = Number(document.getElementById('usdInput').value);
+    if (!Number.isFinite(amount) || amount <= 0) {
       openConversionNoticeModal('Invalid Amount', 'Please enter a USD amount greater than $0.00.', '⚠️', 'warning');
       return;
     }
@@ -1224,17 +1233,27 @@ canvas#liveChart {
       openConversionNoticeModal('Insufficient USD Trading Balance', `Available USD Trading balance: $${safeNumber(usdBalance).toFixed(2)}.`, '$', 'error');
       return;
     }
-    const previousUsd = usdBalance;
-    usdBalance -= amount;
-    phpBalance += amount;
-    if (usdBalance < minimumUsdForOnePercentFee) {
-      usdBalanceStartAt = null;
-      accountAgeDays = 0;
-    }
-    document.getElementById('usdInput').value = '';
-    previewUsdToPhp();
-    updateBalancesUI();
-    openConversionNoticeModal('Transfer Successful', `Transferred $${amount.toFixed(2)} from USD Trading to USD Withdraw.`, '✓', 'success');
+
+    const remainingUsd = usdBalance - amount;
+    const onePercentEligible = isOnePercentEligible(remainingUsd);
+    const feePercent = onePercentEligible ? 0.01 : 0.25;
+    const deduction = amount * feePercent;
+    const netAmount = amount - deduction;
+    const feeLabel = onePercentEligible
+      ? 'Eligible: 31 days completed and at least $130 remains in USD Trading.'
+      : (accountAgeDays < requiredDaysForNoFee
+          ? '25% deduction applies because the 31-day period is not complete.'
+          : '25% deduction applies because less than $130 would remain in USD Trading.');
+
+    pendingConversionData = { usdAmount: amount, finalUsd: netAmount, deduction, feePercent, remainingUsd, onePercentEligible };
+    document.getElementById('conversionModalBody').innerHTML = `
+      <div style="margin-bottom:4px;"><strong style="color:#00d4ff;">Account Age:</strong> Day ${accountAgeDays} of ${requiredDaysForNoFee}</div>
+      <div style="margin-bottom:4px;"><strong style="color:#fff;">Transfer Amount:</strong> $${amount.toFixed(2)} USD</div>
+      <div style="margin-bottom:4px;"><strong style="color:#fff;">USD Trading Remaining:</strong> $${remainingUsd.toFixed(2)} USD</div>
+      <div style="margin-bottom:4px;"><strong style="color:#fca5a5;">Deduction (${(feePercent * 100).toFixed(0)}%):</strong> $${deduction.toFixed(2)} USD</div>
+      <div style="border-top:1px solid rgba(255,255,255,.1);margin-top:6px;padding-top:6px;"><strong style="color:#10b981;font-size:13px;">Net to USD Withdraw: $${netAmount.toFixed(2)} USD</strong></div>
+      <div style="font-size:10px;color:#94a3b8;margin-top:6px;">${feeLabel}</div>`;
+    document.getElementById('conversionConfirmModal').style.display = 'flex';
   }
 
   function closeConversionModal() {
@@ -1244,9 +1263,14 @@ canvas#liveChart {
 
   function confirmUsdToPhpConversion() {
     if (!pendingConversionData) return;
-    const { usdAmount, finalPhp, deduction, feePercent } = pendingConversionData;
-    usdBalance -= usdAmount;
-    phpBalance += finalPhp;
+    const { usdAmount, finalUsd, deduction, feePercent } = pendingConversionData;
+    if (usdAmount > usdBalance) {
+      closeConversionModal();
+      openConversionNoticeModal('Balance Changed', 'Your USD Trading balance changed. Please try again.', '⚠️', 'warning');
+      return;
+    }
+    usdBalance = Math.max(0, usdBalance - usdAmount);
+    phpBalance += finalUsd;
 
     if (usdBalance < minimumUsdForOnePercentFee) {
       usdBalanceStartAt = null;
@@ -1256,18 +1280,15 @@ canvas#liveChart {
     }
 
     closeConversionModal();
-
-    // Gagamitin na ang magandang Conversion Success Modal sa halip na alert()
-    openConversionNoticeModal(
-      'USD to PHP Conversion Successful!',
-      `Converted: $${usdAmount.toFixed(2)} USD\nDeduction (${feePercent * 100}%): ₱${deduction.toFixed(2)} PHP\nNet Received: ₱${finalPhp.toFixed(2)} PHP`,
-      '✓',
-      'success'
-    );
-
     document.getElementById('usdInput').value = '';
     previewUsdToPhp();
     updateBalancesUI();
+    openConversionNoticeModal(
+      'USD Transfer Successful',
+      `Transferred: $${usdAmount.toFixed(2)} USD\nDeduction (${(feePercent * 100).toFixed(0)}%): $${deduction.toFixed(2)} USD\nNet added to USD Withdraw: $${finalUsd.toFixed(2)} USD`,
+      '✓',
+      'success'
+    );
   }
 
   const canvas = document.getElementById('liveChart');
