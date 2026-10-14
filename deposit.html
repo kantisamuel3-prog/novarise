@@ -41,9 +41,40 @@
     .nexora-toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,18px);opacity:0;pointer-events:none;z-index:9999;display:flex;align-items:center;gap:10px;padding:13px 18px;border:1px solid rgba(0,242,254,.45);border-radius:14px;background:linear-gradient(135deg,#0b2036,#06101e);color:#e8fbff;box-shadow:0 0 28px rgba(0,242,254,.18);font:700 12px/1.3 ui-sans-serif,system-ui;transition:opacity .22s ease,transform .22s ease;max-width:calc(100vw - 32px)}
     .nexora-toast.show{opacity:1;transform:translate(-50%,0)}
     .nexora-toast .toast-check{width:23px;height:23px;display:grid;place-items:center;border-radius:50%;background:#00e676;color:#03111a;flex-shrink:0}
+
+    .nx-modal-backdrop{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(1,5,14,.78);backdrop-filter:blur(9px)}
+    .nx-modal-backdrop.open{display:flex;animation:nxFadeIn .18s ease-out}
+    .nx-modal{position:relative;width:min(100%,420px);overflow:hidden;border:1px solid rgba(0,242,254,.38);border-radius:22px;background:linear-gradient(145deg,rgba(13,29,53,.98),rgba(3,9,21,.99));box-shadow:0 0 0 1px rgba(0,242,254,.06),0 24px 80px rgba(0,0,0,.65),0 0 36px rgba(0,242,254,.12);color:#eaf7ff}
+    .nx-modal:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,#00f2fe,#1890ff,#dfb248,transparent)}
+    .nx-modal-icon{width:58px;height:58px;display:grid;place-items:center;border-radius:18px;border:1px solid rgba(0,242,254,.32);background:linear-gradient(135deg,rgba(0,242,254,.16),rgba(24,144,255,.08));color:#00f2fe;box-shadow:0 0 25px rgba(0,242,254,.12);font-size:23px}
+    .nx-modal-close{width:34px;height:34px;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#9fb1c8;background:rgba(255,255,255,.04)}
+    .nx-modal-step{display:flex;gap:11px;align-items:flex-start;padding:11px 12px;border:1px solid rgba(255,255,255,.07);border-radius:12px;background:rgba(255,255,255,.025);font-size:12px;line-height:1.55;color:#cbd5e1}
+    .nx-modal-step b{color:#f8fafc}
+    .nx-modal-primary{width:100%;padding:12px 16px;border-radius:12px;background:linear-gradient(90deg,#00b8c4,#168cff);color:#00131c;font-weight:800;font-size:12px;letter-spacing:.08em;box-shadow:0 5px 22px rgba(0,242,254,.15);transition:filter .15s,transform .15s}
+    .nx-modal-primary:hover{filter:brightness(1.12);transform:translateY(-1px)}
+    @keyframes nxFadeIn{from{opacity:0}to{opacity:1}}
   </style>
 </head>
 <body class="pb-8 relative overflow-x-hidden">
+
+  <div id="walletHelpModal" class="nx-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="walletHelpTitle" aria-hidden="true">
+    <div class="nx-modal p-5 sm:p-6">
+      <div class="flex items-start justify-between gap-4 mb-5">
+        <div class="nx-modal-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <button type="button" id="closeWalletHelp" class="nx-modal-close" aria-label="Close wallet help"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="text-[10px] font-mono font-bold tracking-[.22em] text-cyan-300 mb-2">NEXORA SECURITY GUIDE</div>
+      <h2 id="walletHelpTitle" class="font-brand text-xl font-extrabold tracking-wide text-white">Before You Send</h2>
+      <p class="text-sm text-slate-400 leading-relaxed mt-2 mb-5">Follow these checks to help protect your funds.</p>
+      <div class="space-y-2.5 mb-5">
+        <div class="nx-modal-step"><span class="text-cyan-300"><i class="fa-solid fa-wallet"></i></span><div><b>1. Open your wallet</b><br>Choose USDT as the asset you want to send.</div></div>
+        <div class="nx-modal-step"><span class="text-cyan-300"><i class="fa-solid fa-diagram-project"></i></span><div><b>2. Match the network</b><br>Use TRON (TRC20) or Ethereum (ERC20) to match your selected option here.</div></div>
+        <div class="nx-modal-step"><span class="text-amber-300"><i class="fa-solid fa-triangle-exclamation"></i></span><div><b>3. Verify before confirming</b><br>Check the receiving address and network carefully. Transfers to the wrong network may be unrecoverable.</div></div>
+      </div>
+      <div class="rounded-xl border border-amber-400/20 bg-amber-400/5 p-3 text-[11px] leading-relaxed text-amber-100 mb-5"><i class="fa-solid fa-lock mr-1.5 text-amber-300"></i> Never share your seed phrase or private key with anyone.</div>
+      <button type="button" id="walletHelpGotIt" class="nx-modal-primary">GOT IT <i class="fa-solid fa-arrow-right ml-2"></i></button>
+    </div>
+  </div>
   <div id="nexoraToast" class="nexora-toast" role="status" aria-live="polite"><span class="toast-check"><i class="fa-solid fa-check"></i></span><span id="nexoraToastText">Copy completed</span></div>
   <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
     <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
@@ -296,9 +327,21 @@
       a.href = img; a.download = "Nexora-USDT-" + selectedNetwork + "-QR.png";
       document.body.appendChild(a); a.click(); a.remove();
     });
-    $("openWallet").addEventListener("click", () => {
-      alert("Open your wallet, select USDT, and make sure the sending network matches the selected network. Sending on the wrong network may result in permanent loss. Never share your seed phrase or private key.");
-    });
+    const walletHelpModal = $("walletHelpModal");
+    function closeWalletHelp() {
+      walletHelpModal.classList.remove("open");
+      walletHelpModal.setAttribute("aria-hidden", "true");
+    }
+    function openWalletHelp() {
+      walletHelpModal.classList.add("open");
+      walletHelpModal.setAttribute("aria-hidden", "false");
+      $("walletHelpGotIt").focus();
+    }
+    $("openWallet").addEventListener("click", openWalletHelp);
+    $("closeWalletHelp").addEventListener("click", closeWalletHelp);
+    $("walletHelpGotIt").addEventListener("click", closeWalletHelp);
+    walletHelpModal.addEventListener("click", event => { if (event.target === walletHelpModal) closeWalletHelp(); });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") closeWalletHelp(); });
 
     async function loadCurrentUser() {
       const localUid = localStorage.getItem("nexora_user_uid");
