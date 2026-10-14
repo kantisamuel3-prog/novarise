@@ -603,7 +603,7 @@ canvas#liveChart {
 
       <div class="balances-wrapper">
         <div class="bal-box">
-          <div class="bal-label">USD Balance</div>
+          <div class="bal-label">USD TRADE</div>
           <div class="bal-amount" id="usdBalance">$0.00</div>
         </div>
 
@@ -624,14 +624,14 @@ canvas#liveChart {
 
         <!-- CONVERTER TABS -->
         <div class="converter-tabs">
-          <button class="tab-btn active" onclick="switchConverterTab('phpToUsd', event)">PHP → USD (Deposit)</button>
+          <button class="tab-btn active" onclick="switchConverterTab('phpToUsd', event)">USD WITH → USD (TRADE)</button>
           <button class="tab-btn" onclick="switchConverterTab('usdToPhp', event)">USD → PHP (Withdraw)</button>
         </div>
 
         <!-- TAB 1: USD WITH TO USD (TRADE) -->
         <div id="phpToUsdPane" class="converter-pane active">
           <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 5px;">
-            <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">CONVERT USD WITHDRAW TO USD FOR TRADING</div>
+            <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">CONVERT USD WITHDRAW TO USD FOR TRADE</div>
             <div class="convert-input-group">
               <input type="number" id="phpInput" placeholder="Enter USD ($)" oninput="previewPhpToUsd()">
               <button class="btn-convert-action" onclick="convertPhpToUsd()">Convert</button>
@@ -643,7 +643,7 @@ canvas#liveChart {
         <!-- TAB 2: USD TO PHP (WITHDRAW) -->
         <div id="usdToPhpPane" class="converter-pane">
           <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 5px;">
-            <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">CONVERT USD TO PHP FOR WITHDRAWAL</div>
+            <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">CONVERT USD TRADE TO USD FOR WITHDRAWAL</div>
             <div class="convert-input-group">
               <input type="number" id="usdInput" placeholder="Enter USD ($)" oninput="previewUsdToPhp()">
               <button class="btn-convert-action" onclick="handleUsdToPhpAction()">Convert</button>
@@ -1263,8 +1263,8 @@ canvas#liveChart {
 
     if (usdAmount > usdBalance) {
       openConversionNoticeModal(
-        'Insufficient USD Balance',
-        `Your available USD balance is $${safeNumber(usdBalance).toFixed(2)}. Please enter a lower amount.`,
+        'Insufficient USD TRADE',
+        `Your available USD TRADE is $${safeNumber(usdBalance).toFixed(2)}. Please enter a lower amount.`,
         '$',
         'error'
       );
@@ -1605,7 +1605,7 @@ canvas#liveChart {
         <span style="color: #10b981; font-weight: bold;">+$${profit.toFixed(2)} USD</span>
       </div>
       <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(0,242,254,0.2); padding-top: 6px; margin-top: 4px;">
-        <span style="color: #00f2fe; font-weight: bold;">Total USD Balance:</span>
+        <span style="color: #00f2fe; font-weight: bold;">Total USD TRADE:</span>
         <span style="color: #00f2fe; font-weight: 900; font-size: 12px;">$${total.toFixed(2)} USD</span>
       </div>
     `;
@@ -1857,7 +1857,7 @@ canvas#liveChart {
           icon = '🔒';
         } else if (executionResult.reason === 'insufficient_balance') {
           title = 'Insufficient Balance';
-          message = 'You must have a USD balance greater than $100.00 to execute a trading code. Please recharge or convert USD Withdraw to USD Trading.';
+          message = 'You must have a USD TRADE greater than $100.00 to execute a trading code. Please recharge or convert USD Withdraw to USD Trading.';
           icon = '⚠️';
           type = 'warning';
         } else if (executionResult.reason === 'user_not_found') {
