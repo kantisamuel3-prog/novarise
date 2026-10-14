@@ -2,2350 +2,270 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width,
-      initial-scale=1.0,
-      maximum-scale=1.0,
-      user-scalable=no">
-
-<title>NEXORA — Deposit & Withdrawal Admin</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,body{
-  margin:0;
-  padding:0;
-  min-height:100%;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f4f7fb;
-  color:#172033;
-}
-
-body{
-  padding:20px 14px 40px;
-}
-
-.container{
-  width:100%;
-  max-width:900px;
-  margin:0 auto;
-}
-
-.header{
-  background:linear-gradient(135deg,#0b2a5b,#1557b0);
-  color:#fff;
-  border-radius:20px;
-  padding:22px 20px;
-  margin-bottom:18px;
-  box-shadow:0 10px 30px rgba(20,65,130,.15);
-}
-
-.logo{
-  font-size:25px;
-  font-weight:800;
-  letter-spacing:.3px;
-}
-
-.subtitle{
-  margin-top:5px;
-  font-size:13px;
-  opacity:.82;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin-bottom:18px;
-}
-
-.stat{
-  background:#fff;
-  border-radius:16px;
-  padding:16px 12px;
-  text-align:center;
-  box-shadow:0 5px 18px rgba(25,55,100,.07);
-}
-
-.stat-label{
-  font-size:11px;
-  color:#718096;
-  margin-bottom:7px;
-}
-
-.stat-value{
-  font-size:20px;
-  font-weight:800;
-  color:#123f82;
-}
-
-.requests-grid{
-
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-
-}
-
-.history-toolbar{
-  display:flex;
-  justify-content:center;
-  margin:0 0 18px;
-}
-.history-toggle{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  width:100%;
-  max-width:300px;
-  min-height:52px;
-  padding:12px 18px;
-  border:1px solid #cbdaf0;
-  border-radius:15px;
-  background:#fff;
-  color:#164b91;
-  text-decoration:none;
-  font-size:14px;
-  font-weight:800;
-  letter-spacing:.2px;
-  box-shadow:0 5px 18px rgba(25,55,100,.08);
-  transition:transform .15s ease, box-shadow .15s ease;
-}
-.history-toggle:active{
-  transform:scale(.98);
-}
-.history-icon{
-  font-size:22px;
-  line-height:1;
-}
-.history-arrow{
-  font-size:21px;
-  line-height:1;
-  margin-left:2px;
-}
-.section{
-
-  background:#fff;
-  border-radius:18px;
-  padding:17px;
-  box-shadow:0 5px 20px rgba(25,55,100,.07);
-
-}
-
-.section-title{
-  font-size:18px;
-  font-weight:800;
-  margin-bottom:14px;
-}
-
-.withdrawal-card{
-  border:1px solid #e7edf5;
-  border-radius:16px;
-  padding:15px;
-  margin-bottom:12px;
-  background:#fff;
-}
-
-.withdrawal-card:last-child{
-  margin-bottom:0;
-}
-
-.card-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
-  margin-bottom:13px;
-}
-
-.amount{
-  font-size:21px;
-  font-weight:800;
-  color:#123f82;
-}
-
-.status{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:6px 10px;
-  border-radius:999px;
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:.4px;
-}
-
-.status.pending{
-  background:#fff4d6;
-  color:#9a6800;
-}
-
-.status.approved{
-  background:#e5f8ed;
-  color:#167542;
-}
-
-.status.rejected{
-  background:#ffe8e8;
-  color:#b42323;
-}
-
-.info{
-  display:grid;
-  gap:7px;
-  font-size:13px;
-  color:#596579;
-}
-
-.info-row{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-}
-
-.info-row span:first-child{
-  color:#8a94a6;
-}
-
-.info-row strong{
-  color:#273449;
-  text-align:right;
-  word-break:break-word;
-}
-
-.actions{
-  display:flex;
-  gap:9px;
-  margin-top:15px;
-}
-
-button{
-  flex:1;
-  border:0;
-  border-radius:11px;
-  padding:12px 10px;
-  font-size:13px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.approve-btn{
-  background:#16834a;
-  color:#fff;
-}
-
-.reject-btn{
-  background:#e34b4b;
-  color:#fff;
-}
-
-button:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-}
-
-.empty{
-  text-align:center;
-  padding:30px 15px;
-  color:#7d8797;
-  font-size:14px;
-}
-
-.error{
-  background:#fff0f0;
-  border:1px solid #ffcaca;
-  color:#a62222;
-  border-radius:14px;
-  padding:16px;
-  text-align:center;
-  font-size:14px;
-  line-height:1.5;
-}
-
-.loading{
-  text-align:center;
-  padding:30px 15px;
-  color:#738096;
-  font-size:14px;
-}
-
-@media(max-width:600px){
-
-  body{
-    padding:12px 10px 30px;
-  }
-
-  .header{
-    padding:19px 16px;
-    border-radius:17px;
-  }
-
-  .logo{
-    font-size:22px;
-  }
-
-  .stats{
-    gap:7px;
-  }
-
-  .stat{
-    padding:13px 7px;
-    border-radius:13px;
-  }
-
-  .stat-label{
-    font-size:9px;
-  }
-
-  .stat-value{
-    font-size:17px;
-  }
-
-  .section{
-    padding:13px;
-    border-radius:16px;
-  }
-
-  .withdrawal-card{
-    padding:13px;
-  }
-
-  .amount{
-    font-size:19px;
-  }
-
-  .info-row{
-    align-items:flex-start;
-  }
-
-  .info-row span:first-child{
-    flex-shrink:0;
-  }
-}
-
-/* Unified Nexora deposit/withdraw admin panels */
-.unified-wrap{max-width:1250px;margin:18px auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.unified-panel{background:#fff;border:1px solid #dbe5f1;border-radius:16px;padding:18px;min-width:0;box-shadow:0 5px 18px #1230500a}
-.unified-panel h2{font-size:17px;margin:0 0 8px;color:#12315c}.unified-panel .hint{font-size:12px;color:#66758a;margin:0 0 14px}
-.unified-cards{display:grid;grid-template-columns:1fr;gap:12px}.u-card{border:1px solid #dbe5f1;border-radius:12px;padding:14px;background:#fbfdff;overflow-wrap:anywhere}.u-card h4{margin:0 0 8px}.u-card .u-amount{font-size:22px;font-weight:800;color:#0866b8;margin:8px 0}.u-meta{font-size:12px;color:#64748b;line-height:1.6}.u-actions{display:flex;gap:8px;margin-top:12px}.u-actions button{flex:1;border:0;border-radius:8px;padding:10px;font-weight:700;cursor:pointer}.u-approve{background:#d9f8eb;color:#08764f}.u-reject{background:#ffe2e6;color:#b4233d}.u-status{display:inline-block;font-size:10px;font-weight:800;padding:4px 8px;border-radius:99px;background:#edf2f7}.u-status.APPROVED{background:#d9f8eb;color:#08764f}.u-status.REJECTED{background:#ffe2e6;color:#b4233d}.u-status.PENDING{background:#fff2cc;color:#8a6100}
-#combinedHistory{display:none;max-width:1250px;margin:18px auto}.u-history-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}.u-history-col{background:#fff;border:1px solid #dbe5f1;border-radius:14px;padding:16px;min-width:0}.u-history-col h3{font-size:14px;margin:0 0 12px}.history-controls{display:flex;gap:10px;flex-wrap:wrap;max-width:1250px;margin:16px auto}.history-controls button{border:0;border-radius:9px;background:#1557b0;color:#fff;padding:11px 14px;font-weight:700;cursor:pointer}
-@media(max-width:760px){.unified-wrap,.u-history-grid{grid-template-columns:1fr}.unified-wrap,#combinedHistory,.history-controls{margin-left:0;margin-right:0}}
-.requests-grid,.history-toolbar{display:none!important}
-
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-  <div class="header">
-    <div class="logo">NEXORA</div>
-    <div class="subtitle">Withdrawal Administration</div>
-  </div>
-
-<!-- ADMIN LOGIN SECTION (Direktang tinitingnan sa Firestore database ang password) -->
-  <div id="adminLoginSection" class="section" style="margin-bottom: 18px; display: none;">
-    <div class="section-title">Admin Authentication Required</div>
-    <div style="font-size: 13px; color: #596579; margin-bottom: 12px;">Please enter admin credentials to access withdrawal controls.</div>
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-      <input type="tel" id="adminPhone" placeholder="Admin Mobile Number (e.g. 9999999999)" style="padding: 12px; border: 1px solid #cbdaf0; border-radius: 11px; font-size: 13px; outline: none;" maxlength="10">
-      <input type="password" id="adminPassword" placeholder="Admin Password" style="padding: 12px; border: 1px solid #cbdaf0; border-radius: 11px; font-size: 13px; outline: none;">
-      <button type="button" id="adminLoginBtn" class="approve-btn" style="padding: 12px; font-size: 13px; font-weight: 800; cursor: pointer;">LOGIN AS ADMIN</button>
-    </div>
-  </div>
-      
-  <div class="history-toolbar">
-    <a href="history.html" class="history-toggle" onclick="openHistory(); return false;">
-      <span class="history-icon">↻</span>
-      <span>VIEW HISTORY</span>
-      <span class="history-arrow">→</span>
-    </a>
-  </div>
-
-  <div class="stats">
-
-    <div class="stat">
-      <div class="stat-label">PENDING</div>
-      <div class="stat-value" id="pendingCount">0</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-label">PENDING AMOUNT</div>
-      <div class="stat-value" id="pendingAmount">₱0.00</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-label">TOTAL REQUESTS</div>
-      <div class="stat-value" id="totalCount">0</div>
-    </div>
-
-  </div>
-
-<div class="requests-grid">
-
-      
-<!-- =========================
-     RECHARGE REQUESTS
-========================= -->
-
-<div class="section">
-
-    <div class="section-title">
-      Recharge Requests
-    </div>
-
-    <div id="recharges">
-
-      <div class="loading">
-        Loading recharge requests...
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- =========================
-       WITHDRAWAL REQUESTS
-  ========================= -->
-
-  <div class="section">
-
-    <div class="section-title">
-      Withdrawal Requests
-    </div>
-
-    <div id="withdrawals">
-
-      <div class="loading">
-        Loading withdrawal requests...
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<div class="unified-wrap" id="unifiedPending">
-  <section class="unified-panel">
-    <h2>Pending Deposits</h2><p class="hint">Review incoming crypto deposits before crediting the user's USD trading balance.</p>
-    <div id="unifiedPendingDeposits" class="unified-cards"><div class="loading">Loading deposit requests…</div></div>
-  </section>
-  <section class="unified-panel">
-    <h2>Pending Withdrawals</h2><p class="hint">Withdrawal requests awaiting review.</p>
-    <div id="unifiedPendingWithdrawals" class="unified-cards"><div class="loading">See the Withdrawal Requests panel above while requests load.</div></div>
-  </section>
-</div>
-<div class="history-controls"><button type="button" id="unifiedHistoryBtn">View Combined History</button><button type="button" id="unifiedBackBtn" style="display:none">Back to Pending Requests</button></div>
-<section id="combinedHistory">
-  <div class="u-history-grid">
-    <div class="u-history-col"><h3>Approved Deposits</h3><div id="uApprovedDeposits" class="unified-cards"></div></div>
-    <div class="u-history-col"><h3>Rejected Deposits</h3><div id="uRejectedDeposits" class="unified-cards"></div></div>
-  </div>
-  <div class="u-history-grid">
-    <div class="u-history-col"><h3>Approved Withdrawals</h3><div id="uApprovedWithdrawals" class="unified-cards"></div></div>
-    <div class="u-history-col"><h3>Rejected Withdrawals</h3><div id="uRejectedWithdrawals" class="unified-cards"></div></div>
-  </div>
-</section>
-
-<!-- Firebase Compat SDK -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXORA — Deposit Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-
-<script>
-
-const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
-
-  authDomain:
-    "investpro-2dafb.firebaseapp.com",
-
-  projectId:
-    "investpro-2dafb",
-
-  storageBucket:
-    "investpro-2dafb.firebasestorage.app",
-
-  messagingSenderId:
-    "135092039764",
-
-  appId:
-    "1:135092039764:web:c4c71eef0c904346a77dc1",
-
-  measurementId:
-    "G-0L77SFTC4F"
-
-};
-
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-const $ = id =>
-  document.getElementById(id);
-
-
-/* -----------------------------------------
-   MONEY FORMAT
------------------------------------------ */
-
-function formatMoney(value){
-
-  const amount =
-    Number(value || 0);
-
-  return "₱" +
-    amount.toLocaleString(
-      "en-PH",
-      {
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      }
-    );
-
-}
-
-
-/* -----------------------------------------
-   AUTH CHECK (FIRESTORE DATABASE LOOKUP)
------------------------------------------ */
-
-async function verifyAndLoadAdmin(){
-  const userUid = localStorage.getItem("nexora_user_uid");
-
-  if(!userUid){
-    $("adminLoginSection").style.display = "block";
-    $("withdrawals").innerHTML = '<div class="empty">Please login using the admin credentials above.</div>';
-    $("recharges").innerHTML = '<div class="empty">Please login using the admin credentials above.</div>';
-    return;
-  }
-
-  try {
-    const userDoc = await db.collection("Users").doc(userUid).get();
-    if(!userDoc.exists){
-      $("adminLoginSection").style.display = "block";
-      return;
-    }
-
-    const userData = userDoc.data() || {};
-    const phone = userData.phone || userData.phoneNumber || userData.mobile || "";
-
-    if(phone !== "9999999999" && userData.email !== "639999999999@nexora.local" && userData.rawPhone !== "9999999999"){
-      $("adminLoginSection").style.display = "block";
-      $("withdrawals").innerHTML = '<div class="error">Access denied. Administrator privileges required.</div>';
-      $("recharges").innerHTML = '<div class="error">Access denied.</div>';
-      return;
-    }
-
-    $("adminLoginSection").style.display = "none";
-    await loadWithdrawals();
-  } catch(err) {
-    console.error("Auth verification error:", err);
-    $("adminLoginSection").style.display = "block";
-  }
-}
-
-document.getElementById("adminLoginBtn").addEventListener("click", async () => {
-  const phoneVal = document.getElementById("adminPhone").value.trim();
-  const passVal = document.getElementById("adminPassword").value;
-
-  if(!phoneVal || !passVal) {
-    alert("Please enter admin phone number and password.");
-    return;
-  }
-
-  try {
-    const usersRef = db.collection("Users");
-    let querySnapshot = await usersRef.where("phone", "==", phoneVal).get();
-    
-    if (querySnapshot.empty) {
-      querySnapshot = await usersRef.where("phoneNumber", "==", phoneVal).get();
-    }
-    if (querySnapshot.empty) {
-      querySnapshot = await usersRef.where("mobile", "==", phoneVal).get();
-    }
-    if (querySnapshot.empty) {
-      querySnapshot = await usersRef.where("phone", "==", "0" + phoneVal).get();
-    }
-
-    if (querySnapshot.empty) {
-      alert("Incorrect admin phone number or password.");
-      return;
-    }
-
-    const userDoc = querySnapshot.docs[0];
-    const userData = userDoc.data();
-
-    if (userData.password === passVal) {
-      localStorage.setItem("nexora_user_uid", userDoc.id);
-      $("adminLoginSection").style.display = "none";
-      await loadWithdrawals();
-    } else {
-      alert("Incorrect admin phone number or password.");
-    }
-  } catch(error) {
-    console.error("Admin login error:", error);
-    alert("An error occurred during admin login.");
-  }
-});
-
-(async function(){
-  await verifyAndLoadAdmin();
-})();
-
-/* -----------------------------------------
-   HISTORY DATA
------------------------------------------ */
-
-let adminHistoryRecharge = [];
-let adminHistoryWithdrawal = [];
-
-function openHistory(){
-
-  try{
-
-    sessionStorage.setItem(
-      "novariseAdminHistory",
-      JSON.stringify({
-        recharge: adminHistoryRecharge,
-        withdrawal: adminHistoryWithdrawal
-      })
-    );
-
-  }catch(error){
-    console.error("Unable to prepare history data:", error);
-  }
-
-  window.location.href = "history.html";
-}
-
-/* -----------------------------------------
-   LOAD ALL REQUESTS
------------------------------------------ */
-
-async function loadWithdrawals(){
-
-  $("withdrawals").innerHTML = `
-    <div class="loading">
-      Loading withdrawal requests...
-    </div>
-  `;
-
-
-  $("recharges").innerHTML = `
-    <div class="loading">
-      Loading recharge requests...
-    </div>
-  `;
-
-
-  try{
-
-    const snapshot =
-      await db
-        .collection("Users")
-        .get();
-
-
-    const requests = [];
-
-    const rechargeRequests = [];
-
-
-    snapshot.forEach(
-      UserDoc => {
-
-        const UserData =
-          UserDoc.data() || {};
-
-
-        const transactions =
-          Array.isArray(
-            UserData.transactions
-          )
-            ? UserData.transactions
-            : [];
-
-
-        transactions.forEach(
-          (transaction,index) => {
-
-
-            if(
-              transaction &&
-              transaction.type ===
-                "Withdrawal Request"
-            ){
-
-              requests.push({
-
-                UserId:
-                  UserDoc.id,
-
-                transactionIndex:
-                  index,
-
-                UserName:
-                  UserData.name ||
-                  UserData.displayName ||
-                  "Member",
-
-                ...transaction
-
-              });
-
-            }
-
-
-            if(
-              transaction &&
-              transaction.type ===
-                "Recharge"
-            ){
-
-              rechargeRequests.push({
-
-                UserId:
-                  UserDoc.id,
-
-                transactionIndex:
-                  index,
-
-                UserName:
-                  UserData.name ||
-                  UserData.displayName ||
-                  "Member",
-
-                ...transaction
-
-              });
-
-            }
-
-          }
-        );
-
-      }
-    );
-
-
-    /*
-      Newest withdrawals first.
-    */
-
-    requests.sort(
-      (a,b) => {
-
-        const dateA =
-          new Date(
-            a.date || 0
-          ).getTime();
-
-
-        const dateB =
-          new Date(
-            b.date || 0
-          ).getTime();
-
-
-        return dateB - dateA;
-
-      }
-    );
-
-
-    /*
-      Newest recharge requests first.
-    */
-
-    rechargeRequests.sort(
-      (a,b) => {
-
-        const dateA =
-          new Date(
-            a.date || 0
-          ).getTime();
-
-
-        const dateB =
-          new Date(
-            b.date || 0
-          ).getTime();
-
-
-        return dateB - dateA;
-
-      }
-    );
-
-
-    const pendingWithdrawals = requests.filter(request =>
-      String(request.status || "PENDING").toUpperCase() === "PENDING"
-    );
-    const pendingRecharges = rechargeRequests.filter(request =>
-      String(request.status || "PENDING").toUpperCase() === "PENDING"
-    );
-    const processedWithdrawals = requests.filter(request =>
-      ["APPROVED", "REJECTED"].includes(String(request.status || "").toUpperCase())
-    );
-    const processedRecharges = rechargeRequests.filter(request =>
-      ["APPROVED", "REJECTED"].includes(String(request.status || "").toUpperCase())
-    );
-
-    adminHistoryWithdrawal = processedWithdrawals;
-    adminHistoryRecharge = processedRecharges;
-
-    updateStats(requests);
-
-    if(pendingWithdrawals.length === 0){
-      $("withdrawals").innerHTML = '<div class="empty">No pending withdrawal requests.</div>';
-    }else{
-      $("withdrawals").innerHTML = pendingWithdrawals
-        .map((request,index) => renderWithdrawal(request,index)).join("");
-    }
-
-    if(pendingRecharges.length === 0){
-      $("recharges").innerHTML = '<div class="empty">No pending recharge requests.</div>';
-    }else{
-      $("recharges").innerHTML = pendingRecharges
-        .map((request,index) => renderRecharge(request,index)).join("");
-    }
-
-  }catch(error){
-
-    console.error(
-      "Load requests error:",
-      error
-    );
-
-
-    $("withdrawals").innerHTML = `
-      <div class="error">
-        Failed to load withdrawal requests.<br>
-        Please check your Firebase permissions.
-      </div>
-    `;
-
-
-    $("recharges").innerHTML = `
-      <div class="error">
-        Failed to load recharge requests.<br>
-        Please check your Firebase permissions.
-      </div>
-    `;
-
-  }
-
-}
-
-
-/* -----------------------------------------
-   STATS
------------------------------------------ */
-
-function updateStats(requests){
-
-  const pending =
-    requests.filter(
-      request =>
-        String(
-          request.status || ""
-        ).toUpperCase() ===
-        "PENDING"
-    );
-
-
-  const pendingAmount =
-    pending.reduce(
-      (sum,request) =>
-        sum +
-        Number(
-          request.amount || 0
-        ),
-      0
-    );
-
-
-  $("pendingCount").textContent =
-    pending.length;
-
-
-  $("pendingAmount").textContent =
-    formatMoney(
-      pendingAmount
-    );
-
-
-  $("totalCount").textContent =
-    requests.length;
-
-}
-
-
-/* -----------------------------------------
-   RENDER RECHARGE
------------------------------------------ */
-
-function renderRecharge(
-  request,
-  index
-){
-
-  const status =
-    String(
-      request.status ||
-      "PENDING"
-    ).toUpperCase();
-
-
-  let statusClass =
-    "pending";
-
-
-  if(
-    status ===
-    "APPROVED"
-  ){
-
-    statusClass =
-      "approved";
-
-  }
-
-
-  if(
-    status ===
-    "REJECTED"
-  ){
-
-    statusClass =
-      "rejected";
-
-  }
-
-
-  const date =
-    request.date
-      ? new Date(
-          request.date
-        ).toLocaleString(
-          "en-PH"
-        )
-      : "—";
-
-
-  const amount =
-    formatMoney(
-      request.amount
-    );
-
-
-  const orderId =
-    request.orderId ||
-    "—";
-
-
-  const method =
-    request.method ||
-    "GCash";
-
-
-  let actions =
-    "";
-
-
-  if(
-    status ===
-    "PENDING"
-  ){
-
-    actions = `
-
-<div class="actions">
-
-<button
-type="button"
-class="approve-btn approve-recharge-btn"
-data-userid="${escapeHtml(request.UserId)}"
-data-orderid="${escapeHtml(request.orderId || "")}"
-data-amount="${Number(request.amount || 0)}"
-data-index="${index}">
-APPROVE
-</button>
-
-
-<button
-type="button"
-class="reject-btn reject-recharge-btn"
-data-userid="${escapeHtml(request.UserId)}"
-data-orderid="${escapeHtml(request.orderId || "")}"
-data-index="${index}">
-REJECT
-</button>
-
+<style>
+:root{--bg:#060b16;--panel:#0c1424;--panel2:#101c30;--line:#1c3450;--cyan:#00d5ff;--blue:#0866ff;--text:#eef5ff;--muted:#8fa3bd;--green:#00d49a;--red:#ff6376;--gold:#ffc857}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#10203b 0,#060b16 55%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh}
+.wrap{max-width:1250px;margin:auto;padding:28px 18px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.brand{font-size:22px;font-weight:800;letter-spacing:2px}.brand span{color:var(--cyan)}.sub{color:var(--muted);font-size:12px;margin-top:6px}
+button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--text);background:#17243a;cursor:pointer;font-weight:700}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-primary{background:linear-gradient(100deg,#00bde8,#075cff);border:0}.btn-approve{background:#063e35;border-color:#087a65;color:#65f4cf}.btn-reject{background:#421b29;border-color:#743043;color:#ff9aaa}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}.stat,.panel{background:linear-gradient(145deg,#0e192b,#09111f);border:1px solid var(--line);border-radius:16px;padding:18px}.stat label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.stat strong{display:block;font-size:25px;margin-top:9px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select,.field{background:#080f1c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none}.toolbar input{flex:1;min-width:190px}
+.notice{padding:12px 14px;border-radius:10px;background:#1c1b12;border:1px solid #594b21;color:#ffe5a0;font-size:12px;line-height:1.6;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}.deposit{background:linear-gradient(145deg,#101b2e,#0a1220);border:1px solid var(--line);border-radius:15px;padding:17px;min-width:0}.deposit h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}.meta{font-size:11px;color:var(--muted);margin-bottom:14px;overflow-wrap:anywhere}.amount{font-size:27px;font-weight:800;color:var(--cyan);margin:10px 0}.rowline{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #1a2b41;font-size:12px}.rowline span:first-child{color:var(--muted)}.rowline span:last-child{text-align:right;overflow-wrap:anywhere;max-width:65%}.pill{display:inline-block;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800;letter-spacing:.5px}.PENDING{background:#3b3016;color:#ffda76}.APPROVED{background:#083b31;color:#6af2c9}.REJECTED{background:#421b29;color:#ff9aaa}.proof{display:inline-block;color:var(--cyan);font-size:12px;margin:8px 0}.actions{display:flex;gap:8px;margin-top:14px}.actions button{flex:1}.empty,.loading{color:var(--muted);text-align:center;padding:48px 16px}.small{font-size:10px;color:var(--muted);line-height:1.5;margin-top:10px}.error{color:#ff9aaa;font-size:12px;margin:10px 0}.success{color:#6af2c9;font-size:12px;margin:10px 0}
+#loginBox{max-width:440px;margin:9vh auto}.login-fields{display:grid;gap:10px;margin-top:18px}.login-fields input{width:100%;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:13px}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.modalbox{width:min(500px,100%);background:#0c1424;border:1px solid var(--line);border-radius:16px;padding:20px}.modalbox h2{margin-top:0}.modalbox textarea{width:100%;min-height:90px;margin:10px 0;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:12px}.modal-actions{display:flex;justify-content:flex-end;gap:9px}
+@media(max-width:600px){.stats{grid-template-columns:1fr}.wrap{padding:18px 12px}.actions{flex-direction:column}}
+
+.deposit-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:26px 0 15px}.deposit-heading h2{font-size:18px;margin:0}.deposit-heading p{margin:5px 0 0}.secure-tag{font-size:9px;letter-spacing:.8px;color:#7fe9cb;border:1px solid #205347;background:#0b211e;border-radius:7px;padding:8px 10px;white-space:nowrap}
+.deposit-heading{align-items:flex-start;flex-direction:column}}
+
+.history-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.history-column{min-width:0;background:linear-gradient(145deg,#0e192b,#09111f);border:1px solid var(--line);border-radius:16px;padding:16px}.history-column h3{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 14px;font-size:14px}.history-column .cards{grid-template-columns:1fr}.deposit-heading p{color:var(--muted);font-size:12px}@media(max-width:760px){.history-grid{grid-template-columns:1fr}}
+/* Layout adapted from admin-withdraw.html; deposit-only functionality remains. */
+:root{--bg:#f4f7fb;--panel:#fff;--panel2:#fff;--line:#dbe5f1;--cyan:#1557b0;--blue:#1557b0;--text:#172033;--muted:#718096;--green:#087a65;--red:#b8324b;--gold:#9a6b00}
+html,body{background:#f4f7fb!important;color:#172033!important;font-family:Arial,Helvetica,sans-serif!important}
+body{padding:20px 14px 40px!important}
+.wrap{max-width:900px!important;margin:0 auto!important;padding:0!important}
+.top{background:linear-gradient(135deg,#0b2a5b,#1557b0);color:#fff;border-radius:20px;padding:22px 20px;margin-bottom:18px;box-shadow:0 10px 30px rgba(20,65,130,.15)}
+.brand{color:#fff!important;font-size:25px!important;letter-spacing:.3px!important}.brand span{color:#b9dcff!important}
+.sub{color:#d8e6fa!important;font-size:13px!important}
+.btn{border:1px solid #cbdaf0!important;border-radius:11px!important;padding:11px 14px!important;color:#164b91!important;background:#fff!important;cursor:pointer;font-weight:800!important}
+.btn-primary{background:#1557b0!important;color:#fff!important;border-color:#1557b0!important}
+.btn-approve{background:#e7f8ef!important;border-color:#b6e6cb!important;color:#087a48!important}
+.btn-reject{background:#fff0f2!important;border-color:#f3c3cc!important;color:#b8324b!important}
+.stats{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;margin-bottom:18px!important}
+.stat,.panel{background:#fff!important;border:0!important;border-radius:16px!important;padding:16px 12px!important;box-shadow:0 5px 18px rgba(25,55,100,.07)!important}
+.stat{text-align:center}.stat label{font-size:11px!important;color:#718096!important;letter-spacing:0!important}.stat strong{font-size:20px!important;color:#123f82!important;margin-top:7px!important}
+.toolbar{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.toolbar input,.toolbar select,.field,.login-fields input{background:#fff!important;color:#172033!important;border:1px solid #cbdaf0!important;border-radius:11px!important;padding:12px!important}
+.toolbar input{flex:1;min-width:190px}
+.notice{background:#fff8e6!important;border:1px solid #f3dfaa!important;color:#795b12!important;border-radius:12px!important}
+.deposit-heading{margin:20px 0 14px!important;align-items:flex-start!important;flex-direction:column!important}
+.deposit-heading h2{font-size:18px!important;color:#172033!important}.deposit-heading p{color:#718096!important}
+.secure-tag{color:#164b91!important;border:1px solid #cbdaf0!important;background:#eef5ff!important}
+.cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important;gap:12px!important}
+.deposit{background:#fff!important;border:1px solid #e7edf5!important;border-radius:16px!important;padding:15px!important;box-shadow:0 5px 20px rgba(25,55,100,.05)!important}
+.deposit h3{color:#172033!important}.meta,.small{color:#718096!important}.amount{font-size:21px!important;color:#123f82!important}.rowline{border-top:1px solid #edf1f7!important}.rowline span:first-child{color:#718096!important}
+.PENDING{background:#fff4d6!important;color:#8b6500!important}.APPROVED{background:#e7f8ef!important;color:#087a48!important}.REJECTED{background:#fff0f2!important;color:#b8324b!important}
+.proof{color:#1557b0!important}.empty,.loading{color:#718096!important}
+#loginBox{max-width:440px!important;margin:9vh auto!important;background:#fff!important;border-radius:18px!important;box-shadow:0 5px 20px rgba(25,55,100,.07)!important}
+.login-fields input{width:100%}.modalbox{background:#fff!important;color:#172033!important;border:1px solid #dbe5f1!important}.modalbox textarea{background:#fff!important;color:#172033!important;border:1px solid #cbdaf0!important}
+.history-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}.history-column{background:#fff!important;border:0!important;border-radius:16px!important;padding:15px!important;box-shadow:0 5px 20px rgba(25,55,100,.07)!important}.history-column h3{color:#172033!important}.history-column .cards{grid-template-columns:1fr!important}
+@media(max-width:760px){.history-grid{grid-template-columns:1fr!important}.cards{grid-template-columns:1fr!important}}
+@media(max-width:600px){.stats{grid-template-columns:1fr!important}.wrap{padding:0!important}.actions{flex-direction:column}.top{padding:20px 16px}}
+
+</style>
+</head>
+<body>
+<div id="loginBox" class="panel">
+  <div class="brand">NEX<span>ORA</span> <span style="color:#8fa3bd;font-size:12px;letter-spacing:1px">ADMIN</span></div>
+  <p class="sub">Sign in with your authorized admin account.</p>
+  <form id="loginForm" class="login-fields">
+    <input id="email" type="email" placeholder="Admin email" required autocomplete="username">
+    <input id="password" type="password" placeholder="Password" required autocomplete="current-password">
+    <button class="btn btn-primary" type="submit">Sign in</button>
+  </form>
+  <p id="loginMsg" class="error"></p>
+  <p class="small">Only UIDs explicitly listed in ADMIN_UIDS can open the dashboard. Set the admin UID in this file before use.</p>
 </div>
+<div id="app" class="wrap" hidden>
+  <header class="top">
+    <div><div class="brand">NEXORA</div><div class="sub">Deposit Administration</div></div>
+    <button id="logoutBtn" class="btn">Sign out</button>
+  </header>
+  <div class="notice"><b>Security reminder:</b> A screenshot is not proof of on-chain payment. Verify network, token, destination address, amount, confirmations, and TXID before approving. Configure Firestore Security Rules so only admin accounts can change deposit status and user balances; a hidden page or UID check in HTML alone is not sufficient security.</div>
 
-`;
+  <div class="deposit-heading"><div><h2>Deposit approvals</h2><p class="sub">Review incoming requests and manage user credits.</p></div><span class="secure-tag">● ADMIN CONTROL</span></div>
 
-
-  }
-
-
-  return `
-
-    <div class="withdrawal-card">
-
-      <div class="card-top">
-
-        <div>
-
-          <div class="amount">
-            ${amount}
-          </div>
-
-        </div>
-
-
-        <div class="status ${statusClass}">
-          ${escapeHtml(status)}
-        </div>
-
-      </div>
-
-
-      <div class="info">
-
-        <div class="info-row">
-
-          <span>
-            Member
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              request.UserName ||
-              "Member"
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span>
-            Method
-          </span>
-
-          <strong>
-            ${escapeHtml(method)}
-          </strong>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span>
-            Order ID
-          </span>
-
-          <strong>
-            ${escapeHtml(orderId)}
-          </strong>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span>
-            Date
-          </span>
-
-          <strong>
-            ${escapeHtml(date)}
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      ${actions}
-
+  <section class="stats">
+    <div class="stat"><label>Pending requests</label><strong id="pendingCount">—</strong></div>
+    <div class="stat"><label>Approved requests</label><strong id="approvedCount">—</strong></div>
+    <div class="stat"><label>Rejected requests</label><strong id="rejectedCount">—</strong></div>
+  </section>
+  <div class="toolbar">
+    <input id="searchBox" placeholder="Search TXID, UID, network, reference…">
+    <button id="refreshBtn" class="btn">Refresh</button>
+    <button id="historyToggle" class="btn btn-primary" type="button">↻ View History →</button>
+  </div>
+  <div id="message"></div>
+  <section id="pendingSection">
+    <div class="deposit-heading"><div><h2>Pending Deposit Requests</h2><p class="sub">Review new deposits before crediting accounts.</p></div></div>
+    <div id="pendingDeposits" class="cards"><div class="loading">Loading deposit requests…</div></div>
+  </section>
+  <section id="historySection" hidden>
+    <div class="deposit-heading"><div><h2>Deposit History</h2><p class="sub">Approved and rejected requests are shown side by side.</p></div><button id="backToPending" class="btn">← Back to Pending</button></div>
+    <div class="history-grid">
+      <div class="history-column"><h3>Approved Deposits <span class="pill APPROVED">APPROVED</span></h3><div id="approvedDeposits" class="cards"></div></div>
+      <div class="history-column"><h3>Rejected Deposits <span class="pill REJECTED">REJECTED</span></h3><div id="rejectedDeposits" class="cards"></div></div>
     </div>
-
-  `;
-
-}
-
-
-/* -----------------------------------------
-   RECHARGE BUTTON HANDLER
------------------------------------------ */
-
-$("recharges").addEventListener(
-  "click",
-  function(event){
-
-
-    const approveButton =
-      event.target.closest(
-        ".approve-recharge-btn"
-      );
-
-
-    const rejectButton =
-      event.target.closest(
-        ".reject-recharge-btn"
-      );
-
-
-    if(
-      !approveButton &&
-      !rejectButton
-    )
-      return;
-
-
-
-    const button =
-      approveButton ||
-      rejectButton;
-
-
-
-    const UserId =
-      button.dataset.userid;
-
-
-    const orderId =
-      button.dataset.orderid;
-
-
-    const amount =
-      Number(
-        button.dataset.amount || 0
-      );
-
-
-    const index =
-      Number(
-        button.dataset.index
-      );
-
-
-
-    if(approveButton){
-
-      approveRecharge(
-        UserId,
-        orderId,
-        amount,
-        index
-      );
-
-    }
-
-
-
-    if(rejectButton){
-
-      rejectRecharge(
-        UserId,
-        orderId,
-        index
-      );
-
-    }
-
-
-  }
-);
-
-
-/* -----------------------------------------
-   RENDER WITHDRAWAL
------------------------------------------ */
-
-function renderWithdrawal(
-  request,
-  index
-){
-
-  const status =
-    String(
-      request.status ||
-      "PENDING"
-    ).toUpperCase();
-
-
-  let statusClass =
-    "pending";
-
-
-  if(
-    status ===
-    "APPROVED"
-  ){
-
-    statusClass =
-      "approved";
-
-  }
-
-
-  if(
-    status ===
-    "REJECTED"
-  ){
-
-    statusClass =
-      "rejected";
-
-  }
-
-
-  const date =
-    request.date
-      ? new Date(
-          request.date
-        ).toLocaleString(
-          "en-PH"
-        )
-      : "—";
-
-
-  const amount =
-    formatMoney(
-      request.amount
-    );
-
-
-  const requestId =
-    request.requestId ||
-    "—";
-
-
-  const method =
-    request.method ||
-    "—";
-
-
-  const accountName =
-    request.accountName ||
-    "—";
-
-
-  const accountNumber =
-    request.accountNumber ||
-    "—";
-
-
-  let actions =
-    "";
-
-
-  if(
-    status ===
-    "PENDING"
-  ){
-
-    actions = `
-
-      <div class="actions">
-
-        <button
-          type="button"
-          class="approve-btn"
-          id="approve-${index}"
-          onclick="approveWithdrawal(
-            '${escapeAttribute(request.UserId)}',
-            '${escapeAttribute(request.requestId || "")}',
-            ${Number(request.amount || 0)},
-            ${index}
-          )">
-          APPROVE
-        </button>
-
-
-        <button
-          type="button"
-          class="reject-btn"
-          id="reject-${index}"
-          onclick="rejectWithdrawal(
-            '${escapeAttribute(request.UserId)}',
-            '${escapeAttribute(request.requestId || "")}',
-            ${Number(request.amount || 0)},
-            ${index}
-          )">
-          REJECT
-        </button>
-
-      </div>
-
-    `;
-
-  }
-
-
-  return `
-
-    <div class="withdrawal-card">
-
-      <div class="card-top">
-
-        <div>
-
-          <div class="amount">
-            ${amount}
-          </div>
-
-        </div>
-
-
-        <div class="status ${statusClass}">
-          ${status}
-        </div>
-
-      </div>
-
-
-      <div class="info">
-
-        <div class="info-row">
-
-          <span>
-            Member
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              request.UserName
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span>
-            Method
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              method
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span>
-            Account Name
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              accountName
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span>
-            Account Number
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              accountNumber
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span>
-            Request ID
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              requestId
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span>
-            Date
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              date
-            )}
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      ${actions}
-
-    </div>
-
-  `;
-
-}
-
-
-/* -----------------------------------------
-   APPROVE WITHDRAWAL
------------------------------------------ */
-
-async function approveWithdrawal(
-  UserId,
-  requestId,
-  amount,
-  index
-){
-
-  const approveButton =
-    $("approve-" + index);
-
-
-  const rejectButton =
-    $("reject-" + index);
-
-
-  if(approveButton)
-    approveButton.disabled =
-      true;
-
-
-  if(rejectButton)
-    rejectButton.disabled =
-      true;
-
-
-  try{
-
-    const UserRef =
-      db.collection("Users")
-        .doc(UserId);
-
-
-    await db.runTransaction(
-      async transaction => {
-
-        const snap =
-          await transaction.get(
-            UserRef
-          );
-
-
-        if(!snap.exists){
-
-          throw new Error(
-            "USER_NOT_FOUND"
-          );
-
-        }
-
-
-        const data =
-          snap.data() || {};
-
-
-        const transactions =
-          Array.isArray(
-            data.transactions
-          )
-            ? [...data.transactions]
-            : [];
-
-
-        const transactionIndex =
-          transactions.findIndex(
-            item =>
-              item &&
-              item.type ===
-                "Withdrawal Request" &&
-              item.requestId ===
-                requestId
-          );
-
-
-        if(
-          transactionIndex ===
-          -1
-        ){
-
-          throw new Error(
-            "REQUEST_NOT_FOUND"
-          );
-
-        }
-
-
-        const request =
-          transactions[
-            transactionIndex
-          ];
-
-
-        const currentStatus =
-          String(
-            request.status ||
-            "PENDING"
-          ).toUpperCase();
-
-
-        if(
-          currentStatus !==
-          "PENDING"
-        ){
-
-          throw new Error(
-            "ALREADY_PROCESSED"
-          );
-
-        }
-
-
-        transactions[
-          transactionIndex
-        ] = {
-
-          ...request,
-
-          status:
-            "APPROVED",
-
-          approvedAt:
-            new Date()
-              .toISOString()
-
-        };
-
-
-        /*
-          IMPORTANT:
-          APPROVE DOES NOT DEDUCT BALANCE AGAIN.
-
-          Balance was already deducted
-          when the withdrawal request
-          was submitted.
-        */
-
-        transaction.update(
-          UserRef,
-          {
-            transactions
-          }
-        );
-
-      }
-    );
-
-
-    await loadWithdrawals();
-
-
-  }catch(error){
-
-    console.error(
-      "Approve error:",
-      error
-    );
-
-
-    if(
-      error.message ===
-      "ALREADY_PROCESSED"
-    ){
-
-      alert(
-        "This withdrawal request has already been processed."
-      );
-
-    }else{
-
-      alert(
-        "Failed to approve this withdrawal request."
-      );
-
-    }
-
-
-    await loadWithdrawals();
-
-  }
-
-}
-
-
-/* -----------------------------------------
-   APPROVE RECHARGE (WITH TIERED REFERRAL COMMISSION)
------------------------------------------ */
-
-async function approveRecharge(
-  UserId,
-  orderId,
-  amount,
-  index
-){
-
-  if(
-    !UserId ||
-    !orderId
-  ){
-
-    alert(
-      "Invalid recharge request."
-    );
-
-    return;
-
-  }
-
-
-  const rechargeAmount =
-    Number(amount);
-
-
-  if(
-    !Number.isFinite(
-      rechargeAmount
-    ) ||
-    rechargeAmount <= 0
-  ){
-
-    alert(
-      "Invalid recharge amount."
-    );
-
-    return;
-
-  }
-
-
-  const userRef =
-    db.collection("Users")
-      .doc(UserId);
-
-
-  try{
-
-    await db.runTransaction(
-      async transaction => {
-
-        // 1. BASAHIN muna ang mismong user (Reads)
-        const snap =
-          await transaction.get(
-            userRef
-          );
-
-
-        if(!snap.exists){
-
-          throw new Error(
-            "USER_NOT_FOUND"
-          );
-
-        }
-
-
-        const data =
-          snap.data() || {};
-
-
-        const transactions =
-          Array.isArray(
-            data.transactions
-          )
-            ? [...data.transactions]
-            : [];
-
-
-        const rechargeIndex =
-          transactions.findIndex(
-            item =>
-              item &&
-              item.type ===
-                "Recharge" &&
-              item.orderId ===
-                orderId
-          );
-
-
-        if(
-          rechargeIndex ===
-          -1
-        ){
-
-          throw new Error(
-            "RECHARGE_NOT_FOUND"
-          );
-
-        }
-
-
-        const recharge =
-          transactions[
-            rechargeIndex
-          ];
-
-
-        const currentStatus =
-          String(
-            recharge.status ||
-            "PENDING"
-          ).toUpperCase();
-
-
-        if(
-          currentStatus !==
-          "PENDING"
-        ){
-
-          throw new Error(
-            "RECHARGE_ALREADY_PROCESSED"
-          );
-
-        }
-
-
-        // 2. Kuhanin ang Upline ID at BASAHIN din ang upline document kung sakaling may komisyon (Reads)
-        const uplineId = data.referredBy || data.sponsorId;
-        let uplineRef = null;
-        let uplineSnap = null;
-        let commissionPercentage = 0;
-        let commissionAmount = 0;
-
-        if (uplineId && rechargeAmount >= 11500) {
-          if (rechargeAmount >= 23500) {
-            commissionPercentage = 0.10; // 10% para sa ₱23,500 pataas
-          } else if (rechargeAmount >= 11500) {
-            commissionPercentage = 0.05; // 5% para sa ₱11,500 hanggang ₱23,499
-          }
-
-          if (commissionPercentage > 0) {
-            commissionAmount = rechargeAmount * commissionPercentage;
-            uplineRef = db.collection("Users").doc(uplineId);
-            uplineSnap = await transaction.get(uplineRef);
-          }
-        }
-
-
-        // 3. PAGKATAPOS NG LAHAT NG READS, GAWIN NA ANG LAHAT NG WRITES (Updates)
-        
-        // I-update ang status ng recharge sa loob ng transactions array
-        transactions[
-          rechargeIndex
-        ] = {
-
-          ...recharge,
-
-          status:
-            "APPROVED",
-
-          approvedAt:
-            new Date()
-              .toISOString()
-
-        };
-
-
-        const currentBalance =
-          Number(
-            data.balance || 0
-          );
-
-        // I-update ang balance ng mismong nag-recharge (SINISIGURONG LAGING MAPUPUNTA SA BALANCE)
-        transaction.update(
-          userRef,
-          {
-
-            balance:
-              currentBalance +
-              rechargeAmount,
-
-            transactions
-
-          }
-        );
-
-
-        // Kung may valid na upline at umabot sa commission, i-update din ang upline at isave sa transactions history
-        if (uplineRef && uplineSnap && uplineSnap.exists) {
-          const uplineData = uplineSnap.data() || {};
-          const currentUplineBalance = Number(uplineData.balance || 0);
-          const currentTotalCommission = Number(uplineData.totalCommission || uplineData.commission || 0);
-          const uplineTransactions = Array.isArray(uplineData.transactions) ? [...uplineData.transactions] : [];
-
-          // Bagong commission transaction record para sa history
-          const newCommissionRecord = {
-            type: "Commission Received",
-            amount: commissionAmount,
-            status: "COMPLETED",
-            referredUserId: UserId,
-            details: `Referral Commission (${commissionPercentage * 100}%)`,
-            date: new Date().toISOString()
-          };
-
-          transaction.update(uplineRef, {
-            balance: currentUplineBalance + commissionAmount,
-            totalCommission: currentTotalCommission + commissionAmount,
-            transactions: [newCommissionRecord, ...uplineTransactions]
-          });
-        }
-
-      }
-    );
-
-
-    await loadWithdrawals();
-
-
-    alert(
-      "Recharge approved and referral commission credited successfully."
-    );
-
-
-  }catch(error){
-
-    console.error(
-      "Approve recharge error:",
-      error
-    );
-
-
-    if(
-      error.message ===
-      "RECHARGE_ALREADY_PROCESSED"
-    ){
-
-      alert(
-        "This recharge has already been processed."
-      );
-
-    }else if(
-      error.message ===
-      "RECHARGE_NOT_FOUND"
-    ){
-
-      alert(
-        "Recharge request was not found."
-      );
-
-    }else if(
-      error.message ===
-      "USER_NOT_FOUND"
-    ){
-
-      alert(
-        "Member account was not found."
-      );
-
-    }else{
-
-      alert(
-        "Unable to approve recharge: " + error.message
-      );
-
-    }
-
-  }
-
-}
-
-/* -----------------------------------------
-   REJECT RECHARGE
------------------------------------------ */
-
-async function rejectRecharge(
-  UserId,
-  orderId,
-  index
-){
-
-  try{
-
-    const UserRef =
-      db.collection("Users")
-        .doc(UserId);
-
-
-    await db.runTransaction(
-      async transaction => {
-
-        const snap =
-          await transaction.get(
-            UserRef
-          );
-
-
-        if(!snap.exists){
-
-          throw new Error(
-            "USER_NOT_FOUND"
-          );
-
-        }
-
-
-        const data =
-          snap.data() || {};
-
-
-        const transactions =
-          Array.isArray(
-            data.transactions
-          )
-            ? [...data.transactions]
-            : [];
-
-
-        const rechargeIndex =
-          transactions.findIndex(
-            item =>
-              item &&
-              item.type === "Recharge" &&
-              item.orderId === orderId
-          );
-
-
-        if(
-          rechargeIndex === -1
-        ){
-
-          throw new Error(
-            "RECHARGE_NOT_FOUND"
-          );
-
-        }
-
-
-        const recharge =
-          transactions[
-            rechargeIndex
-          ];
-
-
-        const status =
-          String(
-            recharge.status ||
-            "PENDING"
-          ).toUpperCase();
-
-
-        if(
-          status !== "PENDING"
-        ){
-
-          throw new Error(
-            "ALREADY_PROCESSED"
-          );
-
-        }
-
-
-        transactions[
-          rechargeIndex
-        ] = {
-
-          ...recharge,
-
-          status:
-            "REJECTED",
-
-          rejectedAt:
-            new Date()
-              .toISOString()
-
-        };
-
-
-        transaction.update(
-          UserRef,
-          {
-            transactions
-          }
-        );
-
-
-      }
-    );
-
-
-    await loadWithdrawals();
-
-
-    alert(
-      "Recharge rejected successfully."
-    );
-
-
-  }catch(error){
-
-    console.error(
-      "Reject recharge error:",
-      error
-    );
-
-
-    alert(
-      "Unable to reject recharge."
-    );
-
-  }
-
-}
-      
-/* -----------------------------------------
-   REJECT WITHDRAWAL
------------------------------------------ */
-
-async function rejectWithdrawal(
-  UserId,
-  requestId,
-  amount,
-  index
-){
-
-  const approveButton =
-    $("approve-" + index);
-
-
-  const rejectButton =
-    $("reject-" + index);
-
-
-  if(approveButton)
-    approveButton.disabled =
-      true;
-
-
-  if(rejectButton)
-    rejectButton.disabled =
-      true;
-
-
-  try{
-
-    const UserRef =
-      db.collection("Users")
-        .doc(UserId);
-
-
-    await db.runTransaction(
-      async transaction => {
-
-        const snap =
-          await transaction.get(
-            UserRef
-          );
-
-
-        if(!snap.exists){
-
-          throw new Error(
-            "USER_NOT_FOUND"
-          );
-
-        }
-
-
-        const data =
-          snap.data() || {};
-
-
-        const transactions =
-          Array.isArray(
-            data.transactions
-          )
-            ? [...data.transactions]
-            : [];
-
-
-        const transactionIndex =
-          transactions.findIndex(
-            item =>
-              item &&
-              item.type ===
-                "Withdrawal Request" &&
-              item.requestId ===
-                requestId
-          );
-
-
-        if(
-          transactionIndex ===
-          -1
-        ){
-
-          throw new Error(
-            "REQUEST_NOT_FOUND"
-          );
-
-        }
-
-
-        const request =
-          transactions[
-            transactionIndex
-          ];
-
-
-        const currentStatus =
-          String(
-            request.status ||
-            "PENDING"
-          ).toUpperCase();
-
-
-        if(
-          currentStatus !==
-          "PENDING"
-        ){
-
-          throw new Error(
-            "ALREADY_PROCESSED"
-          );
-
-        }
-
-
-        const currentBalance =
-          Number(
-            data.balance || 0
-          );
-
-
-        const refundAmount =
-          Number(
-            request.amount ||
-            amount ||
-            0
-          );
-
-
-        transactions[
-          transactionIndex
-        ] = {
-
-          ...request,
-
-          status:
-            "REJECTED",
-
-          rejectedAt:
-            new Date()
-              .toISOString()
-
-        };
-
-
-        transaction.update(
-          UserRef,
-          {
-
-            balance:
-              currentBalance +
-              refundAmount,
-
-            transactions
-
-          }
-        );
-
-      }
-    );
-
-
-    await loadWithdrawals();
-
-
-  }catch(error){
-
-    console.error(
-      "Reject error:",
-      error
-    );
-
-
-    if(
-      error.message ===
-      "ALREADY_PROCESSED"
-    ){
-
-      alert(
-        "This withdrawal request has already been processed."
-      );
-
-    }else{
-
-      alert(
-        "Failed to reject this withdrawal request."
-      );
-
-    }
-
-
-    await loadWithdrawals();
-
-  }
-
-}
-
-
-/* -----------------------------------------
-   SECURITY / DISPLAY HELPERS
------------------------------------------ */
-
-function escapeHtml(value){
-
-  return String(
-    value ?? ""
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-function escapeAttribute(value){
-
-  return String(
-    value ?? ""
-  )
-    .replace(
-      /\\/g,
-      "\\\\"
-    )
-    .replace(
-      /'/g,
-      "\\'"
-    );
-
-}
-
-</script>
-
-
+  </section>
+</div>
+<div id="rejectModal" class="modal"><div class="modalbox"><h2>Reject deposit</h2><p class="sub">Add a reason for the user and audit trail.</p><textarea id="rejectReason" maxlength="500" placeholder="Reason for rejection (required)"></textarea><div class="modal-actions"><button id="cancelReject" class="btn">Cancel</button><button id="confirmReject" class="btn btn-reject">Confirm rejection</button></div></div></div>
 <script>
-/* Deposit administration integrated with the existing withdrawal admin page. */
-(function(){
-  const el=id=>document.getElementById(id);
-  let deposits=[];
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const money=v=>Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6});
-  const dt=v=>{try{return v&&typeof v.toDate==='function'?v.toDate().toLocaleString():v?new Date(v).toLocaleString():'—'}catch(e){return '—'}};
-  function card(d,withActions){
-    const status=String(d.status||'PENDING').toUpperCase();
-    return `<article class="u-card"><div style="display:flex;justify-content:space-between;gap:8px"><h4>Deposit request</h4><span class="u-status ${esc(status)}">${esc(status)}</span></div><div class="u-meta">Ref: ${esc(d.id)} · ${esc(dt(d.createdAt))}</div><div class="u-amount">${esc(d.token||'USDT')} ${esc(money(d.amount))}</div><div class="u-meta">User UID: ${esc(d.uid||'—')}<br>Network: ${esc(d.network||'—')}<br>TXID: ${esc(d.txid||'—')}<br>Receiving address: ${esc(d.receivingAddress||'—')}</div>${d.proofUrl?`<p><a href="${esc(d.proofUrl)}" target="_blank" rel="noopener">Open payment proof ↗</a></p>`:''}${d.reviewNote?`<p class="u-meta">Review note: ${esc(d.reviewNote)}</p>`:''}${withActions&&status==='PENDING'?`<div class="u-actions"><button class="u-approve" data-dep-action="approve" data-id="${esc(d.id)}">Approve & credit</button><button class="u-reject" data-dep-action="reject" data-id="${esc(d.id)}">Reject</button></div>`:''}</article>`;
+(() => {
+  // IMPORTANT: Replace this placeholder with the exact Firebase Auth UID of your admin account.
+  // Do not use an email-only check. Never share your password or private keys.
+  const ADMIN_UIDS = ["o8czMuC6PnU8B4W8pS26s7iiG1l2"];
+  const firebaseConfig = {
+    apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+    authDomain: "investpro-2dafb.firebaseapp.com",
+    projectId: "investpro-2dafb",
+    storageBucket: "investpro-2dafb.firebasestorage.app",
+    messagingSenderId: "135092039764",
+    appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
+    measurementId: "G-0L77SFTC4F"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth(), db = firebase.firestore();
+  const $ = id => document.getElementById(id);
+  let deposits = [], rejectTarget = null, busy = false;
+
+  function safe(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  function money(v) { const n = Number(v); return Number.isFinite(n) ? n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:6}) : "0.00"; }
+  function dateText(v) {
+    if (!v) return "—";
+    try { const d = typeof v.toDate === "function" ? v.toDate() : new Date(v); return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(); } catch (_) { return "—"; }
   }
-  function renderDeposits(){
-    const sorted=[...deposits].sort((a,b)=>(b.ms||0)-(a.ms||0));
-    const pending=sorted.filter(d=>d.status==='PENDING');
-    const approved=sorted.filter(d=>d.status==='APPROVED');
-    const rejected=sorted.filter(d=>d.status==='REJECTED');
-    el('unifiedPendingDeposits').innerHTML=pending.length?pending.map(d=>card(d,true)).join():'<div class="empty">No pending deposit requests.</div>';
-    el('uApprovedDeposits').innerHTML=approved.length?approved.map(d=>card(d,false)).join():'<div class="empty">No approved deposits.</div>';
-    el('uRejectedDeposits').innerHTML=rejected.length?rejected.map(d=>card(d,false)).join():'<div class="empty">No rejected deposits.</div>';
+  function isAdmin(user) { return !!user && ADMIN_UIDS.includes(user.uid); }
+  function showMessage(text, type="error") { $("message").innerHTML = `<div class="${type}">${safe(text)}</div>`; }
+  function updateStats() {
+    $("pendingCount").textContent = deposits.filter(d => d.status === "PENDING").length;
+    $("approvedCount").textContent = deposits.filter(d => d.status === "APPROVED").length;
+    $("rejectedCount").textContent = deposits.filter(d => d.status === "REJECTED").length;
   }
-  async function loadDeposits(){
-    try{
-      const snap=await db.collection('CryptoDeposits').orderBy('createdAt','desc').limit(300).get();
-      deposits=snap.docs.map(doc=>{const d=doc.data();return {...d,id:doc.id,status:String(d.status||'PENDING').toUpperCase(),ms:d.createdAt&&d.createdAt.toMillis?d.createdAt.toMillis():0};});
-      renderDeposits();
-    }catch(e){console.error('Deposit load error:',e);el('unifiedPendingDeposits').innerHTML='<div class="error">Unable to load deposits. Check Firestore rules and console.</div>';}
+  function depositCard(d) {
+    return `<article class="deposit">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h3>Deposit request</h3><span class="pill ${safe(d.status)}">${safe(d.status || "UNKNOWN")}</span></div>
+      <div class="meta">Ref: ${safe(d.id)} · ${safe(dateText(d.createdAt))}</div>
+      <div class="amount">${safe(d.token || "USDT")} ${safe(money(d.amount))}</div>
+      <div class="rowline"><span>User UID</span><span>${safe(d.uid || "—")}</span></div>
+      <div class="rowline"><span>Network</span><span>${safe(d.network || "—")}</span></div>
+      <div class="rowline"><span>TXID</span><span>${safe(d.txid || "—")}</span></div>
+      <div class="rowline"><span>Receiving address</span><span>${safe(d.receivingAddress || "—")}</span></div>
+      ${d.proofUrl ? `<a class="proof" href="${safe(d.proofUrl)}" target="_blank" rel="noopener noreferrer">Open payment proof ↗</a>` : '<div class="small">No image proof attached. Verify the TXID directly on-chain.</div>'}
+      ${d.reviewNote ? `<div class="rowline"><span>Review note</span><span>${safe(d.reviewNote)}</span></div>` : ""}
+      ${d.status === "PENDING" ? `<div class="actions"><button class="btn btn-approve" data-action="approve" data-id="${safe(d.id)}">Approve & credit</button><button class="btn btn-reject" data-action="reject" data-id="${safe(d.id)}">Reject</button></div>` : ""}
+    </article>`;
   }
-  async function approveDeposit(id){
-    const d=deposits.find(x=>x.id===id);if(!d||d.status!=='PENDING')return;
-    const amount=Number(d.amount);if(!d.uid||!Number.isFinite(amount)||amount<=0){alert('Invalid deposit amount or missing user UID.');return;}
-    if(!confirm(`Approve ${d.token||'USDT'} ${money(amount)} for user ${d.uid}? Verify the transaction on-chain first.`))return;
-    try{
-      const depRef=db.collection('CryptoDeposits').doc(id), userRef=db.collection('Users').doc(d.uid);
-      await db.runTransaction(async tx=>{const dep=await tx.get(depRef);const user=await tx.get(userRef);if(!dep.exists)throw Error('Deposit request not found.');if(!user.exists)throw Error('User record not found.');if(String(dep.data().status||'PENDING').toUpperCase()!=='PENDING')throw Error('Request already reviewed.');const bal=Number(user.data().usdBalance||0);if(!Number.isFinite(bal)||bal<0)throw Error('Invalid USD balance.');tx.update(userRef,{usdBalance:bal+amount,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});tx.update(depRef,{status:'APPROVED',reviewedAt:firebase.firestore.FieldValue.serverTimestamp(),reviewedBy:localStorage.getItem('nexora_user_uid')||'admin',creditedField:'usdBalance',creditedAmount:amount,reviewNote:'Approved by admin'});});
-      alert('Deposit approved and USD Trading balance credited.');await loadDeposits();
-    }catch(e){console.error(e);alert('Approve failed: '+(e.message||e));}
+  function render() {
+    updateStats();
+    const q = $("searchBox").value.trim().toLowerCase();
+    const matches = d => [d.id,d.uid,d.txid,d.network,d.status,d.token,d.receivingAddress].some(v => String(v || "").toLowerCase().includes(q));
+    const sortNewest = (a,b) => (b.createdAtMs || 0) - (a.createdAtMs || 0);
+    const pending = deposits.filter(d => d.status === "PENDING" && matches(d)).sort(sortNewest);
+    const approved = deposits.filter(d => d.status === "APPROVED" && matches(d)).sort(sortNewest);
+    const rejected = deposits.filter(d => d.status === "REJECTED" && matches(d)).sort(sortNewest);
+    $("pendingDeposits").innerHTML = pending.length ? pending.map(depositCard).join("") : '<div class="empty">No pending deposit requests.</div>';
+    $("approvedDeposits").innerHTML = approved.length ? approved.map(depositCard).join("") : '<div class="empty">No approved deposits yet.</div>';
+    $("rejectedDeposits").innerHTML = rejected.length ? rejected.map(depositCard).join("") : '<div class="empty">No rejected deposits yet.</div>';
   }
-  async function rejectDeposit(id){
-    const d=deposits.find(x=>x.id===id);if(!d||d.status!=='PENDING')return;
-    const reason=prompt('Reason for rejection:');if(reason===null)return;if(!reason.trim()){alert('Please enter a reason.');return;}
-    try{const ref=db.collection('CryptoDeposits').doc(id);await db.runTransaction(async tx=>{const snap=await tx.get(ref);if(!snap.exists)throw Error('Deposit request not found.');if(String(snap.data().status||'PENDING').toUpperCase()!=='PENDING')throw Error('Request already reviewed.');tx.update(ref,{status:'REJECTED',reviewedAt:firebase.firestore.FieldValue.serverTimestamp(),reviewedBy:localStorage.getItem('nexora_user_uid')||'admin',reviewNote:reason.trim()});});alert('Deposit rejected.');await loadDeposits();}catch(e){console.error(e);alert('Reject failed: '+(e.message||e));}
+  async function loadDeposits() {
+    $("pendingDeposits").innerHTML = '<div class="loading">Loading deposit requests…</div>';
+    try {
+      const snap = await db.collection("CryptoDeposits").orderBy("createdAt","desc").limit(300).get();
+      deposits = snap.docs.map(doc => {
+        const data = doc.data();
+        return {...data,id:doc.id,createdAtMs:data.createdAt && typeof data.createdAt.toMillis === "function" ? data.createdAt.toMillis() : 0,status:String(data.status || "PENDING").toUpperCase()};
+      });
+      render(); showMessage("Deposit list updated.", "success");
+    } catch (e) {
+      console.error(e); $("pendingDeposits").innerHTML = '<div class="empty">Unable to load requests. Check Firestore rules and browser console.</div>';
+      showMessage(e.message || "Failed to load deposits.");
+    }
   }
-  document.addEventListener('click',e=>{const b=e.target.closest('button[data-dep-action]');if(!b)return;if(b.dataset.depAction==='approve')approveDeposit(b.dataset.id);if(b.dataset.depAction==='reject')rejectDeposit(b.dataset.id);});
-  el('unifiedHistoryBtn').addEventListener('click',async()=>{await loadDeposits();el('unifiedPending').style.display='none';el('combinedHistory').style.display='block';el('unifiedHistoryBtn').style.display='none';el('unifiedBackBtn').style.display='inline-block';renderDeposits();renderWithdrawalHistory();});
-  el('unifiedBackBtn').addEventListener('click',()=>{el('combinedHistory').style.display='none';el('unifiedPending').style.display='grid';el('unifiedHistoryBtn').style.display='inline-block';el('unifiedBackBtn').style.display='none';});
-  function renderWithdrawalHistory(){
-    const list=Array.isArray(adminHistoryWithdrawal)?adminHistoryWithdrawal:[];
-    const mk=r=>`<article class="u-card"><div style="display:flex;justify-content:space-between;gap:8px"><h4>Withdrawal request</h4><span class="u-status ${esc(String(r.status||'').toUpperCase())}">${esc(String(r.status||'').toUpperCase())}</span></div><div class="u-amount">${esc(money(r.amount))}</div><div class="u-meta">${esc(JSON.stringify(r).slice(0,700))}</div></article>`;
-    const a=list.filter(r=>String(r.status||'').toUpperCase()==='APPROVED'),rej=list.filter(r=>String(r.status||'').toUpperCase()==='REJECTED');
-    el('uApprovedWithdrawals').innerHTML=a.length?a.map(mk).join(''):'<div class="empty">No approved withdrawals.</div>';
-    el('uRejectedWithdrawals').innerHTML=rej.length?rej.map(mk).join(''):'<div class="empty">No rejected withdrawals.</div>';
+  async function approveDeposit(id) {
+    if (busy) return;
+    const d = deposits.find(x => x.id === id);
+    if (!d || d.status !== "PENDING") return;
+    const amount = Number(d.amount);
+    if (!Number.isFinite(amount) || amount <= 0 || !d.uid) { showMessage("Invalid amount or missing user UID. Nothing was changed."); return; }
+    if (!confirm(`Approve ${d.token || "USDT"} ${money(amount)} for UID ${d.uid}?\n\nOnly continue after independently verifying the transaction on-chain.`)) return;
+    busy = true;
+    try {
+      const depositRef = db.collection("CryptoDeposits").doc(id);
+      const userRef = db.collection("Users").doc(d.uid);
+      await db.runTransaction(async tx => {
+        const [depSnap,userSnap] = await Promise.all([tx.get(depositRef),tx.get(userRef)]);
+        if (!depSnap.exists) throw new Error("Deposit request no longer exists.");
+        if (!userSnap.exists) throw new Error("User record not found. No balance was credited.");
+        const latest = depSnap.data();
+        if (String(latest.status || "PENDING").toUpperCase() !== "PENDING") throw new Error("This request has already been reviewed.");
+        const currentBalance = Number(userSnap.data().usdBalance || 0);
+        if (!Number.isFinite(currentBalance) || currentBalance < 0) throw new Error("User USD balance is invalid.");
+        tx.update(userRef, { usdBalance: currentBalance + amount, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        tx.update(depositRef, {
+          status: "APPROVED",
+          reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          reviewedBy: auth.currentUser.uid,
+          creditedField: "usdBalance",
+          creditedAmount: amount,
+          reviewNote: "Approved by admin"
+        });
+      });
+      showMessage("Approved. USD Trading balance credited once.", "success");
+      await loadDeposits();
+    } catch(e) { console.error(e); showMessage(e.message || "Approval failed."); }
+    finally { busy = false; }
   }
-  // Existing admin login calls this after credentials are accepted; load deposits at the same time.
-  const originalLoad=window.loadWithdrawals;
-  if(typeof originalLoad==='function')window.loadWithdrawals=async function(){await originalLoad.apply(this,arguments);const source=el('withdrawals');if(source)el('unifiedPendingWithdrawals').innerHTML=source.innerHTML;await loadDeposits();};
-  // Existing script declares a top-level function, which is global in classic scripts.
-  const oldVerify=window.verifyAndLoadAdmin;
-  // The original login path invokes loadWithdrawals; event wrapping also covers direct login success.
-  document.addEventListener('click',e=>{if(e.target&&e.target.id==='adminLoginBtn')setTimeout(loadDeposits,1500);});
-  // Initial attempt is harmless if not authenticated; errors are shown in panel.
-  setTimeout(()=>{if(localStorage.getItem('nexora_user_uid'))loadDeposits();},700);
+  async function rejectDeposit(id, reason) {
+    if (busy) return;
+    const d = deposits.find(x => x.id === id);
+    if (!d || d.status !== "PENDING") return;
+    busy = true;
+    try {
+      const ref = db.collection("CryptoDeposits").doc(id);
+      await db.runTransaction(async tx => {
+        const snap = await tx.get(ref);
+        if (!snap.exists) throw new Error("Deposit request no longer exists.");
+        if (String(snap.data().status || "PENDING").toUpperCase() !== "PENDING") throw new Error("This request has already been reviewed.");
+        tx.update(ref, {status:"REJECTED", reviewedAt:firebase.firestore.FieldValue.serverTimestamp(), reviewedBy:auth.currentUser.uid, reviewNote:reason});
+      });
+      $("rejectModal").classList.remove("open"); rejectTarget = null; $("rejectReason").value = "";
+      showMessage("Deposit request rejected.", "success");
+      await loadDeposits();
+    } catch(e) { console.error(e); showMessage(e.message || "Rejection failed."); }
+    finally { busy = false; }
+  }
+  $("loginForm").addEventListener("submit", async e => {
+    e.preventDefault(); $("loginMsg").textContent = "";
+    try { await auth.signInWithEmailAndPassword($("email").value.trim(),$("password").value); }
+    catch(err) { $("loginMsg").textContent = err.message || "Sign-in failed."; }
+  });
+  $("logoutBtn").addEventListener("click", () => auth.signOut());
+  $("refreshBtn").addEventListener("click", loadDeposits);
+  $("searchBox").addEventListener("input", render);
+  $("historyToggle").addEventListener("click", () => {
+    $("pendingSection").hidden = true; $("historySection").hidden = false;
+    $("historyToggle").hidden = true;
+  });
+  $("backToPending").addEventListener("click", () => {
+    $("historySection").hidden = true; $("pendingSection").hidden = false;
+    $("historyToggle").hidden = false;
+  });
+  document.addEventListener("click", e => {
+    const btn = e.target.closest("button[data-action]"); if (!btn) return;
+    const id = btn.dataset.id;
+    if (btn.dataset.action === "approve") approveDeposit(id);
+    if (btn.dataset.action === "reject") { rejectTarget = id; $("rejectReason").value = ""; $("rejectModal").classList.add("open"); }
+  });
+  $("cancelReject").addEventListener("click", () => { rejectTarget = null; $("rejectModal").classList.remove("open"); });
+  $("confirmReject").addEventListener("click", () => {
+    const reason = $("rejectReason").value.trim();
+    if (!reason) { alert("Please enter a rejection reason."); return; }
+    if (rejectTarget) rejectDeposit(rejectTarget, reason);
+  });
+  auth.onAuthStateChanged(async user => {
+    if (!user) { $("app").hidden = true; $("loginBox").style.display = "block"; return; }
+    if (!isAdmin(user)) { $("loginMsg").textContent = "This account is not authorized as admin. Ask the project owner to configure the admin UID."; $("loginBox").style.display = "block"; $("app").hidden = true; await auth.signOut(); return; }
+    $("loginBox").style.display = "none"; $("app").hidden = false; await loadDeposits();
+  });
 })();
 </script>
-
 </body>
 </html>
