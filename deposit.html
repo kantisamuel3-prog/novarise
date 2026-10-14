@@ -37,9 +37,14 @@
     .field:focus { border-color:#00f2fe; box-shadow:0 0 0 2px rgba(0,242,254,.1); }
     .chain { transition:all .18s ease; }
     .chain.active { border-color:#00f2fe; background:rgba(0,242,254,.10); box-shadow:0 0 18px rgba(0,242,254,.08); }
+  
+    .nexora-toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,18px);opacity:0;pointer-events:none;z-index:9999;display:flex;align-items:center;gap:10px;padding:13px 18px;border:1px solid rgba(0,242,254,.45);border-radius:14px;background:linear-gradient(135deg,#0b2036,#06101e);color:#e8fbff;box-shadow:0 0 28px rgba(0,242,254,.18);font:700 12px/1.3 ui-sans-serif,system-ui;transition:opacity .22s ease,transform .22s ease;max-width:calc(100vw - 32px)}
+    .nexora-toast.show{opacity:1;transform:translate(-50%,0)}
+    .nexora-toast .toast-check{width:23px;height:23px;display:grid;place-items:center;border-radius:50%;background:#00e676;color:#03111a;flex-shrink:0}
   </style>
 </head>
 <body class="pb-8 relative overflow-x-hidden">
+  <div id="nexoraToast" class="nexora-toast" role="status" aria-live="polite"><span class="toast-check"><i class="fa-solid fa-check"></i></span><span id="nexoraToastText">Copy completed</span></div>
   <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
     <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
     <canvas id="chartCanvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
@@ -249,39 +254,63 @@
     $("trcBtn").addEventListener("click", () => { selectedNetwork = "TRC20"; renderNetwork(); });
     $("ercBtn").addEventListener("click", () => { selectedNetwork = "ERC20"; renderNetwork(); });
 
+    let toastTimer;
+    function showToast(message) {
+      const toast = $("nexoraToast");
+      $("nexoraToastText").textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+    async function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+      const temp = document.createElement("textarea");
+      temp.value = text;
+      temp.setAttribute("readonly", "");
+      temp.style.position = "fixed";
+      temp.style.opacity = "0";
+      document.body.appendChild(temp);
+      temp.select();
+      const ok = document.execCommand("copy");
+      temp.remove();
+      if (!ok) throw new Error("Clipboard copy failed");
+    }
     $("copyAddress").addEventListener("click", async () => {
       const address = wallet().address;
-      if (!address) { alert("Hindi pa naka-configure ang receiving address."); return; }
+      if (!address) { showToast("Receiving address is not configured yet."); return; }
       try {
-        await navigator.clipboard.writeText(address);
-        $("statusMsg").textContent = "Wallet address copied.";
+        await copyText(address);
+        showToast("Copy completed");
       } catch (_) {
-        alert("Hindi makopya nang automatic. Paki-select at kopyahin ang address.");
+        showToast("Copy failed — please select and copy the address.");
       }
     });
 
     $("saveQr").addEventListener("click", () => {
       const img = wallet().qrImage;
-      if (!img) { alert("Hindi pa naka-configure ang QR image."); return; }
+      if (!img) { showToast("QR code is not configured yet."); return; }
       const a = document.createElement("a");
       a.href = img; a.download = "Nexora-USDT-" + selectedNetwork + "-QR.png";
       document.body.appendChild(a); a.click(); a.remove();
     });
     $("openWallet").addEventListener("click", () => {
-      alert("Buksan ang iyong wallet, piliin ang USDT, at tiyaking pareho ang network bago magpadala. Huwag kailanman ibigay ang seed phrase o private key.");
+      alert("Open your wallet, select USDT, and make sure the sending network matches the selected network. Sending on the wrong network may result in permanent loss. Never share your seed phrase or private key.");
     });
 
     async function loadCurrentUser() {
       const localUid = localStorage.getItem("nexora_user_uid");
       if (!localUid) { window.location.href = "login.html"; return; }
-      if (!db) { $("statusMsg").textContent = "Hindi makakonekta sa Firebase."; return; }
+      if (!db) { $("statusMsg").textContent = "Unable to connect to Firebase. Please try again."; return; }
       try {
         const userDoc = await db.collection("Users").doc(localUid).get();
         if (!userDoc.exists) { window.location.href = "login.html"; return; }
         currentUid = localUid;
       } catch (e) {
         console.error(e);
-        $("statusMsg").textContent = "Hindi ma-verify ang account. Mag-login muli.";
+        $("statusMsg").textContent = "Unable to verify your account. Please sign in again.";
       }
     }
 
@@ -302,7 +331,7 @@
 
       btn.disabled = true;
       btn.textContent = "SUBMITTING...";
-      status.textContent = "Ipinapasa ang deposit request...";
+      status.textContent = "Submitting your deposit request...";
       try {
         const duplicate = await db.collection("CryptoDeposits").where("txid", "==", txid).limit(1).get();
         if (!duplicate.empty) throw new Error("Naisumite na ang TXID na ito. Huwag magsumite nang paulit-ulit.");
