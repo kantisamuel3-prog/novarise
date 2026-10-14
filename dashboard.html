@@ -608,8 +608,8 @@ canvas#liveChart {
         </div>
 
         <div class="bal-box">
-          <div class="bal-label">PHP Balance</div>
-          <div class="bal-amount" id="phpBalance">₱0.00</div>
+          <div class="bal-label">USD Withdraw Balance</div>
+          <div class="bal-amount" id="phpBalance">$0.00</div>
         </div>
       </div>
     </div>
@@ -1025,7 +1025,7 @@ canvas#liveChart {
 
     const phpElem = document.getElementById("phpBalance");
     if (phpElem) {
-      phpElem.innerText = "₱" + safeNumber(phpBalance).toLocaleString("en-PH", {
+      phpElem.innerText = "$" + safeNumber(phpBalance).toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
