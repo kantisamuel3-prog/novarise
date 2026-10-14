@@ -530,7 +530,7 @@
 
                 const data = docSnapshot.data() || {};
                 profilePhone.textContent = data.email || data.phone || "Member account";
-                profileName.textContent = "Welcome Member!";
+                profileName.textContent = "Welcome Trader!";
 
                 userRef.onSnapshot((docSnap) => {
                     if(!docSnap.exists) return;
