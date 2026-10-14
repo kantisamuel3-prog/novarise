@@ -91,7 +91,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
 (() => {
   // IMPORTANT: Replace this placeholder with the exact Firebase Auth UID of your admin account.
   // Do not use an email-only check. Never share your password or private keys.
-  const ADMIN_UIDS = ["REPLACE_WITH_YOUR_ADMIN_AUTH_UID"];
+  const ADMIN_UIDS = ["Uj9H0HEYz1Ny8mC8FTC7HZx7Wk53"];
   const firebaseConfig = {
     apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
     authDomain: "investpro-2dafb.firebaseapp.com",
@@ -112,7 +112,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
     if (!v) return "—";
     try { const d = typeof v.toDate === "function" ? v.toDate() : new Date(v); return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(); } catch (_) { return "—"; }
   }
-  function isAdmin(user) { return !!user && ADMIN_UIDS.includes(user.uid) && !ADMIN_UIDS.includes("REPLACE_WITH_YOUR_ADMIN_AUTH_UID"); }
+  function isAdmin(user) { return !!user && ADMIN_UIDS.includes(user.uid) && !ADMIN_UIDS.includes("Uj9H0HEYz1Ny8mC8FTC7HZx7Wk53"); }
   function showMessage(text, type="error") { $("message").innerHTML = `<div class="${type}">${safe(text)}</div>`; }
   function updateStats() {
     $("pendingCount").textContent = deposits.filter(d => d.status === "PENDING").length;
