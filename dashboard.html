@@ -619,7 +619,7 @@ canvas#liveChart {
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <h4 style="margin: 0; color: #00d4ff; font-size: 9px; display: flex; align-items: center; gap: 3px;"><i class="fa-solid fa-rotate"></i> Currency Converter</h4>
-          <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 7px; font-weight: 700; padding: 1px 4px; border-radius: 20px;">$1 = ₱60.00</span>
+          <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); font-size: 7px; font-weight: 700; padding: 1px 4px; border-radius: 20px;">$1 = $60.00</span>
         </div>
 
         <!-- CONVERTER TABS -->
@@ -648,7 +648,7 @@ canvas#liveChart {
               <input type="number" id="usdInput" placeholder="Enter USD ($)" oninput="previewUsdToPhp()">
               <button class="btn-convert-action" onclick="handleUsdToPhpAction()">Convert</button>
             </div>
-            <div style="font-size: 7.5px; color: #10b981; margin-top: 3px; font-weight: 600;" id="usdToPhpPreview">You will receive: ₱0.00 PHP</div>
+            <div style="font-size: 7.5px; color: #10b981; margin-top: 3px; font-weight: 600;" id="usdToPhpPreview">You will receive: $0.00 USD</div>
           </div>
         </div>
 
@@ -789,7 +789,7 @@ canvas#liveChart {
     </div>
     <h3 style="margin-top: 0; color: #fca5a5; font-size: 16px;">Insufficient Balance</h3>
     <p style="font-size: 11px; color: #cbd5e1; line-height: 1.5; margin-bottom: 16px;">
-      You have a <strong>$0.00</strong> balance! Please recharge or convert your PHP to USD before executing a trading code.
+      You have a <strong>$0.00</strong> balance! Please recharge or convert your USD WITHDRAW to USD TRADE before executing a trading code.
     </p>
     <div style="display: flex; gap: 8px;">
       <button class="btn-close" onclick="closeZeroBalanceModal()">Close</button>
@@ -1023,7 +1023,7 @@ canvas#liveChart {
       }
     }
 
-    const phpElem = document.getElementById("phpBalance");
+    const phpElem = document.getElementById("usdBalance");
     if (phpElem) {
       phpElem.innerText = "₱" + safeNumber(phpBalance).toLocaleString("en-PH", {
         minimumFractionDigits: 2,
@@ -1187,7 +1187,7 @@ canvas#liveChart {
     if (phpAmount <= 0) {
       openConversionNoticeModal(
         'Invalid Amount',
-        'Please enter a PHP amount greater than ₱0.00 before converting.',
+        'Please enter a PHP amount greater than $0.00 before converting.',
         '⚠️',
         'warning'
       );
@@ -1197,7 +1197,7 @@ canvas#liveChart {
     if (phpAmount > phpBalance) {
       openConversionNoticeModal(
         'Insufficient PHP Balance',
-        `Your available PHP balance is ₱${safeNumber(phpBalance).toLocaleString('en-PH', {
+        `Your available USD balance is $${safeNumber(phpBalance).toLocaleString('en-PH', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2
         })}. Please enter a lower amount.`,
@@ -1215,7 +1215,7 @@ canvas#liveChart {
     // Gagamitin na ang magandang Conversion Success Modal sa halip na alert()
     openConversionNoticeModal(
       'Conversion Successful!',
-      `Successfully converted ₱${phpAmount.toFixed(2)} PHP to $${convertedUsd.toFixed(2)} USD for trading.`,
+      `Successfully converted $${phpAmount.toFixed(2)} PHP to $${convertedUsd.toFixed(2)} USD for trading.`,
       '✓',
       'success'
     );
@@ -1244,7 +1244,7 @@ canvas#liveChart {
     const finalPhp = rawPhp - deduction;
 
     document.getElementById('usdToPhpPreview').innerText =
-      `You will receive: ₱${finalPhp.toFixed(2)} PHP (w/ ${feePercent * 100}% fee)`;
+      `You will receive: $${finalPhp.toFixed(2)} PHP (w/ ${feePercent * 100}% fee)`;
   }
 
   function handleUsdToPhpAction() {
@@ -1297,8 +1297,8 @@ canvas#liveChart {
       <div style="margin-bottom:4px;"><strong style="color:#00d4ff;">Account Age:</strong> Day ${accountAgeDays} of ${requiredDaysForNoFee} (${accountAgeDays < requiredDaysForNoFee ? 'Under 31 Days' : '31+ Days'})</div>
       <div style="margin-bottom:4px;"><strong style="color:#fff;">Converting Amount:</strong> $${usdAmount.toFixed(2)} USD</div>
       <div style="margin-bottom:4px;"><strong style="color:#fff;">USD Remaining:</strong> $${remainingUsd.toFixed(2)} USD</div>
-      <div style="margin-bottom:4px;"><strong style="color:#fca5a5;">Deduction Fee (${feePercent * 100}%):</strong> ₱${deduction.toFixed(2)} PHP</div>
-      <div style="border-top:1px solid rgba(255,255,255,.1);margin-top:6px;padding-top:6px;"><strong style="color:#10b981;font-size:13px;">Net Total to Receive: ₱${finalPhp.toFixed(2)} PHP</strong></div>
+      <div style="margin-bottom:4px;"><strong style="color:#fca5a5;">Deduction Fee (${feePercent * 100}%):</strong> $${deduction.toFixed(2)} PHP</div>
+      <div style="border-top:1px solid rgba(255,255,255,.1);margin-top:6px;padding-top:6px;"><strong style="color:#10b981;font-size:13px;">Net Total to Receive: $${finalPhp.toFixed(2)} PHP</strong></div>
       <div style="font-size:10px;color:#94a3b8;margin-top:6px;">${feeLabel}. The 1% fee is retained only when Day 31+ is complete and at least $130 USD remains after conversion.</div>
     `;
 
@@ -1329,7 +1329,7 @@ canvas#liveChart {
     // Gagamitin na ang magandang Conversion Success Modal sa halip na alert()
     openConversionNoticeModal(
       'USD to PHP Conversion Successful!',
-      `Converted: $${usdAmount.toFixed(2)} USD\nDeduction (${feePercent * 100}%): ₱${deduction.toFixed(2)} PHP\nNet Received: ₱${finalPhp.toFixed(2)} PHP`,
+      `Converted: $${usdAmount.toFixed(2)} USD\nDeduction (${feePercent * 100}%): $${deduction.toFixed(2)} PHP\nNet Received: $${finalPhp.toFixed(2)} PHP`,
       '✓',
       'success'
     );
