@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NEXORA — Deposit Admin</title>
+<title>NEXORA — Live Trading Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -22,6 +22,10 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
 #loginBox{max-width:440px;margin:9vh auto}.login-fields{display:grid;gap:10px;margin-top:18px}.login-fields input{width:100%;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:13px}
 .modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.modalbox{width:min(500px,100%);background:#0c1424;border:1px solid var(--line);border-radius:16px;padding:20px}.modalbox h2{margin-top:0}.modalbox textarea{width:100%;min-height:90px;margin:10px 0;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:12px}.modal-actions{display:flex;justify-content:flex-end;gap:9px}
 @media(max-width:600px){.stats{grid-template-columns:1fr}.wrap{padding:18px 12px}.actions{flex-direction:column}}
+
+.market-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;margin:18px 0 14px}.market-chip{display:flex;align-items:center;gap:11px;padding:13px 14px;border:1px solid var(--line);border-radius:13px;background:#0b1423}.coin-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;font-weight:800}.btc{background:#3b2c16;color:#ffbd4a}.eth{background:#182849;color:#8aa9ff}.usdt{background:#12382f;color:#4ce0b2}.market-chip small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}.market-chip strong{font-size:13px}.market-chip em{font-style:normal;font-size:11px;margin-left:auto}.up{color:#27d9a0!important}.market-live{display:flex;align-items:center;gap:7px;padding:0 13px;color:#8ff5d5;font-size:10px;font-weight:800;letter-spacing:.7px;border:1px solid #1c4b43;border-radius:12px;background:#0b211e;white-space:nowrap}.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#21d9a0;box-shadow:0 0 10px #21d9a0}.trading-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(240px,1fr);gap:14px;margin-bottom:20px}.chart-panel,.market-side{padding:18px}.chart-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.chart-kicker{font-size:10px;color:var(--muted);letter-spacing:1px;font-weight:700}.demo-tag{font-size:9px;color:#79e8ff;border:1px solid #17516b;border-radius:5px;padding:3px 5px;margin-left:6px} .chart-head h2{font-size:18px;margin:9px 0 0}.chart-head h2 span{font-size:11px;color:var(--muted);font-weight:500;margin-left:7px}.chart-price{text-align:right}.chart-price strong{display:block;font-size:20px}.chart-price em{font-size:11px;color:#27d9a0;font-style:normal}.chart-tools{display:flex;gap:7px;align-items:center;margin:18px 0 4px;flex-wrap:wrap}.chart-tools span{font-size:10px;color:var(--muted);padding:5px 8px;border-radius:6px}.chart-tools span.active{background:#0d3c54;color:#6be7ff}.chart-tools .chart-note{margin-left:auto;font-size:9px}.chart-wrap{height:185px}.chart-wrap svg{width:100%;height:160px;overflow:visible}.gridlines path{stroke:#1a2b40;stroke-width:1;stroke-dasharray:3 5;fill:none}.chart-area{fill:url(#chartFill)}.chart-line{fill:none;stroke:#00d5ff;stroke-width:2.5;vector-effect:non-scaling-stroke}.chart-point{fill:#00d5ff;stroke:#c9f9ff;stroke-width:2}.chart-labels{display:flex;justify-content:space-between;color:#61758f;font-size:9px}.section-title{font-size:13px;font-weight:700;margin-bottom:15px}.section-title .live-dot{float:right}.snapshot-row{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #1a2b41;font-size:11px}.snapshot-row span{color:var(--muted)}.mini-bars{height:40px;display:flex;align-items:flex-end;gap:5px;margin-top:18px}.mini-bars i{display:block;flex:1;border-radius:3px 3px 0 0;background:linear-gradient(0deg,#087cff,#00d5ff);opacity:.8}.deposit-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:26px 0 15px}.deposit-heading h2{font-size:18px;margin:0}.deposit-heading p{margin:5px 0 0}.secure-tag{font-size:9px;letter-spacing:.8px;color:#7fe9cb;border:1px solid #205347;background:#0b211e;border-radius:7px;padding:8px 10px;white-space:nowrap}
+@media(max-width:850px){.market-strip{grid-template-columns:1fr 1fr}.market-live{min-height:48px;justify-content:center}.trading-grid{grid-template-columns:1fr}}@media(max-width:500px){.market-strip{grid-template-columns:1fr}.market-live{padding:12px}.chart-head{align-items:flex-start;flex-direction:column}.chart-price{text-align:left}.chart-tools .chart-note{width:100%;margin-left:0}.deposit-heading{align-items:flex-start;flex-direction:column}}
+
 </style>
 </head>
 <body>
@@ -38,10 +42,27 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
 </div>
 <div id="app" class="wrap" hidden>
   <header class="top">
-    <div><div class="brand">NEX<span>ORA</span> <span style="color:#8fa3bd;font-size:12px;letter-spacing:1px">DEPOSIT ADMIN</span></div><div class="sub">Review crypto deposit requests · Verify TXID on the correct blockchain before approving.</div></div>
+    <div><div class="brand">NEX<span>ORA</span> <span style="color:#8fa3bd;font-size:12px;letter-spacing:1px">DEPOSIT ADMIN</span></div><div class="sub">Live-style market overview and deposit review · Verify TXID on-chain before approving.</div></div>
     <button id="logoutBtn" class="btn">Sign out</button>
   </header>
   <div class="notice"><b>Security reminder:</b> A screenshot is not proof of on-chain payment. Verify network, token, destination address, amount, confirmations, and TXID before approving. Configure Firestore Security Rules so only admin accounts can change deposit status and user balances; a hidden page or UID check in HTML alone is not sufficient security.</div>
+
+  <section class="market-strip" aria-label="Market ticker">
+    <div class="market-chip"><span class="coin-icon btc">₿</span><div><small>BTC / USDT</small><strong id="btcPrice">$67,482.18</strong></div><em class="up">+2.41%</em></div>
+    <div class="market-chip"><span class="coin-icon eth">◆</span><div><small>ETH / USDT</small><strong id="ethPrice">$3,524.70</strong></div><em class="up">+1.28%</em></div>
+    <div class="market-chip"><span class="coin-icon usdt">₮</span><div><small>USDT / USD</small><strong>$1.000</strong></div><em class="up">+0.01%</em></div>
+    <div class="market-live"><span class="live-dot"></span> MARKET VIEW</div>
+  </section>
+  <section class="trading-grid">
+    <div class="panel chart-panel">
+      <div class="chart-head"><div><div class="chart-kicker">MARKET OVERVIEW <span class="demo-tag">LIVE-STYLE UI</span></div><h2>Bitcoin <span>BTC / USDT</span></h2></div><div class="chart-price"><strong id="chartPrice">67,482.18</strong><em>+2.41% today</em></div></div>
+      <div class="chart-tools"><span class="active">1H</span><span>4H</span><span>1D</span><span>1W</span><span class="chart-note">Illustrative chart · not live exchange pricing</span></div>
+      <div class="chart-wrap"><svg viewBox="0 0 900 210" preserveAspectRatio="none" role="img" aria-label="Decorative upward market chart"><defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#00d5ff" stop-opacity=".27"/><stop offset="100%" stop-color="#00d5ff" stop-opacity="0"/></linearGradient></defs><g class="gridlines"><path d="M0 30H900 M0 70H900 M0 110H900 M0 150H900 M0 190H900"/><path d="M100 0V210 M250 0V210 M400 0V210 M550 0V210 M700 0V210 M850 0V210"/></g><path class="chart-area" d="M0 170 L35 155 L70 166 L105 130 L140 143 L175 115 L210 126 L245 91 L280 108 L315 99 L350 120 L385 83 L420 96 L455 68 L490 85 L525 58 L560 74 L595 42 L630 62 L665 51 L700 71 L735 36 L770 48 L805 25 L840 39 L875 18 L900 23 L900 210 L0 210Z"/><path class="chart-line" d="M0 170 L35 155 L70 166 L105 130 L140 143 L175 115 L210 126 L245 91 L280 108 L315 99 L350 120 L385 83 L420 96 L455 68 L490 85 L525 58 L560 74 L595 42 L630 62 L665 51 L700 71 L735 36 L770 48 L805 25 L840 39 L875 18 L900 23"/><circle cx="900" cy="23" r="4" class="chart-point"/></svg><div class="chart-labels"><span>09:00</span><span>11:00</span><span>13:00</span><span>15:00</span><span>17:00</span><span>19:00</span></div></div>
+    </div>
+    <div class="panel market-side"><div class="section-title">Market snapshot <span class="live-dot"></span></div><div class="snapshot-row"><span>24h High</span><b>$68,120.00</b></div><div class="snapshot-row"><span>24h Low</span><b>$65,908.30</b></div><div class="snapshot-row"><span>24h Volume</span><b>$1.84B</b></div><div class="snapshot-row"><span>Market trend</span><b class="up">↗ Bullish</b></div><div class="mini-bars"><i style="height:32%"></i><i style="height:48%"></i><i style="height:39%"></i><i style="height:62%"></i><i style="height:55%"></i><i style="height:74%"></i><i style="height:66%"></i><i style="height:90%"></i><i style="height:78%"></i><i style="height:100%"></i><i style="height:83%"></i><i style="height:94%"></i></div><p class="small">Sample market figures for visual design only. Connect a trusted market-data API for real-time prices.</p></div>
+  </section>
+  <div class="deposit-heading"><div><h2>Deposit approvals</h2><p class="sub">Review incoming requests and manage user credits.</p></div><span class="secure-tag">● ADMIN CONTROL</span></div>
+
   <section class="stats">
     <div class="stat"><label>Pending requests</label><strong id="pendingCount">—</strong></div>
     <div class="stat"><label>Approved requests</label><strong id="approvedCount">—</strong></div>
@@ -60,7 +81,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
 (() => {
   // IMPORTANT: Replace this placeholder with the exact Firebase Auth UID of your admin account.
   // Do not use an email-only check. Never share your password or private keys.
-  const ADMIN_UIDS = ["Uj9H0HEYz1Ny8mC8FTC7HZx7Wk53"];
+  const ADMIN_UIDS = ["REPLACE_WITH_YOUR_ADMIN_AUTH_UID"];
   const firebaseConfig = {
     apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
     authDomain: "investpro-2dafb.firebaseapp.com",
