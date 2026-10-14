@@ -608,8 +608,8 @@ canvas#liveChart {
         </div>
 
         <div class="bal-box">
-          <div class="bal-label">USD Withdraw</div>
-          <div class="bal-amount" id="usdWithdrawBalance">$0.00</div>
+          <div class="bal-label">PHP Balance</div>
+          <div class="bal-amount" id="phpBalance">₱0.00</div>
         </div>
       </div>
     </div>
@@ -1023,10 +1023,9 @@ canvas#liveChart {
       }
     }
 
-    const usdWithdrawElem = document.getElementById("usdWithdrawBalance");
-    if (usdWithdrawElem) {
-      // Display only: reuse the existing USD balance without changing Firestore fields.
-      usdWithdrawElem.innerText = "$" + safeNumber(usdBalance).toLocaleString("en-US", {
+    const phpElem = document.getElementById("phpBalance");
+    if (phpElem) {
+      phpElem.innerText = "₱" + safeNumber(phpBalance).toLocaleString("en-PH", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
