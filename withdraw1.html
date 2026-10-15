@@ -300,9 +300,10 @@
       <div class="rounded-xl border border-slate-700/80 bg-slate-950/70 p-4 space-y-3 text-xs font-mono">
         <div class="flex justify-between gap-3"><span class="text-slate-400">Withdrawal amount</span><strong id="feeAmount" class="text-white text-right">—</strong></div>
         <div class="flex justify-between gap-3"><span class="text-slate-400">Transaction fee (5%)</span><strong id="feeValue" class="text-amber-300 text-right">—</strong></div>
+        <div class="flex justify-between gap-3"><span class="text-slate-300">You will receive</span><strong id="feeNet" class="text-emerald-300 text-right">—</strong></div>
         <div class="border-t border-slate-700 pt-3 flex justify-between gap-3"><span class="text-slate-300">Total balance deduction</span><strong id="feeTotal" class="text-cyan-300 text-right">—</strong></div>
       </div>
-      <p class="text-[10px] leading-relaxed text-slate-400 mt-3">The 5% fee shown here is part of this page's withdrawal calculation. Continue only if you agree with the displayed total.</p>
+      <p class="text-[10px] leading-relaxed text-slate-400 mt-3">The 5% transaction fee is deducted from your withdrawal amount. The remaining 95% is the amount you will receive.</p>
       <div class="flex gap-2 mt-5">
         <button id="cancelFeeBtn" type="button" class="flex-1 py-3 rounded-xl border border-slate-600 bg-slate-800/70 text-slate-200 text-xs font-bold">CANCEL</button>
         <button id="continueFeeBtn" type="button" class="flex-1 py-3 rounded-xl border border-cyan-300/40 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 text-cyan-200 text-xs font-black shadow-lg">CONTINUE <i class="fa-solid fa-arrow-right ml-1"></i></button>
@@ -711,9 +712,9 @@
         toast("Your balance is $0.00. Add funds before submitting a withdrawal.");
         return;
       }
-      const requestedTotal = amount * 1.05;
+      const requestedTotal = amount;
       if(availableBalance < requestedTotal){
-        toast(`Insufficient balance. You need ${requestedTotal.toLocaleString("en-US", {maximumFractionDigits: 8})} including the 5% fee.`);
+        toast(`Insufficient balance. You need ${requestedTotal.toLocaleString("en-US", {maximumFractionDigits: 8})} for this withdrawal.`);
         return;
       }
     } catch(balanceError) {
@@ -731,12 +732,14 @@
       return;
     }
     const fee = amount * 0.05;
-    const total = amount + fee;
+    const netAmount = amount - fee;
+    const total = amount; // Deduct the entered amount; do not add the fee on top.
     const fmt = value => `${value.toLocaleString("en-US", {maximumFractionDigits: 8})} ${asset}`;
     $("feeAmount").textContent = fmt(amount);
     $("feeValue").textContent = fmt(fee);
+    $("feeNet").textContent = fmt(netAmount);
     $("feeTotal").textContent = fmt(total);
-    window.__pendingWithdrawal = { amount, fee, total, asset, network, walletAddress };
+    window.__pendingWithdrawal = { amount, fee, netAmount, total, asset, network, walletAddress };
     $("feeModal").classList.remove("hidden");
   });
 
@@ -768,7 +771,7 @@
     const pending = window.__pendingWithdrawal || {};
     const amount = Number(pending.amount ?? $("withdrawAmount").value);
     const fee = Number(pending.fee ?? amount * 0.05);
-    const total = Number(pending.total ?? amount + fee);
+    const total = Number(pending.total ?? amount);
     const walletAddress = pending.walletAddress || $("walletAddress").value.trim();
     const asset = pending.asset || $("assetSelect").value;
     const network = pending.network || $("networkSelect").value;
@@ -794,7 +797,7 @@
         }
 
         if(currentBal < total){
-          throw new Error(`Insufficient balance. You need ${total.toLocaleString("en-US", {maximumFractionDigits: 8})} total including the 5% fee.`);
+          throw new Error(`Insufficient balance. You need ${total.toLocaleString("en-US", {maximumFractionDigits: 8})} for this withdrawal.`);
         }
 
         const transactions = Array.isArray(data.transactions) ? [...data.transactions] : [];
@@ -808,7 +811,8 @@
           type: "Withdrawal Request",
           status: "PENDING",
           requestId: requestId,
-          amount: amount,
+          amount: Number(pending.netAmount ?? (amount - fee)),
+          grossAmount: amount,
           feeRate: 0.05,
           fee: fee,
           totalDeducted: total,
