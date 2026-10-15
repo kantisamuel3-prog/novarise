@@ -586,7 +586,8 @@
 
   const assetNetworks = {
     USDT: [
-      { value: "Tron", label: "TRON (TRC-20)" }
+      { value: "Tron", label: "TRON (TRC-20)" },
+      { value: "Ethereum", label: "Ethereum (ERC-20)" }
     ],
     ETH: [
       { value: "Ethereum", label: "Ethereum (ERC-20)" }
@@ -632,14 +633,6 @@
     if(!walletAddress || walletAddress.length < 12){
       toast("Please enter a valid destination wallet address.");
       $("walletAddress").focus();
-      return;
-    }
-    if(asset === "USDT" && network !== "Tron"){
-      toast("USDT withdrawals must use TRON (TRC-20).");
-      return;
-    }
-    if(asset === "ETH" && network !== "Ethereum"){
-      toast("ETH withdrawals must use Ethereum (ERC-20).");
       return;
     }
     if(asset === "TRX" && !["Tron","Ethereum"].includes(network)){
