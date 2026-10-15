@@ -401,8 +401,8 @@
       <div class="field">
         <label for="withdrawAmount">WITHDRAWAL AMOUNT</label>
         <div class="input-wrap">
-          <span class="input-symbol" id="amountSymbol">USDT</span>
-          <input id="withdrawAmount" class="nexora-input !pl-16" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="Enter crypto amount" autocomplete="off">
+          
+          <input id="withdrawAmount" class="nexora-input !pl-3.5" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="Enter crypto amount" autocomplete="off">
         </div>
       </div>
 
@@ -589,23 +589,25 @@
   const assetNetworks = {
     USDT: [
       { value: "Tron", label: "TRON (TRC-20)" },
-      { value: "Ethereum", label: "Ethereum (ERC-20)" }
+      { value: "Ethereum", label: "Ethereum (ERC-20)" },
+      { value: "BSC", label: "BNB Smart Chain (BEP-20)" }
     ],
     ETH: [
-      { value: "Ethereum", label: "Ethereum (ERC-20)" }
+      { value: "Ethereum", label: "Ethereum (ERC-20)" },
+      { value: "BSC", label: "BNB Smart Chain (BEP-20)" }
     ],
     BTC: [
-      { value: "Bitcoin", label: "Bitcoin network" }
+      { value: "Bitcoin", label: "Bitcoin" }
     ],
     USDC: [
-      { value: "BSC", label: "BNB Smart Chain (BEP-20)" }
+      { value: "BSC", label: "BNB Smart Chain (BEP-20)" },
+      { value: "Solana", label: "Solana" }
     ]
   };
 
   function updateAssetSelection(asset) {
     $("assetSelect").value = asset;
     selectedMethod = asset;
-    $("amountSymbol").textContent = asset;
     document.querySelectorAll(".crypto-card").forEach(card => {
       const active = card.dataset.asset === asset;
       card.classList.toggle("active", active);
