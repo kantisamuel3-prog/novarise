@@ -3,32 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NEXORA — Live Trading Admin</title>
+<title>NEXORA — Deposit Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-:root{--bg:#060b16;--panel:#0c1424;--panel2:#101c30;--line:#1c3450;--cyan:#00d5ff;--blue:#0866ff;--text:#eef5ff;--muted:#8fa3bd;--green:#00d49a;--red:#ff6376;--gold:#ffc857}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#10203b 0,#060b16 55%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh}
-.wrap{max-width:1250px;margin:auto;padding:28px 18px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
-.brand{font-size:22px;font-weight:800;letter-spacing:2px}.brand span{color:var(--cyan)}.sub{color:var(--muted);font-size:12px;margin-top:6px}
-button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--text);background:#17243a;cursor:pointer;font-weight:700}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-primary{background:linear-gradient(100deg,#00bde8,#075cff);border:0}.btn-approve{background:#063e35;border-color:#087a65;color:#65f4cf}.btn-reject{background:#421b29;border-color:#743043;color:#ff9aaa}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}.stat,.panel{background:linear-gradient(145deg,#0e192b,#09111f);border:1px solid var(--line);border-radius:16px;padding:18px}.stat label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.stat strong{display:block;font-size:25px;margin-top:9px}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select,.field{background:#080f1c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none}.toolbar input{flex:1;min-width:190px}
-.notice{padding:12px 14px;border-radius:10px;background:#1c1b12;border:1px solid #594b21;color:#ffe5a0;font-size:12px;line-height:1.6;margin-bottom:16px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}.deposit{background:linear-gradient(145deg,#101b2e,#0a1220);border:1px solid var(--line);border-radius:15px;padding:17px;min-width:0}.deposit h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}.meta{font-size:11px;color:var(--muted);margin-bottom:14px;overflow-wrap:anywhere}.amount{font-size:27px;font-weight:800;color:var(--cyan);margin:10px 0}.rowline{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #1a2b41;font-size:12px}.rowline span:first-child{color:var(--muted)}.rowline span:last-child{text-align:right;overflow-wrap:anywhere;max-width:65%}.pill{display:inline-block;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800;letter-spacing:.5px}.PENDING{background:#3b3016;color:#ffda76}.APPROVED{background:#083b31;color:#6af2c9}.REJECTED{background:#421b29;color:#ff9aaa}.proof{display:inline-block;color:var(--cyan);font-size:12px;margin:8px 0}.actions{display:flex;gap:8px;margin-top:14px}.actions button{flex:1}.empty,.loading{color:var(--muted);text-align:center;padding:48px 16px}.small{font-size:10px;color:var(--muted);line-height:1.5;margin-top:10px}.error{color:#ff9aaa;font-size:12px;margin:10px 0}.success{color:#6af2c9;font-size:12px;margin:10px 0}
-#loginBox{max-width:440px;margin:9vh auto}.login-fields{display:grid;gap:10px;margin-top:18px}.login-fields input{width:100%;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:13px}
-.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.modalbox{width:min(500px,100%);background:#0c1424;border:1px solid var(--line);border-radius:16px;padding:20px}.modalbox h2{margin-top:0}.modalbox textarea{width:100%;min-height:90px;margin:10px 0;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:12px}.modal-actions{display:flex;justify-content:flex-end;gap:9px}
-@media(max-width:600px){.stats{grid-template-columns:1fr}.wrap{padding:18px 12px}.actions{flex-direction:column}}
 
-.market-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;margin:18px 0 14px}.market-chip{display:flex;align-items:center;gap:11px;padding:13px 14px;border:1px solid var(--line);border-radius:13px;background:#0b1423}.coin-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;font-weight:800}.btc{background:#3b2c16;color:#ffbd4a}.eth{background:#182849;color:#8aa9ff}.usdt{background:#12382f;color:#4ce0b2}.market-chip small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}.market-chip strong{font-size:13px}.market-chip em{font-style:normal;font-size:11px;margin-left:auto}.up{color:#27d9a0!important}.market-live{display:flex;align-items:center;gap:7px;padding:0 13px;color:#8ff5d5;font-size:10px;font-weight:800;letter-spacing:.7px;border:1px solid #1c4b43;border-radius:12px;background:#0b211e;white-space:nowrap}.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#21d9a0;box-shadow:0 0 10px #21d9a0}.trading-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(240px,1fr);gap:14px;margin-bottom:20px}.chart-panel,.market-side{padding:18px}.chart-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.chart-kicker{font-size:10px;color:var(--muted);letter-spacing:1px;font-weight:700}.demo-tag{font-size:9px;color:#79e8ff;border:1px solid #17516b;border-radius:5px;padding:3px 5px;margin-left:6px} .chart-head h2{font-size:18px;margin:9px 0 0}.chart-head h2 span{font-size:11px;color:var(--muted);font-weight:500;margin-left:7px}.chart-price{text-align:right}.chart-price strong{display:block;font-size:20px}.chart-price em{font-size:11px;color:#27d9a0;font-style:normal}.chart-tools{display:flex;gap:7px;align-items:center;margin:18px 0 4px;flex-wrap:wrap}.chart-tools span{font-size:10px;color:var(--muted);padding:5px 8px;border-radius:6px}.chart-tools span.active{background:#0d3c54;color:#6be7ff}.chart-tools .chart-note{margin-left:auto;font-size:9px}.chart-wrap{height:185px}.chart-wrap svg{width:100%;height:160px;overflow:visible}.gridlines path{stroke:#1a2b40;stroke-width:1;stroke-dasharray:3 5;fill:none}.chart-area{fill:url(#chartFill)}.chart-line{fill:none;stroke:#00d5ff;stroke-width:2.5;vector-effect:non-scaling-stroke}.chart-point{fill:#00d5ff;stroke:#c9f9ff;stroke-width:2}.chart-labels{display:flex;justify-content:space-between;color:#61758f;font-size:9px}.section-title{font-size:13px;font-weight:700;margin-bottom:15px}.section-title .live-dot{float:right}.snapshot-row{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #1a2b41;font-size:11px}.snapshot-row span{color:var(--muted)}.mini-bars{height:40px;display:flex;align-items:flex-end;gap:5px;margin-top:18px}.mini-bars i{display:block;flex:1;border-radius:3px 3px 0 0;background:linear-gradient(0deg,#087cff,#00d5ff);opacity:.8}.deposit-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:26px 0 15px}.deposit-heading h2{font-size:18px;margin:0}.deposit-heading p{margin:5px 0 0}.secure-tag{font-size:9px;letter-spacing:.8px;color:#7fe9cb;border:1px solid #205347;background:#0b211e;border-radius:7px;padding:8px 10px;white-space:nowrap}
-@media(max-width:850px){.market-strip{grid-template-columns:1fr 1fr}.market-live{min-height:48px;justify-content:center}.trading-grid{grid-template-columns:1fr}}@media(max-width:500px){.market-strip{grid-template-columns:1fr}.market-live{padding:12px}.chart-head{align-items:flex-start;flex-direction:column}.chart-price{text-align:left}.chart-tools .chart-note{width:100%;margin-left:0}.deposit-heading{align-items:flex-start;flex-direction:column}}
+:root{--bg:#f3f6fb;--panel:#fff;--panel2:#f8fbff;--line:#dce6f4;--blue:#1456a8;--text:#10213c;--muted:#71829b;--green:#14864b;--red:#e44848;--gold:#a66a00}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
+body{min-height:100vh}
+.wrap{max-width:1250px;margin:auto;padding:26px 18px 48px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.brand{font-size:22px;font-weight:800;letter-spacing:2px;color:#123e78}.brand span{color:#1765bf}.sub{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.5}
+button,input,select,textarea{font:inherit}.btn{border:1px solid #d2e0f2;border-radius:10px;padding:11px 14px;color:#124681;background:#fff;cursor:pointer;font-weight:800;min-height:42px}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-primary{background:linear-gradient(100deg,#123c77,#1767c4);border:0;color:#fff}.btn-approve{background:#14864b;border-color:#14864b;color:white}.btn-reject{background:#e44848;border-color:#e44848;color:white}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}.stat,.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 5px 18px #15355b0b}.stat{text-align:center}.stat label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}.stat strong{display:block;font-size:24px;margin-top:8px;color:#124681}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.toolbar input,.toolbar select,.field{background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;outline:none;min-height:44px}.toolbar input{flex:1;min-width:180px}
+.notice{padding:12px 14px;border-radius:10px;background:#fff9e8;border:1px solid #f2dfad;color:#77520b;font-size:12px;line-height:1.6;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.deposit{background:#fff;border:1px solid #dce6f4;border-radius:15px;padding:16px;min-width:0;box-shadow:0 4px 15px #18385b08}
+.deposit h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}.meta{font-size:11px;color:var(--muted);margin-bottom:12px;overflow-wrap:anywhere}.amount{font-size:25px;font-weight:800;color:#124681;margin:10px 0;overflow-wrap:anywhere}
+.rowline{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #edf1f7;font-size:12px}.rowline span:first-child{color:var(--muted);flex:0 0 35%}.rowline span:last-child{text-align:right;overflow-wrap:anywhere;word-break:break-word;min-width:0}
+.pill{display:inline-block;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800;letter-spacing:.4px;white-space:nowrap}.PENDING{background:#fff2d4;color:#986000}.APPROVED{background:#dcf7e8;color:#147a42}.REJECTED{background:#ffe3e3;color:#bd3030}.proof{display:inline-block;color:#145fb3;font-size:12px;margin:8px 0;overflow-wrap:anywhere}.actions{display:flex;gap:8px;margin-top:14px}.actions button{flex:1;min-width:0}.empty,.loading{color:var(--muted);text-align:center;padding:30px 12px;grid-column:1/-1}.small{font-size:10px;color:var(--muted);line-height:1.5;margin-top:10px}
+.error{color:#c52d3b;font-size:12px;margin:10px 0}.success{color:#147a42;font-size:12px;margin:10px 0}
+#loginBox{max-width:440px;margin:9vh auto;background:#fff}.login-fields{display:grid;gap:10px;margin-top:18px}.login-fields input{width:100%;background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:13px;min-height:45px}
+.modal{position:fixed;inset:0;background:#10213c88;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.modalbox{width:min(500px,100%);background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 20px 60px #0002}.modalbox h2{margin-top:0}.modalbox textarea{width:100%;min-height:90px;margin:10px 0;background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px}.modal-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.deposit-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 14px}.deposit-heading h2{font-size:19px;margin:0;color:#10213c}.deposit-heading p{margin:5px 0 0;color:var(--muted);font-size:12px}.secure-tag{font-size:10px;letter-spacing:.6px;color:#147a62;border:1px solid #c8e9dc;background:#ecfbf5;border-radius:7px;padding:8px 10px;white-space:nowrap}
+.request-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}.request-column{min-width:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 5px 18px #15355b0b}.request-column h2{font-size:19px;margin:0 0 13px;color:#10213c}.history-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}.history-grid{display:grid;grid-template-columns:1fr;gap:14px}.history-column{min-width:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 5px 18px #15355b0b}.history-column h3{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 13px;font-size:14px;color:#123e78}.history-column .cards{grid-template-columns:1fr}.history-entry{display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;align-items:start;min-width:0}.history-number{font-weight:800;color:var(--blue);padding-top:20px}.history-entry .deposit{min-width:0}
+@media(max-width:760px){.wrap{padding:16px 12px 32px}.request-grid,.history-groups,.history-grid{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:13px 8px}.stat strong{font-size:20px}.stat label{font-size:9px}.cards{grid-template-columns:1fr}.deposit-heading{align-items:flex-start}.toolbar input{flex-basis:100%;min-width:0}.toolbar .btn{flex:1}.actions{gap:8px}.actions button{padding:11px 8px;font-size:12px}}
+@media(max-width:380px){.brand{font-size:19px}.deposit{padding:13px}.rowline{font-size:11px}.amount{font-size:22px}.stats{grid-template-columns:1fr}.stat{display:flex;justify-content:space-between;align-items:center;text-align:left}.stat strong{margin-top:0}}
 
-
-.proof-preview{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
-.proof-preview img{color:#64748b}
 </style>
 </head>
 <body>
@@ -45,25 +51,11 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
 </div>
 <div id="app" class="wrap" hidden>
   <header class="top">
-    <div><div class="brand">NEX<span>ORA</span> <span style="color:#8fa3bd;font-size:12px;letter-spacing:1px">DEPOSIT ADMIN</span></div><div class="sub">Live-style market overview and deposit review · Verify TXID on-chain before approving.</div></div>
+    <div><div class="brand">NEX<span>ORA</span> <span style="color:#8fa3bd;font-size:12px;letter-spacing:1px">DEPOSIT ADMIN</span></div><div class="sub">Deposit review · Verify TXID on-chain before approving.</div></div>
     <button id="logoutBtn" class="btn">Sign out</button>
   </header>
   <div class="notice"><b>Security reminder:</b> A screenshot is not proof of on-chain payment. Verify network, token, destination address, amount, confirmations, and TXID before approving. Configure Firestore Security Rules so only admin accounts can change deposit status and user balances; a hidden page or UID check in HTML alone is not sufficient security.</div>
 
-  <section class="market-strip" aria-label="Market ticker">
-    <div class="market-chip"><span class="coin-icon btc">₿</span><div><small>BTC / USDT</small><strong id="btcPrice">$67,482.18</strong></div><em class="up">+2.41%</em></div>
-    <div class="market-chip"><span class="coin-icon eth">◆</span><div><small>ETH / USDT</small><strong id="ethPrice">$3,524.70</strong></div><em class="up">+1.28%</em></div>
-    <div class="market-chip"><span class="coin-icon usdt">₮</span><div><small>USDT / USD</small><strong>$1.000</strong></div><em class="up">+0.01%</em></div>
-    <div class="market-live"><span class="live-dot"></span> MARKET VIEW</div>
-  </section>
-  <section class="trading-grid">
-    <div class="panel chart-panel">
-      <div class="chart-head"><div><div class="chart-kicker">MARKET OVERVIEW <span class="demo-tag">LIVE-STYLE UI</span></div><h2>Bitcoin <span>BTC / USDT</span></h2></div><div class="chart-price"><strong id="chartPrice">67,482.18</strong><em>+2.41% today</em></div></div>
-      <div class="chart-tools"><span class="active">1H</span><span>4H</span><span>1D</span><span>1W</span><span class="chart-note">Illustrative chart · not live exchange pricing</span></div>
-      <div class="chart-wrap"><svg viewBox="0 0 900 210" preserveAspectRatio="none" role="img" aria-label="Decorative upward market chart"><defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#00d5ff" stop-opacity=".27"/><stop offset="100%" stop-color="#00d5ff" stop-opacity="0"/></linearGradient></defs><g class="gridlines"><path d="M0 30H900 M0 70H900 M0 110H900 M0 150H900 M0 190H900"/><path d="M100 0V210 M250 0V210 M400 0V210 M550 0V210 M700 0V210 M850 0V210"/></g><path class="chart-area" d="M0 170 L35 155 L70 166 L105 130 L140 143 L175 115 L210 126 L245 91 L280 108 L315 99 L350 120 L385 83 L420 96 L455 68 L490 85 L525 58 L560 74 L595 42 L630 62 L665 51 L700 71 L735 36 L770 48 L805 25 L840 39 L875 18 L900 23 L900 210 L0 210Z"/><path class="chart-line" d="M0 170 L35 155 L70 166 L105 130 L140 143 L175 115 L210 126 L245 91 L280 108 L315 99 L350 120 L385 83 L420 96 L455 68 L490 85 L525 58 L560 74 L595 42 L630 62 L665 51 L700 71 L735 36 L770 48 L805 25 L840 39 L875 18 L900 23"/><circle cx="900" cy="23" r="4" class="chart-point"/></svg><div class="chart-labels"><span>09:00</span><span>11:00</span><span>13:00</span><span>15:00</span><span>17:00</span><span>19:00</span></div></div>
-    </div>
-    <div class="panel market-side"><div class="section-title">Market snapshot <span class="live-dot"></span></div><div class="snapshot-row"><span>24h High</span><b>$68,120.00</b></div><div class="snapshot-row"><span>24h Low</span><b>$65,908.30</b></div><div class="snapshot-row"><span>24h Volume</span><b>$1.84B</b></div><div class="snapshot-row"><span>Market trend</span><b class="up">↗ Bullish</b></div><div class="mini-bars"><i style="height:32%"></i><i style="height:48%"></i><i style="height:39%"></i><i style="height:62%"></i><i style="height:55%"></i><i style="height:74%"></i><i style="height:66%"></i><i style="height:90%"></i><i style="height:78%"></i><i style="height:100%"></i><i style="height:83%"></i><i style="height:94%"></i></div><p class="small">Sample market figures for visual design only. Connect a trusted market-data API for real-time prices.</p></div>
-  </section>
   <div class="deposit-heading"><div><h2>Deposit approvals</h2><p class="sub">Review incoming requests and manage user credits.</p></div><span class="secure-tag">● ADMIN CONTROL</span></div>
 
   <section class="stats">
@@ -73,11 +65,37 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
   </section>
   <div class="toolbar">
     <input id="searchBox" placeholder="Search TXID, UID, network, reference…">
-    <select id="statusFilter"><option value="PENDING">Pending first</option><option value="ALL">All statuses</option><option value="APPROVED">Approved</option><option value="REJECTED">Rejected</option></select>
     <button id="refreshBtn" class="btn">Refresh</button>
+    <button id="historyToggle" class="btn btn-primary" type="button">↻ View History →</button>
   </div>
   <div id="message"></div>
-  <div id="deposits" class="cards"><div class="loading">Loading deposit requests…</div></div>
+  <section id="pendingSection">
+    <div class="request-grid">
+      <div class="request-column">
+        <h2>Deposit Requests</h2>
+        <div id="pendingDeposits" class="cards"><div class="loading">Loading deposit requests…</div></div>
+      </div>
+      <div class="request-column">
+        <h2>Withdrawal Requests</h2>
+        <div id="pendingWithdrawals" class="cards"><div class="empty">Withdrawal request layout is ready. Connect your existing withdrawal collection and actions to show live requests here.</div></div>
+      </div>
+    </div>
+  </section>
+  <section id="historySection" hidden>
+    <div class="deposit-heading"><div><h2>Request History</h2><p class="sub">Approved and rejected deposit and withdrawal requests.</p></div><button id="backToPending" class="btn">← Back to Pending</button></div>
+    <div class="history-groups">
+      <div class="history-column">
+        <h3>Deposit History <span class="pill" id="depositHistoryCount">0 requests</span></h3>
+        <p class="sub">Approved and rejected deposits in one chronological list.</p>
+        <div id="depositHistoryList" class="cards"></div>
+      </div>
+      <div class="history-column">
+        <h3>Withdrawal History <span class="pill" id="withdrawHistoryCount">0 requests</span></h3>
+        <p class="sub">Approved and rejected withdrawals in one chronological list.</p>
+        <div id="withdrawalHistoryList" class="cards"><div class="empty">Withdrawal history data is not connected yet.</div></div>
+      </div>
+    </div>
+  </section>
 </div>
 <div id="rejectModal" class="modal"><div class="modalbox"><h2>Reject deposit</h2><p class="sub">Add a reason for the user and audit trail.</p><textarea id="rejectReason" maxlength="500" placeholder="Reason for rejection (required)"></textarea><div class="modal-actions"><button id="cancelReject" class="btn">Cancel</button><button id="confirmReject" class="btn btn-reject">Confirm rejection</button></div></div></div>
 <script>
@@ -105,39 +123,40 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
     if (!v) return "—";
     try { const d = typeof v.toDate === "function" ? v.toDate() : new Date(v); return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(); } catch (_) { return "—"; }
   }
-  function isAdmin(user) { return !!user && ADMIN_UIDS.includes(user.uid) && !ADMIN_UIDS.includes("o8czMuC6PnU8B4W8pS26s7iiG1l2"); }
+  function isAdmin(user) { return !!user && ADMIN_UIDS.includes(user.uid); }
   function showMessage(text, type="error") { $("message").innerHTML = `<div class="${type}">${safe(text)}</div>`; }
   function updateStats() {
     $("pendingCount").textContent = deposits.filter(d => d.status === "PENDING").length;
     $("approvedCount").textContent = deposits.filter(d => d.status === "APPROVED").length;
     $("rejectedCount").textContent = deposits.filter(d => d.status === "REJECTED").length;
   }
+  function depositCard(d) {
+    return `<article class="deposit">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h3>Deposit request</h3><span class="pill ${safe(d.status)}">${safe(d.status || "UNKNOWN")}</span></div>
+      <div class="meta">Ref: ${safe(d.id)} · ${safe(dateText(d.createdAt))}</div>
+      <div class="amount">${safe(d.token || "USDT")} ${safe(money(d.amount))}</div>
+      <div class="rowline"><span>User UID</span><span>${safe(d.uid || "—")}</span></div>
+      <div class="rowline"><span>Network</span><span>${safe(d.network || "—")}</span></div>
+      <div class="rowline"><span>TXID</span><span>${safe(d.txid || "—")}</span></div>
+      <div class="rowline"><span>Receiving address</span><span>${safe(d.receivingAddress || "—")}</span></div>
+      ${d.proofUrl ? `<a class="proof" href="${safe(d.proofUrl)}" target="_blank" rel="noopener noreferrer">Open payment proof ↗</a>` : '<div class="small">No image proof attached. Verify the TXID directly on-chain.</div>'}
+      ${d.reviewNote ? `<div class="rowline"><span>Review note</span><span>${safe(d.reviewNote)}</span></div>` : ""}
+      ${d.status === "PENDING" ? `<div class="actions"><button class="btn btn-approve" data-action="approve" data-id="${safe(d.id)}">Approve & credit</button><button class="btn btn-reject" data-action="reject" data-id="${safe(d.id)}">Reject</button></div>` : ""}
+    </article>`;
+  }
   function render() {
     updateStats();
-    const filter = $("statusFilter").value, q = $("searchBox").value.trim().toLowerCase();
-    let list = deposits.filter(d => (filter === "ALL" || d.status === filter) &&
-      [d.id,d.uid,d.txid,d.network,d.status,d.token].some(v => String(v || "").toLowerCase().includes(q)));
-    list.sort((a,b) => {
-      if (filter === "PENDING" && a.status !== b.status) return a.status === "PENDING" ? -1 : 1;
-      return (b.createdAtMs || 0) - (a.createdAtMs || 0);
-    });
-    if (!list.length) { $("deposits").innerHTML = '<div class="empty">No matching deposit requests.</div>'; return; }
-    $("deposits").innerHTML = list.map(d => `
-      <article class="deposit">
-        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h3>Deposit request</h3><span class="pill ${safe(d.status)}">${safe(d.status || "UNKNOWN")}</span></div>
-        <div class="meta">Ref: ${safe(d.id)} · ${safe(dateText(d.createdAt))}</div>
-        <div class="amount">${safe(d.token || "USDT")} ${safe(money(d.amount))}</div>
-        <div class="rowline"><span>User UID</span><span>${safe(d.uid || "—")}</span></div>
-        <div class="rowline"><span>Network</span><span>${safe(d.network || "—")}</span></div>
-        <div class="rowline"><span>TXID</span><span>${safe(d.txid || "—")}</span></div>
-        <div class="rowline"><span>Receiving address</span><span>${safe(d.receivingAddress || "—")}</span></div>
-        ${d.proofUrl ? `<div class="proof-preview"><div class="rowline"><span>Payment proof</span><span>Image uploaded</span></div><a class="proof" href="${safe(d.proofUrl)}" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none"><img src="${safe(d.proofUrl)}" alt="Payment proof image" loading="lazy" style="display:block;width:100%;max-width:420px;max-height:360px;object-fit:contain;margin:10px 0;border:1px solid #dbe5f1;border-radius:10px;background:#f8fafc"><span>Open full-size image ↗</span></a></div>` : '<div class="small">No payment proof image found for this submission. Check the deposit upload and Firebase Storage permissions.</div>'}
-        ${d.reviewNote ? `<div class="rowline"><span>Review note</span><span>${safe(d.reviewNote)}</span></div>` : ""}
-        ${d.status === "PENDING" ? `<div class="actions"><button class="btn btn-approve" data-action="approve" data-id="${safe(d.id)}">Approve & credit</button><button class="btn btn-reject" data-action="reject" data-id="${safe(d.id)}">Reject</button></div>` : ""}
-      </article>`).join("");
+    const q = $("searchBox").value.trim().toLowerCase();
+    const matches = d => [d.id,d.uid,d.txid,d.network,d.status,d.token,d.receivingAddress].some(v => String(v || "").toLowerCase().includes(q));
+    const sortNewest = (a,b) => (b.createdAtMs || 0) - (a.createdAtMs || 0);
+    const pending = deposits.filter(d => d.status === "PENDING" && matches(d)).sort(sortNewest);
+    const history = deposits.filter(d => (d.status === "APPROVED" || d.status === "REJECTED") && matches(d)).sort(sortNewest);
+    $("pendingDeposits").innerHTML = pending.length ? pending.map(depositCard).join("") : '<div class="empty">No pending deposit requests.</div>';
+    $("depositHistoryCount").textContent = `${history.length} requests`;
+    $("depositHistoryList").innerHTML = history.length ? history.map((d,i) => `<div class="history-entry"><div class="history-number">${i+1}.</div>${depositCard(d)}</div>`).join("") : '<div class="empty">No reviewed deposit requests yet.</div>';
   }
   async function loadDeposits() {
-    $("deposits").innerHTML = '<div class="loading">Loading deposit requests…</div>';
+    $("pendingDeposits").innerHTML = '<div class="loading">Loading deposit requests…</div>';
     try {
       const snap = await db.collection("CryptoDeposits").orderBy("createdAt","desc").limit(300).get();
       deposits = snap.docs.map(doc => {
@@ -146,7 +165,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
       });
       render(); showMessage("Deposit list updated.", "success");
     } catch (e) {
-      console.error(e); $("deposits").innerHTML = '<div class="empty">Unable to load requests. Check Firestore rules and browser console.</div>';
+      console.error(e); $("pendingDeposits").innerHTML = '<div class="empty">Unable to load requests. Check Firestore rules and browser console.</div>';
       showMessage(e.message || "Failed to load deposits.");
     }
   }
@@ -211,8 +230,15 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);bord
   $("logoutBtn").addEventListener("click", () => auth.signOut());
   $("refreshBtn").addEventListener("click", loadDeposits);
   $("searchBox").addEventListener("input", render);
-  $("statusFilter").addEventListener("change", render);
-  $("deposits").addEventListener("click", e => {
+  $("historyToggle").addEventListener("click", () => {
+    $("pendingSection").hidden = true; $("historySection").hidden = false;
+    $("historyToggle").hidden = true;
+  });
+  $("backToPending").addEventListener("click", () => {
+    $("historySection").hidden = true; $("pendingSection").hidden = false;
+    $("historyToggle").hidden = false;
+  });
+  document.addEventListener("click", e => {
     const btn = e.target.closest("button[data-action]"); if (!btn) return;
     const id = btn.dataset.id;
     if (btn.dataset.action === "approve") approveDeposit(id);
