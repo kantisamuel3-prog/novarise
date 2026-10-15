@@ -435,7 +435,7 @@
           status: "PENDING",
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        status.textContent = "Deposit request submitted successfully. Reference: " + ref.id + ". Status: PENDING — waite for verification.";
+        status.textContent = "Deposit request submitted successfully. Reference: " + ref.id + ". Status: PENDING — wait for verification.";
         $("depositForm").reset();
       } catch (error) {
         console.error("Deposit submission failed", error);
