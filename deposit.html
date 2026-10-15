@@ -13,7 +13,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <script>
     tailwind.config = {
       theme: { extend: {
@@ -242,7 +241,6 @@
       apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
       authDomain: "investpro-2dafb.firebaseapp.com",
       projectId: "investpro-2dafb",
-      storageBucket: "investpro-2dafb.firebasestorage.app",
       messagingSenderId: "135092039764",
       appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
       measurementId: "G-0L77SFTC4F"
@@ -250,12 +248,10 @@
 
     let selectedNetwork = "TRC20";
     let db = null;
-    let storage = null;
     let currentUid = null;
     try {
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
-      storage = firebase.storage();
     } catch (e) {
       console.error("Firebase initialization failed", e);
     }
@@ -415,13 +411,27 @@
           .get();
         if (!duplicate.empty) throw new Error("This TXID has already been submitted. Do not submit it repeatedly.");
 
+        // Upload the proof image to Cloudinary using the unsigned preset configured in the dashboard.
+        // Never place a Cloudinary API secret in browser-side code.
+        const CLOUDINARY_CLOUD_NAME = "uko4gise";
+        const CLOUDINARY_UPLOAD_PRESET = "nexora_deposit_proof";
         let proofUrl = "";
         let proofPath = "";
         if (file) {
-          const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-          proofPath = "deposit-proofs/" + currentUid + "/" + Date.now() + "-" + safeName;
-          const upload = await storage.ref(proofPath).put(file);
-          proofUrl = await upload.ref.getDownloadURL();
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+          const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+            method: "POST",
+            body: formData
+          });
+          const uploadResult = await uploadResponse.json().catch(() => ({}));
+          if (!uploadResponse.ok || !uploadResult.secure_url) {
+            console.error("Cloudinary upload failed", uploadResult);
+            throw new Error(uploadResult.error?.message || "Hindi na-upload ang proof image. Pakisubukan ulit.");
+          }
+          proofUrl = uploadResult.secure_url;
+          proofPath = uploadResult.public_id || "";
         }
 
         const ref = await db.collection("CryptoDeposits").add({
