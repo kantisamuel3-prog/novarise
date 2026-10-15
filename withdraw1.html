@@ -614,7 +614,7 @@
       if(snap.exists()){
         const data = snap.data();
         const bal = Number(data.balance || data.wallet || 0);
-        $("userBalance").textContent = `₱${bal.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        $("userBalance").textContent = `$${bal.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
       }
     } catch(e) {
       console.error("Error loading user data:", e);
