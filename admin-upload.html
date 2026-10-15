@@ -3,39 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NEXORA — Deposit Admin</title>
+<title>NEXORA — Live Trading Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
+:root{--bg:#060b16;--panel:#0c1424;--panel2:#101c30;--line:#1c3450;--cyan:#00d5ff;--blue:#0866ff;--text:#eef5ff;--muted:#8fa3bd;--green:#00d49a;--red:#ff6376;--gold:#ffc857}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#10203b 0,#060b16 55%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh}
+.wrap{max-width:1250px;margin:auto;padding:28px 18px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.brand{font-size:22px;font-weight:800;letter-spacing:2px}.brand span{color:var(--cyan)}.sub{color:var(--muted);font-size:12px;margin-top:6px}
+button,input,select,textarea{font:inherit}.btn{border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--text);background:#17243a;cursor:pointer;font-weight:700}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-primary{background:linear-gradient(100deg,#00bde8,#075cff);border:0}.btn-approve{background:#063e35;border-color:#087a65;color:#65f4cf}.btn-reject{background:#421b29;border-color:#743043;color:#ff9aaa}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}.stat,.panel{background:linear-gradient(145deg,#0e192b,#09111f);border:1px solid var(--line);border-radius:16px;padding:18px}.stat label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.stat strong{display:block;font-size:25px;margin-top:9px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select,.field{background:#080f1c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none}.toolbar input{flex:1;min-width:190px}
+.notice{padding:12px 14px;border-radius:10px;background:#1c1b12;border:1px solid #594b21;color:#ffe5a0;font-size:12px;line-height:1.6;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}.deposit{background:linear-gradient(145deg,#101b2e,#0a1220);border:1px solid var(--line);border-radius:15px;padding:17px;min-width:0}.deposit h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}.meta{font-size:11px;color:var(--muted);margin-bottom:14px;overflow-wrap:anywhere}.amount{font-size:27px;font-weight:800;color:var(--cyan);margin:10px 0}.rowline{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #1a2b41;font-size:12px}.rowline span:first-child{color:var(--muted)}.rowline span:last-child{text-align:right;overflow-wrap:anywhere;max-width:65%}.pill{display:inline-block;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800;letter-spacing:.5px}.PENDING{background:#3b3016;color:#ffda76}.APPROVED{background:#083b31;color:#6af2c9}.REJECTED{background:#421b29;color:#ff9aaa}.proof{display:inline-block;color:var(--cyan);font-size:12px;margin:8px 0}.actions{display:flex;gap:8px;margin-top:14px}.actions button{flex:1}.empty,.loading{color:var(--muted);text-align:center;padding:48px 16px}.small{font-size:10px;color:var(--muted);line-height:1.5;margin-top:10px}.error{color:#ff9aaa;font-size:12px;margin:10px 0}.success{color:#6af2c9;font-size:12px;margin:10px 0}
+#loginBox{max-width:440px;margin:9vh auto}.login-fields{display:grid;gap:10px;margin-top:18px}.login-fields input{width:100%;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:13px}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.modalbox{width:min(500px,100%);background:#0c1424;border:1px solid var(--line);border-radius:16px;padding:20px}.modalbox h2{margin-top:0}.modalbox textarea{width:100%;min-height:90px;margin:10px 0;background:#080f1c;color:white;border:1px solid var(--line);border-radius:10px;padding:12px}.modal-actions{display:flex;justify-content:flex-end;gap:9px}
+@media(max-width:600px){.stats{grid-template-columns:1fr}.wrap{padding:18px 12px}.actions{flex-direction:column}}
 
-:root{--bg:#f3f6fb;--panel:#fff;--panel2:#f8fbff;--line:#dce6f4;--blue:#1456a8;--text:#10213c;--muted:#71829b;--green:#14864b;--red:#e44848;--gold:#a66a00}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
-body{min-height:100vh}
-.wrap{max-width:1250px;margin:auto;padding:26px 18px 48px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:22px}
-.brand{font-size:22px;font-weight:800;letter-spacing:2px;color:#123e78}.brand span{color:#1765bf}.sub{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.5}
-button,input,select,textarea{font:inherit}.btn{border:1px solid #d2e0f2;border-radius:10px;padding:11px 14px;color:#124681;background:#fff;cursor:pointer;font-weight:800;min-height:42px}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-primary{background:linear-gradient(100deg,#123c77,#1767c4);border:0;color:#fff}.btn-approve{background:#14864b;border-color:#14864b;color:white}.btn-reject{background:#e44848;border-color:#e44848;color:white}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}.stat,.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 5px 18px #15355b0b}.stat{text-align:center}.stat label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}.stat strong{display:block;font-size:24px;margin-top:8px;color:#124681}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.toolbar input,.toolbar select,.field{background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;outline:none;min-height:44px}.toolbar input{flex:1;min-width:180px}
-.notice{padding:12px 14px;border-radius:10px;background:#fff9e8;border:1px solid #f2dfad;color:#77520b;font-size:12px;line-height:1.6;margin-bottom:16px}
-.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.deposit{background:#fff;border:1px solid #dce6f4;border-radius:15px;padding:16px;min-width:0;box-shadow:0 4px 15px #18385b08}
-.deposit h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}.meta{font-size:11px;color:var(--muted);margin-bottom:12px;overflow-wrap:anywhere}.amount{font-size:25px;font-weight:800;color:#124681;margin:10px 0;overflow-wrap:anywhere}
-.rowline{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #edf1f7;font-size:12px}.rowline span:first-child{color:var(--muted);flex:0 0 35%}.rowline span:last-child{text-align:right;overflow-wrap:anywhere;word-break:break-word;min-width:0}
-.pill{display:inline-block;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800;letter-spacing:.4px;white-space:nowrap}.PENDING{background:#fff2d4;color:#986000}.APPROVED{background:#dcf7e8;color:#147a42}.REJECTED{background:#ffe3e3;color:#bd3030}.proof{display:inline-block;color:#145fb3;font-size:12px;margin:8px 0;overflow-wrap:anywhere}.actions{display:flex;gap:8px;margin-top:14px}.actions button{flex:1;min-width:0}.empty,.loading{color:var(--muted);text-align:center;padding:30px 12px;grid-column:1/-1}.small{font-size:10px;color:var(--muted);line-height:1.5;margin-top:10px}
-.error{color:#c52d3b;font-size:12px;margin:10px 0}.success{color:#147a42;font-size:12px;margin:10px 0}
-#loginBox{max-width:440px;margin:9vh auto;background:#fff}.login-fields{display:grid;gap:10px;margin-top:18px}.login-fields input{width:100%;background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:13px;min-height:45px}
-.modal{position:fixed;inset:0;background:#10213c88;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.modalbox{width:min(500px,100%);background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 20px 60px #0002}.modalbox h2{margin-top:0}.modalbox textarea{width:100%;min-height:90px;margin:10px 0;background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px}.modal-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
-.deposit-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 14px}.deposit-heading h2{font-size:19px;margin:0;color:#10213c}.deposit-heading p{margin:5px 0 0;color:var(--muted);font-size:12px}.secure-tag{font-size:10px;letter-spacing:.6px;color:#147a62;border:1px solid #c8e9dc;background:#ecfbf5;border-radius:7px;padding:8px 10px;white-space:nowrap}
-.request-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}.request-column{min-width:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 5px 18px #15355b0b}.request-column h2{font-size:19px;margin:0 0 13px;color:#10213c}.history-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}.history-grid{display:grid;grid-template-columns:1fr;gap:14px}.history-column{min-width:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 5px 18px #15355b0b}.history-column h3{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 13px;font-size:14px;color:#123e78}.history-column .cards{grid-template-columns:1fr}.history-entry{display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;align-items:start;min-width:0}.history-number{font-weight:800;color:var(--blue);padding-top:20px}.history-entry .deposit{min-width:0}
-@media(max-width:760px){.wrap{padding:16px 12px 32px}.request-grid,.history-groups,.history-grid{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:13px 8px}.stat strong{font-size:20px}.stat label{font-size:9px}.cards{grid-template-columns:1fr}.deposit-heading{align-items:flex-start}.toolbar input{flex-basis:100%;min-width:0}.toolbar .btn{flex:1}.actions{gap:8px}.actions button{padding:11px 8px;font-size:12px}}
-@media(max-width:380px){.brand{font-size:19px}.deposit{padding:13px}.rowline{font-size:11px}.amount{font-size:22px}.stats{grid-template-columns:1fr}.stat{display:flex;justify-content:space-between;align-items:center;text-align:left}.stat strong{margin-top:0}}
+.deposit-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:26px 0 15px}.deposit-heading h2{font-size:18px;margin:0}.deposit-heading p{margin:5px 0 0}.secure-tag{font-size:9px;letter-spacing:.8px;color:#7fe9cb;border:1px solid #205347;background:#0b211e;border-radius:7px;padding:8px 10px;white-space:nowrap}
+.deposit-heading{align-items:flex-start;flex-direction:column}}
 
-</style>
+.history-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.history-column{min-width:0;background:linear-gradient(145deg,#0e192b,#09111f);border:1px solid var(--line);border-radius:16px;padding:16px}.history-column h3{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 14px;font-size:14px}.history-column .cards{grid-template-columns:1fr}.deposit-heading p{color:var(--muted);font-size:12px}@media(max-width:760px){.history-grid{grid-template-columns:1fr}}</style>
 </head>
 <body>
 <div id="loginBox" class="panel">
@@ -70,30 +61,14 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #d2e0f2;border-r
   </div>
   <div id="message"></div>
   <section id="pendingSection">
-    <div class="request-grid">
-      <div class="request-column">
-        <h2>Deposit Requests</h2>
-        <div id="pendingDeposits" class="cards"><div class="loading">Loading deposit requests…</div></div>
-      </div>
-      <div class="request-column">
-        <h2>Withdrawal Requests</h2>
-        <div id="pendingWithdrawals" class="cards"><div class="empty">Withdrawal request layout is ready. Connect your existing withdrawal collection and actions to show live requests here.</div></div>
-      </div>
-    </div>
+    <div class="deposit-heading"><div><h2>Pending Deposit Requests</h2><p class="sub">Review new deposits before crediting accounts.</p></div></div>
+    <div id="pendingDeposits" class="cards"><div class="loading">Loading deposit requests…</div></div>
   </section>
   <section id="historySection" hidden>
-    <div class="deposit-heading"><div><h2>Request History</h2><p class="sub">Approved and rejected deposit and withdrawal requests.</p></div><button id="backToPending" class="btn">← Back to Pending</button></div>
-    <div class="history-groups">
-      <div class="history-column">
-        <h3>Deposit History <span class="pill" id="depositHistoryCount">0 requests</span></h3>
-        <p class="sub">Approved and rejected deposits in one chronological list.</p>
-        <div id="depositHistoryList" class="cards"></div>
-      </div>
-      <div class="history-column">
-        <h3>Withdrawal History <span class="pill" id="withdrawHistoryCount">0 requests</span></h3>
-        <p class="sub">Approved and rejected withdrawals in one chronological list.</p>
-        <div id="withdrawalHistoryList" class="cards"><div class="empty">Withdrawal history data is not connected yet.</div></div>
-      </div>
+    <div class="deposit-heading"><div><h2>Deposit History</h2><p class="sub">Approved and rejected requests are shown side by side.</p></div><button id="backToPending" class="btn">← Back to Pending</button></div>
+    <div class="history-grid">
+      <div class="history-column"><h3>Approved Deposits <span class="pill APPROVED">APPROVED</span></h3><div id="approvedDeposits" class="cards"></div></div>
+      <div class="history-column"><h3>Rejected Deposits <span class="pill REJECTED">REJECTED</span></h3><div id="rejectedDeposits" class="cards"></div></div>
     </div>
   </section>
 </div>
@@ -139,7 +114,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #d2e0f2;border-r
       <div class="rowline"><span>Network</span><span>${safe(d.network || "—")}</span></div>
       <div class="rowline"><span>TXID</span><span>${safe(d.txid || "—")}</span></div>
       <div class="rowline"><span>Receiving address</span><span>${safe(d.receivingAddress || "—")}</span></div>
-      ${d.proofUrl ? `<div style="margin:12px 0"><a class="proof" href="${safe(d.proofUrl)}" target="_blank" rel="noopener noreferrer">Open payment proof ↗</a><a href="${safe(d.proofUrl)}" target="_blank" rel="noopener noreferrer" aria-label="View payment proof"><img src="${safe(d.proofUrl)}" alt="Payment proof image" loading="lazy" style="display:block;width:100%;max-width:420px;max-height:360px;object-fit:contain;background:#f3f6fa;border:1px solid #d8e1ed;border-radius:10px;margin-top:10px"></a></div>` : '<div class="small">No image proof attached. Verify the TXID directly on-chain.</div>'}
+      ${d.proofUrl ? `<a class="proof" href="${safe(d.proofUrl)}" target="_blank" rel="noopener noreferrer">Open payment proof ↗</a>` : '<div class="small">No image proof attached. Verify the TXID directly on-chain.</div>'}
       ${d.reviewNote ? `<div class="rowline"><span>Review note</span><span>${safe(d.reviewNote)}</span></div>` : ""}
       ${d.status === "PENDING" ? `<div class="actions"><button class="btn btn-approve" data-action="approve" data-id="${safe(d.id)}">Approve & credit</button><button class="btn btn-reject" data-action="reject" data-id="${safe(d.id)}">Reject</button></div>` : ""}
     </article>`;
@@ -150,10 +125,11 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #d2e0f2;border-r
     const matches = d => [d.id,d.uid,d.txid,d.network,d.status,d.token,d.receivingAddress].some(v => String(v || "").toLowerCase().includes(q));
     const sortNewest = (a,b) => (b.createdAtMs || 0) - (a.createdAtMs || 0);
     const pending = deposits.filter(d => d.status === "PENDING" && matches(d)).sort(sortNewest);
-    const history = deposits.filter(d => (d.status === "APPROVED" || d.status === "REJECTED") && matches(d)).sort(sortNewest);
+    const approved = deposits.filter(d => d.status === "APPROVED" && matches(d)).sort(sortNewest);
+    const rejected = deposits.filter(d => d.status === "REJECTED" && matches(d)).sort(sortNewest);
     $("pendingDeposits").innerHTML = pending.length ? pending.map(depositCard).join("") : '<div class="empty">No pending deposit requests.</div>';
-    $("depositHistoryCount").textContent = `${history.length} requests`;
-    $("depositHistoryList").innerHTML = history.length ? history.map((d,i) => `<div class="history-entry"><div class="history-number">${i+1}.</div>${depositCard(d)}</div>`).join("") : '<div class="empty">No reviewed deposit requests yet.</div>';
+    $("approvedDeposits").innerHTML = approved.length ? approved.map(depositCard).join("") : '<div class="empty">No approved deposits yet.</div>';
+    $("rejectedDeposits").innerHTML = rejected.length ? rejected.map(depositCard).join("") : '<div class="empty">No rejected deposits yet.</div>';
   }
   async function loadDeposits() {
     $("pendingDeposits").innerHTML = '<div class="loading">Loading deposit requests…</div>';
@@ -180,25 +156,77 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #d2e0f2;border-r
     try {
       const depositRef = db.collection("CryptoDeposits").doc(id);
       const userRef = db.collection("Users").doc(d.uid);
+      let commissionPaid = 0;
+      let commissionRate = 0;
       await db.runTransaction(async tx => {
-        const [depSnap,userSnap] = await Promise.all([tx.get(depositRef),tx.get(userRef)]);
+        const depSnap = await tx.get(depositRef);
+        const userSnap = await tx.get(userRef);
         if (!depSnap.exists) throw new Error("Deposit request no longer exists.");
         if (!userSnap.exists) throw new Error("User record not found. No balance was credited.");
         const latest = depSnap.data();
         if (String(latest.status || "PENDING").toUpperCase() !== "PENDING") throw new Error("This request has already been reviewed.");
-        const currentBalance = Number(userSnap.data().usdBalance || 0);
+        const member = userSnap.data();
+        const currentBalance = Number(member.usdBalance || 0);
         if (!Number.isFinite(currentBalance) || currentBalance < 0) throw new Error("User USD balance is invalid.");
-        tx.update(userRef, { usdBalance: currentBalance + amount, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+
+        // Referral commission is calculated from this approved deposit only.
+        // $350–$499.99 = 5%; $500 and above = 10%.
+        const inviterId = member.referredBy || member.sponsorId || null;
+        let inviterRef = null, inviterSnap = null, inviterData = null;
+        if (inviterId && inviterId !== d.uid) {
+          inviterRef = db.collection("Users").doc(String(inviterId));
+          inviterSnap = await tx.get(inviterRef);
+          if (inviterSnap.exists) inviterData = inviterSnap.data();
+        }
+        if (inviterData && amount >= 350) {
+          commissionRate = amount >= 500 ? 0.10 : 0.05;
+          commissionPaid = Math.round(amount * commissionRate * 100) / 100;
+        }
+
+        // All reads are completed before transaction writes.
+        tx.update(userRef, {
+          usdBalance: currentBalance + amount,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        if (inviterRef && inviterData && commissionPaid > 0) {
+          const inviterBalance = Number(inviterData.balance || 0);
+          const oldCommission = Number(inviterData.totalCommission || 0);
+          if (!Number.isFinite(inviterBalance) || inviterBalance < 0 || !Number.isFinite(oldCommission) || oldCommission < 0) {
+            throw new Error("Inviter balance/commission data is invalid. Nothing was approved.");
+          }
+          const inviterTransactions = Array.isArray(inviterData.transactions) ? inviterData.transactions : [];
+          const commissionTx = {
+            type: "Commission Received",
+            status: "COMPLETED",
+            amount: commissionPaid,
+            referredUserId: d.uid,
+            sourceDepositId: id,
+            depositAmount: amount,
+            commissionRate: commissionRate,
+            createdAt: new Date().toISOString()
+          };
+          tx.update(inviterRef, {
+            balance: inviterBalance + commissionPaid,
+            totalCommission: oldCommission + commissionPaid,
+            transactions: inviterTransactions.concat([commissionTx]),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
         tx.update(depositRef, {
           status: "APPROVED",
           reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
           reviewedBy: auth.currentUser.uid,
           creditedField: "usdBalance",
           creditedAmount: amount,
+          inviterCommission: commissionPaid,
+          inviterCommissionRate: commissionRate,
+          inviterCommissionPaidTo: inviterId || null,
           reviewNote: "Approved by admin"
         });
       });
-      showMessage("Approved. USD Trading balance credited once.", "success");
+      showMessage(commissionPaid > 0
+        ? `Approved. USD balance credited; inviter commission of $${money(commissionPaid)} (${commissionRate * 100}%) was added.`
+        : "Approved. USD Trading balance credited once. No eligible inviter commission was paid (no inviter found or amount below $350).", "success");
       await loadDeposits();
     } catch(e) { console.error(e); showMessage(e.message || "Approval failed."); }
     finally { busy = false; }
