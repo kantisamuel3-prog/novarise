@@ -398,7 +398,7 @@
       if (!currentUid || !db) { status.textContent = "Hindi pa handa ang account connection. I-refresh o mag-login muli."; return; }
       if (!wallet().address) { status.textContent = "Hindi pa naka-configure ang receiving wallet para sa network na ito."; return; }
       if (!Number.isFinite(amount) || amount <= 0) { status.textContent = "Maglagay ng valid na USDT amount."; return; }
-      if (txid.length < 20) { status.textContent = "Pakisuri ang transaction hash/TXID."; return; }
+      if (txid.length < 20) { status.textContent = "Please check the transaction hash/TXID."; return; }
       if (file && !["image/png","image/jpeg","image/webp"].includes(file.type)) { status.textContent = "PNG, JPG, o WEBP image lang ang puwede."; return; }
       if (file && file.size > 5 * 1024 * 1024) { status.textContent = "Maximum file size ay 5 MB."; return; }
 
