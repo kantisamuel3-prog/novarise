@@ -344,15 +344,45 @@
     document.addEventListener("keydown", event => { if (event.key === "Escape") closeWalletHelp(); });
 
     async function loadCurrentUser() {
-      const localUid = localStorage.getItem("nexora_user_uid");
-      if (!localUid) { window.location.href = "login.html"; return; }
-      if (!db) { $("statusMsg").textContent = "Unable to connect to Firebase. Please try again."; return; }
+      if (!db || !firebase.auth) {
+        $("statusMsg").textContent = "Unable to connect to Firebase. Please try again.";
+        return;
+      }
+
+      // Firestore rules use request.auth.uid, so localStorage alone is not enough.
       try {
-        const userDoc = await db.collection("Users").doc(localUid).get();
-        if (!userDoc.exists) { window.location.href = "login.html"; return; }
-        currentUid = localUid;
+        const authUser = await new Promise((resolve, reject) => {
+          const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+            unsubscribe();
+            resolve(user);
+          }, error => {
+            unsubscribe();
+            reject(error);
+          });
+        });
+
+        if (!authUser) {
+          currentUid = null;
+          window.location.href = "login.html";
+          return;
+        }
+
+        const localUid = localStorage.getItem("nexora_user_uid");
+        if (localUid && localUid !== authUser.uid) {
+          currentUid = null;
+          $("statusMsg").textContent = "Your signed-in account does not match this session. Please log in again.";
+          return;
+        }
+
+        const userDoc = await db.collection("Users").doc(authUser.uid).get();
+        if (!userDoc.exists) {
+          $("statusMsg").textContent = "Account profile not found. Please contact support.";
+          return;
+        }
+
+        currentUid = authUser.uid;
       } catch (e) {
-        console.error(e);
+        console.error("Account verification failed", e);
         $("statusMsg").textContent = "Unable to verify your account. Please sign in again.";
       }
     }
@@ -376,7 +406,12 @@
       btn.textContent = "SUBMITTING...";
       status.textContent = "Submitting your deposit request...";
       try {
-        const duplicate = await db.collection("CryptoDeposits").where("txid", "==", txid).limit(1).get();
+        // Match the owner filter required by the member-only Firestore read rules.
+        const duplicate = await db.collection("CryptoDeposits")
+          .where("uid", "==", currentUid)
+          .where("txid", "==", txid)
+          .limit(1)
+          .get();
         if (!duplicate.empty) throw new Error("Naisumite na ang TXID na ito. Huwag magsumite nang paulit-ulit.");
 
         let proofUrl = "";
