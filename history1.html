@@ -324,12 +324,17 @@
 
               let detailsHTML = "";
               if (type.toLowerCase().includes("recharge")) {
-                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Network</span><span class="text-white">${esc(r.network || r.method || "—")}</span></div>
-                                 <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">TXID / Reference</span><span class="text-white break-all text-right ml-3">${esc(r.txid || r.orderId || r.reference || "—")}</span></div>
-                                 <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Asset</span><span class="text-white">${esc(r.token || "USDT")}</span></div>`;
+                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">Network</span><span class="text-white text-right">${esc(r.network || r.method || "—")}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">TXID / Reference</span><span class="text-white break-all text-right max-w-[65%]">${esc(r.txid || r.transactionId || r.orderId || r.reference || "—")}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">Wallet Address</span><span class="text-white break-all text-right max-w-[65%]">${esc(r.walletAddress || r.depositAddress || r.destinationAddress || r.address || "—")}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">Asset</span><span class="text-white text-right">${esc(r.token || r.asset || "USDT")}</span></div>`;
               } else if (type.toLowerCase().includes("withdrawal")) {
-                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Account Name</span><span class="text-white">${esc(r.accountName || "—")}</span></div>
-                                 <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Account No.</span><span class="text-white">${esc(r.accountNumber || "—")}</span></div>`;
+                  const grossAmount = Number(r.grossAmount ?? r.requestedAmount ?? r.amount ?? 0);
+                  const feeAmount = Number(r.fee ?? (grossAmount * Number(r.feeRate ?? 0)));
+                  const receiveAmount = Number(r.netAmount ?? (r.grossAmount != null ? grossAmount - feeAmount : r.amount ?? 0));
+                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">You Receive</span><span class="text-emerald-300 text-right font-bold">${formatMoney(receiveAmount)}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">Wallet Address</span><span class="text-white break-all text-right max-w-[65%]">${esc(r.walletAddress || r.destinationAddress || r.address || "—")}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">Transaction ID</span><span class="text-white break-all text-right max-w-[65%]">${esc(r.txid || r.transactionId || r.requestId || r.id || "Pending — not yet on-chain")}</span></div>`;
               } else {
                   detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Details</span><span class="text-white">${esc(r.details || r.description || type)}</span></div>`;
               }
