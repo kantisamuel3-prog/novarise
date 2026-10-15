@@ -300,8 +300,7 @@
       <div class="rounded-xl border border-slate-700/80 bg-slate-950/70 p-4 space-y-3 text-xs font-mono">
         <div class="flex justify-between gap-3"><span class="text-slate-400">Withdrawal amount</span><strong id="feeAmount" class="text-white text-right">—</strong></div>
         <div class="flex justify-between gap-3"><span class="text-slate-400">Transaction fee (5%)</span><strong id="feeValue" class="text-amber-300 text-right">—</strong></div>
-        <div class="flex justify-between gap-3"><span class="text-slate-300">You will receive</span><strong id="feeNet" class="text-emerald-300 text-right">—</strong></div>
-        <div class="border-t border-slate-700 pt-3 flex justify-between gap-3"><span class="text-slate-300">Total balance deduction</span><strong id="feeTotal" class="text-cyan-300 text-right">—</strong></div>
+        <div class="border-t border-slate-700 pt-3 flex justify-between gap-3"><span class="text-slate-300">Total receive withdrawal</span><strong id="feeNet" class="text-emerald-300 text-right">—</strong></div>
       </div>
       <p class="text-[10px] leading-relaxed text-slate-400 mt-3">The 5% transaction fee is deducted from your withdrawal amount. The remaining 95% is the amount you will receive.</p>
       <div class="flex gap-2 mt-5">
@@ -738,7 +737,6 @@
     $("feeAmount").textContent = fmt(amount);
     $("feeValue").textContent = fmt(fee);
     $("feeNet").textContent = fmt(netAmount);
-    $("feeTotal").textContent = fmt(total);
     window.__pendingWithdrawal = { amount, fee, netAmount, total, asset, network, walletAddress };
     $("feeModal").classList.remove("hidden");
   });
