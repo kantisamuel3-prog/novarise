@@ -412,7 +412,7 @@
           .where("txid", "==", txid)
           .limit(1)
           .get();
-        if (!duplicate.empty) throw new Error("Naisumite na ang TXID na ito. Huwag magsumite nang paulit-ulit.");
+        if (!duplicate.empty) throw new Error("This TXID has already been submitted. Do not submit it repeatedly.");
 
         let proofUrl = "";
         let proofPath = "";
