@@ -326,7 +326,6 @@
               if (type.toLowerCase().includes("recharge")) {
                   detailsHTML = `<div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">Network</span><span class="text-white text-right">${esc(r.network || r.method || "—")}</span></div>
                                  <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">TXID / Reference</span><span class="text-white break-all text-right max-w-[65%]">${esc(r.txid || r.transactionId || r.orderId || r.reference || "—")}</span></div>
-                                 <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">Wallet Address</span><span class="text-white break-all text-right max-w-[65%]">${esc(r.walletAddress || r.depositAddress || r.destinationAddress || r.address || "—")}</span></div>
                                  <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400">Asset</span><span class="text-white text-right">${esc(r.token || r.asset || "USDT")}</span></div>`;
               } else if (type.toLowerCase().includes("withdrawal")) {
                   const grossAmount = Number(r.grossAmount ?? r.requestedAmount ?? r.amount ?? 0);
@@ -350,7 +349,7 @@
                       </div>
                       <div class="space-y-1">
                           ${detailsHTML}
-                          <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Timestamp</span><span class="text-gray-300">${esc(formatDate(r.date || r.timestamp))}</span></div>
+                          <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Date</span><span class="text-gray-300">${esc(formatDate(r.date || r.timestamp))}</span></div>
                       </div>
                   </div>
               `;
