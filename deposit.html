@@ -173,8 +173,8 @@
       <input id="amount" class="field mb-4" type="number" min="0.000001" step="any" placeholder="Enter usd amount" required>
       <label for="txid" class="block text-[10px] text-gray-400 font-mono tracking-wider mb-2">TRANSACTION HASH / TXID</label>
       <input id="txid" class="field mb-4" type="text" maxlength="180" placeholder="Paste your blockchain transaction hash" required>
-      <label for="proof" class="block text-[10px] text-gray-400 font-mono tracking-wider mb-2">PAYMENT PROOF (OPTIONAL IMAGE)</label>
-      <input id="proof" class="field mb-2 text-xs" type="file" accept="image/png,image/jpeg,image/webp">
+      <label for="proof" class="block text-[10px] text-gray-400 font-mono tracking-wider mb-2">PAYMENT PROOF (REQUIRED IMAGE)</label>
+      <input id="proof" required class="field mb-2 text-xs" type="file" accept="image/png,image/jpeg,image/webp">
       <p class="text-[10px] text-gray-500 mb-4">A screenshot alone does not verify payment. The transaction must be checked on the selected blockchain.</p>
       <button id="submitBtn" type="submit" class="w-full rounded-xl bg-gradient-to-r from-nexora-cyan via-blue-500 to-nexora-cyan text-slate-950 py-3.5 font-black text-xs tracking-[.15em] shadow-[0_0_20px_rgba(0,242,254,.15)]">
         <i class="fa-solid fa-paper-plane mr-2"></i> SUBMIT FOR REVIEW
@@ -397,9 +397,10 @@
 
       if (!currentUid || !db) { status.textContent = "Hindi pa handa ang account connection. I-refresh o mag-login muli."; return; }
       if (!wallet().address) { status.textContent = "Hindi pa naka-configure ang receiving wallet para sa network na ito."; return; }
-      if (!Number.isFinite(amount) || amount <= 0) { status.textContent = "Maglagay ng valid na USDT amount."; return; }
+      if (!Number.isFinite(amount) || amount < 350) { status.textContent = "Minimum deposit ay $350 USDT. Hindi maipapasa ang request kung mas mababa rito."; return; }
       if (txid.length < 20) { status.textContent = "Please check the transaction hash/TXID."; return; }
-      if (file && !["image/png","image/jpeg","image/webp"].includes(file.type)) { status.textContent = "PNG, JPG, o WEBP image lang ang puwede."; return; }
+      if (!file) { status.textContent = "Mag-upload muna ng payment proof image bago mag-submit for review."; return; }
+      if (!["image/png","image/jpeg","image/webp"].includes(file.type)) { status.textContent = "PNG, JPG, o WEBP image lang ang puwede."; return; }
       if (file && file.size > 5 * 1024 * 1024) { status.textContent = "Maximum file size ay 5 MB."; return; }
 
       btn.disabled = true;
