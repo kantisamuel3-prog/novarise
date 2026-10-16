@@ -318,40 +318,121 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #17415e;border-r
     const d = deposits.find(x => x.id === id);
     if (!d || d.status !== "PENDING") return;
     const amount = Number(d.amount);
-    if (!Number.isFinite(amount) || amount <= 0 || !d.uid) { showMessage("Invalid amount or missing user UID. Nothing was changed."); return; }
+    if (!Number.isFinite(amount) || amount <= 0 || !d.uid) {
+      showMessage("Invalid amount or missing user UID. Nothing was changed.");
+      return;
+    }
+
     const confirmed = await brandedConfirm({
       title: "Approve deposit?",
-      message: `Approve ${d.token || "USDT"} ${money(amount)} for UID ${d.uid}?\\n\\nOnly continue after independently verifying the transaction on-chain.`,
+      message: `Approve ${d.token || "USDT"} ${money(amount)} for UID ${d.uid}?
+
+Only continue after independently verifying the transaction on-chain.`,
       confirmText: "Approve & credit",
       icon: "✓"
     });
     if (!confirmed) return;
+
     busy = true;
     try {
       const depositRef = db.collection("CryptoDeposits").doc(id);
       const userRef = db.collection("Users").doc(d.uid);
+      let commissionPaid = 0;
+      let commissionRate = 0;
+
       await db.runTransaction(async tx => {
-        const [depSnap,userSnap] = await Promise.all([tx.get(depositRef),tx.get(userRef)]);
+        const depSnap = await tx.get(depositRef);
+        const userSnap = await tx.get(userRef);
         if (!depSnap.exists) throw new Error("Deposit request no longer exists.");
         if (!userSnap.exists) throw new Error("User record not found. No balance was credited.");
+
         const latest = depSnap.data();
-        if (String(latest.status || "PENDING").toUpperCase() !== "PENDING") throw new Error("This request has already been reviewed.");
-        const currentBalance = Number(userSnap.data().usdBalance || 0);
-        if (!Number.isFinite(currentBalance) || currentBalance < 0) throw new Error("User USD balance is invalid.");
-        tx.update(userRef, { usdBalance: currentBalance + amount, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        if (String(latest.status || "PENDING").toUpperCase() !== "PENDING") {
+          throw new Error("This request has already been reviewed.");
+        }
+
+        const member = userSnap.data() || {};
+        const currentBalance = Number(member.usdBalance || 0);
+        if (!Number.isFinite(currentBalance) || currentBalance < 0) {
+          throw new Error("User USD balance is invalid.");
+        }
+
+        // Referral commission: $350–$499.99 = 5%; $500+ = 10%.
+        const inviterId = member.referredBy || member.sponsorId || null;
+        let inviterRef = null;
+        let inviterSnap = null;
+        let inviterData = null;
+
+        if (inviterId && String(inviterId) !== String(d.uid)) {
+          inviterRef = db.collection("Users").doc(String(inviterId));
+          inviterSnap = await tx.get(inviterRef);
+          if (inviterSnap.exists) inviterData = inviterSnap.data() || {};
+        }
+
+        if (inviterData && amount >= 350) {
+          commissionRate = amount >= 500 ? 0.10 : 0.05;
+          commissionPaid = Math.round(amount * commissionRate * 100) / 100;
+        }
+
+        // All transaction reads occur before any writes.
+        tx.update(userRef, {
+          usdBalance: currentBalance + amount,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        if (inviterRef && inviterData && commissionPaid > 0) {
+          const inviterBalance = Number(inviterData.balance || 0);
+          const oldCommission = Number(inviterData.totalCommission || 0);
+          if (!Number.isFinite(inviterBalance) || inviterBalance < 0 ||
+              !Number.isFinite(oldCommission) || oldCommission < 0) {
+            throw new Error("Inviter balance/commission data is invalid. Nothing was approved.");
+          }
+
+          const inviterTransactions = Array.isArray(inviterData.transactions)
+            ? inviterData.transactions : [];
+          const commissionTx = {
+            type: "Commission Received",
+            status: "COMPLETED",
+            amount: commissionPaid,
+            referredUserId: d.uid,
+            sourceDepositId: id,
+            depositAmount: amount,
+            commissionRate: commissionRate,
+            createdAt: new Date().toISOString()
+          };
+
+          tx.update(inviterRef, {
+            balance: inviterBalance + commissionPaid,
+            totalCommission: oldCommission + commissionPaid,
+            transactions: inviterTransactions.concat([commissionTx]),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+
         tx.update(depositRef, {
           status: "APPROVED",
           reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
           reviewedBy: auth.currentUser.uid,
           creditedField: "usdBalance",
           creditedAmount: amount,
+          inviterCommission: commissionPaid,
+          inviterCommissionRate: commissionRate,
+          inviterCommissionPaidTo: inviterId || null,
           reviewNote: "Approved by admin"
         });
       });
-      showMessage("Approved. USD Trading balance credited once.", "success");
+
+      showMessage(commissionPaid > 0
+        ? `Approved. USD balance credited; inviter commission of $${money(commissionPaid)} (${commissionRate * 100}%) was added.`
+        : "Approved. USD Trading balance credited once. No eligible inviter commission was paid (no inviter found or amount below $350).",
+        "success");
       await loadDeposits();
-    } catch(e) { console.error(e); showMessage(e.message || "Approval failed."); }
-    finally { busy = false; }
+    } catch(e) {
+      console.error(e);
+      showMessage(e.message || "Approval failed.");
+    } finally {
+      busy = false;
+    }
   }
   async function rejectDeposit(id, reason) {
     if (busy) return;
