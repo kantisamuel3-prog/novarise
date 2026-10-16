@@ -328,15 +328,18 @@
             <div class="grid grid-cols-12 gap-2">
                 <!-- FORM -->
                 <div class="col-span-7 space-y-1.5 font-mono">
-                    <div class="bg-[#1a1a1a] border border-[#2e2e2e] p-2 rounded-xl flex justify-between items-center text-xs">
-                        <span class="text-white font-semibold">Limit / Market</span>
-                        <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
-                    </div>
+                    <label class="bg-[#1a1a1a] border border-[#2e2e2e] p-2 rounded-xl flex justify-between items-center text-xs gap-2">
+                        <span class="text-white font-semibold shrink-0">Order Type</span>
+                        <select id="orderType" aria-label="Order type" class="min-w-0 w-28 bg-transparent text-cyan-300 font-bold text-right outline-none cursor-pointer">
+                            <option value="Limit" class="bg-[#1a1a1a]">Limit</option>
+                            <option value="Market" class="bg-[#1a1a1a]">Market</option>
+                        </select>
+                    </label>
 
-                    <div class="bg-[#1a1a1a] border border-[#2e2e2e] p-2 rounded-xl flex justify-between items-center text-xs">
-                        <span class="text-gray-500">Contracts</span>
-                        <span class="text-white font-bold">0.01 BTC</span>
-                    </div>
+                    <label class="bg-[#1a1a1a] border border-[#2e2e2e] p-2 rounded-xl flex justify-between items-center text-xs gap-2">
+                        <span class="text-gray-400 shrink-0">Contracts (BTC)</span>
+                        <input id="contractQty" aria-label="Contracts in BTC" type="number" min="0.001" max="100" step="0.001" value="0.01" class="w-24 bg-transparent text-white font-bold text-right outline-none">
+                    </label>
 
                     <div class="text-[10px] space-y-0.5 text-gray-400 pt-0.5">
                         <div class="flex justify-between"><span>Available</span><span class="text-white font-bold">1,482.00 USDT</span></div>
@@ -562,6 +565,33 @@
             <button onclick="closeMemberModal()" class="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 rounded-xl text-xs font-black shadow-lg uppercase tracking-wider">
                 Close Details
             </button>
+        </div>
+    </div>
+
+    <!-- ORDER HELP / RESULT MODAL: visual confirmation, not a real exchange execution -->
+    <div id="orderHelpModal" class="fixed inset-0 bg-black/80 z-[1400] hidden items-center justify-center p-4 font-mono" role="dialog" aria-modal="true" aria-labelledby="orderHelpTitle">
+        <div class="w-full max-w-sm rounded-2xl border border-cyan-400/40 bg-[#0b1526] shadow-[0_0_35px_rgba(0,242,254,0.15)] overflow-hidden">
+            <div class="px-4 py-4 border-b border-cyan-400/20 flex items-center gap-3">
+                <div id="orderHelpIcon" class="w-10 h-10 rounded-full bg-cyan-950/70 border border-cyan-400/40 flex items-center justify-center text-cyan-300">
+                    <i class="fa-solid fa-circle-check text-xl"></i>
+                </div>
+                <div class="min-w-0">
+                    <h3 id="orderHelpTitle" class="text-white text-sm font-black">Order Help</h3>
+                    <p id="orderHelpSubtitle" class="text-gray-400 text-[10px] mt-1">Order request summary</p>
+                </div>
+                <button onclick="closeOrderHelp()" aria-label="Close order help" class="ml-auto text-gray-400 hover:text-white p-2"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4">
+                <div id="orderHelpStatus" class="text-emerald-300 text-xs font-bold mb-3"><i class="fa-solid fa-check mr-1"></i> Order help successfully processed</div>
+                <div class="rounded-xl bg-[#111d30] border border-white/10 p-3 space-y-2 text-xs">
+                    <div class="flex justify-between gap-3"><span class="text-gray-400">Action</span><span id="orderHelpAction" class="text-white font-bold text-right">Open Long BTC</span></div>
+                    <div class="flex justify-between gap-3"><span class="text-gray-400">Order type</span><span id="orderHelpType" class="text-cyan-300 font-bold">Limit</span></div>
+                    <div class="flex justify-between gap-3"><span class="text-gray-400">Contracts</span><span id="orderHelpQty" class="text-white font-bold">0.01 BTC</span></div>
+                    <div class="flex justify-between gap-3"><span class="text-gray-400">Displayed price</span><span id="orderHelpPrice" class="text-white font-bold">—</span></div>
+                </div>
+                <p class="text-[10px] leading-relaxed text-gray-500 mt-3">This is a demo interface confirmation only. It does not submit a real trade or move funds.</p>
+                <button onclick="closeOrderHelp()" class="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-[#061124] font-black text-xs uppercase tracking-wider">Done</button>
+            </div>
         </div>
     </div>
 
@@ -1056,8 +1086,38 @@
     }
 
     function executeAction() {
-        alert(`[Nexora Perpetual]: Order successfully processed at $${basePrice.toFixed(1)}`);
+        const qtyInput = document.getElementById('contractQty');
+        const qty = Number(qtyInput.value);
+        if (!Number.isFinite(qty) || qty < 0.001 || qty > 100) {
+            qtyInput.focus();
+            qtyInput.setCustomValidity('Enter a contract amount from 0.001 to 100 BTC.');
+            qtyInput.reportValidity();
+            qtyInput.addEventListener('input', () => qtyInput.setCustomValidity(''), { once: true });
+            return;
+        }
+
+        const actionLabel = currentSide === 'open' ? 'Open Long BTC' : 'Close Short BTC';
+        document.getElementById('orderHelpAction').textContent = actionLabel;
+        document.getElementById('orderHelpType').textContent = document.getElementById('orderType').value;
+        document.getElementById('orderHelpQty').textContent = qty.toFixed(3).replace(/0+$/, '').replace(/\.$/, '') + ' BTC';
+        document.getElementById('orderHelpPrice').textContent = '$' + basePrice.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+        document.getElementById('orderHelpTitle').textContent = 'Order Help';
+        document.getElementById('orderHelpSubtitle').textContent = actionLabel + ' • BTCUSDT Perpetual';
+        document.getElementById('orderHelpStatus').innerHTML = '<i class="fa-solid fa-check mr-1"></i> Order help successfully processed';
+        document.getElementById('orderHelpModal').style.display = 'flex';
     }
+
+    function closeOrderHelp() {
+        document.getElementById('orderHelpModal').style.display = 'none';
+    }
+
+    // Close the order help dialog by tapping its backdrop or pressing Escape.
+    document.getElementById('orderHelpModal').addEventListener('click', function (event) {
+        if (event.target === this) closeOrderHelp();
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') closeOrderHelp();
+    });
 
     initData();
     renderChart();
