@@ -35,6 +35,20 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #17415e;border-r
 @media(max-width:760px){.wrap{padding:12px 8px 26px}.request-grid,.history-groups,.history-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.request-column,.history-column{padding:7px;border-radius:10px}.request-column h2{font-size:12px;line-height:1.25;margin-bottom:7px}.stats{gap:6px}.stat{padding:10px 6px}.stat strong{font-size:17px}.stat label{font-size:8px}.cards{grid-template-columns:1fr;gap:7px}.request-column .cards{grid-template-columns:1fr;gap:7px}.deposit{padding:8px;border-radius:9px}.deposit h3{font-size:11px}.meta{font-size:9px;margin-bottom:7px}.amount{font-size:16px;margin:6px 0}.rowline{font-size:9px;padding:4px 0;gap:5px}.rowline span:first-child{flex-basis:36%}.pill{font-size:8px;padding:4px 6px}.proof{font-size:9px;margin:5px 0}.actions{grid-template-columns:minmax(0,1fr);gap:5px;margin-top:auto;padding-top:8px}.actions button{width:100%;padding:7px 4px;font-size:10px;min-height:32px;line-height:1.15}.deposit-heading{align-items:flex-start;margin:15px 0 10px}.deposit-heading h2{font-size:16px}.toolbar input{flex-basis:100%;min-width:0}.toolbar .btn{flex:1;padding:8px 6px;font-size:11px;min-height:34px}.notice{font-size:10px;padding:9px}.history-entry{grid-template-columns:14px minmax(0,1fr);gap:4px}.history-number{font-size:10px;padding-top:12px}}
 @media(max-width:380px){.brand{font-size:18px}.wrap{padding-left:6px;padding-right:6px}.request-grid,.history-groups,.history-grid{gap:5px}.request-column,.history-column{padding:5px}.deposit{padding:6px}.rowline{font-size:8px}.amount{font-size:14px}.actions button{font-size:9px;padding:6px 2px}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stat{display:block;text-align:center}.stat strong{margin-top:5px}.stat label{font-size:7px}}
 
+
+/* Branded confirmation dialogs */
+.confirm-modal .modalbox{position:relative;overflow:hidden;background:linear-gradient(155deg,#10223b 0%,#091525 72%);border-color:#176080;padding:0;max-width:430px}
+.confirm-modal .modalbox:before{content:"";display:block;height:4px;background:linear-gradient(90deg,#00d9e8,#0068ff)}
+.confirm-head{display:flex;gap:12px;align-items:center;padding:20px 20px 10px}
+.confirm-icon{width:42px;height:42px;flex:0 0 42px;border-radius:13px;display:grid;place-items:center;color:#00e2ef;background:#063746;border:1px solid #12647a;font-size:21px;font-weight:800;box-shadow:0 0 22px #00d9e822}
+.confirm-title{font-size:17px;font-weight:800;margin:0;color:#f0f8ff}
+.confirm-body{padding:0 20px 18px;color:#a8bdd5;font-size:13px;line-height:1.65;white-space:pre-line;overflow-wrap:anywhere}
+.confirm-footer{display:flex;justify-content:flex-end;gap:9px;padding:13px 20px 18px;border-top:1px solid #1a3550;background:#081423}
+.confirm-footer .btn{min-width:92px}
+.confirm-footer .confirm-yes{background:linear-gradient(100deg,#00d9c0,#00a7ff);border:0;color:#00131d}
+.confirm-footer .confirm-danger{background:linear-gradient(100deg,#ff647c,#e63d62);border:0;color:#fff}
+@media(max-width:480px){.confirm-head{padding:16px 16px 8px}.confirm-body{padding:0 16px 15px}.confirm-footer{padding:12px 16px 15px}}
+
 </style>
 </head>
 <body>
@@ -98,6 +112,13 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #17415e;border-r
   </section>
 </div>
 <div id="rejectModal" class="modal"><div class="modalbox"><h2>Reject deposit</h2><p class="sub">Add a reason for the user and audit trail.</p><textarea id="rejectReason" maxlength="500" placeholder="Reason for rejection (required)"></textarea><div class="modal-actions"><button id="cancelReject" class="btn">Cancel</button><button id="confirmReject" class="btn btn-reject">Confirm rejection</button></div></div></div>
+<div id="confirmModal" class="modal confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="modalbox">
+    <div class="confirm-head"><div class="confirm-icon" id="confirmIcon">!</div><h2 class="confirm-title" id="confirmTitle">Please confirm</h2></div>
+    <div class="confirm-body" id="confirmBody"></div>
+    <div class="confirm-footer"><button id="confirmCancel" class="btn" type="button">Cancel</button><button id="confirmAccept" class="btn confirm-yes" type="button">Continue</button></div>
+  </div>
+</div>
 <script>
 (() => {
   // IMPORTANT: Replace this placeholder with the exact Firebase Auth UID of your admin account.
@@ -125,6 +146,24 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #17415e;border-r
   }
   function isAdmin(user) { return !!user && ADMIN_UIDS.includes(user.uid); }
   function showMessage(text, type="error") { $("message").innerHTML = `<div class="${type}">${safe(text)}</div>`; }
+  let confirmResolver = null;
+  function brandedConfirm({title="Please confirm", message="", confirmText="Continue", danger=false, icon="!"}={}) {
+    $("confirmTitle").textContent = title;
+    $("confirmBody").textContent = message;
+    $("confirmAccept").textContent = confirmText;
+    $("confirmAccept").className = "btn " + (danger ? "confirm-danger" : "confirm-yes");
+    $("confirmIcon").textContent = icon;
+    $("confirmModal").classList.add("open");
+    return new Promise(resolve => { confirmResolver = resolve; });
+  }
+  function closeBrandedConfirm(result) {
+    $("confirmModal").classList.remove("open");
+    if (confirmResolver) { const resolve = confirmResolver; confirmResolver = null; resolve(result); }
+  }
+  $("confirmCancel").addEventListener("click", () => closeBrandedConfirm(false));
+  $("confirmAccept").addEventListener("click", () => closeBrandedConfirm(true));
+  $("confirmModal").addEventListener("click", e => { if (e.target === $("confirmModal")) closeBrandedConfirm(false); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && $("confirmModal").classList.contains("open")) closeBrandedConfirm(false); });
   function updateStats() {
     $("pendingCount").textContent = deposits.filter(d => d.status === "PENDING").length;
     $("approvedCount").textContent = deposits.filter(d => d.status === "APPROVED").length;
@@ -230,7 +269,16 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #17415e;border-r
   async function reviewWithdrawal(userId, requestId, decision) {
     if (busy) return;
     const actionText = decision === "APPROVED" ? "approve" : "reject and refund";
-    if (!confirm(`Are you sure you want to ${actionText} withdrawal ${requestId}?`)) return;
+    const confirmed = await brandedConfirm({
+      title: decision === "APPROVED" ? "Approve withdrawal?" : "Reject & refund withdrawal?",
+      message: decision === "APPROVED"
+        ? `You are about to approve withdrawal ${requestId}.\n\nThe amount was already deducted when the user submitted the request. No additional balance deduction will be made.`
+        : `You are about to reject withdrawal ${requestId}.\n\nThe deducted amount will be refunded to the user's balance.`,
+      confirmText: decision === "APPROVED" ? "Approve withdrawal" : "Reject & refund",
+      danger: decision !== "APPROVED",
+      icon: decision === "APPROVED" ? "✓" : "!"
+    });
+    if (!confirmed) return;
     busy = true;
     try {
       const userRef = db.collection("Users").doc(userId);
@@ -271,7 +319,13 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #17415e;border-r
     if (!d || d.status !== "PENDING") return;
     const amount = Number(d.amount);
     if (!Number.isFinite(amount) || amount <= 0 || !d.uid) { showMessage("Invalid amount or missing user UID. Nothing was changed."); return; }
-    if (!confirm(`Approve ${d.token || "USDT"} ${money(amount)} for UID ${d.uid}?\n\nOnly continue after independently verifying the transaction on-chain.`)) return;
+    const confirmed = await brandedConfirm({
+      title: "Approve deposit?",
+      message: `Approve ${d.token || "USDT"} ${money(amount)} for UID ${d.uid}?\\n\\nOnly continue after independently verifying the transaction on-chain.`,
+      confirmText: "Approve & credit",
+      icon: "✓"
+    });
+    if (!confirmed) return;
     busy = true;
     try {
       const depositRef = db.collection("CryptoDeposits").doc(id);
@@ -345,7 +399,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #17415e;border-r
   $("cancelReject").addEventListener("click", () => { rejectTarget = null; $("rejectModal").classList.remove("open"); });
   $("confirmReject").addEventListener("click", () => {
     const reason = $("rejectReason").value.trim();
-    if (!reason) { alert("Please enter a rejection reason."); return; }
+    if (!reason) { showMessage("Please enter a rejection reason before continuing."); $("rejectReason").focus(); return; }
     if (rejectTarget) rejectDeposit(rejectTarget, reason);
   });
   auth.onAuthStateChanged(async user => {
