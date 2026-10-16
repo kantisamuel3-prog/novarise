@@ -47,10 +47,8 @@
         gap: 7px;
         color: #f4fbff !important;
       }
-      /* The closed phone field shows only the dialing code and a chevron; flags appear in the picker list. */
-      .iti__selected-country .iti__flag,
-      .iti__selected-country .iti__flag-container,
-      .iti__selected-country-primary { display: none !important; }
+      /* Compact selected country control: show the flag and dialing code. */
+      .nexora-selected-flag { display: inline-flex; align-items: center; justify-content: center; font-size: 17px; line-height: 1; flex-shrink: 0; }
       .nexora-selected-dial-code { color: #f4fbff; font: 700 13px 'JetBrains Mono', monospace; white-space: nowrap; }
       .nexora-selected-chevron { display: none !important; }
       .iti__selected-dial-code { margin-left: 0 !important; }
@@ -533,15 +531,15 @@
                     return a.name.localeCompare(b.name);
                 });
 
-            // Replace the flag in the compact, closed control with a code + chevron.
-            // The country flags remain visible in the searchable modal list.
+            // Show the selected country's flag beside its dialing code in the phone field.
+            // The custom centered search modal remains available when the control is clicked.
             function updateCompactCountryControl() {
                 const button = phoneInput.closest('.iti')?.querySelector('.iti__selected-country');
                 if (!button) return;
                 const country = iti.getSelectedCountryData();
-                button.innerHTML = `<span class="nexora-selected-dial-code">+${country.dialCode || '1'}</span>`;
-                button.setAttribute('aria-label', `Selected country code +${country.dialCode}. Click to choose another country`);
-                button.setAttribute('title', `+${country.dialCode} — choose country`);
+                button.innerHTML = `<span class="nexora-selected-flag" aria-hidden="true">${flagEmoji(country.iso2)}</span><span class="nexora-selected-dial-code">+${country.dialCode || '1'}</span>`;
+                button.setAttribute('aria-label', `Selected country ${country.name}, dialing code +${country.dialCode}. Click to choose another country`);
+                button.setAttribute('title', `${country.name} +${country.dialCode} — choose country`);
             }
 
             function flagEmoji(iso2) {
