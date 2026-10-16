@@ -345,6 +345,8 @@ canvas#liveChart {
   background: #02050b;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  touch-action: pan-y;
+  cursor: crosshair;
 }
 
 .bottom-side-by-side {
@@ -1304,7 +1306,64 @@ canvas#liveChart {
   canvas.height = canvas.offsetHeight || 140;
 
   let pricePoints = Array(35).fill(96420);
-  let currentPrice = 96420;
+let currentPrice = 96420;
+
+// Zoom: 8 = pinakamalapit, 35 = pinakamalawak
+let visibleCount = 35;
+
+canvas.addEventListener('wheel', function(event) {
+  event.preventDefault();
+
+  if (event.deltaY < 0) {
+    visibleCount = Math.max(8, visibleCount - 3);
+  } else {
+    visibleCount = Math.min(pricePoints.length, visibleCount + 3);
+  }
+
+  drawChart();
+}, { passive: false });
+
+// Pinch zoom para sa cellphone
+let pinchStartDistance = 0;
+let pinchStartCount = visibleCount;
+
+function getTouchDistance(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.hypot(dx, dy);
+}
+
+canvas.addEventListener('touchstart', function(event) {
+  if (event.touches.length === 2) {
+    pinchStartDistance = getTouchDistance(event.touches);
+    pinchStartCount = visibleCount;
+  }
+}, { passive: true });
+
+canvas.addEventListener('touchmove', function(event) {
+  if (event.touches.length !== 2) return;
+
+  event.preventDefault();
+
+  const distance = getTouchDistance(event.touches);
+  if (!pinchStartDistance) return;
+
+  const scale = pinchStartDistance / distance;
+
+  visibleCount = Math.max(
+    8,
+    Math.min(
+      pricePoints.length,
+      Math.round(pinchStartCount * scale)
+    )
+  );
+
+  drawChart();
+}, { passive: false });
+
+canvas.addEventListener('touchend', function() {
+  pinchStartDistance = 0;
+}, { passive: true });
 
   function drawChart() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1312,9 +1371,10 @@ canvas#liveChart {
     const bottomPadding = 14; 
     const chartWidth = canvas.width - rightPadding;
     const chartHeight = canvas.height - bottomPadding;
+    const chartPoints = pricePoints.slice(-visibleCount);
 
-    const minPrice = Math.min(...pricePoints) - 10;
-    const maxPrice = Math.max(...pricePoints) + 10;
+    const minPrice = Math.min(...chartPoints) - 10;
+    const maxPrice = Math.max(...chartPoints) + 10;
 
     ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
     ctx.fillStyle = "#64748b";
@@ -1336,16 +1396,16 @@ canvas#liveChart {
     ctx.fillText("Live", chartWidth - 20, chartHeight + 10);
 
     ctx.beginPath();
-    const step = chartWidth / (pricePoints.length - 1);
+    const step = chartWidth / (chartPoints.length - 1);
 
-    for (let i = 0; i < pricePoints.length; i++) {
-      const x = i * step;
-      const y = chartHeight - ((pricePoints[i] - minPrice) / (maxPrice - minPrice)) * chartHeight;
+    for (let i = 0; i < chartPoints.length; i++) {
+    const x = i * step;
+    const y = chartHeight - ((chartPoints[i] - minPrice) / (maxPrice - minPrice)) * chartHeight;
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
 
-    const isUp = pricePoints[pricePoints.length - 1] >= pricePoints[pricePoints.length - 2];
+    const isUp = chartPoints[chartPoints.length - 1] >= chartPoints[chartPoints.length - 2];
     ctx.strokeStyle = isUp ? "#10b981" : "#ef4444";
     ctx.lineWidth = 2;
     ctx.stroke();
