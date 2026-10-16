@@ -121,10 +121,11 @@
             box-sizing: border-box;
         }
 
+        /* PINATABA O PINAHABA ANG HEIGHT NG CANDLESTICK CHART CONTAINER DITO */
         .chart-box {
             position: relative;
             width: 100%;
-            height: 210px;
+            height: 310px; /* Itinaas mula 210px para mas mahaba tingnan ang mga candlestick */
             background: rgba(3, 11, 23, 0.24);
             cursor: crosshair;
         }
@@ -166,20 +167,19 @@
 
         ::-webkit-scrollbar { display: none; }
     
-        /* Slightly more compact trading layout while keeping controls usable */
+        /* Responsive adjustments para sa mas mahabang chart */
         @media (min-width: 768px) {
-            .chart-box { height: 200px; }
+            .chart-box { height: 330px; }
         }
         @media (max-width: 767px) {
             body > header, body > #chartContainer, body > div.px-3 { max-width: 100%; }
             .nexora-bottom-nav { width: 100vw !important; }
-            .chart-box { height: 190px; }
+            .chart-box { height: 290px; }
             body { font-size: 12px; }
         }
     </style>
 
 <style>
-    /* Keep the Exchange platform and bottom navigation visible during Firebase auth checks/reloads. */
     html.exchange-auth-check body,
     html.exchange-auth-check body > *,
     html.exchange-auth-ready body,
@@ -221,7 +221,6 @@
                 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
                 const auth = firebase.auth();
 
-                // Keep the signed-in session across page navigation and browser restarts.
                 await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
                 let initialStateHandled = false;
@@ -232,7 +231,6 @@
                         return;
                     }
 
-                    // Wait briefly for Firebase to finish restoring its persisted session.
                     if (!initialStateHandled) {
                         initialStateHandled = true;
                         window.setTimeout(function () {
@@ -244,7 +242,6 @@
                     }
                 }, function (error) {
                     console.error('Nexora Exchange authentication state error:', error);
-                    // Do not redirect on a transient listener error; retry by checking current state.
                     window.setTimeout(function () {
                         if (auth.currentUser) showExchange();
                         else showLogin();
@@ -252,7 +249,6 @@
                 });
             } catch (error) {
                 console.error('Nexora Exchange authentication check failed:', error);
-                // A failed persistence setup should not automatically log out a valid session.
                 try {
                     const auth = firebase.auth();
                     if (auth.currentUser) showExchange();
@@ -270,7 +266,6 @@
 
 </head>
 <body class="min-h-screen flex flex-col justify-between relative pb-16">
-    <!-- Matching Account page: subtle animated candlestick background -->
     <div class="exchange-background" aria-hidden="true">
         <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
         <canvas id="accountStyleBackground"></canvas>
@@ -425,14 +420,13 @@
             </div>
         </div>
 
-        <!-- PANEL 2: OPTIONS (MAY SAKTO AT MALILIIT NA LOGO NG BTC, ETH, SOL, AT XRP) -->
+        <!-- PANEL 2: OPTIONS -->
         <div id="panelOptions" class="mode-panel font-mono text-xs space-y-1.5">
             <div class="text-white font-bold mb-1 flex justify-between items-center text-[11px]">
                 <span>Active Options Contracts</span>
                 <span class="text-emerald-500 text-[9px]">● Live Market</span>
             </div>
             
-            <!-- BTC Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC" class="w-4 h-4 rounded-full">
@@ -444,7 +438,6 @@
                 <span id="optBadge1" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↑ +2.4%</span>
             </div>
 
-            <!-- ETH Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH" class="w-4 h-4 rounded-full">
@@ -456,7 +449,6 @@
                 <span id="optBadge2" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↓ -1.8%</span>
             </div>
 
-            <!-- SOL Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/4128/small/solana.png" alt="SOL" class="w-4 h-4 rounded-full">
@@ -468,7 +460,6 @@
                 <span id="optBadge3" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↑ +4.1%</span>
             </div>
 
-            <!-- XRP Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png" alt="XRP" class="w-4 h-4 rounded-full bg-black p-0.5 border border-gray-700">
@@ -570,7 +561,6 @@
 
             <!-- Modal Content -->
             <div class="p-3 overflow-y-auto space-y-2.5 flex-1 text-xs" id="mixedTradersList">
-                <!-- Populated dynamically -->
             </div>
         </div>
     </div>
@@ -612,7 +602,7 @@
         </div>
     </div>
 
-    <!-- ORDER HELP / RESULT MODAL: visual confirmation, not a real exchange execution -->
+    <!-- ORDER HELP / RESULT MODAL -->
     <div id="orderHelpModal" class="fixed inset-0 bg-black/80 z-[99999] hidden items-center justify-center p-4 font-mono" style="position:fixed;inset:0;align-items:center;justify-content:center;display:none;overflow-y:auto;" role="dialog" aria-modal="true" aria-labelledby="orderHelpTitle">
         <div class="w-full max-w-sm rounded-2xl border border-cyan-400/40 bg-[#0b1526] shadow-[0_0_35px_rgba(0,242,254,0.15)] overflow-hidden">
             <div class="px-4 py-4 border-b border-cyan-400/20 flex items-center gap-3">
@@ -639,7 +629,7 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION — matching Nexora Account navigation -->
+    <!-- BOTTOM NAVIGATION -->
     <nav class="nexora-bottom-nav fixed bottom-0 left-0 right-0 h-20 bg-[#030b17]/95 border-t border-cyan-400/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
         <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cyan-300 transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
             <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
@@ -1135,8 +1125,6 @@
         renderChart();
     }
 
-    // Demo trading balance: each successful BTC order-help action deducts 5 USDT.
-    // Stored locally so the displayed balance remains after a page reload in this browser.
     const NEXORA_ORDER_FEE = 5;
     const NEXORA_BALANCE_KEY = 'nexora_exchange_available_balance';
     let availableBalance = 1482;
@@ -1145,7 +1133,7 @@
         if (localStorage.getItem(NEXORA_BALANCE_KEY) !== null && Number.isFinite(savedBalance) && savedBalance >= 0) {
             availableBalance = savedBalance;
         }
-    } catch (e) { /* Use the default demo balance if browser storage is unavailable. */ }
+    } catch (e) {}
 
     function renderAvailableBalance() {
         const balanceEl = document.getElementById('availableBalance');
@@ -1183,7 +1171,7 @@
         }
 
         availableBalance = Math.round((availableBalance - NEXORA_ORDER_FEE) * 100) / 100;
-        try { localStorage.setItem(NEXORA_BALANCE_KEY, String(availableBalance)); } catch (e) { /* Balance still updates for this page session. */ }
+        try { localStorage.setItem(NEXORA_BALANCE_KEY, String(availableBalance)); } catch (e) {}
         renderAvailableBalance();
 
         const actionLabel = currentSide === 'open' ? 'Open Long BTC' : 'Close Short BTC';
@@ -1195,7 +1183,6 @@
         document.getElementById('orderHelpSubtitle').textContent = actionLabel + ' • BTCUSDT Perpetual';
         document.getElementById('orderHelpStatus').innerHTML = '<i class="fa-solid fa-check mr-1"></i> Order help successfully processed';
         const modal = document.getElementById('orderHelpModal');
-        // Force a viewport-centered overlay regardless of surrounding page layout.
         modal.style.position = 'fixed';
         modal.style.inset = '0';
         modal.style.alignItems = 'center';
@@ -1207,10 +1194,8 @@
     function closeOrderHelp() {
         const modal = document.getElementById('orderHelpModal');
         modal.style.display = 'none';
-        // Closing resets the dialog so the user can open a new order-help result again.
     }
 
-    // Close the order help dialog by tapping its backdrop or pressing Escape.
     document.getElementById('orderHelpModal').addEventListener('click', function (event) {
         if (event.target === this) closeOrderHelp();
     });
@@ -1218,7 +1203,6 @@
         if (event.key === 'Escape') closeOrderHelp();
     });
 
-    // Restore the Exchange view when navigating away and coming back in the same tab.
     (function restoreExchangeState() {
         let savedCandles = null;
         try {
@@ -1268,7 +1252,6 @@
         renderChart();
     })();
 
-    // Save chart candles and current price while the live ticker updates.
     setInterval(function () {
         try {
             sessionStorage.setItem('nexora_exchange_candles', JSON.stringify(candles));
@@ -1278,7 +1261,6 @@
 
     setInterval(softTicker, 850);
 </script>
-
 
 <script>
 (function () {
@@ -1323,11 +1305,6 @@
     window.addEventListener('resize', resizeAccountBackground);
     resizeAccountBackground(); animateAccountBackground();
 })();
-</script>
-
-<script>
-// Keep Exchange clickable: clicking it again reloads the platform page normally.
-// The bottom navigation stays fixed in place through its .nexora-bottom-nav CSS.
 </script>
 
 </body>
