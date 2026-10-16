@@ -52,7 +52,7 @@
       .iti__selected-country .iti__flag-container,
       .iti__selected-country-primary { display: none !important; }
       .nexora-selected-dial-code { color: #f4fbff; font: 700 13px 'JetBrains Mono', monospace; white-space: nowrap; }
-      .nexora-selected-chevron { color: #00f2fe; font-size: 11px; line-height: 1; }
+      .nexora-selected-chevron { display: none !important; }
       .iti__selected-dial-code { margin-left: 0 !important; }
       .iti__dropdown-content { z-index: 9999; color: #111827; }
       .iti__search-input { color: #111827; }
@@ -537,7 +537,7 @@
                 const button = phoneInput.closest('.iti')?.querySelector('.iti__selected-country');
                 if (!button) return;
                 const country = iti.getSelectedCountryData();
-                button.innerHTML = `<span class="nexora-selected-dial-code">+${country.dialCode || '1'}</span><span class="nexora-selected-chevron" aria-hidden="true">⌄</span>`;
+                button.innerHTML = `<span class="nexora-selected-dial-code">+${country.dialCode || '1'}</span>`;
                 button.setAttribute('aria-label', `Selected country code +${country.dialCode}. Click to choose another country`);
                 button.setAttribute('title', `+${country.dialCode} — choose country`);
             }
