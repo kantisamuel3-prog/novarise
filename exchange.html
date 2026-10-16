@@ -78,6 +78,8 @@
         .exchange-background canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .20; }
         body > *:not(.exchange-background) { position: relative; z-index: 1; }
 
+        .nexora-bottom-nav { width: 100vw; max-width: none; margin-left: 0; margin-right: 0; border-left: 0 !important; border-right: 0 !important; border-radius: 0 !important; }
+
         .chart-box {
             position: relative;
             width: 100%;
@@ -180,7 +182,7 @@
 </script>
 
 </head>
-<body class="max-w-md mx-auto min-h-screen flex flex-col justify-between border-x border-[#222222] relative pb-16">
+<body class="min-h-screen flex flex-col justify-between relative pb-16">
     <!-- Matching Account page: subtle animated candlestick background -->
     <div class="exchange-background" aria-hidden="true">
         <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
@@ -521,7 +523,7 @@
     </div>
 
     <!-- BOTTOM NAVIGATION — matching Nexora Account navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-[#030b17]/95 border-t border-cyan-400/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
+    <nav class="nexora-bottom-nav fixed bottom-0 left-0 right-0 h-20 bg-[#030b17]/95 border-t border-cyan-400/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
         <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cyan-300 transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
             <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
             <span>Home</span>
