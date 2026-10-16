@@ -16,6 +16,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
+    <!-- International country-code selector -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
+    <style>
+      .iti { width: 100%; min-width: 0; }
+      .iti__tel-input { width: 100% !important; padding-left: 58px !important; }
+      .iti__country-container { left: 0; }
+      .iti__selected-country { background: transparent !important; border-radius: 999px 0 0 999px; }
+      .iti__selected-country-primary { padding-left: 8px; padding-right: 8px; }
+      .iti__dropdown-content { z-index: 9999; color: #111827; }
+      .iti__search-input { color: #111827; }
+    </style>
+
     <!-- Firebase SDKs (Compat v10) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -218,16 +230,14 @@
                     <div class="text-gray-300 pr-3 border-r border-nexora-cyan/30 flex items-center text-lg">
                         <i class="fa-solid fa-mobile-screen-button text-nexora-cyan"></i>
                     </div>
-                    <div class="flex items-center w-full pl-3 font-mono text-sm">
-                        <span class="text-nexora-cyan font-bold mr-2">+63</span>
-                        <input 
-                            type="tel" 
-                            id="phone" 
-                            name="phone" 
-                            placeholder="PHONE" 
-                            pattern="^9\d{9}$" 
-                            maxlength="10" 
-                            required 
+                    <div class="flex items-center w-full pl-3 font-mono text-sm min-w-0">
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="PHONE NUMBER"
+                            autocomplete="tel-national"
+                            required
                             class="w-full bg-transparent text-white font-semibold tracking-wider placeholder-gray-500 uppercase focus:outline-none"
                         >
                     </div>
@@ -365,6 +375,7 @@
         drawChart();
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
     <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
@@ -402,13 +413,22 @@
             });
         }
 
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function() {
-                this.value = this.value.replace(/\D/g, '');
-                if (this.value.length > 10) {
-                    this.value = this.value.slice(0, 10);
-                }
-            });
+        // Searchable international country selector; defaults to +1.
+        const iti = phoneInput && window.intlTelInput ? window.intlTelInput(phoneInput, {
+            initialCountry: 'us',
+            separateDialCode: true,
+            nationalMode: true,
+            formatOnDisplay: false,
+            autoPlaceholder: 'polite',
+            countrySearch: true,
+            utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js'
+        }) : null;
+
+        function getPhoneDetails() {
+            const national = phoneInput ? phoneInput.value.replace(/\D/g, '') : '';
+            const selected = iti ? iti.getSelectedCountryData() : { dialCode: '1', iso2: 'us' };
+            const dialCode = selected && selected.dialCode ? selected.dialCode : '1';
+            return { national, dialCode, full: dialCode + national, country: selected && selected.iso2 ? selected.iso2 : 'us' };
         }
 
         function showMessage(msg, isError = true) {
@@ -430,7 +450,7 @@
                 const phoneVal = phoneInput ? phoneInput.value.trim() : '';
                 const passVal = passwordInput ? passwordInput.value : '';
 
-                if (!/^9\d{9}$/.test(phoneVal) || !passVal) {
+                if (!phoneVal || phoneVal.length < 4 || !passVal) {
                     showMessage('Please enter your phone number and password first before scanning fingerprint.', true);
                     return;
                 }
@@ -454,10 +474,12 @@
                     return;
                 }
                 
-                const phoneVal = phoneInput ? phoneInput.value.trim() : '';
+                const phoneDetails = getPhoneDetails();
+                const phoneVal = phoneDetails.national;
+                const internationalPhone = phoneDetails.full;
                 const passVal = passwordInput ? passwordInput.value : '';
 
-                if (!phoneVal || !passVal) {
+                if (!phoneVal || phoneVal.length < 4 || !passVal) {
                     showMessage('Please enter phone number and password.', true);
                     return;
                 }
@@ -470,10 +492,22 @@
                     let querySnapshot = await usersRef.where("phone", "==", phoneVal).get();
 
                     if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("phone", "==", internationalPhone).get();
+                    }
+                    if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("phone", "==", "+" + internationalPhone).get();
+                    }
+                    if (querySnapshot.empty && phoneDetails.dialCode === "63") {
                         querySnapshot = await usersRef.where("phone", "==", "0" + phoneVal).get();
                     }
                     if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("normalizedPhone", "==", internationalPhone).get();
+                    }
+                    if (querySnapshot.empty && phoneDetails.dialCode === "63") {
                         querySnapshot = await usersRef.where("normalizedPhone", "==", "63" + phoneVal).get();
+                    }
+                    if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("phoneNumber", "==", internationalPhone).get();
                     }
                     if (querySnapshot.empty) {
                         querySnapshot = await usersRef.where("phoneNumber", "==", phoneVal).get();
@@ -493,7 +527,7 @@
                     if (storedPassword === passVal) {
                         const phoneDigits = phoneVal.replace(/\D/g, "");
                         const normalizedPhone = phoneDigits.replace(/^0+/, "");
-                        const syntheticEmail = "63" + normalizedPhone + "@nexora.local";
+                        const syntheticEmail = phoneDetails.dialCode + normalizedPhone + "@nexora.local";
 
                         try {
                             await auth.signInWithEmailAndPassword(
@@ -506,7 +540,7 @@
 
                             setTimeout(() => {
                                 if (
-                                    phoneVal === "9999999999" ||
+                                    (phoneDetails.dialCode === "63" && phoneVal === "9999999999") ||
                                     userData.email === "639999999999@nexora.local"
                                 ) {
                                     window.location.href = "admin-withdraw.html";
@@ -534,7 +568,7 @@
 
                                 setTimeout(() => {
                                     if (
-                                        phoneVal === "9999999999" ||
+                                        (phoneDetails.dialCode === "63" && phoneVal === "9999999999") ||
                                         userData.email === "639999999999@nexora.local"
                                     ) {
                                         window.location.href = "admin-withdraw.html";
