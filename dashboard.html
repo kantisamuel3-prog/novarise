@@ -121,18 +121,33 @@ header {
   gap: 8px;
 }
 
+
 .logo-icon {
   width: 30px;
   height: 30px;
-  background: linear-gradient(135deg, #00d4ff, #0055ff);
-  border-radius: 50%;
+  min-width: 30px;
+  min-height: 30px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
-  font-size: 14px;
-  color: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+  background: radial-gradient(circle, #063b65 0%, #041426 75%);
+  border: 2px dashed rgba(0, 242, 254, 0.8);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    0 0 8px rgba(0, 242, 254, 0.65),
+    inset 0 0 8px rgba(0, 242, 254, 0.2);
+}
+
+.logo-icon svg {
+  width: 19px;
+  height: 19px;
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.9));
 }
 
 .logo-copy strong {
