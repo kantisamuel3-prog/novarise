@@ -80,6 +80,15 @@
 
         .nexora-bottom-nav { width: 100vw; max-width: none; margin-left: 0; margin-right: 0; border-left: 0 !important; border-right: 0 !important; border-radius: 0 !important; }
 
+        /* Phone-sized trading app canvas; keep the bottom navigation full-width like account.html. */
+        body > header, body > #chartContainer, body > div.px-3 {
+            width: 100%;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
+        }
+
         .chart-box {
             position: relative;
             width: 100%;
@@ -130,6 +139,7 @@
             .chart-box { height: 200px; }
         }
         @media (max-width: 767px) {
+            body > header, body > #chartContainer, body > div.px-3 { max-width: 100%; }
             .chart-box { height: 190px; }
             body { font-size: 12px; }
         }
