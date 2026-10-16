@@ -386,11 +386,11 @@
 
                     <label class="bg-[#1a1a1a] border border-[#2e2e2e] p-2 rounded-xl flex justify-between items-center text-xs gap-2">
                         <span class="text-gray-400 shrink-0">Contracts (BTC)</span>
-                        <input id="contractQty" aria-label="Contracts in BTC" type="number" min="0.001" max="100" step="0.001" value="0.01" class="w-24 bg-transparent text-white font-bold text-right outline-none">
+                        <input id="contractQty" aria-label="Contracts in BTC" type="number" min="0.001" max="100" step="0.001" value="0.01" class="w-24 bg-transparent text-white font-bold text-center outline-none">
                     </label>
 
                     <div class="text-[10px] space-y-0.5 text-gray-400 pt-0.5">
-                        <div class="flex justify-between"><span>Available</span><span class="text-white font-bold">1,482.00 USDT</span></div>
+                        <div class="flex justify-between"><span>Available</span><span id="availableBalance" class="text-white font-bold">1,482.00 USDT</span></div>
                         <div class="flex justify-between"><span>Max Leverage</span><span class="text-white font-bold">20x</span></div>
                     </div>
 
@@ -1139,6 +1139,24 @@
         renderChart();
     }
 
+    // Demo trading balance: each successful BTC order-help action deducts 10 USDT.
+    // Stored locally so the displayed balance remains after a page reload in this browser.
+    const NEXORA_ORDER_FEE = 10;
+    const NEXORA_BALANCE_KEY = 'nexora_exchange_available_balance';
+    let availableBalance = 1482;
+    try {
+        const savedBalance = Number(localStorage.getItem(NEXORA_BALANCE_KEY));
+        if (localStorage.getItem(NEXORA_BALANCE_KEY) !== null && Number.isFinite(savedBalance) && savedBalance >= 0) {
+            availableBalance = savedBalance;
+        }
+    } catch (e) { /* Use the default demo balance if browser storage is unavailable. */ }
+
+    function renderAvailableBalance() {
+        const balanceEl = document.getElementById('availableBalance');
+        if (balanceEl) balanceEl.textContent = availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USDT';
+    }
+    renderAvailableBalance();
+
     function executeAction() {
         const qtyInput = document.getElementById('contractQty');
         const qty = Number(qtyInput.value);
@@ -1149,6 +1167,28 @@
             qtyInput.addEventListener('input', () => qtyInput.setCustomValidity(''), { once: true });
             return;
         }
+
+        if (availableBalance < NEXORA_ORDER_FEE) {
+            document.getElementById('orderHelpTitle').textContent = 'Insufficient Balance';
+            document.getElementById('orderHelpSubtitle').textContent = 'You need at least 10.00 USDT to continue.';
+            document.getElementById('orderHelpStatus').textContent = 'Order not processed. Available balance is too low.';
+            document.getElementById('orderHelpAction').textContent = currentSide === 'open' ? 'Open Long BTC' : 'Close Short BTC';
+            document.getElementById('orderHelpType').textContent = document.getElementById('orderType').value;
+            document.getElementById('orderHelpQty').textContent = qty.toFixed(3).replace(/0+$/, '').replace(/\.$/, '') + ' BTC';
+            document.getElementById('orderHelpPrice').textContent = '$' + basePrice.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+            const lowBalanceModal = document.getElementById('orderHelpModal');
+            lowBalanceModal.style.position = 'fixed';
+            lowBalanceModal.style.inset = '0';
+            lowBalanceModal.style.alignItems = 'center';
+            lowBalanceModal.style.justifyContent = 'center';
+            lowBalanceModal.style.overflowY = 'auto';
+            lowBalanceModal.style.display = 'flex';
+            return;
+        }
+
+        availableBalance = Math.round((availableBalance - NEXORA_ORDER_FEE) * 100) / 100;
+        try { localStorage.setItem(NEXORA_BALANCE_KEY, String(availableBalance)); } catch (e) { /* Balance still updates for this page session. */ }
+        renderAvailableBalance();
 
         const actionLabel = currentSide === 'open' ? 'Open Long BTC' : 'Close Short BTC';
         document.getElementById('orderHelpAction').textContent = actionLabel;
