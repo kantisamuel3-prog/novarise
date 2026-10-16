@@ -138,15 +138,15 @@
                 <i class="fa-solid fa-chevron-right text-blue-400 text-xs pointer-events-none"></i>
             </button>
 
-            <!-- Option 3: Bind Bank Account (GCash / Maya) -->
+            <!-- Option 3: Bind Crypto Wallet -->
             <button onclick="openSection('bankSection')" class="w-full p-4 rounded-2xl border border-amber-500/25 bg-nexora-card/90 flex items-center justify-between glow-box hover:border-amber-500/60 transition-all cursor-pointer">
                 <div class="flex items-center space-x-3 pointer-events-none">
                     <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-sm">
-                        <i class="fa-solid fa-wallet"></i>
+                        <i class="fa-brands fa-bitcoin"></i>
                     </div>
                     <div class="text-left">
-                        <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND BANK ACCOUNT</h2>
-                        <p class="text-[10px] text-gray-400 font-mono">Link GCash or Maya for payouts</p>
+                        <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND CRYPTO WALLET</h2>
+                        <p class="text-[10px] text-gray-400 font-mono">Link wallet address for crypto withdrawals</p>
                     </div>
                 </div>
                 <i class="fa-solid fa-chevron-right text-amber-400 text-xs pointer-events-none"></i>
@@ -246,55 +246,49 @@
                 </div>
             </div>
 
-            <!-- BIND BANK ACCOUNT FORM -->
+            <!-- BIND CRYPTO WALLET FORM -->
             <div id="bankSection" class="form-panel hidden rounded-2xl border border-amber-500/25 bg-nexora-card/95 p-5 glow-box backdrop-blur-xl relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-amber-400 to-amber-600"></div>
-                
+
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center space-x-2.5">
                         <div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs">
-                            <i class="fa-solid fa-wallet"></i>
+                            <i class="fa-brands fa-bitcoin"></i>
                         </div>
-                        <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND BANK ACCOUNT</h2>
+                        <h2 class="text-xs font-black font-mono tracking-wider text-white">BIND CRYPTO WALLET</h2>
                     </div>
                     <span id="bankStatusBadge" class="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-400 border border-gray-500/20">UNBOUND</span>
                 </div>
 
                 <div class="space-y-3">
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">SELECT METHOD</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <!-- GCash Button -->
-                            <button type="button" id="methodGcash" class="h-12 px-3 rounded-xl border border-blue-500/40 bg-[#007dfc] text-white transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2">
-                                <span class="w-6 h-6 rounded-full bg-white text-[#007dfc] font-black text-xs flex items-center justify-center shadow-inner pointer-events-none">G</span>
-                                <span class="font-extrabold text-sm tracking-tight text-white font-sans pointer-events-none">GCash</span>
-                            </button>
-
-                            <!-- Maya Button -->
-                            <button type="button" id="methodMaya" class="h-12 px-3 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 transition-all cursor-pointer flex items-center justify-center space-x-1.5">
-                                <span class="font-black text-lg tracking-tighter lowercase text-[#50e3a4] font-sans pointer-events-none">maya</span>
-                            </button>
-                        </div>
+                        <label for="cryptoAssetSelect" class="block text-[10px] font-black text-gray-400 font-mono mb-1">CRYPTO ASSET</label>
+                        <select id="cryptoAssetSelect" class="w-full h-11 px-3.5 bg-slate-950/90 border border-amber-500/25 rounded-xl text-white text-xs font-mono outline-none focus:border-amber-500 transition-all">
+                            <option value="USDT">USDT — Tether</option>
+                            <option value="ETH">ETH — Ethereum</option>
+                            <option value="BTC">BTC — Bitcoin</option>
+                            <option value="USDC">USDC — USD Coin</option>
+                        </select>
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1">ACCOUNT NAME</label>
-                        <input id="bankAccountName" type="text" placeholder="Full name on account" class="w-full h-11 px-3.5 bg-slate-950/90 border border-amber-500/25 rounded-xl text-white text-xs font-mono outline-none focus:border-amber-500 transition-all">
+                        <label for="cryptoNetworkSelect" class="block text-[10px] font-black text-gray-400 font-mono mb-1">NETWORK</label>
+                        <select id="cryptoNetworkSelect" class="w-full h-11 px-3.5 bg-slate-950/90 border border-amber-500/25 rounded-xl text-white text-xs font-mono outline-none focus:border-amber-500 transition-all"></select>
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 font-mono mb-1" id="bankNumberLabel">ACCOUNT NUMBER</label>
-                        <input id="bankAccountNumber" type="text" placeholder="Enter mobile number" class="w-full h-11 px-3.5 bg-slate-950/90 border border-amber-500/25 rounded-xl text-white text-xs font-mono outline-none focus:border-amber-500 transition-all">
+                        <label for="bankAccountNumber" class="block text-[10px] font-black text-gray-400 font-mono mb-1">WALLET ADDRESS</label>
+                        <textarea id="bankAccountNumber" rows="3" placeholder="Enter your destination wallet address" class="w-full min-h-[88px] px-3.5 py-3 bg-slate-950/90 border border-amber-500/25 rounded-xl text-white text-xs font-mono outline-none focus:border-amber-500 transition-all resize-y"></textarea>
+                        <p class="text-[9px] text-gray-500 font-mono mt-1">Choose the correct asset and network. Sending crypto on the wrong network may result in permanent loss.</p>
                     </div>
 
                     <button id="saveBankBtn" class="w-full py-3 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/40 text-amber-400 text-xs font-black font-mono rounded-xl hover:bg-amber-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]">
-                        Save Bank Account
+                        Save Crypto Wallet
                     </button>
 
-                    <!-- Professional Warning Notice -->
                     <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[10px] font-mono text-amber-200/90 leading-relaxed">
                         <i class="fa-solid fa-circle-exclamation mr-1 text-amber-400"></i>
-                        <strong>Important Note:</strong> Please carefully review and verify your account name and mobile number before saving. Once bound and locked, account details cannot be modified directly for security purposes. If you need assistance updating your bound accounts, please contact our support team.
+                        <strong>Important:</strong> Verify your wallet address and network before saving. Each asset/network wallet is locked after binding. USDT networks follow the options used on the Withdraw page: TRON (TRC-20) and Ethereum (ERC-20).
                     </div>
                 </div>
             </div>
@@ -357,88 +351,79 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        let selectedBankMethod = "GCash";
+        let selectedBankMethod = "USDT";
         let userDataCache = {};
 
-        // Bank Selection Logic
-        document.getElementById("methodGcash").addEventListener("click", () => {
-            selectedBankMethod = "GCash";
-            updateBankMethodUI();
-        });
+        // Crypto asset/network options aligned with withdraw1.html
+        const cryptoAssetNetworks = {
+            USDT: [
+                { value: "Tron", label: "TRON (TRC-20)" },
+                { value: "Ethereum", label: "Ethereum (ERC-20)" }
+            ],
+            ETH: [
+                { value: "Ethereum", label: "Ethereum (ERC-20)" }
+            ],
+            BTC: [
+                { value: "Bitcoin", label: "Bitcoin network" }
+            ],
+            USDC: [
+                { value: "Ethereum", label: "Ethereum (ERC-20)" },
+                { value: "Tron", label: "TRON (TRC-20)" }
+            ]
+        };
 
-        document.getElementById("methodMaya").addEventListener("click", () => {
-            selectedBankMethod = "Maya";
+        function getCryptoWalletKey(asset, network) {
+            return `${asset}_${network}`;
+        }
+
+        function updateCryptoNetworkOptions() {
+            const asset = document.getElementById("cryptoAssetSelect").value;
+            const networkSelect = document.getElementById("cryptoNetworkSelect");
+            const options = cryptoAssetNetworks[asset] || [];
+            const previous = networkSelect.value;
+            networkSelect.innerHTML = options.map(n => `<option value="${n.value}">${n.label}</option>`).join("");
+            if (options.some(n => n.value === previous)) networkSelect.value = previous;
             updateBankMethodUI();
-        });
+        }
 
         function updateBankMethodUI() {
-            const nameInput = document.getElementById("bankAccountName");
-            const numberInput = document.getElementById("bankAccountNumber");
-            const gcashBtn = document.getElementById("methodGcash");
-            const mayaBtn = document.getElementById("methodMaya");
-
-            let bankData = userDataCache.bankAccount || {};
-            
-            if(bankData.number && !bankData.gcash && !bankData.maya) {
-                const legacyMeth = bankData.method === "Maya" ? "maya" : "gcash";
-                bankData = {
-                    [legacyMeth]: { name: bankData.name, number: bankData.number }
-                };
-            }
-
-            if(selectedBankMethod === "GCash") {
-                gcashBtn.className = "h-12 px-3 rounded-xl border border-blue-500/40 bg-[#007dfc] text-white transition-all cursor-pointer shadow-md flex items-center justify-center space-x-2";
-                mayaBtn.className = "h-12 px-3 rounded-xl border border-emerald-500/20 bg-slate-950/90 text-gray-400 transition-all cursor-pointer flex items-center justify-center space-x-1.5";
-                document.getElementById("bankNumberLabel").textContent = "GCASH NUMBER";
-
-                if(bankData.gcash && bankData.gcash.number) {
-                    nameInput.value = bankData.gcash.name || "";
-                    numberInput.value = bankData.gcash.number || "";
-                    setInputsLocked(true, "GCash");
-                } else {
-                    nameInput.value = "";
-                    numberInput.value = "";
-                    setInputsLocked(false, "GCash");
-                }
-            } else {
-                mayaBtn.className = "h-12 px-3 rounded-xl border border-emerald-500/40 bg-black text-[#50e3a4] transition-all cursor-pointer shadow-md flex items-center justify-center space-x-1.5";
-                gcashBtn.className = "h-12 px-3 rounded-xl border border-blue-500/20 bg-slate-950/90 text-gray-400 transition-all cursor-pointer flex items-center justify-center space-x-2";
-                document.getElementById("bankNumberLabel").textContent = "MAYA NUMBER";
-
-                if(bankData.maya && bankData.maya.number) {
-                    nameInput.value = bankData.maya.name || "";
-                    numberInput.value = bankData.maya.number || "";
-                    setInputsLocked(true, "Maya");
-                } else {
-                    nameInput.value = "";
-                    numberInput.value = "";
-                    setInputsLocked(false, "Maya");
-                }
-            }
-        }
-
-        function setInputsLocked(isLocked, method) {
-            const nameInput = document.getElementById("bankAccountName");
-            const numberInput = document.getElementById("bankAccountNumber");
+            const asset = document.getElementById("cryptoAssetSelect").value;
+            const network = document.getElementById("cryptoNetworkSelect").value;
+            const addressInput = document.getElementById("bankAccountNumber");
             const saveBtn = document.getElementById("saveBankBtn");
+            const wallets = userDataCache.cryptoWallets || {};
+            const key = getCryptoWalletKey(asset, network);
+            const wallet = wallets[key];
 
-            nameInput.disabled = isLocked;
-            numberInput.disabled = isLocked;
+            addressInput.value = wallet?.address || "";
+            const locked = Boolean(wallet?.address);
+            addressInput.disabled = locked;
+            document.getElementById("cryptoAssetSelect").disabled = false;
+            document.getElementById("cryptoNetworkSelect").disabled = false;
 
-            if(isLocked) {
-                nameInput.classList.add("opacity-60", "cursor-not-allowed");
-                numberInput.classList.add("opacity-60", "cursor-not-allowed");
+            if (locked) {
+                addressInput.classList.add("opacity-60", "cursor-not-allowed");
                 saveBtn.disabled = true;
-                saveBtn.textContent = `LOCKED / BOUND (${method})`;
+                saveBtn.textContent = `LOCKED / BOUND (${asset} · ${network})`;
                 saveBtn.className = "w-full py-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black font-mono rounded-xl cursor-not-allowed shadow-inner";
             } else {
-                nameInput.classList.remove("opacity-60", "cursor-not-allowed");
-                numberInput.classList.remove("opacity-60", "cursor-not-allowed");
+                addressInput.classList.remove("opacity-60", "cursor-not-allowed");
                 saveBtn.disabled = false;
-                saveBtn.textContent = `Save ${method} Account`;
+                saveBtn.textContent = `Save ${asset} Wallet`;
                 saveBtn.className = "w-full py-3 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/40 text-amber-400 text-xs font-black font-mono rounded-xl hover:bg-amber-500/30 transition-all cursor-pointer shadow-md active:scale-[0.98]";
             }
+
+            const anyBound = Object.values(wallets).some(w => w && w.address);
+            const badge = document.getElementById("bankStatusBadge");
+            badge.textContent = anyBound ? "BOUND" : "UNBOUND";
+            badge.className = anyBound
+                ? "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                : "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-400 border border-gray-500/20";
         }
+
+        document.getElementById("cryptoAssetSelect").addEventListener("change", updateCryptoNetworkOptions);
+        document.getElementById("cryptoNetworkSelect").addEventListener("change", updateBankMethodUI);
+        updateCryptoNetworkOptions();
 
         // Navigation Functions between Menu and Forms
         function openSection(sectionId) {
@@ -599,19 +584,9 @@
                     badge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
                 }
 
-                let bAcc = data.bankAccount || {};
-                if(bAcc.number && !bAcc.gcash && !bAcc.maya) {
-                    const legacyMethod = bAcc.method === "Maya" ? "maya" : "gcash";
-                    bAcc = { [legacyMethod]: { name: bAcc.name, number: bAcc.number } };
-                }
-
-                if((bAcc.gcash && bAcc.gcash.number) || (bAcc.maya && bAcc.maya.number)) {
-                    const bankBadge = document.getElementById("bankStatusBadge");
-                    bankBadge.textContent = "BOUND";
-                    bankBadge.className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-                }
-
-                updateBankMethodUI();
+                // Crypto wallet bindings are stored separately from any legacy bankAccount data.
+                userDataCache.cryptoWallets = data.cryptoWallets || {};
+                updateCryptoNetworkOptions();
 
                 if(data.withdrawalPin){
                     document.getElementById("currentPinWrapper").style.display = "block";
@@ -671,7 +646,7 @@
             }
         });
 
-        // Save Bank Account Logic (GCash / Maya Separately)
+        // Save crypto wallet address for the selected asset/network
         document.getElementById("saveBankBtn").addEventListener("click", async () => {
             const userUid = localStorage.getItem("nexora_user_uid");
             if(!userUid) {
@@ -679,52 +654,54 @@
                 return;
             }
 
-            const nameInput = document.getElementById("bankAccountName");
-            const numberInput = document.getElementById("bankAccountNumber");
-            const name = nameInput.value.trim();
-            const number = numberInput.value.trim();
+            const asset = document.getElementById("cryptoAssetSelect").value;
+            const network = document.getElementById("cryptoNetworkSelect").value;
+            const addressInput = document.getElementById("bankAccountNumber");
+            const address = addressInput.value.trim();
 
-            if(!name) {
-                showAlert("Please enter the account holder name.");
+            if(!asset || !network) {
+                showAlert("Please select a crypto asset and network.");
                 return;
             }
-            if(!number || number.length < 10) {
-                showAlert("Please enter a valid mobile number.");
+            if(!address || address.length < 12) {
+                showAlert("Please enter a valid wallet address.");
+                addressInput.focus();
                 return;
             }
 
+            const key = getCryptoWalletKey(asset, network);
             try {
                 const userRef = db.collection("Users").doc(userUid);
                 const docSnap = await userRef.get();
-                let existingBank = docSnap.exists && docSnap.data().bankAccount ? docSnap.data().bankAccount : {};
-
-                if(existingBank.number && !existingBank.gcash && !existingBank.maya) {
-                    const legacyMethod = existingBank.method === "Maya" ? "maya" : "gcash";
-                    existingBank = {
-                        [legacyMethod]: { name: existingBank.name, number: existingBank.number }
-                    };
+                if(!docSnap.exists) {
+                    showAlert("User account was not found.");
+                    return;
+                }
+                const existingData = docSnap.data() || {};
+                const existingWallets = existingData.cryptoWallets || {};
+                if(existingWallets[key]?.address) {
+                    userDataCache.cryptoWallets = existingWallets;
+                    updateBankMethodUI();
+                    showAlert("This asset/network wallet is already bound and locked.");
+                    return;
                 }
 
-                const methodKey = selectedBankMethod.toLowerCase();
-                existingBank[methodKey] = {
-                    name: name,
-                    number: number
+                const walletRecord = {
+                    asset,
+                    network,
+                    address,
+                    boundAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
-
                 await userRef.set({
-                    bankAccount: existingBank
+                    cryptoWallets: { ...existingWallets, [key]: walletRecord }
                 }, { merge: true });
 
-                userDataCache.bankAccount = existingBank;
-
+                userDataCache.cryptoWallets = { ...existingWallets, [key]: { ...walletRecord, boundAt: new Date() } };
                 updateBankMethodUI();
-                document.getElementById("bankStatusBadge").textContent = "BOUND";
-                document.getElementById("bankStatusBadge").className = "text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-
-                showAlert(`Your ${selectedBankMethod} account has been successfully bound and locked!`, "SUCCESS");
+                showAlert(`Your ${asset} wallet on ${network} has been successfully bound and locked!`, "SUCCESS");
             } catch(err) {
                 console.error(err);
-                showAlert("Failed to bind bank account: " + err.message);
+                showAlert("Failed to bind crypto wallet: " + err.message);
             }
         });
 
