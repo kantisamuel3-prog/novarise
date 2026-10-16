@@ -225,7 +225,7 @@ button,input,select,textarea{font:inherit}.btn{border:1px solid #17415e;border-r
       <div class="rowline"><span>Wallet address</span><span>${safe(w.walletAddress || "—")}</span></div>
       <div class="rowline"><span>Gross amount</span><span>${safe(money(gross))} ${safe(w.asset || w.method || "")}</span></div>
       <div class="rowline"><span>Fee</span><span>${safe(money(fee))} ${safe(w.asset || w.method || "")}</span></div>
-      <div class="rowline"><span>Total deducted</span><span>${safe(money(deducted))} ${safe(w.asset || w.method || "")}</span></div>
+      <div class="rowline"><span>Total received</span><span>${safe(money(net))} ${safe(w.asset || w.method || "")}</span></div>
       ${w.reviewNote ? `<div class="rowline"><span>Review note</span><span>${safe(w.reviewNote)}</span></div>` : ""}
       ${pending && status === "PENDING" ? `<div class="actions"><button class="btn btn-approve" data-action="approveWithdrawal" data-user="${safe(userId)}" data-request="${safe(w.requestId)}">Approve</button><button class="btn btn-reject" data-action="rejectWithdrawal" data-user="${safe(userId)}" data-request="${safe(w.requestId)}">Reject & Refund</button></div>` : ""}
     </article>`;
