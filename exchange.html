@@ -569,7 +569,7 @@
     </div>
 
     <!-- ORDER HELP / RESULT MODAL: visual confirmation, not a real exchange execution -->
-    <div id="orderHelpModal" class="fixed inset-0 bg-black/80 z-[1400] hidden items-center justify-center p-4 font-mono" role="dialog" aria-modal="true" aria-labelledby="orderHelpTitle">
+    <div id="orderHelpModal" class="fixed inset-0 bg-black/80 z-[99999] hidden items-center justify-center p-4 font-mono" style="position:fixed;inset:0;align-items:center;justify-content:center;display:none;overflow-y:auto;" role="dialog" aria-modal="true" aria-labelledby="orderHelpTitle">
         <div class="w-full max-w-sm rounded-2xl border border-cyan-400/40 bg-[#0b1526] shadow-[0_0_35px_rgba(0,242,254,0.15)] overflow-hidden">
             <div class="px-4 py-4 border-b border-cyan-400/20 flex items-center gap-3">
                 <div id="orderHelpIcon" class="w-10 h-10 rounded-full bg-cyan-950/70 border border-cyan-400/40 flex items-center justify-center text-cyan-300">
@@ -1104,11 +1104,20 @@
         document.getElementById('orderHelpTitle').textContent = 'Order Help';
         document.getElementById('orderHelpSubtitle').textContent = actionLabel + ' • BTCUSDT Perpetual';
         document.getElementById('orderHelpStatus').innerHTML = '<i class="fa-solid fa-check mr-1"></i> Order help successfully processed';
-        document.getElementById('orderHelpModal').style.display = 'flex';
+        const modal = document.getElementById('orderHelpModal');
+        // Force a viewport-centered overlay regardless of surrounding page layout.
+        modal.style.position = 'fixed';
+        modal.style.inset = '0';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.overflowY = 'auto';
+        modal.style.display = 'flex';
     }
 
     function closeOrderHelp() {
-        document.getElementById('orderHelpModal').style.display = 'none';
+        const modal = document.getElementById('orderHelpModal');
+        modal.style.display = 'none';
+        // Closing resets the dialog so the user can open a new order-help result again.
     }
 
     // Close the order help dialog by tapping its backdrop or pressing Escape.
