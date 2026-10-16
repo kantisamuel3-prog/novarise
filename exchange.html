@@ -1280,5 +1280,19 @@
 })();
 </script>
 
+<script>
+// Prevent the active Exchange navigation item from reloading exchange.html.
+document.addEventListener('click', function (event) {
+    const link = event.target.closest('a[href]');
+    if (!link) return;
+    const target = (link.getAttribute('href') || '').split(/[?#]/)[0].split('/').pop().toLowerCase();
+    const current = window.location.pathname.split('/').pop().toLowerCase();
+    if (target === 'exchange.html' && (current === 'exchange.html' || current === '')) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+}, true);
+</script>
+
 </body>
 </html>
