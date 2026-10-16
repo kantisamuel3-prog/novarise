@@ -179,13 +179,9 @@
     </style>
 
 <style>
-    /* Keep the bottom navigation visible while the page reloads and Firebase checks auth. */
-    html.exchange-auth-check body > *:not(.exchange-background):not(.nexora-bottom-nav) {
-        visibility: hidden !important;
-    }
-    html.exchange-auth-check body > .nexora-bottom-nav {
-        visibility: visible !important;
-    }
+    /* Keep the Exchange platform and bottom navigation visible during Firebase auth checks/reloads. */
+    html.exchange-auth-check body,
+    html.exchange-auth-check body > *,
     html.exchange-auth-ready body,
     html.exchange-auth-ready body > * {
         visibility: visible !important;
