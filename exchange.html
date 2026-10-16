@@ -195,30 +195,69 @@
             measurementId: "G-0L77SFTC4F"
         };
 
+        let redirectStarted = false;
         function showLogin() {
+            if (redirectStarted) return;
+            redirectStarted = true;
             window.location.replace('login.html');
         }
+        function showExchange() {
+            document.documentElement.classList.remove('exchange-auth-check');
+            document.documentElement.classList.add('exchange-auth-ready');
+        }
 
-        window.addEventListener('DOMContentLoaded', function () {
+        window.addEventListener('DOMContentLoaded', async function () {
             try {
                 if (!window.firebase || !firebase.auth) {
+                    console.error('Firebase Authentication SDK did not load.');
                     showLogin();
                     return;
                 }
                 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-                firebase.auth().onAuthStateChanged(function (user) {
+                const auth = firebase.auth();
+
+                // Keep the signed-in session across page navigation and browser restarts.
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+                let initialStateHandled = false;
+                auth.onAuthStateChanged(function (user) {
                     if (user) {
-                        document.documentElement.classList.remove('exchange-auth-check');
-                        document.documentElement.classList.add('exchange-auth-ready');
+                        initialStateHandled = true;
+                        showExchange();
+                        return;
+                    }
+
+                    // Wait briefly for Firebase to finish restoring its persisted session.
+                    if (!initialStateHandled) {
+                        initialStateHandled = true;
+                        window.setTimeout(function () {
+                            if (auth.currentUser) showExchange();
+                            else showLogin();
+                        }, 1800);
                     } else {
                         showLogin();
                     }
-                }, function () {
-                    showLogin();
+                }, function (error) {
+                    console.error('Nexora Exchange authentication state error:', error);
+                    // Do not redirect on a transient listener error; retry by checking current state.
+                    window.setTimeout(function () {
+                        if (auth.currentUser) showExchange();
+                        else showLogin();
+                    }, 1800);
                 });
             } catch (error) {
                 console.error('Nexora Exchange authentication check failed:', error);
-                showLogin();
+                // A failed persistence setup should not automatically log out a valid session.
+                try {
+                    const auth = firebase.auth();
+                    if (auth.currentUser) showExchange();
+                    else window.setTimeout(function () {
+                        if (auth.currentUser) showExchange();
+                        else showLogin();
+                    }, 1800);
+                } catch (_) {
+                    showLogin();
+                }
             }
         });
     })();
@@ -659,6 +698,7 @@
     ];
 
     function selectTimeframe(tf) {
+        try { sessionStorage.setItem('nexora_exchange_timeframe', tf); } catch (_) {}
         document.querySelectorAll('.tf-btn').forEach(btn => {
             btn.classList.remove('text-white', 'bg-[#2e2e2e]');
             btn.classList.add('hover:text-white');
@@ -806,6 +846,7 @@
         if (spacing < 26) {
             spacing += 2;
             candleWidth = Math.max(4, candleWidth + 1);
+            try { sessionStorage.setItem('nexora_exchange_spacing', String(spacing)); sessionStorage.setItem('nexora_exchange_candleWidth', String(candleWidth)); } catch (_) {}
             renderChart();
         }
     }
@@ -814,6 +855,7 @@
         if (spacing > 6) {
             spacing -= 2;
             candleWidth = Math.max(3, candleWidth - 1);
+            try { sessionStorage.setItem('nexora_exchange_spacing', String(spacing)); sessionStorage.setItem('nexora_exchange_candleWidth', String(candleWidth)); } catch (_) {}
             renderChart();
         }
     }
@@ -841,6 +883,7 @@
     });
 
     function switchMode(mode) {
+        try { sessionStorage.setItem('nexora_exchange_mode', mode); } catch (_) {}
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
 
@@ -867,6 +910,7 @@
 
     function setSide(side) {
         currentSide = side;
+        try { sessionStorage.setItem('nexora_exchange_side', side); } catch (_) {}
         if(side === 'open') {
             document.getElementById('sideOpen').className = "py-1.5 rounded-lg bg-[#00b074] text-slate-950 font-black text-xs uppercase tracking-wider text-center";
             document.getElementById('sideClose').className = "py-1.5 rounded-lg bg-[#222222] text-gray-400 font-bold text-xs uppercase tracking-wider text-center";
@@ -882,6 +926,7 @@
 
     function toggleHideMA() {
         showMA = !showMA;
+        try { sessionStorage.setItem('nexora_exchange_showMA', String(showMA)); } catch (_) {}
         document.getElementById('hideBtn').style.opacity = showMA ? "1" : "0.5";
         document.getElementById('maLegend').style.display = showMA ? "grid" : "none";
         renderChart();
@@ -1128,8 +1173,64 @@
         if (event.key === 'Escape') closeOrderHelp();
     });
 
-    initData();
-    renderChart();
+    // Restore the Exchange view when navigating away and coming back in the same tab.
+    (function restoreExchangeState() {
+        let savedCandles = null;
+        try {
+            const rawCandles = sessionStorage.getItem('nexora_exchange_candles');
+            if (rawCandles) savedCandles = JSON.parse(rawCandles);
+            const savedPrice = Number(sessionStorage.getItem('nexora_exchange_basePrice'));
+            const savedSpacing = Number(sessionStorage.getItem('nexora_exchange_spacing'));
+            const savedWidth = Number(sessionStorage.getItem('nexora_exchange_candleWidth'));
+            if (Number.isFinite(savedPrice) && savedPrice > 0) basePrice = savedPrice;
+            if (Number.isFinite(savedSpacing) && savedSpacing >= 6 && savedSpacing <= 26) spacing = savedSpacing;
+            if (Number.isFinite(savedWidth) && savedWidth >= 3 && savedWidth <= 14) candleWidth = savedWidth;
+            const savedMA = sessionStorage.getItem('nexora_exchange_showMA');
+            if (savedMA !== null) showMA = savedMA === 'true';
+        } catch (error) {
+            console.warn('Could not restore Nexora Exchange chart state:', error);
+        }
+
+        if (Array.isArray(savedCandles) && savedCandles.length &&
+            savedCandles.every(c => c && ['open','close','high','low','volume'].every(k => Number.isFinite(Number(c[k]))))) {
+            candles = savedCandles.map(c => ({
+                open: Number(c.open), close: Number(c.close), high: Number(c.high),
+                low: Number(c.low), volume: Number(c.volume)
+            }));
+        } else {
+            initData();
+        }
+
+        const savedMode = (() => { try { return sessionStorage.getItem('nexora_exchange_mode'); } catch (_) { return null; } })();
+        const savedTF = (() => { try { return sessionStorage.getItem('nexora_exchange_timeframe'); } catch (_) { return null; } })();
+        const savedSide = (() => { try { return sessionStorage.getItem('nexora_exchange_side'); } catch (_) { return null; } })();
+
+        if (savedMode && ['spot','futures','options','bots'].includes(savedMode)) switchMode(savedMode);
+        if (savedTF && ['15m','1h','4h','1d'].includes(savedTF)) {
+            document.querySelectorAll('.tf-btn').forEach(btn => {
+                btn.classList.remove('text-white', 'bg-[#2e2e2e]');
+                btn.classList.add('hover:text-white');
+            });
+            const tfButton = document.getElementById('tf' + savedTF);
+            if (tfButton) {
+                tfButton.classList.add('text-white', 'bg-[#2e2e2e]');
+                tfButton.classList.remove('hover:text-white');
+            }
+        }
+        if (savedSide && ['open','close'].includes(savedSide)) setSide(savedSide);
+        document.getElementById('hideBtn').style.opacity = showMA ? '1' : '0.5';
+        document.getElementById('maLegend').style.display = showMA ? 'grid' : 'none';
+        renderChart();
+    })();
+
+    // Save chart candles and current price while the live ticker updates.
+    setInterval(function () {
+        try {
+            sessionStorage.setItem('nexora_exchange_candles', JSON.stringify(candles));
+            sessionStorage.setItem('nexora_exchange_basePrice', String(basePrice));
+        } catch (_) {}
+    }, 1000);
+
     setInterval(softTicker, 850);
 </script>
 
