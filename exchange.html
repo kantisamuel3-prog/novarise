@@ -1139,9 +1139,9 @@
         renderChart();
     }
 
-    // Demo trading balance: each successful BTC order-help action deducts 10 USDT.
+    // Demo trading balance: each successful BTC order-help action deducts 5 USDT.
     // Stored locally so the displayed balance remains after a page reload in this browser.
-    const NEXORA_ORDER_FEE = 10;
+    const NEXORA_ORDER_FEE = 5;
     const NEXORA_BALANCE_KEY = 'nexora_exchange_available_balance';
     let availableBalance = 1482;
     try {
@@ -1170,7 +1170,7 @@
 
         if (availableBalance < NEXORA_ORDER_FEE) {
             document.getElementById('orderHelpTitle').textContent = 'Insufficient Balance';
-            document.getElementById('orderHelpSubtitle').textContent = 'You need at least 10.00 USDT to continue.';
+            document.getElementById('orderHelpSubtitle').textContent = 'You need at least 5.00 USDT to continue.';
             document.getElementById('orderHelpStatus').textContent = 'Order not processed. Available balance is too low.';
             document.getElementById('orderHelpAction').textContent = currentSide === 'open' ? 'Open Long BTC' : 'Close Short BTC';
             document.getElementById('orderHelpType').textContent = document.getElementById('orderType').value;
