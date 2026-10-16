@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>82,026.8 BTC USDT Perpetual Swap | Nexora</title>
     
+    <!-- Firebase Authentication for Nexora login protection -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -102,10 +105,66 @@
             display: block;
         }
 
+        .tf-btn {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .tf-btn.active {
+            color: #ffffff;
+            background-color: #2e2e2e;
+        }
+
         ::-webkit-scrollbar { display: none; }
     </style>
+
+<style>
+    html.exchange-auth-check body { visibility: hidden !important; }
+    html.exchange-auth-ready body { visibility: visible !important; }
+</style>
+<script>
+    document.documentElement.classList.add('exchange-auth-check');
+    (function () {
+        const firebaseConfig = {
+            apiKey: "AIzaSyCIBDQOIiCOgfV4pMCUr0oUCNZoIDYDqGk",
+            authDomain: "investpro-2dafb.firebaseapp.com",
+            projectId: "investpro-2dafb",
+            storageBucket: "investpro-2dafb.firebasestorage.app",
+            messagingSenderId: "135092039764",
+            appId: "1:135092039764:web:c4c71eef0c904346a77dc1",
+            measurementId: "G-0L77SFTC4F"
+        };
+
+        function showLogin() {
+            window.location.replace('login.html');
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            try {
+                if (!window.firebase || !firebase.auth) {
+                    showLogin();
+                    return;
+                }
+                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                firebase.auth().onAuthStateChanged(function (user) {
+                    if (user) {
+                        document.documentElement.classList.remove('exchange-auth-check');
+                        document.documentElement.classList.add('exchange-auth-ready');
+                    } else {
+                        showLogin();
+                    }
+                }, function () {
+                    showLogin();
+                });
+            } catch (error) {
+                console.error('Nexora Exchange authentication check failed:', error);
+                showLogin();
+            }
+        });
+    })();
+</script>
+
 </head>
-<body class="max-w-md mx-auto min-h-screen flex flex-col justify-between border-x border-[#222222] relative pb-24">
+<body class="max-w-md mx-auto min-h-screen flex flex-col justify-between border-x border-[#222222] relative pb-16">
 
     <!-- TOP HEADER & MARKET MODES -->
     <header class="bg-[#121212] px-3 pt-2 pb-2 border-b border-[#222222] shrink-0">
@@ -160,11 +219,11 @@
 
         <!-- TIMEFRAME & ZOOM TOOLBAR -->
         <div class="flex items-center justify-between mt-2 text-[11px] font-mono text-gray-400 bg-[#1a1a1a] px-2 py-1 rounded-lg border border-[#2e2e2e]">
-            <div class="flex space-x-2.5 font-bold">
-                <button class="text-white bg-[#2e2e2e] px-1.5 py-0.5 rounded text-[10px]">15m</button>
-                <button class="hover:text-white text-[10px]">1h</button>
-                <button class="hover:text-white text-[10px]">4h</button>
-                <button class="hover:text-white text-[10px]">1D</button>
+            <div class="flex space-x-2 font-bold">
+                <button onclick="selectTimeframe('15m')" id="tf15m" class="tf-btn text-white bg-[#2e2e2e] px-1.5 py-0.5 rounded text-[10px]">15m</button>
+                <button onclick="selectTimeframe('1h')" id="tf1h" class="tf-btn hover:text-white px-1.5 py-0.5 rounded text-[10px]">1h</button>
+                <button onclick="selectTimeframe('4h')" id="tf4h" class="tf-btn hover:text-white px-1.5 py-0.5 rounded text-[10px]">4h</button>
+                <button onclick="selectTimeframe('1d')" id="tf1d" class="tf-btn hover:text-white px-1.5 py-0.5 rounded text-[10px]">1D</button>
             </div>
             <div class="flex items-center space-x-2">
                 <button onclick="zoomOut()" title="Zoom Out" class="w-6 h-6 bg-[#242424] hover:bg-[#2e2e2e] text-white rounded flex items-center justify-center font-bold">
@@ -253,18 +312,59 @@
             </div>
         </div>
 
-        <!-- PANEL 2: OPTIONS -->
-        <div id="panelOptions" class="mode-panel font-mono text-xs space-y-2">
-            <div class="text-white font-bold mb-1 flex justify-between items-center">
-                <span>Options Contracts</span>
-                <span class="text-emerald-500 text-[10px]">● Active</span>
+        <!-- PANEL 2: OPTIONS (MAY SAKTO AT MALILIIT NA LOGO NG BTC, ETH, SOL, AT XRP) -->
+        <div id="panelOptions" class="mode-panel font-mono text-xs space-y-1.5">
+            <div class="text-white font-bold mb-1 flex justify-between items-center text-[11px]">
+                <span>Active Options Contracts</span>
+                <span class="text-emerald-500 text-[9px]">● Live Market</span>
             </div>
-            <div class="p-2.5 bg-[#1a1a1a] rounded-xl border border-[#2e2e2e] flex justify-between items-center">
-                <div>
-                    <div class="text-white font-bold">BTC 15 min price call</div>
-                    <div class="text-[9px] text-gray-400">Vol: 1.37K Contracts</div>
+            
+            <!-- BTC Option -->
+            <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC" class="w-4 h-4 rounded-full">
+                    <div>
+                        <div class="text-white font-bold text-[10px]">BTC 15 min price call</div>
+                        <div class="text-[7px] text-gray-400">Vol: <span id="optVol1">1.37K</span> • Strike: $82,000</div>
+                    </div>
                 </div>
-                <span class="px-2.5 py-1 bg-[#2e2e2e] text-emerald-400 rounded-lg font-bold text-xs">↑ 2%</span>
+                <span id="optBadge1" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↑ +2.4%</span>
+            </div>
+
+            <!-- ETH Option -->
+            <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH" class="w-4 h-4 rounded-full">
+                    <div>
+                        <div class="text-white font-bold text-[10px]">ETH 30 min price put</div>
+                        <div class="text-[7px] text-gray-400">Vol: <span id="optVol2">2.15K</span> • Strike: $3,120</div>
+                    </div>
+                </div>
+                <span id="optBadge2" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↓ -1.8%</span>
+            </div>
+
+            <!-- SOL Option -->
+            <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <img src="https://assets.coingecko.com/coins/images/4128/small/solana.png" alt="SOL" class="w-4 h-4 rounded-full">
+                    <div>
+                        <div class="text-white font-bold text-[10px]">SOL 1 hour binary option</div>
+                        <div class="text-[7px] text-gray-400">Vol: <span id="optVol3">4.89K</span> • Strike: $194.5</div>
+                    </div>
+                </div>
+                <span id="optBadge3" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↑ +4.1%</span>
+            </div>
+
+            <!-- XRP Option -->
+            <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <img src="https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png" alt="XRP" class="w-4 h-4 rounded-full bg-black p-0.5 border border-gray-700">
+                    <div>
+                        <div class="text-white font-bold text-[10px]">XRP 4 hours volatility contract</div>
+                        <div class="text-[7px] text-gray-400">Vol: <span id="optVol4">8.42K</span> • Strike: $2.45</div>
+                    </div>
+                </div>
+                <span id="optBadge4" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↑ +5.6%</span>
             </div>
         </div>
 
@@ -275,13 +375,70 @@
                     <div class="text-gray-400 text-[9px]">Active Trading Bots</div>
                     <div class="text-base font-bold text-white">0.00 <span class="text-[10px]">USD</span></div>
                 </div>
-                <button class="px-2.5 py-1 bg-white text-black font-bold rounded-full text-[10px]">+ Create Bot</button>
+                <button onclick="openBotModal()" class="px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black rounded-xl text-[10px] shadow-md uppercase tracking-wider">
+                    + Create Bot
+                </button>
             </div>
         </div>
 
     </div>
 
-    <!-- SEE ALL TRADERS MODAL (PAGANDANG DESIGN) -->
+    <!-- TIMEFRAME ANALYTICS MODAL -->
+    <div id="timeframeModal" class="fixed inset-0 bg-black/85 z-[125] hidden items-center justify-center p-4 font-mono">
+        <div class="bg-[#1a1a1a] border border-cyan-500/40 w-full max-w-xs rounded-2xl p-4 shadow-2xl relative">
+            <button onclick="closeTimeframeModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white text-xs">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+            <div class="flex items-center space-x-2 mb-3">
+                <div class="w-7 h-7 bg-cyan-950/60 rounded-lg flex items-center justify-center border border-cyan-500/30 text-cyan-400 font-bold text-xs" id="modalTfBadge">1h</div>
+                <div>
+                    <h3 class="text-white font-extrabold text-xs">Timeframe Analytics</h3>
+                    <p class="text-[9px] text-gray-400">BTCUSDT Perpetual Market Structure</p>
+                </div>
+            </div>
+
+            <div class="space-y-2 text-xs bg-[#121212] p-3 rounded-xl border border-[#2e2e2e] mb-3">
+                <div class="flex justify-between items-center border-b border-[#2e2e2e] pb-1.5">
+                    <span class="text-gray-400 text-[10px]">Candle Interval:</span>
+                    <span id="mInterval" class="text-cyan-400 font-bold">1 Hour (1H)</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-[#2e2e2e] pb-1.5">
+                    <span class="text-gray-400 text-[10px]">RSI (14):</span>
+                    <span id="mRsi" class="text-emerald-400 font-bold">58.42 (Neutral)</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-[#2e2e2e] pb-1.5">
+                    <span class="text-gray-400 text-[10px]">Volume Weight:</span>
+                    <span id="mVol" class="text-white font-bold">45.2M USDT</span>
+                </div>
+                <div class="flex justify-between items-center pt-1">
+                    <span class="text-gray-400 text-[10px]">Market Sentiment:</span>
+                    <span id="mSentiment" class="text-emerald-400 font-bold">Bullish Bias</span>
+                </div>
+            </div>
+
+            <button onclick="closeTimeframeModal()" class="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 rounded-xl text-xs font-black shadow-lg uppercase tracking-wider">
+                Apply Timeframe
+            </button>
+        </div>
+    </div>
+
+    <!-- BOT SUPPORT RESTRICTION CUSTOM MODAL -->
+    <div id="botSupportModal" class="fixed inset-0 bg-black/90 z-[130] hidden items-center justify-center p-4 font-mono">
+        <div class="bg-[#1a1a1a] border border-cyan-500/40 w-full max-w-xs rounded-2xl p-4 shadow-2xl relative text-center">
+            <div class="w-12 h-12 bg-cyan-950/60 rounded-full flex items-center justify-center mx-auto mb-3 border border-cyan-500/30">
+                <i class="fa-solid fa-headset text-cyan-400 text-lg"></i>
+            </div>
+            <h3 class="text-white font-extrabold text-sm mb-1">Activation Required</h3>
+            <p class="text-[10px] text-gray-400 mb-4 leading-relaxed">
+                Please contact and notify <span class="text-cyan-400 font-bold">Nexora Support</span> first before you are allowed to create and activate an AI trading bot.
+            </p>
+            <button onclick="closeBotModal()" class="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 rounded-xl text-xs font-black shadow-lg uppercase tracking-wider">
+                I Understand
+            </button>
+        </div>
+    </div>
+
+    <!-- SEE ALL TRADERS MODAL -->
     <div id="seeAllModal" class="fixed inset-0 bg-black/85 z-[100] hidden items-center justify-center p-3 font-mono">
         <div class="bg-[#1a1a1a] border border-[#2e2e2e] w-full max-w-sm rounded-2xl flex flex-col max-h-[88vh] overflow-hidden shadow-2xl">
             <!-- Modal Header -->
@@ -298,14 +455,14 @@
                 </button>
             </div>
 
-            <!-- Modal Content (Rotating Wins and Losses, dynamic rank changing) -->
+            <!-- Modal Content -->
             <div class="p-3 overflow-y-auto space-y-2.5 flex-1 text-xs" id="mixedTradersList">
                 <!-- Populated dynamically -->
             </div>
         </div>
     </div>
 
-    <!-- MEMBER DETAILS MODAL (MODERN & BEAUTIFUL DESIGN) -->
+    <!-- MEMBER DETAILS MODAL -->
     <div id="memberDetailModal" class="fixed inset-0 bg-black/90 z-[120] hidden items-center justify-center p-4 font-mono">
         <div class="bg-[#1a1a1a] border border-cyan-500/40 w-full max-w-xs rounded-2xl p-4 shadow-2xl relative">
             <button onclick="closeMemberModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white text-xs">
@@ -342,23 +499,26 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION — matching Nexora Account navigation -->
-    <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-20 bg-[#030b17]/95 border-t border-cyan-400/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
-        <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cyan-300 transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
-            <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
-            <span>Home</span>
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="fixed bottom-0 left-0 right-0 h-14 bg-[#121212]/95 border-t border-[#222222] z-50 flex items-center justify-around px-2 backdrop-blur-md max-w-md mx-auto">
+        <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-emerald-400 transition-colors">
+            <i class="fa-solid fa-house text-sm mb-0.5"></i>
+            <span class="text-[9px] font-semibold">Dashboard</span>
         </a>
-        <a href="markets.html" aria-current="page" class="flex flex-col items-center justify-center w-full h-full text-cyan-300 transition-colors text-xs font-bold drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
-            <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m7 14 4-4 4 3 6-7"></path></svg>
-            <span>Exchange</span>
+        
+        <a href="markets.html" class="flex flex-col items-center justify-center w-full h-full text-emerald-400 font-bold">
+            <i class="fa-solid fa-chart-line text-sm mb-0.5"></i>
+            <span class="text-[9px]">Exchange</span>
         </a>
-        <a href="team.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cyan-300 transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
-            <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            <span>Team</span>
+
+        <a href="about.html" class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-emerald-400 transition-colors">
+            <i class="fa-solid fa-users text-sm mb-0.5"></i>
+            <span class="text-[9px] font-semibold">Team</span>
         </a>
-        <a href="account.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cyan-300 transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
-            <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
-            <span>Account</span>
+
+        <a href="account.html" class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-emerald-400 transition-colors">
+            <i class="fa-solid fa-user text-sm mb-0.5"></i>
+            <span class="text-[9px] font-semibold">Account</span>
         </a>
     </nav>
 
@@ -380,7 +540,6 @@
     let currentTradersCount = 1842;
     let pauseCounter = 0;
 
-    // Mixed members data na may kanya-kanyang cycle ng pagpanalo at pagkatalo para magpalit-palitan ng pwesto
     let mixedMembers = [
         { phone: "+86 138 ••• 5290", country: "China", flag: "🇨🇳", type: "Long 50x", pnl: 450.00, wins: 1250.00, losses: 120.00, speed: 12 },
         { phone: "+1 305 ••• 4410", country: "Miami, USA", flag: "🇺🇸", type: "Short 50x", pnl: -210.00, wins: 50.00, losses: 840.50, speed: 15 },
@@ -395,6 +554,85 @@
         { phone: "+1 415 ••• 6620", country: "California, USA", flag: "🇺🇸", type: "Short 10x", pnl: 290.00, wins: 100.00, losses: 450.00, speed: 10 },
         { phone: "+852 6382 ••••", country: "Hong Kong", flag: "🇭🇰", type: "Long 12x", pnl: -140.10, wins: 290.10, losses: 40.00, speed: 11 }
     ];
+
+    let optionsData = [
+        { val: 2.4, baseVol: 1.37 },
+        { val: -1.8, baseVol: 2.15 },
+        { val: 4.1, baseVol: 4.89 },
+        { val: 5.6, baseVol: 8.42 }
+    ];
+
+    function selectTimeframe(tf) {
+        document.querySelectorAll('.tf-btn').forEach(btn => {
+            btn.classList.remove('text-white', 'bg-[#2e2e2e]');
+            btn.classList.add('hover:text-white');
+        });
+        
+        let activeBtn = document.getElementById(`tf${tf}`);
+        activeBtn.classList.add('text-white', 'bg-[#2e2e2e]');
+        activeBtn.classList.remove('hover:text-white');
+
+        document.getElementById('modalTfBadge').innerText = tf.toUpperCase();
+        
+        let intervalText = "15 Minutes (15M)";
+        let rsiVal = "61.20 (Bullish)";
+        let volVal = "18.4M USDT";
+        let sentiment = "Strong Bullish";
+
+        if(tf === '1h') {
+            intervalText = "1 Hour (1H)";
+            rsiVal = "58.42 (Neutral)";
+            volVal = "45.2M USDT";
+            sentiment = "Bullish Bias";
+        } else if(tf === '4h') {
+            intervalText = "4 Hours (4H)";
+            rsiVal = "64.80 (Overbought zone)";
+            volVal = "128.9M USDT";
+            sentiment = "High Momentum";
+        } else if(tf === '1d') {
+            intervalText = "1 Day (1D)";
+            rsiVal = "71.50 (Bullish Continuation)";
+            volVal = "450.6M USDT";
+            sentiment = "Macro Bullish";
+        }
+
+        document.getElementById('mInterval').innerText = intervalText;
+        document.getElementById('mRsi').innerText = rsiVal;
+        document.getElementById('mVol').innerText = volVal;
+        document.getElementById('mSentiment').innerText = sentiment;
+
+        document.getElementById('timeframeModal').style.display = 'flex';
+    }
+
+    function closeTimeframeModal() {
+        document.getElementById('timeframeModal').style.display = 'none';
+    }
+
+    function updateLiveOptions() {
+        optionsData.forEach((opt, idx) => {
+            let shift = (Math.random() - 0.48) * 0.3;
+            opt.val += shift;
+            let badgeEl = document.getElementById(`optBadge${idx + 1}`);
+            let volEl = document.getElementById(`optVol${idx + 1}`);
+            
+            let isPos = opt.val >= 0;
+            badgeEl.innerText = (isPos ? "↑ +" : "↓ ") + opt.val.toFixed(2) + "%";
+            badgeEl.className = isPos 
+                ? "px-1.5 py-0.5 rounded font-bold text-[9px] border bg-emerald-950/60 text-emerald-400 border-emerald-500/30"
+                : "px-1.5 py-0.5 rounded font-bold text-[9px] border bg-rose-950/60 text-rose-400 border-rose-500/30";
+
+            let liveVol = opt.baseVol + (Math.random() - 0.5) * 0.05;
+            volEl.innerText = liveVol.toFixed(2) + "K";
+        });
+    }
+
+    function openBotModal() {
+        document.getElementById('botSupportModal').style.display = 'flex';
+    }
+
+    function closeBotModal() {
+        document.getElementById('botSupportModal').style.display = 'none';
+    }
 
     function openSeeAllModal() {
         document.getElementById('seeAllModal').style.display = 'flex';
@@ -435,11 +673,10 @@
     }
 
     function renderMixedTraders() {
-        // I-sort ang mga miyembro mula sa pinakamalaking tubo (win) patungo sa pinakamalaking talo (loss) para magpalit-palitan sila ng pwesto sa listahan
         let sortedMembers = [...mixedMembers].sort((a, b) => b.pnl - a.pnl);
 
         let listHTML = '';
-        sortedMembers.forEach((m, idx) => {
+        sortedMembers.forEach((m) => {
             let isCurrentWin = m.pnl >= 0;
             let borderClass = isCurrentWin ? "border-[#2e2e2e] hover:border-emerald-500/50" : "border-rose-950/40 hover:border-rose-500/50";
             let pnlColor = isCurrentWin ? "text-emerald-400" : "text-rose-400";
@@ -698,7 +935,6 @@
             document.getElementById('headerPrice').innerText = basePrice.toFixed(1);
         }
 
-        // Active members count logic (mabagal, banayad, at may random na paghinto)
         if (pauseCounter > 0) {
             pauseCounter--;
         } else {
@@ -716,14 +952,14 @@
         document.getElementById('activeTradersCount').innerText = currentTradersCount.toLocaleString();
         document.getElementById('modalTotalTraders').innerText = currentTradersCount.toLocaleString();
 
-        // Dynamic PnL fluctuation para sa bawat trader para magpalit-palitan sila ng panalo at talo at umakyat-baba sa listahan
         mixedMembers.forEach(m => {
             let shift = (Math.random() - 0.49) * m.speed;
             m.pnl += shift;
-            // Balance lang ang taas at baba (hindi lalampas sa kanilang total wins o losses limits)
             if (m.pnl > m.wins) m.pnl = m.wins * 0.8;
             if (m.pnl < -m.losses) m.pnl = -m.losses * 0.8;
         });
+
+        updateLiveOptions();
 
         let asksHTML = '';
         for(let i = 3; i >= 1; i--) {
