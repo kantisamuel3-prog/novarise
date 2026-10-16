@@ -38,9 +38,22 @@
       .iti__selected-country {
         background: transparent !important;
         border-radius: 999px 0 0 999px;
-        max-width: 112px;
+        min-width: 70px;
+        max-width: 92px;
+        padding: 0 7px !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        color: #f4fbff !important;
       }
-      .iti__selected-country-primary { padding-left: 8px; padding-right: 8px; }
+      /* The closed phone field shows only the dialing code and a chevron; flags appear in the picker list. */
+      .iti__selected-country .iti__flag,
+      .iti__selected-country .iti__flag-container,
+      .iti__selected-country-primary { display: none !important; }
+      .nexora-selected-dial-code { color: #f4fbff; font: 700 13px 'JetBrains Mono', monospace; white-space: nowrap; }
+      .nexora-selected-chevron { color: #00f2fe; font-size: 11px; line-height: 1; }
+      .iti__selected-dial-code { margin-left: 0 !important; }
       .iti__dropdown-content { z-index: 9999; color: #111827; }
       .iti__search-input { color: #111827; }
 
@@ -69,12 +82,13 @@
       .nexora-country-search-wrap i { color:#00f2fe; }
       #nexoraCountrySearch { width:100%; min-width:0; outline:none; border:0; background:transparent; color:#fff; font:500 14px 'Inter',sans-serif; }
       #nexoraCountrySearch::placeholder { color:#71849e; }
-      .nexora-country-list { overflow:auto; padding:8px; overscroll-behavior:contain; }
-      .nexora-country-option { display:flex; align-items:center; gap:12px; width:100%; padding:12px; border:1px solid transparent; border-radius:12px; background:transparent; color:#eaf7ff; text-align:left; cursor:pointer; }
-      .nexora-country-option:hover, .nexora-country-option:focus-visible { outline:none; background:rgba(0,242,254,.09); border-color:rgba(0,242,254,.28); }
-      .nexora-country-flag { width:30px; flex-shrink:0; text-align:center; font-size:21px; }
+      .nexora-country-list { overflow:auto; padding:9px; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:#00cbd8 rgba(255,255,255,.05); }
+      .nexora-country-option { display:flex; align-items:center; gap:13px; width:100%; min-height:58px; padding:11px 13px; border:1px solid transparent; border-radius:13px; background:transparent; color:#eaf7ff; text-align:left; cursor:pointer; transition:background .16s ease,border-color .16s ease,transform .16s ease; }
+      .nexora-country-option:hover, .nexora-country-option:focus-visible { outline:none; background:linear-gradient(100deg,rgba(0,242,254,.12),rgba(24,144,255,.07)); border-color:rgba(0,242,254,.35); transform:translateY(-1px); }
+      .nexora-country-option.is-selected { background:rgba(0,242,254,.08); border-color:rgba(0,242,254,.25); }
+      .nexora-country-flag { width:34px; height:28px; flex-shrink:0; display:flex; align-items:center; justify-content:center; text-align:center; font-size:23px; filter:drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
       .nexora-country-name { flex:1; min-width:0; font:600 13px 'Inter',sans-serif; overflow-wrap:anywhere; }
-      .nexora-country-code { color:#00f2fe; font:700 13px 'JetBrains Mono',monospace; white-space:nowrap; }
+      .nexora-country-code { color:#00f2fe; font:700 13px 'JetBrains Mono',monospace; white-space:nowrap; padding:6px 8px; border:1px solid rgba(0,242,254,.17); border-radius:8px; background:rgba(0,242,254,.045); }
       .nexora-country-empty { padding:26px 12px; color:#8ea7c4; text-align:center; font-size:13px; }
       @media (max-width: 480px) {
         .nexora-country-overlay { padding:12px; align-items:center; }
@@ -504,8 +518,29 @@
             const search = overlay.querySelector('#nexoraCountrySearch');
             const list = overlay.querySelector('#nexoraCountryList');
             const closeButton = overlay.querySelector('#nexoraCountryClose');
+            const priorityCountries = ['us', 'au', 'cn', 'sg', 'vn', 'ph'];
             const countries = (window.intlTelInput.getCountryData ? window.intlTelInput.getCountryData() : [])
-                .slice().sort((a, b) => a.name.localeCompare(b.name));
+                .slice().sort((a, b) => {
+                    const ai = priorityCountries.indexOf(a.iso2);
+                    const bi = priorityCountries.indexOf(b.iso2);
+                    if (ai !== -1 || bi !== -1) {
+                        if (ai === -1) return 1;
+                        if (bi === -1) return -1;
+                        return ai - bi;
+                    }
+                    return a.name.localeCompare(b.name);
+                });
+
+            // Replace the flag in the compact, closed control with a code + chevron.
+            // The country flags remain visible in the searchable modal list.
+            function updateCompactCountryControl() {
+                const button = phoneInput.closest('.iti')?.querySelector('.iti__selected-country');
+                if (!button) return;
+                const country = iti.getSelectedCountryData();
+                button.innerHTML = `<span class="nexora-selected-dial-code">+${country.dialCode || '1'}</span><span class="nexora-selected-chevron" aria-hidden="true">⌄</span>`;
+                button.setAttribute('aria-label', `Selected country code +${country.dialCode}. Click to choose another country`);
+                button.setAttribute('title', `+${country.dialCode} — choose country`);
+            }
 
             function flagEmoji(iso2) {
                 if (!iso2 || iso2.length !== 2) return '🌐';
@@ -530,12 +565,14 @@
                 filtered.forEach(country => {
                     const option = document.createElement('button');
                     option.type = 'button';
-                    option.className = 'nexora-country-option';
+                    option.className = 'nexora-country-option' + (country.iso2 === iti.getSelectedCountryData().iso2 ? ' is-selected' : '');
                     option.setAttribute('role', 'option');
+                    option.setAttribute('aria-selected', country.iso2 === iti.getSelectedCountryData().iso2 ? 'true' : 'false');
                     option.innerHTML = `<span class="nexora-country-flag" aria-hidden="true">${flagEmoji(country.iso2)}</span><span class="nexora-country-name"></span><span class="nexora-country-code">+${country.dialCode}</span>`;
                     option.querySelector('.nexora-country-name').textContent = country.name;
                     option.addEventListener('click', () => {
                         iti.setCountry(country.iso2);
+                        updateCompactCountryControl();
                         overlay.classList.remove('is-open');
                         search.value = '';
                         renderCountries();
@@ -546,6 +583,7 @@
             }
             function openCountryPicker(event) {
                 if (event) { event.preventDefault(); event.stopPropagation(); }
+                updateCompactCountryControl();
                 overlay.classList.add('is-open');
                 search.value = '';
                 renderCountries();
@@ -566,6 +604,8 @@
                     overlay.classList.remove('is-open');
                 }
             });
+            phoneInput.addEventListener('countrychange', updateCompactCountryControl);
+            updateCompactCountryControl();
             renderCountries();
         }
 
