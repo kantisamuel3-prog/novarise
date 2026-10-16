@@ -124,7 +124,7 @@
         .chart-box {
             position: relative;
             width: 100%;
-            height: 185px;
+            height: 210px;
             background: rgba(3, 11, 23, 0.24);
             cursor: crosshair;
         }
@@ -168,12 +168,12 @@
     
         /* Slightly more compact trading layout while keeping controls usable */
         @media (min-width: 768px) {
-            .chart-box { height: 185px; }
+            .chart-box { height: 200px; }
         }
         @media (max-width: 767px) {
             body > header, body > #chartContainer, body > div.px-3 { max-width: 100%; }
             .nexora-bottom-nav { width: 100vw !important; }
-            .chart-box { height: 175px; }
+            .chart-box { height: 190px; }
             body { font-size: 12px; }
         }
     </style>
@@ -668,8 +668,12 @@
 
     let candles = [];
     let basePrice = 82026.80;
-    let spacing = 14;     
-    let candleWidth = 8;
+    let spacing = 8;
+    let candleWidth = 5;
+    let chartPanX = 0;
+    let isChartDragging = false;
+    let chartDragStartX = 0;
+    let chartDragStartPanX = 0;
     let showMA = true;
     let currentSide = 'open';
 
@@ -857,9 +861,9 @@
     }
 
     function zoomOut() {
-        if (spacing > 6) {
-            spacing -= 2;
-            candleWidth = Math.max(3, candleWidth - 1);
+        if (spacing > 3) {
+            spacing = Math.max(3, spacing - 2);
+            candleWidth = Math.max(2, Math.min(spacing - 1, candleWidth - 1));
             try { sessionStorage.setItem('nexora_exchange_spacing', String(spacing)); sessionStorage.setItem('nexora_exchange_candleWidth', String(candleWidth)); } catch (_) {}
             renderChart();
         }
@@ -874,17 +878,41 @@
         }
     }, { passive: false });
 
-    canvas.addEventListener('mousemove', function(e) {
+    canvas.style.cursor = 'grab';
+    canvas.addEventListener('pointerdown', function(e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        isChartDragging = true;
+        chartDragStartX = e.clientX;
+        chartDragStartPanX = chartPanX;
+        canvas.style.cursor = 'grabbing';
+        try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+
+    canvas.addEventListener('pointermove', function(e) {
         const rect = canvas.getBoundingClientRect();
         mouseX = e.clientX - rect.left;
         mouseY = e.clientY - rect.top;
-        isHovering = true;
+        if (isChartDragging) {
+            chartPanX = chartDragStartPanX + (e.clientX - chartDragStartX);
+            isHovering = false;
+        } else {
+            isHovering = true;
+        }
         renderChart();
     });
 
-    canvas.addEventListener('mouseleave', function() {
-        isHovering = false;
-        renderChart();
+    function stopChartDrag() {
+        isChartDragging = false;
+        canvas.style.cursor = 'grab';
+    }
+    canvas.addEventListener('pointerup', stopChartDrag);
+    canvas.addEventListener('pointercancel', stopChartDrag);
+    canvas.addEventListener('lostpointercapture', stopChartDrag);
+    canvas.addEventListener('pointerleave', function() {
+        if (!isChartDragging) {
+            isHovering = false;
+            renderChart();
+        }
     });
 
     function switchMode(mode) {
@@ -939,7 +967,7 @@
 
     function initData() {
         candles = [];
-        let count = 30;
+        let count = 180;
         let p = basePrice - 200;
         for (let i = 0; i < count; i++) {
             let open = p;
@@ -964,7 +992,7 @@
 
         const yAxisWidth = 65;
         const chartAreaWidth = canvas.width - yAxisWidth;
-        const chartHeight = canvas.height - 30;
+        const chartHeight = canvas.height - 22;
 
         ctx.strokeStyle = "#1a1a1a";
         ctx.fillStyle = "#6b7280";
@@ -982,7 +1010,13 @@
             ctx.fillText(pTick, chartAreaWidth + 4, y + 3);
         }
 
-        let startX = chartAreaWidth - (candles.length * spacing) - 10;
+        let startX = chartAreaWidth - (candles.length * spacing) - 10 + chartPanX;
+
+        // Clip candles/indicators to the plot area so they never draw over the price axis.
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, 0, chartAreaWidth, canvas.height);
+        ctx.clip();
 
         candles.forEach((c, index) => {
             let x = startX + (index * spacing);
@@ -1007,7 +1041,7 @@
 
             let volH = (c.volume / 60) * 14;
             ctx.fillStyle = isGreen ? 'rgba(0, 176, 116, 0.25)' : 'rgba(239, 68, 68, 0.25)';
-            ctx.fillRect(x, canvas.height - 16 - volH, candleWidth, volH);
+            ctx.fillRect(x, canvas.height - volH - 2, candleWidth, volH);
         });
 
         if(showMA && candles.length > 5) {
@@ -1028,6 +1062,8 @@
             }
         }
 
+        ctx.restore();
+
         let curY = chartHeight - ((basePrice - minP) / range) * (chartHeight - 30) - 8;
         ctx.strokeStyle = '#00b074';
         ctx.setLineDash([2, 2]);
@@ -1042,23 +1078,6 @@
         ctx.fillStyle = '#ffffff';
         ctx.font = "bold 8px 'JetBrains Mono', monospace";
         ctx.fillText(basePrice.toFixed(1), chartAreaWidth + 4, curY + 3);
-
-        // Bottom candle-index labels stay inside the chart instead of being clipped.
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(0, chartHeight + 1, chartAreaWidth, canvas.height - chartHeight - 1);
-        ctx.clip();
-        ctx.fillStyle = "#7b8798";
-        ctx.font = "8px 'JetBrains Mono', monospace";
-        ctx.textAlign = "center";
-        const labelCount = 5;
-        for (let i = 0; i < labelCount; i++) {
-            const x = (chartAreaWidth - 12) * i / (labelCount - 1) + 6;
-            const candleIndex = Math.max(1, Math.min(candles.length, Math.round((x - startX) / spacing) + 1));
-            ctx.fillText(String(candleIndex), x, canvas.height - 4);
-        }
-        ctx.textAlign = "start";
-        ctx.restore();
 
         if (isHovering && mouseX >= 0 && mouseX <= chartAreaWidth && mouseY >= 0 && mouseY <= chartHeight) {
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
@@ -1245,8 +1264,8 @@
             const savedSpacing = Number(sessionStorage.getItem('nexora_exchange_spacing'));
             const savedWidth = Number(sessionStorage.getItem('nexora_exchange_candleWidth'));
             if (Number.isFinite(savedPrice) && savedPrice > 0) basePrice = savedPrice;
-            if (Number.isFinite(savedSpacing) && savedSpacing >= 6 && savedSpacing <= 26) spacing = savedSpacing;
-            if (Number.isFinite(savedWidth) && savedWidth >= 3 && savedWidth <= 14) candleWidth = savedWidth;
+            if (Number.isFinite(savedSpacing) && savedSpacing >= 3 && savedSpacing <= 26) spacing = savedSpacing;
+            if (Number.isFinite(savedWidth) && savedWidth >= 2 && savedWidth <= 14) candleWidth = savedWidth;
             const savedMA = sessionStorage.getItem('nexora_exchange_showMA');
             if (savedMA !== null) showMA = savedMA === 'true';
         } catch (error) {
