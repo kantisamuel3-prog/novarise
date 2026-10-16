@@ -670,6 +670,10 @@
     let basePrice = 82026.80;
     let spacing = 14;     
     let candleWidth = 8;
+    // Horizontal chart navigation: drag/hold the chart to pan through candles.
+    let chartPanOffset = 0;
+    let isChartDragging = false;
+    let chartDragLastX = 0;
     let showMA = true;
     let currentSide = 'open';
 
@@ -874,7 +878,43 @@
         }
     }, { passive: false });
 
+    // Drag with mouse or finger to scroll the candle graph horizontally.
+    canvas.addEventListener('pointerdown', function(e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        isChartDragging = true;
+        chartDragLastX = e.clientX;
+        canvas.style.cursor = 'grabbing';
+        try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+        e.preventDefault();
+    });
+
+    canvas.addEventListener('pointermove', function(e) {
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+        isHovering = true;
+
+        if (isChartDragging) {
+            const deltaX = e.clientX - chartDragLastX;
+            chartDragLastX = e.clientX;
+            chartPanOffset += deltaX;
+            renderChart();
+            e.preventDefault();
+            return;
+        }
+        renderChart();
+    });
+
+    function stopChartDragging() {
+        isChartDragging = false;
+        canvas.style.cursor = 'crosshair';
+    }
+    canvas.addEventListener('pointerup', stopChartDragging);
+    canvas.addEventListener('pointercancel', stopChartDragging);
+    canvas.addEventListener('lostpointercapture', stopChartDragging);
+
     canvas.addEventListener('mousemove', function(e) {
+        if (isChartDragging) return;
         const rect = canvas.getBoundingClientRect();
         mouseX = e.clientX - rect.left;
         mouseY = e.clientY - rect.top;
@@ -982,7 +1022,7 @@
             ctx.fillText(pTick, chartAreaWidth + 4, y + 3);
         }
 
-        let startX = chartAreaWidth - (candles.length * spacing) - 10;
+        let startX = chartAreaWidth - (candles.length * spacing) - 10 + chartPanOffset;
 
         candles.forEach((c, index) => {
             let x = startX + (index * spacing);
