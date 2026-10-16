@@ -80,6 +80,7 @@
         .nexora-bottom-nav { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100% !important; max-width: none !important; z-index: 50 !important; }
 
         .nexora-bottom-nav { width: 100vw; max-width: none; margin-left: 0; margin-right: 0; border-left: 0 !important; border-right: 0 !important; border-radius: 0 !important; }
+        /* Keep navigation anchored to the viewport while page content scrolls. */
         html, body { min-height: 100%; }
         .nexora-bottom-nav {
             position: fixed !important;
@@ -89,6 +90,7 @@
             z-index: 999 !important;
             transform: none !important;
         }
+        /* Trader dialogs must appear centered in the visible screen, above navigation. */
         #seeAllModal, #memberDetailModal, #timeframeModal, #botSupportModal {
             position: fixed !important;
             inset: 0 !important;
@@ -110,6 +112,7 @@
             .nexora-bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
         }
 
+        /* Phone-sized trading app canvas; keep the bottom navigation full-width like account.html. */
         body > header, body > #chartContainer, body > div.px-3 {
             width: 100%;
             max-width: 480px;
@@ -121,7 +124,7 @@
         .chart-box {
             position: relative;
             width: 100%;
-            height: 240px;
+            height: 210px;
             background: rgba(3, 11, 23, 0.24);
             cursor: crosshair;
         }
@@ -163,18 +166,20 @@
 
         ::-webkit-scrollbar { display: none; }
     
+        /* Slightly more compact trading layout while keeping controls usable */
         @media (min-width: 768px) {
-            .chart-box { height: 230px; }
+            .chart-box { height: 200px; }
         }
         @media (max-width: 767px) {
             body > header, body > #chartContainer, body > div.px-3 { max-width: 100%; }
             .nexora-bottom-nav { width: 100vw !important; }
-            .chart-box { height: 210px; }
+            .chart-box { height: 190px; }
             body { font-size: 12px; }
         }
     </style>
 
 <style>
+    /* Keep the Exchange platform and bottom navigation visible during Firebase auth checks/reloads. */
     html.exchange-auth-check body,
     html.exchange-auth-check body > *,
     html.exchange-auth-ready body,
@@ -216,6 +221,7 @@
                 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
                 const auth = firebase.auth();
 
+                // Keep the signed-in session across page navigation and browser restarts.
                 await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
                 let initialStateHandled = false;
@@ -226,6 +232,7 @@
                         return;
                     }
 
+                    // Wait briefly for Firebase to finish restoring its persisted session.
                     if (!initialStateHandled) {
                         initialStateHandled = true;
                         window.setTimeout(function () {
@@ -237,6 +244,7 @@
                     }
                 }, function (error) {
                     console.error('Nexora Exchange authentication state error:', error);
+                    // Do not redirect on a transient listener error; retry by checking current state.
                     window.setTimeout(function () {
                         if (auth.currentUser) showExchange();
                         else showLogin();
@@ -244,6 +252,7 @@
                 });
             } catch (error) {
                 console.error('Nexora Exchange authentication check failed:', error);
+                // A failed persistence setup should not automatically log out a valid session.
                 try {
                     const auth = firebase.auth();
                     if (auth.currentUser) showExchange();
@@ -261,6 +270,7 @@
 
 </head>
 <body class="min-h-screen flex flex-col justify-between relative pb-16">
+    <!-- Matching Account page: subtle animated candlestick background -->
     <div class="exchange-background" aria-hidden="true">
         <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
         <canvas id="accountStyleBackground"></canvas>
@@ -415,13 +425,14 @@
             </div>
         </div>
 
-        <!-- PANEL 2: OPTIONS -->
+        <!-- PANEL 2: OPTIONS (MAY SAKTO AT MALILIIT NA LOGO NG BTC, ETH, SOL, AT XRP) -->
         <div id="panelOptions" class="mode-panel font-mono text-xs space-y-1.5">
             <div class="text-white font-bold mb-1 flex justify-between items-center text-[11px]">
                 <span>Active Options Contracts</span>
                 <span class="text-emerald-500 text-[9px]">● Live Market</span>
             </div>
             
+            <!-- BTC Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC" class="w-4 h-4 rounded-full">
@@ -433,6 +444,7 @@
                 <span id="optBadge1" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↑ +2.4%</span>
             </div>
 
+            <!-- ETH Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH" class="w-4 h-4 rounded-full">
@@ -444,6 +456,7 @@
                 <span id="optBadge2" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↓ -1.8%</span>
             </div>
 
+            <!-- SOL Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/4128/small/solana.png" alt="SOL" class="w-4 h-4 rounded-full">
@@ -455,6 +468,7 @@
                 <span id="optBadge3" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↑ +4.1%</span>
             </div>
 
+            <!-- XRP Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png" alt="XRP" class="w-4 h-4 rounded-full bg-black p-0.5 border border-gray-700">
@@ -540,6 +554,7 @@
     <!-- SEE ALL TRADERS MODAL -->
     <div id="seeAllModal" class="fixed inset-0 bg-black/85 z-[100] hidden items-center justify-center p-3 font-mono">
         <div class="bg-[#1a1a1a] border border-[#2e2e2e] w-full max-w-sm rounded-2xl flex flex-col max-h-[88vh] overflow-hidden shadow-2xl">
+            <!-- Modal Header -->
             <div class="px-4 py-3 border-b border-[#2e2e2e] flex items-center justify-between bg-[#121212]">
                 <div>
                     <h3 class="text-white font-bold text-xs flex items-center space-x-2">
@@ -553,7 +568,9 @@
                 </button>
             </div>
 
+            <!-- Modal Content -->
             <div class="p-3 overflow-y-auto space-y-2.5 flex-1 text-xs" id="mixedTradersList">
+                <!-- Populated dynamically -->
             </div>
         </div>
     </div>
@@ -595,7 +612,7 @@
         </div>
     </div>
 
-    <!-- ORDER HELP / RESULT MODAL -->
+    <!-- ORDER HELP / RESULT MODAL: visual confirmation, not a real exchange execution -->
     <div id="orderHelpModal" class="fixed inset-0 bg-black/80 z-[99999] hidden items-center justify-center p-4 font-mono" style="position:fixed;inset:0;align-items:center;justify-content:center;display:none;overflow-y:auto;" role="dialog" aria-modal="true" aria-labelledby="orderHelpTitle">
         <div class="w-full max-w-sm rounded-2xl border border-cyan-400/40 bg-[#0b1526] shadow-[0_0_35px_rgba(0,242,254,0.15)] overflow-hidden">
             <div class="px-4 py-4 border-b border-cyan-400/20 flex items-center gap-3">
@@ -622,7 +639,7 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
+    <!-- BOTTOM NAVIGATION — matching Nexora Account navigation -->
     <nav class="nexora-bottom-nav fixed bottom-0 left-0 right-0 h-20 bg-[#030b17]/95 border-t border-cyan-400/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
         <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cyan-300 transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
             <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
@@ -830,19 +847,22 @@
         document.getElementById('mixedTradersList').innerHTML = listHTML;
     }
 
-    // Inayos ang Zoom In at Zoom Out para pataas/pababa (vertical range) lang ang gumagalaw at humahaba ang candles nang hindi nagiging malapad pakaliwa/pakanan
-    let priceZoomMultiplier = 1.0;
-
     function zoomIn() {
-        priceZoomMultiplier = Math.max(0.3, priceZoomMultiplier - 0.15);
-        try { sessionStorage.setItem('nexora_exchange_zoom', String(priceZoomMultiplier)); } catch (_) {}
-        renderChart();
+        if (spacing < 26) {
+            spacing += 2;
+            candleWidth = Math.max(4, candleWidth + 1);
+            try { sessionStorage.setItem('nexora_exchange_spacing', String(spacing)); sessionStorage.setItem('nexora_exchange_candleWidth', String(candleWidth)); } catch (_) {}
+            renderChart();
+        }
     }
 
     function zoomOut() {
-        priceZoomMultiplier = Math.min(2.5, priceZoomMultiplier + 0.15);
-        try { sessionStorage.setItem('nexora_exchange_zoom', String(priceZoomMultiplier)); } catch (_) {}
-        renderChart();
+        if (spacing > 6) {
+            spacing -= 2;
+            candleWidth = Math.max(3, candleWidth - 1);
+            try { sessionStorage.setItem('nexora_exchange_spacing', String(spacing)); sessionStorage.setItem('nexora_exchange_candleWidth', String(candleWidth)); } catch (_) {}
+            renderChart();
+        }
     }
 
     canvas.addEventListener('wheel', function(e) {
@@ -940,14 +960,7 @@
 
         let maxP = Math.max(...candles.map(c => c.high));
         let minP = Math.min(...candles.map(c => c.low));
-        let rawRange = maxP - minP || 1;
-        
-        // Gumagamit ng multiplier para mag-adjust ang vertical range (haba ng candlesticks) nang hindi binabago ang lapad
-        let midPoint = (maxP + minP) / 2;
-        let adjustedRange = rawRange * priceZoomMultiplier;
-        let effectiveMaxP = midPoint + adjustedRange / 2;
-        let effectiveMinP = midPoint - adjustedRange / 2;
-        let range = effectiveMaxP - effectiveMinP || 1;
+        let range = maxP - minP || 1;
 
         const yAxisWidth = 65;
         const chartAreaWidth = canvas.width - yAxisWidth;
@@ -960,7 +973,7 @@
 
         for (let i = 0; i <= 4; i++) {
             let y = (chartHeight / 4) * i + 8;
-            let pTick = (effectiveMaxP - (i / 4) * range).toFixed(1);
+            let pTick = (maxP - (i / 4) * range).toFixed(1);
 
             ctx.beginPath();
             ctx.moveTo(0, y);
@@ -975,10 +988,10 @@
             let x = startX + (index * spacing);
             let isGreen = c.close >= c.open;
 
-            let highY = chartHeight - ((c.high - effectiveMinP) / range) * (chartHeight - 30) - 8;
-            let lowY = chartHeight - ((c.low - effectiveMinP) / range) * (chartHeight - 30) - 8;
-            let openY = chartHeight - ((c.open - effectiveMinP) / range) * (chartHeight - 30) - 8;
-            let closeY = chartHeight - ((c.close - effectiveMinP) / range) * (chartHeight - 30) - 8;
+            let highY = chartHeight - ((c.high - minP) / range) * (chartHeight - 30) - 8;
+            let lowY = chartHeight - ((c.low - minP) / range) * (chartHeight - 30) - 8;
+            let openY = chartHeight - ((c.open - minP) / range) * (chartHeight - 30) - 8;
+            let closeY = chartHeight - ((c.close - minP) / range) * (chartHeight - 30) - 8;
 
             ctx.strokeStyle = isGreen ? '#00b074' : '#ef4444';
             ctx.fillStyle = isGreen ? '#00b074' : '#ef4444';
@@ -1007,7 +1020,7 @@
                 candles.forEach((c, idx) => {
                     let x = startX + (idx * spacing) + candleWidth/2;
                     let pVal = c.close + offset + Math.sin(idx + m) * 15;
-                    let y = chartHeight - ((pVal - effectiveMinP) / range) * (chartHeight - 30) - 8;
+                    let y = chartHeight - ((pVal - minP) / range) * (chartHeight - 30) - 8;
                     if(idx === 0) ctx.moveTo(x, y);
                     else ctx.lineTo(x, y);
                 });
@@ -1015,7 +1028,7 @@
             }
         }
 
-        let curY = chartHeight - ((basePrice - effectiveMinP) / range) * (chartHeight - 30) - 8;
+        let curY = chartHeight - ((basePrice - minP) / range) * (chartHeight - 30) - 8;
         ctx.strokeStyle = '#00b074';
         ctx.setLineDash([2, 2]);
         ctx.beginPath();
@@ -1046,7 +1059,7 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            let hoveredPrice = effectiveMaxP - ((mouseY - 8) / (chartHeight - 30)) * range;
+            let hoveredPrice = maxP - ((mouseY - 8) / (chartHeight - 30)) * range;
 
             ctx.fillStyle = '#3b82f6';
             ctx.fillRect(chartAreaWidth + 2, mouseY - 8, yAxisWidth - 4, 16);
@@ -1122,6 +1135,8 @@
         renderChart();
     }
 
+    // Demo trading balance: each successful BTC order-help action deducts 5 USDT.
+    // Stored locally so the displayed balance remains after a page reload in this browser.
     const NEXORA_ORDER_FEE = 5;
     const NEXORA_BALANCE_KEY = 'nexora_exchange_available_balance';
     let availableBalance = 1482;
@@ -1130,7 +1145,7 @@
         if (localStorage.getItem(NEXORA_BALANCE_KEY) !== null && Number.isFinite(savedBalance) && savedBalance >= 0) {
             availableBalance = savedBalance;
         }
-    } catch (e) {}
+    } catch (e) { /* Use the default demo balance if browser storage is unavailable. */ }
 
     function renderAvailableBalance() {
         const balanceEl = document.getElementById('availableBalance');
@@ -1168,7 +1183,7 @@
         }
 
         availableBalance = Math.round((availableBalance - NEXORA_ORDER_FEE) * 100) / 100;
-        try { localStorage.setItem(NEXORA_BALANCE_KEY, String(availableBalance)); } catch (e) {}
+        try { localStorage.setItem(NEXORA_BALANCE_KEY, String(availableBalance)); } catch (e) { /* Balance still updates for this page session. */ }
         renderAvailableBalance();
 
         const actionLabel = currentSide === 'open' ? 'Open Long BTC' : 'Close Short BTC';
@@ -1180,6 +1195,7 @@
         document.getElementById('orderHelpSubtitle').textContent = actionLabel + ' • BTCUSDT Perpetual';
         document.getElementById('orderHelpStatus').innerHTML = '<i class="fa-solid fa-check mr-1"></i> Order help successfully processed';
         const modal = document.getElementById('orderHelpModal');
+        // Force a viewport-centered overlay regardless of surrounding page layout.
         modal.style.position = 'fixed';
         modal.style.inset = '0';
         modal.style.alignItems = 'center';
@@ -1191,8 +1207,10 @@
     function closeOrderHelp() {
         const modal = document.getElementById('orderHelpModal');
         modal.style.display = 'none';
+        // Closing resets the dialog so the user can open a new order-help result again.
     }
 
+    // Close the order help dialog by tapping its backdrop or pressing Escape.
     document.getElementById('orderHelpModal').addEventListener('click', function (event) {
         if (event.target === this) closeOrderHelp();
     });
@@ -1200,15 +1218,18 @@
         if (event.key === 'Escape') closeOrderHelp();
     });
 
+    // Restore the Exchange view when navigating away and coming back in the same tab.
     (function restoreExchangeState() {
         let savedCandles = null;
         try {
             const rawCandles = sessionStorage.getItem('nexora_exchange_candles');
             if (rawCandles) savedCandles = JSON.parse(rawCandles);
             const savedPrice = Number(sessionStorage.getItem('nexora_exchange_basePrice'));
-            const savedZoom = Number(sessionStorage.getItem('nexora_exchange_zoom'));
+            const savedSpacing = Number(sessionStorage.getItem('nexora_exchange_spacing'));
+            const savedWidth = Number(sessionStorage.getItem('nexora_exchange_candleWidth'));
             if (Number.isFinite(savedPrice) && savedPrice > 0) basePrice = savedPrice;
-            if (Number.isFinite(savedZoom) && savedZoom >= 0.3 && savedZoom <= 2.5) priceZoomMultiplier = savedZoom;
+            if (Number.isFinite(savedSpacing) && savedSpacing >= 6 && savedSpacing <= 26) spacing = savedSpacing;
+            if (Number.isFinite(savedWidth) && savedWidth >= 3 && savedWidth <= 14) candleWidth = savedWidth;
             const savedMA = sessionStorage.getItem('nexora_exchange_showMA');
             if (savedMA !== null) showMA = savedMA === 'true';
         } catch (error) {
@@ -1247,6 +1268,7 @@
         renderChart();
     })();
 
+    // Save chart candles and current price while the live ticker updates.
     setInterval(function () {
         try {
             sessionStorage.setItem('nexora_exchange_candles', JSON.stringify(candles));
@@ -1256,6 +1278,7 @@
 
     setInterval(softTicker, 850);
 </script>
+
 
 <script>
 (function () {
@@ -1300,6 +1323,11 @@
     window.addEventListener('resize', resizeAccountBackground);
     resizeAccountBackground(); animateAccountBackground();
 })();
+</script>
+
+<script>
+// Keep Exchange clickable: clicking it again reloads the platform page normally.
+// The bottom navigation stays fixed in place through its .nexora-bottom-nav CSS.
 </script>
 
 </body>
