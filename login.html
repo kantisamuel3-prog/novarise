@@ -19,10 +19,27 @@
     <!-- International country-code selector -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
     <style>
-      .iti { width: 100%; min-width: 0; }
-      .iti__tel-input { width: 100% !important; padding-left: 58px !important; }
+      /* Keep the international selector and number field from overlapping. */
+      .iti {
+        display: block;
+        flex: 1 1 0%;
+        width: 100%;
+        min-width: 0;
+      }
+      .iti input.iti__tel-input {
+        display: block;
+        width: 100% !important;
+        min-width: 0;
+        box-sizing: border-box;
+        /* Let intl-tel-input calculate the correct space for each dial code. */
+        padding-left: 8px;
+      }
       .iti__country-container { left: 0; }
-      .iti__selected-country { background: transparent !important; border-radius: 999px 0 0 999px; }
+      .iti__selected-country {
+        background: transparent !important;
+        border-radius: 999px 0 0 999px;
+        max-width: 112px;
+      }
       .iti__selected-country-primary { padding-left: 8px; padding-right: 8px; }
       .iti__dropdown-content { z-index: 9999; color: #111827; }
       .iti__search-input { color: #111827; }
