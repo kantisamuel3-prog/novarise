@@ -16,6 +16,90 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
+    <!-- International country-code selector -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
+    <style>
+      /* Keep the international selector and number field from overlapping. */
+      .iti {
+        display: block;
+        flex: 1 1 0%;
+        width: 100%;
+        min-width: 0;
+      }
+      .iti input.iti__tel-input {
+        display: block;
+        width: 100% !important;
+        min-width: 0;
+        box-sizing: border-box;
+        /* Let intl-tel-input calculate the correct space for each dial code. */
+        padding-left: 8px;
+      }
+      .iti__country-container { left: 0; }
+      .iti__selected-country {
+        background: transparent !important;
+        border-radius: 999px 0 0 999px;
+        min-width: 70px;
+        max-width: 92px;
+        padding: 0 7px !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        color: #f4fbff !important;
+      }
+      /* Compact selected country control: show the flag and dialing code. */
+      .nexora-selected-flag { display: inline-flex; width: 22px; height: 15px; align-items: center; justify-content: center; flex-shrink: 0; }
+      .nexora-selected-flag img { display: block; width: 22px; height: 15px; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(255,255,255,.16); }
+      
+      .nexora-selected-dial-code { color: #f4fbff; font: 700 13px 'JetBrains Mono', monospace; white-space: nowrap; }
+      .nexora-selected-chevron { display: none !important; }
+      .iti__selected-dial-code { margin-left: 0 !important; }
+      .iti__dropdown-content { z-index: 9999; color: #111827; }
+      .iti__search-input { color: #111827; }
+
+      /* Nexora full-screen country picker */
+      .nexora-country-overlay {
+        position: fixed; inset: 0; z-index: 100000;
+        display: none; align-items: center; justify-content: center;
+        padding: 18px; background: rgba(1, 7, 19, .78);
+        backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
+      }
+      .nexora-country-overlay.is-open { display: flex; }
+      .nexora-country-modal {
+        width: min(100%, 440px); max-height: min(78vh, 680px);
+        display: flex; flex-direction: column; overflow: hidden;
+        color: #eaf7ff; background: linear-gradient(160deg, #10223b, #050c1a 78%);
+        border: 1px solid rgba(0,242,254,.65); border-radius: 22px;
+        box-shadow: 0 0 35px rgba(0,242,254,.2), 0 24px 80px rgba(0,0,0,.55);
+      }
+      .nexora-country-head { padding: 20px 20px 14px; border-bottom: 1px solid rgba(0,242,254,.16); }
+      .nexora-country-title { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+      .nexora-country-title h2 { margin:0; font:800 16px 'Montserrat',sans-serif; letter-spacing:.08em; }
+      .nexora-country-subtitle { margin:6px 0 14px; color:#8ea7c4; font:500 12px 'Inter',sans-serif; }
+      .nexora-country-close { width:34px; height:34px; flex-shrink:0; border:1px solid rgba(148,163,184,.25); border-radius:50%; color:#b9c9dc; background:rgba(255,255,255,.04); cursor:pointer; }
+      .nexora-country-close:hover { color:#00f2fe; border-color:#00f2fe; }
+      .nexora-country-search-wrap { display:flex; align-items:center; gap:10px; padding:0 13px; height:46px; border:1px solid rgba(0,242,254,.38); border-radius:13px; background:rgba(1,8,20,.82); }
+      .nexora-country-search-wrap i { color:#00f2fe; }
+      #nexoraCountrySearch { width:100%; min-width:0; outline:none; border:0; background:transparent; color:#fff; font:500 14px 'Inter',sans-serif; }
+      #nexoraCountrySearch::placeholder { color:#71849e; }
+      .nexora-country-list { overflow:auto; padding:9px; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:#00cbd8 rgba(255,255,255,.05); }
+      .nexora-country-option { display:flex; align-items:center; gap:13px; width:100%; min-height:58px; padding:11px 13px; border:1px solid transparent; border-radius:13px; background:transparent; color:#eaf7ff; text-align:left; cursor:pointer; transition:background .16s ease,border-color .16s ease,transform .16s ease; }
+      .nexora-country-option:hover, .nexora-country-option:focus-visible { outline:none; background:linear-gradient(100deg,rgba(0,242,254,.12),rgba(24,144,255,.07)); border-color:rgba(0,242,254,.35); transform:translateY(-1px); }
+      .nexora-country-option.is-selected { background:rgba(0,242,254,.08); border-color:rgba(0,242,254,.25); }
+      .nexora-country-flag { width:34px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+      .nexora-country-flag img { display:block; width:28px; height:19px; object-fit:cover; border-radius:3px; box-shadow:0 1px 4px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.12); }
+      .nexora-country-name { flex:1; min-width:0; font:600 13px 'Inter',sans-serif; overflow-wrap:anywhere; }
+      .nexora-country-code { color:#00f2fe; font:700 13px 'JetBrains Mono',monospace; white-space:nowrap; padding:6px 8px; border:1px solid rgba(0,242,254,.17); border-radius:8px; background:rgba(0,242,254,.045); }
+      .nexora-country-empty { padding:26px 12px; color:#8ea7c4; text-align:center; font-size:13px; }
+      .nexora-country-section { padding:13px 13px 7px; color:#6f91b5; font:800 10px 'Inter',sans-serif; letter-spacing:.16em; text-transform:uppercase; }
+      .nexora-country-option:active { transform:scale(.99); }
+      @media (max-width: 480px) {
+        .nexora-country-overlay { padding:12px; align-items:center; }
+        .nexora-country-modal { max-height:82vh; border-radius:18px; }
+        .nexora-country-head { padding:17px 15px 12px; }
+      }
+    </style>
+
     <!-- Firebase SDKs (v9 Compat para sa seamless integration) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -262,17 +346,15 @@
                         <div class="text-gray-300 pr-3 border-r border-nexora-cyan/30 flex items-center text-base">
                             <i class="fa-solid fa-mobile-screen-button text-nexora-cyan"></i>
                         </div>
-                        <div class="flex items-center w-full pl-3 font-mono text-sm">
-                            <span class="text-nexora-cyan font-bold mr-2">+63</span>
-                            <input 
-                                type="tel" 
-                                id="phone" 
-                                name="phone" 
-                                placeholder="MOBILE NUMBER" 
-                                pattern="^9\d{9}$" 
-                                maxlength="10" 
-                                required 
-                                class="w-full bg-transparent text-white font-semibold tracking-wider placeholder-gray-500 uppercase focus:outline-none"
+                        <div class="flex items-center w-full pl-3 font-mono text-sm min-w-0">
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                placeholder="MOBILE NUMBER"
+                                autocomplete="tel-national"
+                                required
+                                class="w-full min-w-0 bg-transparent text-white font-semibold tracking-wider placeholder-gray-500 uppercase focus:outline-none"
                             >
                         </div>
                     </div>
@@ -476,6 +558,8 @@
         drawChart();
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
+
     <!-- FIREBASE & REGISTRATION LOGIC -->
     <script>
     // =====================================================
@@ -526,6 +610,106 @@
 
     const messageDiv =
         document.getElementById("message");
+
+
+    // =====================================================
+    // INTERNATIONAL PHONE COUNTRY SELECTOR (same UI as login)
+    // =====================================================
+    const iti = phoneInput && window.intlTelInput ? window.intlTelInput(phoneInput, {
+        initialCountry: 'us',
+        separateDialCode: true,
+        nationalMode: true,
+        allowDropdown: true,
+        countrySearch: true,
+        autoPlaceholder: 'off',
+        formatOnDisplay: false,
+        utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js'
+    }) : null;
+
+    if (iti && phoneInput) {
+        const countryButton = phoneInput.closest('.iti')?.querySelector('.iti__selected-country');
+        const overlay = document.createElement('div');
+        overlay.className = 'nexora-country-overlay';
+        overlay.id = 'nexoraCountryOverlay';
+        overlay.innerHTML = `
+          <section class="nexora-country-modal" role="dialog" aria-modal="true" aria-labelledby="nexoraCountryTitle">
+            <div class="nexora-country-head">
+              <div class="nexora-country-title">
+                <h2 id="nexoraCountryTitle"><i class="fa-solid fa-globe" style="color:#00f2fe;margin-right:8px"></i>SELECT COUNTRY</h2>
+                <button type="button" class="nexora-country-close" id="nexoraCountryClose" aria-label="Close country selector"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <p class="nexora-country-subtitle">Search a country or international dialing code</p>
+              <label class="nexora-country-search-wrap" for="nexoraCountrySearch">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="nexoraCountrySearch" type="search" placeholder="Search country or code (e.g. +63)" autocomplete="off">
+              </label>
+            </div>
+            <div class="nexora-country-list" id="nexoraCountryList" role="listbox" aria-label="Countries"></div>
+          </section>`;
+        document.body.appendChild(overlay);
+        const search = overlay.querySelector('#nexoraCountrySearch');
+        const list = overlay.querySelector('#nexoraCountryList');
+        const closeButton = overlay.querySelector('#nexoraCountryClose');
+        const priorityCountries = ['us', 'au', 'cn', 'sg', 'vn', 'ph'];
+        const countries = (window.intlTelInput.getCountryData ? window.intlTelInput.getCountryData() : [])
+            .filter(country => country.dialCode)
+            .slice();
+        countries.sort((a, b) => {
+            const ai = priorityCountries.indexOf(a.iso2), bi = priorityCountries.indexOf(b.iso2);
+            if (ai !== -1 || bi !== -1) return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+            return a.name.localeCompare(b.name);
+        });
+
+        function updateCompactCountryControl() {
+            const button = phoneInput.closest('.iti')?.querySelector('.iti__selected-country');
+            if (!button || !iti) return;
+            const country = iti.getSelectedCountryData();
+            button.innerHTML = `<span class="nexora-selected-flag" aria-hidden="true"><img src="https://flagcdn.com/w40/${country.iso2.toLowerCase()}.png" alt="" loading="eager" onerror="this.style.display='none'"></span><span class="nexora-selected-dial-code">+${country.dialCode || '1'}</span>`;
+            button.setAttribute('aria-label', `Selected country ${country.name}, dialing code +${country.dialCode}. Click to choose another country`);
+            button.setAttribute('title', `${country.name} +${country.dialCode} — choose country`);
+        }
+        function renderCountries() {
+            list.innerHTML = '';
+            const term = search.value.trim().toLowerCase();
+            const filtered = countries.filter(country => country.name.toLowerCase().includes(term) || country.dialCode.includes(term.replace(/^\+/, '')) || country.iso2.toLowerCase() === term);
+            if (!filtered.length) {
+                const empty = document.createElement('div'); empty.className = 'nexora-country-empty';
+                empty.textContent = 'No country found. Try another name or dialing code.'; list.appendChild(empty); return;
+            }
+            const showSections = search.value.trim() === '';
+            const prioritySet = new Set(priorityCountries);
+            if (showSections) { const h = document.createElement('div'); h.className = 'nexora-country-section'; h.textContent = 'Popular countries'; list.appendChild(h); }
+            let allHeadingAdded = false;
+            filtered.forEach(country => {
+                if (showSections && !prioritySet.has(country.iso2) && !allHeadingAdded) { const h = document.createElement('div'); h.className = 'nexora-country-section'; h.textContent = 'All countries'; list.appendChild(h); allHeadingAdded = true; }
+                const option = document.createElement('button'); option.type = 'button';
+                option.className = 'nexora-country-option' + (country.iso2 === iti.getSelectedCountryData().iso2 ? ' is-selected' : '');
+                option.setAttribute('role', 'option'); option.setAttribute('aria-selected', country.iso2 === iti.getSelectedCountryData().iso2 ? 'true' : 'false');
+                option.innerHTML = `<span class="nexora-country-flag" aria-hidden="true"><img src="https://flagcdn.com/w40/${country.iso2.toLowerCase()}.png" alt="" loading="lazy" onerror="this.style.display='none'"></span><span class="nexora-country-name"></span><span class="nexora-country-code">+${country.dialCode}</span>`;
+                option.querySelector('.nexora-country-name').textContent = country.name;
+                option.addEventListener('click', () => { iti.setCountry(country.iso2); updateCompactCountryControl(); overlay.classList.remove('is-open'); search.value = ''; renderCountries(); phoneInput.focus(); });
+                list.appendChild(option);
+            });
+        }
+        function openCountryPicker(event) {
+            if (event) { event.preventDefault(); event.stopPropagation(); }
+            updateCompactCountryControl(); overlay.classList.add('is-open'); search.value = ''; renderCountries(); setTimeout(() => search.focus(), 30);
+        }
+        if (countryButton) { countryButton.addEventListener('click', openCountryPicker, true); countryButton.setAttribute('aria-label', 'Choose country and dialing code'); countryButton.setAttribute('title', 'Choose country and dialing code'); }
+        search.addEventListener('input', renderCountries);
+        closeButton.addEventListener('click', () => overlay.classList.remove('is-open'));
+        overlay.addEventListener('click', event => { if (event.target === overlay) overlay.classList.remove('is-open'); });
+        document.addEventListener('keydown', event => { if (event.key === 'Escape' && overlay.classList.contains('is-open')) overlay.classList.remove('is-open'); });
+        phoneInput.addEventListener('countrychange', updateCompactCountryControl);
+        updateCompactCountryControl(); renderCountries();
+    }
+
+    function getRegistrationPhoneDetails() {
+        const national = phoneInput ? phoneInput.value.replace(/\D/g, '') : '';
+        const selected = iti ? iti.getSelectedCountryData() : { dialCode: '1', iso2: 'us' };
+        const dialCode = selected && selected.dialCode ? selected.dialCode : '1';
+        return { national, dialCode, full: dialCode + national, country: selected && selected.iso2 ? selected.iso2 : 'us' };
+    }
 
 
     // =====================================================
@@ -741,16 +925,8 @@
                     );
 
 
-                if (
-                    this.value.length > 10
-                ) {
-
-                    this.value =
-                        this.value.slice(
-                            0,
-                            10
-                        );
-
+                if (this.value.length > 15) {
+                    this.value = this.value.slice(0, 15);
                 }
 
 
@@ -936,8 +1112,9 @@
                 e.preventDefault();
 
 
-                const phone =
-                    phoneInput.value.trim();
+                const phoneDetails = getRegistrationPhoneDetails();
+                const phone = phoneDetails.national;
+                const internationalPhone = phoneDetails.full;
 
 
                 const password =
@@ -961,18 +1138,9 @@
                 // PHONE VALIDATION
                 // -------------------------------------------------
 
-                if (
-                    !/^9\d{9}$/.test(
-                        phone
-                    )
-                ) {
-
-                    showMessage(
-                        "Please enter a valid 10-digit mobile number starting with 9."
-                    );
-
+                if (!phone || phone.length < 4 || phone.length > 15 || !/^\d+$/.test(phone)) {
+                    showMessage("Please enter a valid phone number for the selected country.");
                     return;
-
                 }
 
 
@@ -1038,8 +1206,7 @@
                     // =================================================
 
                     const email =
-                        "63" +
-                        phone +
+                        internationalPhone +
                         "@nexora.local";
 
 
@@ -1221,15 +1388,19 @@
                                 user.uid,
 
                             phone:
-                                "0" +
-                                phone,
+                                "+" + internationalPhone,
 
                             rawPhone:
                                 phone,
 
                             normalizedPhone:
-                                "63" +
-                                phone,
+                                internationalPhone,
+
+                            countryCode:
+                                "+" + phoneDetails.dialCode,
+
+                            country:
+                                phoneDetails.country,
 
                             email:
                                 email,
