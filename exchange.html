@@ -61,22 +61,28 @@
 
     <style>
         body {
-            background-color: #121212;
-            color: #9ca3af;
+            background: radial-gradient(circle at 50% 40%, #0d1e38 0%, #061124 50%, #020712 100%);
+            color: #cbd5e1;
             font-family: 'Inter', sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 0 0 92px;
+            min-height: 100vh;
             overflow-x: hidden;
             user-select: none;
             -webkit-user-select: none;
-            padding-bottom: 92px;
         }
+        .brushed-metal-overlay {
+            background: repeating-radial-gradient(circle at 50% 40%, rgba(255,255,255,.015) 0px, rgba(255,255,255,.015) 1px, transparent 1px, transparent 3px);
+        }
+        .exchange-background { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .exchange-background canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .20; }
+        body > *:not(.exchange-background) { position: relative; z-index: 1; }
 
         .chart-box {
             position: relative;
             width: 100%;
-            height: 240px;
-            background-color: #121212;
+            height: 210px;
+            background: rgba(3, 11, 23, 0.24);
             cursor: crosshair;
         }
 
@@ -116,6 +122,15 @@
         }
 
         ::-webkit-scrollbar { display: none; }
+    
+        /* Slightly more compact trading layout while keeping controls usable */
+        @media (min-width: 768px) {
+            .chart-box { height: 200px; }
+        }
+        @media (max-width: 767px) {
+            .chart-box { height: 190px; }
+            body { font-size: 12px; }
+        }
     </style>
 
 <style>
@@ -166,6 +181,11 @@
 
 </head>
 <body class="max-w-md mx-auto min-h-screen flex flex-col justify-between border-x border-[#222222] relative pb-16">
+    <!-- Matching Account page: subtle animated candlestick background -->
+    <div class="exchange-background" aria-hidden="true">
+        <div class="absolute inset-0 brushed-metal-overlay opacity-60"></div>
+        <canvas id="accountStyleBackground"></canvas>
+    </div>
 
     <!-- TOP HEADER & MARKET MODES -->
     <header class="bg-[#121212] px-3 pt-2 pb-2 border-b border-[#222222] shrink-0">
@@ -251,7 +271,7 @@
     </main>
 
     <!-- TRADING PANEL -->
-    <div class="px-3 py-2 bg-[#121212] flex-1 flex flex-col justify-between">
+    <div class="px-3 py-1.5 bg-[#061124]/55 flex-1 flex flex-col justify-between">
         
         <!-- PANEL 1: FUTURES & SPOT TRADING -->
         <div id="panelTrade" class="mode-panel active">
@@ -994,6 +1014,52 @@
     initData();
     renderChart();
     setInterval(softTicker, 850);
+</script>
+
+
+<script>
+(function () {
+    const bgCanvas = document.getElementById('accountStyleBackground');
+    if (!bgCanvas) return;
+    const bgCtx = bgCanvas.getContext('2d');
+    let bgCandles = [];
+    const candleWidth = 14, spacing = 22;
+    function resizeAccountBackground() {
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+        bgCandles = [];
+        const count = Math.ceil(bgCanvas.width / spacing) + 5;
+        let price = bgCanvas.height * 0.55;
+        for (let i = 0; i < count; i++) {
+            const open = price;
+            const close = open + (Math.random() - 0.48) * 35;
+            bgCandles.push({ open, close, high: Math.max(open, close) + Math.random() * 15,
+                low: Math.min(open, close) - Math.random() * 15, x: i * spacing });
+            price = close;
+        }
+    }
+    function animateAccountBackground() {
+        bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+        for (const c of bgCandles) {
+            const up = c.close <= c.open;
+            bgCtx.strokeStyle = up ? '#00e676' : '#ff5252';
+            bgCtx.fillStyle = up ? 'rgba(0,230,118,.5)' : 'rgba(255,82,82,.5)';
+            bgCtx.beginPath(); bgCtx.moveTo(c.x + candleWidth / 2, c.high);
+            bgCtx.lineTo(c.x + candleWidth / 2, c.low); bgCtx.stroke();
+            bgCtx.fillRect(c.x, Math.min(c.open, c.close), candleWidth, Math.max(Math.abs(c.open - c.close), 2));
+            c.x -= .4;
+        }
+        if (bgCandles.length && bgCandles[0].x < -spacing) {
+            const last = bgCandles[bgCandles.length - 1], open = last.close;
+            const close = open + (Math.random() - .48) * 35;
+            bgCandles.shift(); bgCandles.push({ open, close, high: Math.max(open, close) + Math.random() * 15,
+                low: Math.min(open, close) - Math.random() * 15, x: last.x + spacing });
+        }
+        requestAnimationFrame(animateAccountBackground);
+    }
+    window.addEventListener('resize', resizeAccountBackground);
+    resizeAccountBackground(); animateAccountBackground();
+})();
 </script>
 
 </body>
