@@ -328,8 +328,19 @@
                                  <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">TXID / Reference</span><span class="text-white break-all text-right ml-3">${esc(r.txid || r.orderId || r.reference || "—")}</span></div>
                                  <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Asset</span><span class="text-white">${esc(r.token || "USDT")}</span></div>`;
               } else if (type.toLowerCase().includes("withdrawal")) {
-                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Account Name</span><span class="text-white">${esc(r.accountName || "—")}</span></div>
-                                 <div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Account No.</span><span class="text-white">${esc(r.accountNumber || "—")}</span></div>`;
+                  const asset = r.asset || r.method || "USDT";
+                  const hasGrossAmount = r.grossAmount != null || r.requestedAmount != null || r.withdrawAmount != null;
+                  const grossAmount = Number(r.grossAmount ?? r.requestedAmount ?? r.withdrawAmount ?? r.amount ?? 0);
+                  const fee = Number(r.fee ?? (hasGrossAmount ? grossAmount * 0.05 : 0));
+                  const receivedAmount = Number(
+                      r.netAmount ?? r.amountReceived ??
+                      (r.grossAmount != null ? r.amount : (grossAmount - fee))
+                  );
+                  detailsHTML = `<div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400 shrink-0">Wallet Address</span><span class="text-white break-all text-right">${esc(r.walletAddress || r.destinationAddress || r.toAddress || "—")}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400 shrink-0">Network</span><span class="text-white text-right">${esc(r.network || "—")}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400 shrink-0">Amount withdrawn</span><span class="text-white text-right">${esc(formatMoney(grossAmount))} ${esc(asset)}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400 shrink-0">Withdrawal fee (5%)</span><span class="text-white text-right">${esc(formatMoney(fee))} ${esc(asset)}</span></div>
+                                 <div class="flex justify-between text-[11px] font-mono gap-3"><span class="text-gray-400 shrink-0">Total received</span><span class="text-nexora-cyan font-bold text-right">${esc(formatMoney(receivedAmount))} ${esc(asset)}</span></div>`;
               } else {
                   detailsHTML = `<div class="flex justify-between text-[11px] font-mono"><span class="text-gray-400">Details</span><span class="text-white">${esc(r.details || r.description || type)}</span></div>`;
               }
