@@ -289,8 +289,14 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        let userDataCache = {};
+        
+        // Idagdag ito para manatili ang login session sa settings page
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+          .catch((error) => {
+            console.error("Settings auth persistence error:", error);
+          });
 
+        let userDataCache = {};
 
 
         // Navigation Functions between Menu and Forms
