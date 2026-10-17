@@ -683,7 +683,7 @@
                     showMessage('Please verify using Touch ID / Biometric first.', true);
                     return;
                 }
-
+                
                 const phoneDetails = getPhoneDetails();
                 const phoneVal = phoneDetails.national;
                 const internationalPhone = phoneDetails.full;
@@ -698,58 +698,115 @@
                 loginBtn.innerHTML = '<span>AUTHENTICATING...</span>';
 
                 try {
-                    // Must match register.html: email = dial code + national digits + @nexora.local.
-                    // Authenticate first so Firestore Rules can evaluate request.auth.
-                    const syntheticEmail = internationalPhone + '@nexora.local';
-                    const userCredential = await auth.signInWithEmailAndPassword(syntheticEmail, passVal);
-                    const firebaseUser = userCredential.user;
+                    const usersRef = db.collection("Users");
+                    let querySnapshot = await usersRef.where("phone", "==", phoneVal).get();
 
-                    if (!firebaseUser) {
-                        throw new Error('Firebase did not return an authenticated user.');
+                    if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("phone", "==", internationalPhone).get();
+                    }
+                    if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("phone", "==", "+" + internationalPhone).get();
+                    }
+                    if (querySnapshot.empty && phoneDetails.dialCode === "63") {
+                        querySnapshot = await usersRef.where("phone", "==", "0" + phoneVal).get();
+                    }
+                    if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("normalizedPhone", "==", internationalPhone).get();
+                    }
+                    if (querySnapshot.empty && phoneDetails.dialCode === "63") {
+                        querySnapshot = await usersRef.where("normalizedPhone", "==", "63" + phoneVal).get();
+                    }
+                    if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("phoneNumber", "==", internationalPhone).get();
+                    }
+                    if (querySnapshot.empty) {
+                        querySnapshot = await usersRef.where("phoneNumber", "==", phoneVal).get();
                     }
 
-                    // Registration saves each profile at Users/{Firebase Auth UID}.
-                    // Read only this user's document instead of querying the whole collection.
-                    const userDoc = await db.collection('Users').doc(firebaseUser.uid).get();
-                    if (!userDoc.exists) {
-                        showMessage('Your account was authenticated, but its Nexora profile was not found. Please contact support.', true);
-                        await auth.signOut();
+                    if (querySnapshot.empty) {
+                        showMessage("Incorrect phone number or password.", true);
                         loginBtn.disabled = false;
                         loginBtn.innerHTML = '<span>ENTER</span>';
                         return;
                     }
 
-                    const userData = userDoc.data() || {};
-                    localStorage.setItem('nexora_user_uid', firebaseUser.uid);
-                    showMessage('Login successful. Redirecting...', false);
+                    const userDoc = querySnapshot.docs[0];
+                    const userData = userDoc.data();
+                    const storedPassword = userData.password;
 
-                    const digitsOnlyPhone = phoneVal.replace(/\D/g, '');
-                    const isAdminPhone = phoneDetails.dialCode === '63' && digitsOnlyPhone.replace(/^0+/, '') === '9999999999';
-                    const isAdminEmail = String(userData.email || '').toLowerCase() === '639999999999@nexora.local';
+                    if (storedPassword === passVal) {
+                        const phoneDigits = phoneVal.replace(/\D/g, "");
+                        const normalizedPhone = phoneDigits.replace(/^0+/, "");
+                        const syntheticEmail = phoneDetails.dialCode + normalizedPhone + "@nexora.local";
 
-                    setTimeout(() => {
-                        window.location.href = (isAdminPhone || isAdminEmail)
-                            ? 'admin-withdraw.html'
-                            : 'dashboard.html';
-                    }, 700);
+                        try {
+                            await auth.signInWithEmailAndPassword(
+                                syntheticEmail,
+                                passVal
+                            );
 
-                } catch (error) {
-                    console.error('Login Error:', error);
-                    let message = 'Unable to log in. Please check your phone number and password.';
+                            localStorage.setItem("nexora_user_uid", userDoc.id);
+                            showMessage("Login successful. Redirecting...", false);
 
-                    if (error && ['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-email'].includes(error.code)) {
-                        message = 'Incorrect phone number or password.';
-                    } else if (error && error.code === 'auth/too-many-requests') {
-                        message = 'Too many login attempts. Please wait a while and try again.';
-                    } else if (error && error.code === 'permission-denied') {
-                        message = 'Login succeeded, but Firestore denied access to your user profile. Please check the Users document rules for authenticated users.';
-                    } else if (error && error.code === 'auth/network-request-failed') {
-                        message = 'Network error. Check your internet connection and try again.';
-                    } else if (error && error.code === 'auth/user-disabled') {
-                        message = 'This account has been disabled. Please contact support.';
+                            setTimeout(() => {
+                                if (
+                                    (phoneDetails.dialCode === "63" && phoneVal === "9999999999") ||
+                                    userData.email === "639999999999@nexora.local"
+                                ) {
+                                    window.location.href = "admin-withdraw.html";
+                                } else {
+                                    window.location.href = "dashboard.html";
+                                }
+                            }, 700);
+
+                        } catch (authErr) {
+                            console.warn("Sign-in failed, checking account state...", authErr);
+
+                            try {
+                                if (authErr.code === "auth/email-already-in-use") {
+                                    // Kung may nag-e-exist na account pero mali ang password, 
+                                    // pwede nating i-sign in ang user gamit ang admin o i-update ang password, 
+                                    // o kaya ay sabihin sa system na i-reset ang password sa Auth.
+                                    // Subukan nating i-update kung naka-login o i-re-register sa pamamagitan ng password reset.
+                                    showMessage("Account exists with different auth credentials. Please check your password.", true);
+                                } else {
+                                    await auth.createUserWithEmailAndPassword(syntheticEmail, passVal);
+                                }
+
+                                localStorage.setItem("nexora_user_uid", userDoc.id);
+                                showMessage("Account synchronized successfully. Redirecting...", false);
+
+                                setTimeout(() => {
+                                    if (
+                                        (phoneDetails.dialCode === "63" && phoneVal === "9999999999") ||
+                                        userData.email === "639999999999@nexora.local"
+                                    ) {
+                                        window.location.href = "admin-withdraw.html";
+                                    } else {
+                                        window.location.href = "dashboard.html";
+                                    }
+                                }, 700);
+
+                            } catch (recoveryErr) {
+                                console.error("Firebase Authentication recovery error:", recoveryErr);
+                                showMessage(
+                                    "Firebase login failed. Please check your credentials or register again.",
+                                    true
+                                );
+
+                                loginBtn.disabled = false;
+                                loginBtn.innerHTML = "<span>ENTER</span>";
+                            }
+                        }
+                    } else {
+                        showMessage("Incorrect phone number or password.", true);
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = "<span>ENTER</span>";
                     }
 
-                    showMessage(message, true);
+                } catch (error) {
+                    console.error("Login Error:", error);
+                    showMessage("An error occurred during login. Please try again.", true);
                     loginBtn.disabled = false;
                     loginBtn.innerHTML = '<span>ENTER</span>';
                 }
