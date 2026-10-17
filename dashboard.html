@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Nexora Algorithmic Live Trading Terminal</title>
 
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230b1f3a'/%3E%3Ctext x='50' y='72' font-size='68' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3EN%3C/text%3E%3C/svg%3E">   
+
 <!-- FIREBASE SDKs (Compat v10) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -121,18 +123,33 @@ header {
   gap: 8px;
 }
 
+
 .logo-icon {
   width: 30px;
   height: 30px;
-  background: linear-gradient(135deg, #00d4ff, #0055ff);
-  border-radius: 50%;
+  min-width: 30px;
+  min-height: 30px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
-  font-size: 14px;
-  color: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+  background: radial-gradient(circle, #063b65 0%, #041426 75%);
+  border: 2px dashed rgba(0, 242, 254, 0.8);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    0 0 8px rgba(0, 242, 254, 0.65),
+    inset 0 0 8px rgba(0, 242, 254, 0.2);
+}
+
+.logo-icon svg {
+  width: 19px;
+  height: 19px;
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.9));
 }
 
 .logo-copy strong {
@@ -314,11 +331,6 @@ main {
   font-size: 9px;
   cursor: pointer;
   width: 100%;
-}
-
-.btn-convert-action:disabled {
-  filter: grayscale(0.35);
-  box-shadow: none;
 }
 
 .chart-card {
@@ -582,7 +594,18 @@ canvas#liveChart {
 
 <header>
   <div class="logo">
-    <div class="logo-icon">N</div>
+<div class="logo-icon">
+  <svg viewBox="0 0 100 100" fill="none"
+       xmlns="http://www.w3.org/2000/svg"
+       aria-label="Nexora logo">
+    <polygon points="18,15 36,10 36,90 18,85"
+             fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+    <polygon points="36,10 82,75 82,90 64,90 18,25 18,15"
+             fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+    <polygon points="64,10 82,15 82,85 64,90"
+             fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
+  </svg>
+</div>
     <div class="logo-copy">
       <strong>NEXORA</strong>
       <small>Live Trading Engine</small>
@@ -641,7 +664,7 @@ canvas#liveChart {
             <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">TRANSFER USD WITHDRAW TO USD TRADING</div>
             <div class="convert-input-group">
               <input type="number" id="phpInput" placeholder="Enter USD Withdraw ($)" oninput="previewPhpToUsd()">
-              <button class="btn-convert-action" id="btnConvertPhpToUsd" onclick="convertPhpToUsd()">Convert</button>
+              <button class="btn-convert-action" onclick="convertPhpToUsd()">Convert</button>
             </div>
             <div style="font-size: 7.5px; color: #10b981; margin-top: 3px; font-weight: 600;" id="phpToUsdPreview">You will receive: $0.00 USD</div>
           </div>
@@ -653,7 +676,7 @@ canvas#liveChart {
             <div style="font-size: 6.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">TRANSFER USD TRADING TO USD WITHDRAW</div>
             <div class="convert-input-group">
               <input type="number" id="usdInput" placeholder="Enter USD Trading ($)" oninput="previewUsdToPhp()">
-              <button class="btn-convert-action" id="btnConvertUsdToPhp" onclick="handleUsdToPhpAction()">Convert</button>
+              <button class="btn-convert-action" onclick="handleUsdToPhpAction()">Convert</button>
             </div>
             <div style="font-size: 7.5px; color: #10b981; margin-top: 3px; font-weight: 600;" id="usdToPhpPreview">You will transfer: $0.00 USD to withdraw balance</div>
           </div>
@@ -1196,10 +1219,6 @@ canvas#liveChart {
   }
 
   function convertPhpToUsd() {
-    if (isTradingRunning) {
-      openConversionNoticeModal('Trade In Progress', 'Currency conversion is unavailable while your trading session is running. It will be available again when the trade is complete.', '⏳', 'warning');
-      return;
-    }
     const amount = parseFloat(document.getElementById('phpInput').value) || 0;
     if (amount <= 0) {
       openConversionNoticeModal('Invalid Amount', 'Please enter an amount greater than $0.00.', '⚠️', 'warning');
@@ -1242,10 +1261,6 @@ canvas#liveChart {
   }
 
   function handleUsdToPhpAction() {
-    if (isTradingRunning) {
-      openConversionNoticeModal('Trade In Progress', 'Currency conversion is unavailable while your trading session is running. It will be available again when the trade is complete.', '⏳', 'warning');
-      return;
-    }
     const amount = Number(document.getElementById('usdInput').value);
     if (!Number.isFinite(amount) || amount <= 0) {
       openConversionNoticeModal('Invalid Amount', 'Please enter a USD amount greater than $0.00.', '⚠️', 'warning');
@@ -1284,11 +1299,6 @@ canvas#liveChart {
   }
 
   function confirmUsdToPhpConversion() {
-    if (isTradingRunning) {
-      closeConversionModal();
-      openConversionNoticeModal('Trade In Progress', 'Currency conversion is unavailable while your trading session is running. It will be available again when the trade is complete.', '⏳', 'warning');
-      return;
-    }
     if (!pendingConversionData) return;
     const { usdAmount, finalUsd, deduction, feePercent } = pendingConversionData;
     if (usdAmount > usdBalance) {
@@ -1503,24 +1513,11 @@ canvas.addEventListener('touchend', function() {
     const btn = document.getElementById('btnExecute');
     const progress = document.getElementById('progressContainer');
     const status = document.getElementById('pnlStatus');
-    const convertButtons = [
-      document.getElementById('btnConvertPhpToUsd'),
-      document.getElementById('btnConvertUsdToPhp')
-    ];
 
     if (btn) {
       btn.disabled = running;
       btn.style.opacity = running ? '0.5' : '1';
     }
-    convertButtons.forEach((convertButton) => {
-      if (!convertButton) return;
-      convertButton.disabled = running;
-      convertButton.style.opacity = running ? '0.45' : '1';
-      convertButton.style.cursor = running ? 'not-allowed' : 'pointer';
-      convertButton.title = running
-        ? 'Available after the trading session is complete'
-        : 'Convert';
-    });
     if (progress) progress.style.display = running ? 'block' : 'none';
     if (status) {
       status.innerText = running ? '● EXECUTING...' : '● IDLE';
