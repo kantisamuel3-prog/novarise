@@ -493,8 +493,14 @@
         };
 
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Patingnan/Itakda ang LOCAL persistence upang hindi basta-basta ma-logout sa mobile/iPad
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .catch((error) => {
+        console.error("Auth persistence setup error:", error);
+      });
 
         const dollarBalance = document.getElementById("dollarBalance");
         const pesoBalance = document.getElementById("pesoBalance");
