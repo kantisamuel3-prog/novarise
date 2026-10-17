@@ -465,6 +465,12 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // Patingnan/Itakda ang LOCAL persistence upang hindi basta-basta ma-logout sa mobile/iPad
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .catch((error) => {
+        console.error("Auth persistence setup error:", error);
+      });
+
     let isBiometricVerified = false;
 
     document.addEventListener('DOMContentLoaded', function() {
