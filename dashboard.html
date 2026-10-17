@@ -953,6 +953,12 @@ canvas#liveChart {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
+  // Idagdag ito para manatili ang login session sa mobile at iPad
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .catch((error) => {
+      console.error("Dashboard auth persistence error:", error);
+    });
+
   const EXCHANGE_RATE = 60;
   let usdBalance = 0.00;
   let phpBalance = 0.00;
