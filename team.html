@@ -456,21 +456,19 @@
           return "NEX-" + uid.substring(0, 8).toUpperCase();
       }
 
-      async function getUserDocument(uid) {
-          let data = {};
-          let found = false;
-          try {
-              const primaryRef = doc(db, "Users", uid);
-              const primarySnapshot = await getDoc(primaryRef);
-              if (primarySnapshot.exists()) {
-                  data = primarySnapshot.data();
-                  found = true;
-              }
-          } catch (error) {
-              console.warn("Users lookup error:", error);
-          }
-          return { exists: found, data: data };
-      }
+      
+async function getUserDocument(uid) {
+    const primaryRef = doc(db, "Users", uid);
+    const primarySnapshot = await getDoc(primaryRef);
+
+    return {
+        exists: primarySnapshot.exists(),
+        data: primarySnapshot.exists()
+            ? primarySnapshot.data()
+            : {}
+    };
+}
+
 
       async function queryChildren(collectionName, parentIds) {
           const result = new Map();
@@ -551,28 +549,32 @@
           }
       }
 
-      document.addEventListener("DOMContentLoaded", async () => {
-          const userUid = localStorage.getItem("nexora_user_uid");
-          
-          if (!userUid) {
-              window.location.href = "login.html";
-              return;
-          }
+      
+document.addEventListener("DOMContentLoaded", async () => {
+    const userUid = localStorage.getItem("nexora_user_uid");
 
-          try {
-              const userDoc = await getUserDocument(userUid);
-              if (!userDoc.exists) {
-                  window.location.href = "login.html";
-                  return;
-              }
+    if (!userUid) {
+        window.location.href = "login.html";
+        return;
+    }
 
-              // I-load ang mga detalye ng team gamit ang localStorage UID
-              loadTeam(userUid);
-          } catch (error) {
-              console.error("Auth error:", error);
-              window.location.href = "login.html";
-          }
-      });
+    try {
+        const userDoc = await getUserDocument(userUid);
+
+        if (!userDoc.exists) {
+            console.warn("Walang Users document para sa UID:", userUid);
+            showToast("Hindi makita ang account record.");
+            return;
+        }
+
+        await loadTeam(userUid);
+
+    } catch (error) {
+        console.error("User verification failed:", error);
+        showToast("Hindi ma-verify ang account. Suriin ang internet at subukan muli.");
+    }
+});
+
 
       document.getElementById("copyCodeButton").addEventListener("click", () => {
           const code = referralCodeElement.textContent;
