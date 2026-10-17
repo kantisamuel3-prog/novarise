@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Nexora Algorithmic Live Trading Terminal</title>
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230b1f3a'/%3E%3Ctext x='50' y='72' font-size='68' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3EN%3C/text%3E%3C/svg%3E">    
-
 <!-- FIREBASE SDKs (Compat v10) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -123,18 +121,32 @@ header {
   gap: 8px;
 }
 
+.logo-icon svg {
+  width: 19px;
+  height: 19px;
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.9));
+}
+
 .logo-icon {
   width: 30px;
   height: 30px;
-  background: linear-gradient(135deg, #00d4ff, #0055ff);
-  border-radius: 50%;
+  min-width: 30px;
+  min-height: 30px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
-  font-size: 14px;
-  color: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+  background: radial-gradient(circle, #063b65 0%, #041426 75%);
+  border: 2px dashed rgba(0, 242, 254, 0.8);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    0 0 8px rgba(0, 242, 254, 0.65),
+    inset 0 0 8px rgba(0, 242, 254, 0.2);
 }
 
 .logo-copy strong {
@@ -584,7 +596,18 @@ canvas#liveChart {
 
 <header>
   <div class="logo">
-    <div class="logo-icon">N</div>
+<div class="logo-icon">
+  <svg viewBox="0 0 100 100" fill="none"
+       xmlns="http://www.w3.org/2000/svg"
+       aria-label="Nexora logo">
+    <polygon points="18,15 36,10 36,90 18,85"
+             fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+    <polygon points="36,10 82,75 82,90 64,90 18,25 18,15"
+             fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+    <polygon points="64,10 82,15 82,85 64,90"
+             fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
+  </svg>
+</div>
     <div class="logo-copy">
       <strong>NEXORA</strong>
       <small>Live Trading Engine</small>
