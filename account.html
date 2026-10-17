@@ -590,9 +590,15 @@
             window.location.href = "settings.html";
         });
 
-        document.getElementById("aboutButton").addEventListener("click", () => {
-            openAboutModal();
-        });
+        // Guard optional About button: this page currently navigates via its inline About link,
+        // so avoid a null-element error if no element with id="aboutButton" exists.
+        const aboutButton = document.getElementById("aboutButton");
+        if (aboutButton) {
+            aboutButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                openAboutModal();
+            });
+        }
     </script>
 </body>
 </html>
