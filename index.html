@@ -897,78 +897,94 @@
         }
         renderProStreamChart();
 
-        // CONDITIONAL LANGUAGE CHAT SYSTEM (+63 = Tagalog, Others = English/Foreign)
+        // INFINITE CONVERSATION THREAD SYSTEM (+63 = Tagalog, Others = English)
         const foreignCodes = ["+1 212", "+1 415", "+44 79", "+49 151", "+81 90", "+971 50", "+61 41", "+33 61", "+34 60", "+65 91"];
         const pinoyCodes = ["+63 917", "+63 908", "+63 927", "+63 999"];
 
-        const englishComments = [
-            "That breakout on BTC was super clean!",
-            "Just closed my long position with nice profits.",
-            "Nexora's liquidity routing is amazingly fast.",
-            "Watching that key resistance level closely.",
-            "Ethereum showing strong support above 3.5k.",
-            "Sub-millisecond trade execution is a game changer.",
-            "Anyone else trading the SOL/USD pair right now?",
-            "Clean candles and reliable data feeds.",
-            "Target 2 reached! Locking in gains.",
-            "Low latency is crucial for high volatility scalping.",
-            "Loving the UI design of this trading terminal.",
-            "Volume is picking up nicely on the 1M chart.",
-            "Great analysis and smooth stream layout.",
-            "My limit order filled instantly without slippage.",
-            "Bullish momentum building up on the 15-minute timeframe.",
-            "Thanks for sharing this awesome trading code structure!"
+        // English Conversation Chains
+        const englishConversations = [
+            [
+                { speaker: "foreign", text: "Is anyone holding long positions on BTC right now?" },
+                { speaker: "foreign", text: "Yes, opened mine at 81,500. Looking for a push to 83k." },
+                { speaker: "foreign", text: "Same here, the 1M chart looks extremely bullish." },
+                { speaker: "foreign", text: "Nexora's execution speed is making this so smooth." }
+            ],
+            [
+                { speaker: "foreign", text: "What do you guys think about ETH support levels?" },
+                { speaker: "foreign", text: "Holding above 3.5k quite comfortably." },
+                { speaker: "foreign", text: "True, institutional buyers are stepping in heavily." }
+            ],
+            [
+                { speaker: "foreign", text: "Has anyone checked the proof-of-reserves audit today?" },
+                { speaker: "foreign", text: "Always 1:1 on-chain, checked it earlier. Very secure." },
+                { speaker: "foreign", text: "That's why I switched all my trading volume here." }
+            ]
         ];
 
-        const tagalogComments = [
-            "solid ng flow ng market ngayon ah",
-            "pumasok na naman ang TP ko, ang lupet",
-            "ingat sa volatility guys, tight stop loss",
-            "ayos talaga mag-trade dito sa Nexora",
-            "solid ng mga signals dito mga paps 🚀",
-            "Salamat sa trading code boss, laking tulong nito!",
-            "Grabe ang smooth nitong platform na to, salamat po."
+        // Tagalog Conversation Chains (Strictly for +63)
+        const tagalogConversations = [
+            [
+                { speaker: "pinoy", text: "mga paps, kumusta ang trade nyo ngayon?" },
+                { speaker: "pinoy", text: "ayos naman boss, hit ko na TP ko sa BTC kanina pa" },
+                { speaker: "pinoy", text: "solid talaga dito sa Nexora, walang lag kahit volatile" },
+                { speaker: "pinoy", text: "totoo yan, ang bilis mag-execute ng order" }
+            ],
+            [
+                { speaker: "pinoy", text: "may nag-try na ba sa inyo mag-long sa SOL?" },
+                { speaker: "pinoy", text: "ako paps, medyo naghihintay pa ako ng pullback" },
+                { speaker: "pinoy", text: "sabagay, maganda rin sumabay kapag breakout" }
+            ]
         ];
 
-        function generateChatEntry() {
-            let isPinoy = Math.random() < 0.255; // 25% chance maging Pilipino (+63)
-            let code, text;
-
-            if (isPinoy) {
-                code = pinoyCodes[Math.floor(Math.random() * pinoyCodes.length)];
-                text = tagalogComments[Math.floor(Math.random() * tagalogComments.length)];
-            } else {
-                code = foreignCodes[Math.floor(Math.random() * foreignCodes.length)];
-                text = englishComments[Math.floor(Math.random() * englishComments.length)];
-            }
-
+        function getRandomNumber(isPinoy) {
+            let codes = isPinoy ? pinoyCodes : foreignCodes;
+            let code = codes[Math.floor(Math.random() * codes.length)];
             let end = Math.floor(1000 + Math.random() * 9000);
-            return { number: `${code}-***-${end}`, text: text };
+            return `${code}-***-${end}`;
         }
 
-        const chatBox = id => document.getElementById(id);
-        const chatStream = chatBox('chatStream');
+        const chatStream = document.getElementById('chatStream');
+        
+        let activeChain = null;
+        let chainStep = 0;
+        let currentIsPinoy = false;
 
-        // Initial load
-        for (let i = 0; i < 3; i++) {
-            let entry = generateChatEntry();
+        function appendMessage(number, text) {
             const div = document.createElement('div');
             div.className = 'chat-message';
-            div.innerHTML = `<span class="chat-number">${entry.number}:</span> <span class="chat-text">${entry.text}</span>`;
-            chatStream.appendChild(div);
-        }
-
-        // Interval updates
-        setInterval(() => {
-            let entry = generateChatEntry();
-            const div = document.createElement('div');
-            div.className = 'chat-message';
-            div.innerHTML = `<span class="chat-number">${entry.number}:</span> <span class="chat-text">${entry.text}</span>`;
+            div.innerHTML = `<span class="chat-number">${number}:</span> <span class="chat-text">${text}</span>`;
             chatStream.appendChild(div);
             chatStream.scrollTop = chatStream.scrollHeight;
-        }, 3500);
+        }
 
-        // User Custom Comment
+        // Simula ng usapan
+        function advanceConversation() {
+            if (!activeChain || chainStep >= activeChain.length) {
+                // Pumili ng bagong usapan (75% English, 25% Tagalog para sa +63)
+                currentIsPinoy = Math.random() < 0.25;
+                let pool = currentIsPinoy ? tagalogConversations : englishConversations;
+                activeChain = pool[Math.floor(Math.random() * pool.length)];
+                chainStep = 0;
+            }
+
+            let msgData = activeChain[chainStep];
+            let number = getRandomNumber(currentIsPinoy);
+            
+            appendMessage(number, msgData.text);
+            chainStep++;
+        }
+
+        // Mag-load ng paunang usapan
+        for (let i = 0; i < 4; i++) {
+            advanceConversation();
+        }
+
+        // Tuluy-tuloy na pag-uusap nang walang katapusan
+        setInterval(() => {
+            advanceConversation();
+        }, 3600);
+
+        // User Custom Comment (You:)
         document.getElementById('chatForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
