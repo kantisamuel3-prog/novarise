@@ -527,46 +527,49 @@
             return "$" + number.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            const userUid = localStorage.getItem("nexora_user_uid");
-            
-            if(!userUid){
-                window.location.href = "login.html";
-                return;
-            }
-
-            try {
-                const userRef = db.collection("Users").doc(userUid);
-                const docSnapshot = await userRef.get();
-
-                if(!docSnapshot.exists){
+        document.addEventListener("DOMContentLoaded", () => {
+            auth.onAuthStateChanged(async (user) => {
+                const userUid = localStorage.getItem("nexora_user_uid");
+                
+                if (!user && !userUid) {
                     window.location.href = "login.html";
                     return;
                 }
 
-                const data = docSnapshot.data() || {};
-                profilePhone.textContent = data.email || data.phone || "Member account";
-                profileName.textContent = "Welcome Trader!";
+                const activeUid = user ? user.uid : userUid;
 
-                userRef.onSnapshot((docSnap) => {
-                    if(!docSnap.exists) return;
-                    const liveData = docSnap.data() || {};
-                    const phpBalance = Number(liveData.balance) || 0;
-                    const usdBalance = Number(liveData.usdBalance) || 0;
+                try {
+                    const userRef = db.collection("Users").doc(activeUid);
+                    const docSnapshot = await userRef.get();
 
-                    dollarBalance.textContent = formatUSD(usdBalance);
-                    pesoBalance.textContent = formatPeso(phpBalance);
+                    if(!docSnapshot.exists){
+                        window.location.href = "login.html";
+                        return;
+                    }
 
-                    dollarBalance.classList.remove("loading");
-                    pesoBalance.classList.remove("loading");
-                }, (error) => {
-                    console.error("ACCOUNT FIRESTORE ERROR:", error);
-                });
+                    const data = docSnapshot.data() || {};
+                    profilePhone.textContent = data.email || data.phone || "Member account";
+                    profileName.textContent = "Welcome Trader!";
 
-            } catch (error) {
-                console.error("Auth error:", error);
-                window.location.href = "login.html";
-            }
+                    userRef.onSnapshot((docSnap) => {
+                        if(!docSnap.exists) return;
+                        const liveData = docSnap.data() || {};
+                        const phpBalance = Number(liveData.balance) || 0;
+                        const usdBalance = Number(liveData.usdBalance) || 0;
+
+                        dollarBalance.textContent = formatUSD(usdBalance);
+                        pesoBalance.textContent = formatPeso(phpBalance);
+
+                        dollarBalance.classList.remove("loading");
+                        pesoBalance.classList.remove("loading");
+                    }, (error) => {
+                        console.error("ACCOUNT FIRESTORE ERROR:", error);
+                    });
+
+                } catch (error) {
+                    console.error("Auth error:", error);
+                }
+            });
         });
 
         logoutButton.addEventListener("click", async () => {
