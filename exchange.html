@@ -171,12 +171,47 @@
         /* Slightly more compact trading layout while keeping controls usable */
         @media (min-width: 768px) {
             .chart-box { height: 185px; }
+            body > header, body > #chartContainer, body > div.px-3 {
+                max-width: 720px;
+            }
+        }
+        @media (min-width: 1024px) {
+            body > header, body > #chartContainer, body > div.px-3 {
+                max-width: 960px;
+            }
         }
         @media (max-width: 767px) {
             body > header, body > #chartContainer, body > div.px-3 { max-width: 100%; }
             .nexora-bottom-nav { width: 100vw !important; }
             .chart-box { height: 175px; }
             body { font-size: 12px; }
+        }
+
+        /* Umiilaw at umiikot na logo box para sa exchange header */
+        .exchange-logo-box {
+            position: relative;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulseCyan 3s ease-in-out infinite;
+        }
+        .exchange-logo-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1.5px dashed rgba(56, 189, 248, 0.6);
+            animation: orbit 10s linear infinite;
+        }
+        .text-chrome-3d {
+            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 35%, #94a3b8 65%, #64748b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-ring-accent {
+            background: radial-gradient(circle, #ffe380 0%, #d4af37 60%, #996515 100%);
+            box-shadow: 0 0 6px rgba(212, 175, 55, 0.8), inset 0 0 2px rgba(255, 255, 255, 0.8);
         }
     </style>
 
@@ -281,16 +316,25 @@
     <!-- TOP HEADER & MARKET MODES -->
     <header class="bg-[#121212] px-3 pt-2 pb-2 border-b border-[#222222] shrink-0">
         <div class="flex items-center justify-between mb-1.5">
-            <div class="flex items-center space-x-2">
-                <div class="relative w-7 h-7 flex items-center justify-center animate-pulse-cyan">
-                    <div class="absolute inset-0 rounded-full border border-dashed border-cyan-400 animate-orbit"></div>
-                    <svg class="w-5 h-5 drop-shadow-[0_0_8px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div class="flex items-center space-x-2.5">
+                <div class="exchange-logo-box">
+                    <div class="exchange-logo-ring"></div>
+                    <svg class="w-6 h-6 drop-shadow-[0_0_10px_rgba(0,242,254,0.9)] relative z-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
                         <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
                         <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
                         <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
                     </svg>
                 </div>
-                <span class="text-white font-black tracking-wider text-xs font-mono">NEXORA</span>
+                <div class="flex flex-col">
+                    <div class="flex items-center font-brand font-black text-sm tracking-wider">
+                        <span class="text-chrome-3d">NEX</span>
+                        <span class="relative inline-flex items-center justify-center w-2.5 h-2.5 mx-0.5 border border-[#dfb248] rounded-full gold-ring-accent" style="border-radius: 9999px; border-width: 1.5px;">
+                            <span style="background-color: #0f172a; width: 2.5px; height: 2.5px; border-radius: 9999px;"></span>
+                        </span>
+                        <span class="text-chrome-3d">RA</span>
+                    </div>
+                    <span class="text-[7px] text-[#dfb248] font-mono tracking-widest uppercase font-bold">TRADE . GROW . TOGETHER</span>
+                </div>
             </div>
             <div class="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/20">
                 ● Perpetual Swap
@@ -427,14 +471,13 @@
             </div>
         </div>
 
-        <!-- PANEL 2: OPTIONS (MAY SAKTO AT MALILIIT NA LOGO NG BTC, ETH, SOL, AT XRP) -->
+        <!-- PANEL 2: OPTIONS -->
         <div id="panelOptions" class="mode-panel font-mono text-xs space-y-1.5">
             <div class="text-white font-bold mb-1 flex justify-between items-center text-[11px]">
                 <span>Active Options Contracts</span>
                 <span class="text-emerald-500 text-[9px]">● Live Market</span>
             </div>
             
-            <!-- BTC Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC" class="w-4 h-4 rounded-full">
@@ -446,7 +489,6 @@
                 <span id="optBadge1" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↑ +2.4%</span>
             </div>
 
-            <!-- ETH Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH" class="w-4 h-4 rounded-full">
@@ -458,7 +500,6 @@
                 <span id="optBadge2" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↓ -1.8%</span>
             </div>
 
-            <!-- SOL Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/4128/small/solana.png" alt="SOL" class="w-4 h-4 rounded-full">
@@ -470,7 +511,6 @@
                 <span id="optBadge3" class="px-1.5 py-0.5 rounded font-bold text-[9px] border">↑ +4.1%</span>
             </div>
 
-            <!-- XRP Option -->
             <div class="p-1.5 bg-[#1a1a1a] rounded-lg border border-[#2e2e2e] flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <img src="https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png" alt="XRP" class="w-4 h-4 rounded-full bg-black p-0.5 border border-gray-700">
@@ -614,7 +654,7 @@
         </div>
     </div>
 
-    <!-- ORDER HELP / RESULT MODAL: visual confirmation, not a real exchange execution -->
+    <!-- ORDER HELP / RESULT MODAL -->
     <div id="orderHelpModal" class="fixed inset-0 bg-black/80 z-[99999] hidden items-center justify-center p-4 font-mono" style="position:fixed;inset:0;align-items:center;justify-content:center;display:none;overflow-y:auto;" role="dialog" aria-modal="true" aria-labelledby="orderHelpTitle">
         <div class="w-full max-w-sm rounded-2xl border border-cyan-400/40 bg-[#0b1526] shadow-[0_0_35px_rgba(0,242,254,0.15)] overflow-hidden">
             <div class="px-4 py-4 border-b border-cyan-400/20 flex items-center gap-3">
@@ -641,7 +681,7 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION — matching Nexora Account navigation -->
+    <!-- BOTTOM NAVIGATION -->
     <nav class="nexora-bottom-nav fixed bottom-0 left-0 right-0 h-20 bg-[#030b17]/95 border-t border-cyan-400/20 z-50 flex items-center justify-around px-2 backdrop-blur-md shadow-2xl">
         <a href="dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cyan-300 transition-colors text-xs font-bold hover:drop-shadow-[0_0_8px_rgba(0,242,254,0.6)]">
             <svg class="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
@@ -672,7 +712,6 @@
     let basePrice = 82026.80;
     let spacing = 14;     
     let candleWidth = 8;
-    // Horizontal chart navigation: drag/hold the chart to pan through candles.
     let chartPanOffset = 0;
     let isChartDragging = false;
     let chartDragLastX = 0;
@@ -880,7 +919,6 @@
         }
     }, { passive: false });
 
-    // Drag with mouse or finger to scroll the candle graph horizontally.
     canvas.addEventListener('pointerdown', function(e) {
         if (e.button !== undefined && e.button !== 0) return;
         isChartDragging = true;
@@ -1085,7 +1123,6 @@
         ctx.font = "bold 8px 'JetBrains Mono', monospace";
         ctx.fillText(basePrice.toFixed(1), chartAreaWidth + 4, curY + 3);
 
-        // Bottom candle-index labels stay inside the chart instead of being clipped.
         ctx.save();
         ctx.beginPath();
         ctx.rect(0, chartHeight + 1, chartAreaWidth, canvas.height - chartHeight - 1);
@@ -1194,8 +1231,6 @@
         renderChart();
     }
 
-    // Demo trading balance: each successful BTC order-help action deducts 5 USDT.
-    // Stored locally so the displayed balance remains after a page reload in this browser.
     const NEXORA_ORDER_FEE = 5;
     const NEXORA_BALANCE_KEY = 'nexora_exchange_available_balance';
     let availableBalance = 1482;
@@ -1204,7 +1239,7 @@
         if (localStorage.getItem(NEXORA_BALANCE_KEY) !== null && Number.isFinite(savedBalance) && savedBalance >= 0) {
             availableBalance = savedBalance;
         }
-    } catch (e) { /* Use the default demo balance if browser storage is unavailable. */ }
+    } catch (e) {}
 
     function renderAvailableBalance() {
         const balanceEl = document.getElementById('availableBalance');
@@ -1242,7 +1277,7 @@
         }
 
         availableBalance = Math.round((availableBalance - NEXORA_ORDER_FEE) * 100) / 100;
-        try { localStorage.setItem(NEXORA_BALANCE_KEY, String(availableBalance)); } catch (e) { /* Balance still updates for this page session. */ }
+        try { localStorage.setItem(NEXORA_BALANCE_KEY, String(availableBalance)); } catch (e) {}
         renderAvailableBalance();
 
         const actionLabel = currentSide === 'open' ? 'Open Long BTC' : 'Close Short BTC';
@@ -1254,7 +1289,6 @@
         document.getElementById('orderHelpSubtitle').textContent = actionLabel + ' • BTCUSDT Perpetual';
         document.getElementById('orderHelpStatus').innerHTML = '<i class="fa-solid fa-check mr-1"></i> Order help successfully processed';
         const modal = document.getElementById('orderHelpModal');
-        // Force a viewport-centered overlay regardless of surrounding page layout.
         modal.style.position = 'fixed';
         modal.style.inset = '0';
         modal.style.alignItems = 'center';
@@ -1266,10 +1300,8 @@
     function closeOrderHelp() {
         const modal = document.getElementById('orderHelpModal');
         modal.style.display = 'none';
-        // Closing resets the dialog so the user can open a new order-help result again.
     }
 
-    // Close the order help dialog by tapping its backdrop or pressing Escape.
     document.getElementById('orderHelpModal').addEventListener('click', function (event) {
         if (event.target === this) closeOrderHelp();
     });
@@ -1277,7 +1309,6 @@
         if (event.key === 'Escape') closeOrderHelp();
     });
 
-    // Restore the Exchange view when navigating away and coming back in the same tab.
     (function restoreExchangeState() {
         let savedCandles = null;
         try {
@@ -1327,7 +1358,6 @@
         renderChart();
     })();
 
-    // Save chart candles and current price while the live ticker updates.
     setInterval(function () {
         try {
             sessionStorage.setItem('nexora_exchange_candles', JSON.stringify(candles));
@@ -1337,7 +1367,6 @@
 
     setInterval(softTicker, 850);
 </script>
-
 
 <script>
 (function () {
@@ -1382,11 +1411,6 @@
     window.addEventListener('resize', resizeAccountBackground);
     resizeAccountBackground(); animateAccountBackground();
 })();
-</script>
-
-<script>
-// Keep Exchange clickable: clicking it again reloads the platform page normally.
-// The bottom navigation stays fixed in place through its .nexora-bottom-nav CSS.
 </script>
 
 </body>
