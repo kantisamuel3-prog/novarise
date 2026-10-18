@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEXORA — Next-Generation Institutional Crypto Infrastructure</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts para sa Montserrat at JetBrains Mono gaya ng sa account.html -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-deep: #020617;
@@ -123,29 +124,40 @@
             text-decoration: none;
         }
 
-        /* Na-update ang logo shield para maging katulad ng account.html pero sakto pa rin ang sukat */
+        /* Eksaktong istilo ng Logo Shield mula sa account.html pero sakto ang sukat para sa index header */
         .logo-shield {
             width: 42px;
             height: 42px;
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(24, 144, 255, 0.1));
+            border: 1.5px solid var(--neon-cyan);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            font-size: 22px;
-            color: #000;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+        }
+
+        .text-chrome-3d {
+            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 35%, #94a3b8 65%, #64748b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.9));
+        }
+
+        .gold-ring-accent {
+            background: radial-gradient(circle, #ffe380 0%, #d4af37 60%, #996515 100%);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.8), inset 0 0 3px rgba(255, 255, 255, 0.8);
         }
 
         .brand-text h1 {
             font-size: 20px;
-            font-weight: 800;
+            font-weight: 900;
+            font-family: 'Montserrat', sans-serif;
             letter-spacing: 2px;
-            background: linear-gradient(135deg, #fff, var(--neon-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             line-height: 1;
+            display: flex;
+            align-items: center;
+            gap: 3px;
         }
 
         .brand-text span {
@@ -153,6 +165,7 @@
             letter-spacing: 2.5px;
             color: var(--gold-accent);
             font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .btn-portal {
@@ -549,12 +562,24 @@
             </div>
         </div>
 
-        <!-- Header -->
+        <!-- Header na may eksaktong N logo at NEXORA text style galing sa account.html -->
         <header>
             <a href="index.html" class="brand-logo">
-                <div class="logo-shield">N</div>
+                <div class="logo-shield">
+                    <svg class="w-6 h-6 drop-shadow-[0_0_8px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+                        <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+                        <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
+                    </svg>
+                </div>
                 <div class="brand-text">
-                    <h1>NEXORA</h1>
+                    <h1>
+                        <span class="text-chrome-3D" style="background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 35%, #94a3b8 65%, #64748b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">NEX</span>
+                        <span class="relative inline-flex items-center justify-center w-3.5 h-3.5 mx-0.5 border border-nexora-gold rounded-full gold-ring-accent" style="border-radius: 9999px; border-width: 2px; border-color: #dfb248;">
+                            <span class="w-1 h-1 rounded-full bg-slate-900" style="background-color: #0f172a; width: 4px; height: 4px; border-radius: 9999px;"></span>
+                        </span>
+                        <span class="text-chrome-3D" style="background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 35%, #94a3b8 65%, #64748b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">RA</span>
+                    </h1>
                     <span>TRADE . GROW . TOGETHER</span>
                 </div>
             </a>
