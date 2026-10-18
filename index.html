@@ -322,7 +322,7 @@
         /* Legitimacy & Compliance Section */
         .legitimacy-section {
             max-width: 1050px;
-            margin: 0 auto 80px;
+            margin: 0 auto 120px;
             padding: 0 20px;
         }
 
@@ -383,16 +383,162 @@
             line-height: 1.4;
         }
 
+        /* FLOATING INTERACTIVE LIVE STREAM & CHAT WIDGET */
+        .live-stream-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(11, 17, 32, 0.95);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+        }
+
+        .widget-top {
+            background: rgba(3, 7, 18, 0.9);
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--candle-red);
+            color: var(--candle-red);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--candle-red);
+            border-radius: 50%;
+            animation: pulse 1.2s infinite;
+        }
+
+        .viewer-count {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Video Container */
+        .video-box {
+            width: 100%;
+            height: 160px;
+            background: #000;
+            position: relative;
+        }
+
+        .video-box iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: none; /* Keeps background video smooth */
+        }
+
+        /* Live Chat Box */
+        .chat-container {
+            height: 140px;
+            background: rgba(3, 7, 18, 0.85);
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            scroll-behavior: smooth;
+        }
+
+        .chat-message {
+            font-size: 11px;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .chat-user {
+            font-weight: 700;
+            color: var(--neon-cyan);
+            margin-right: 4px;
+        }
+
+        .chat-user.you {
+            color: var(--gold-accent);
+        }
+
+        .chat-text {
+            color: #e2e8f0;
+        }
+
+        /* Chat Input Form */
+        .chat-input-box {
+            display: flex;
+            padding: 8px;
+            background: rgba(11, 17, 32, 0.95);
+            gap: 6px;
+        }
+
+        .chat-input-box input {
+            flex: 1;
+            background: rgba(3, 7, 18, 0.8);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .chat-input-box input:focus {
+            border-color: var(--neon-cyan);
+        }
+
+        .chat-input-box button {
+            background: var(--neon-cyan);
+            color: #000;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 11px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .chat-input-box button:hover {
+            opacity: 0.9;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(1.2); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 768px) {
             .hero-title { font-size: 38px; }
             .hero-actions { flex-direction: column; }
             .btn-launch, .btn-secondary { width: 100%; text-align: center; }
-            .legitimacy-card { padding: 25px; }
+            .live-stream-widget { width: 280px; bottom: 10px; right: 10px; }
+            .video-box { height: 130px; }
+            .chat-container { height: 110px; }
         }
     </style>
 </head>
@@ -518,8 +664,38 @@
 
     </div>
 
-    <!-- Smooth Candlestick Animation Engine Script -->
+    <!-- FLOATING LIVE VIDEO STREAM & INTERACTIVE CHAT WIDGET -->
+    <div class="live-stream-widget">
+        <div class="widget-top">
+            <div class="live-badge">
+                <div class="live-dot"></div>
+                LIVE SESSION
+            </div>
+            <span class="viewer-count">👁️ 1,420 watching</span>
+        </div>
+        
+        <!-- Live Video Frame -->
+        <div class="video-box">
+            <iframe src="https://www.youtube.com/embed/26XmB4qJ3c8?autoplay=1&mute=1&controls=0&loop=1&playlist=26XmB4qJ3c8" allow="autoplay"></iframe>
+        </div>
+
+        <!-- Live Comments Container -->
+        <div class="chat-container" id="chatStream">
+            <div class="chat-message"><span class="chat-user">Alex_Trader:</span> BTC looking very strong here 🔥</div>
+            <div class="chat-message"><span class="chat-user">Crypto_Sam:</span> Nexora signals hitting 98% accuracy today!</div>
+            <div class="chat-message"><span class="chat-user">Marco_P:</span> Just opened ETH Long 🚀</div>
+        </div>
+
+        <!-- Comment Input Form -->
+        <form class="chat-input-box" id="chatForm">
+            <input type="text" id="userInput" placeholder="Say something in live chat..." required>
+            <button type="submit">SEND</button>
+        </form>
+    </div>
+
+    <!-- Background Engine & Interactive Live Chat Script -->
     <script>
+        // Smooth Candlestick Background Canvas
         const canvas = document.getElementById('smoothCandleCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -535,7 +711,6 @@
         const gap = 12;
         const count = Math.ceil(window.innerWidth / (candleWidth + gap)) + 5;
 
-        // Initialize smooth candle data
         let currentPrice = canvas.height / 2;
         for (let i = 0; i < count; i++) {
             let change = (Math.random() - 0.48) * 35;
@@ -552,7 +727,7 @@
         function drawSmoothCandles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            offset += 0.4; // Smooth horizontal flow speed
+            offset += 0.4;
             if (offset >= candleWidth + gap) {
                 offset = 0;
                 candles.shift();
@@ -571,7 +746,6 @@
                 let isGreen = c.close <= c.open;
                 let color = isGreen ? '#10b981' : '#ef4444';
 
-                // Draw Wick
                 ctx.beginPath();
                 ctx.strokeStyle = color;
                 ctx.lineWidth = 1.5;
@@ -579,12 +753,10 @@
                 ctx.lineTo(x + candleWidth / 2, c.low);
                 ctx.stroke();
 
-                // Draw Candle Body
                 ctx.fillStyle = color;
                 let bodyY = Math.min(c.open, c.close);
                 let bodyHeight = Math.max(Math.abs(c.close - c.open), 3);
                 
-                // Rounded candles for smooth aesthetic
                 ctx.beginPath();
                 ctx.roundRect(x, bodyY, candleWidth, bodyHeight, 3);
                 ctx.fill();
@@ -594,6 +766,42 @@
         }
 
         drawSmoothCandles();
+
+        // Simulated Automatic Audience Chat Stream
+        const simulatedComments = [
+            { user: "David_H", text: "Is this live session recording saved?" },
+            { user: "Elena_R", text: "Nexora platform speed is top notch ✨" },
+            { user: "Crypto_Node", text: "Buy order filled @ $81,670!" },
+            { user: "Viktor_K", text: "Let's go 🚀🚀" }
+        ];
+        
+        let simIdx = 0;
+        const chatBox = document.getElementById('chatStream');
+
+        setInterval(() => {
+            const msg = simulatedComments[simIdx];
+            const div = document.createElement('div');
+            div.className = 'chat-message';
+            div.innerHTML = `<span class="chat-user">${msg.user}:</span> <span class="chat-text">${msg.text}</span>`;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            simIdx = (simIdx + 1) % simulatedComments.length;
+        }, 4000);
+
+        // Handle User Custom Chat Form Submission
+        document.getElementById('chatForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (text) {
+                const div = document.createElement('div');
+                div.className = 'chat-message';
+                div.innerHTML = `<span class="chat-user you">You:</span> <span class="chat-text">${text}</span>`;
+                chatBox.appendChild(div);
+                chatBox.scrollTop = chatBox.scrollHeight;
+                input.value = '';
+            }
+        });
     </script>
 </body>
 </html>
