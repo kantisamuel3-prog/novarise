@@ -304,6 +304,7 @@
             font-size: 20px;
             font-weight: 700;
             color: #fff;
+            transition: color 0.3s;
         }
 
         /* INTEGRATED LIVE STREAM & CHAT WIDGET */
@@ -540,12 +541,12 @@
         <!-- Top Ticker Bar -->
         <div class="ticker-bar">
             <div class="ticker-track">
-                <div class="ticker-node"><span class="ticker-sym">BTC/USD</span><span class="ticker-val">$81,678.50</span><span class="ticker-up">+4.12%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">ETH/USD</span><span class="ticker-val">$3,520.10</span><span class="ticker-up">+2.65%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">NEX/USD</span><span class="ticker-val">$24.80</span><span class="ticker-up">+18.40%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">SOL/USD</span><span class="ticker-val">$189.45</span><span class="ticker-down">-0.85%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">BTC/USD</span><span class="ticker-val">$81,678.50</span><span class="ticker-up">+4.12%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">ETH/USD</span><span class="ticker-val">$3,520.10</span><span class="ticker-up">+2.65%</span></div>
+                <div class="ticker-node"><span class="ticker-sym">BTC/USD</span><span class="ticker-val" id="tickBtc">$81,678.50</span><span class="ticker-up">+4.12%</span></div>
+                <div class="ticker-node"><span class="ticker-sym">ETH/USD</span><span class="ticker-val" id="tickEth">$3,520.10</span><span class="ticker-up">+2.65%</span></div>
+                <div class="ticker-node"><span class="ticker-sym">NEX/USD</span><span class="ticker-val" id="tickNex">$24.80</span><span class="ticker-up">+18.40%</span></div>
+                <div class="ticker-node"><span class="ticker-sym">SOL/USD</span><span class="ticker-val" id="tickSol">$189.45</span><span class="ticker-down">-0.85%</span></div>
+                <div class="ticker-node"><span class="ticker-sym">BTC/USD</span><span class="ticker-val" id="tickBtc2">$81,678.50</span><span class="ticker-up">+4.12%</span></div>
+                <div class="ticker-node"><span class="ticker-sym">ETH/USD</span><span class="ticker-val" id="tickEth2">$3,520.10</span><span class="ticker-up">+2.65%</span></div>
             </div>
         </div>
 
@@ -589,35 +590,35 @@
                     <a href="login.html" class="btn-secondary">ACCESS ACCOUNT</a>
                 </div>
 
-                <!-- Market Cards Preview -->
+                <!-- Market Cards Preview (Live Smooth Moving Prices) -->
                 <div class="market-preview-grid">
                     <div class="price-card">
                         <div class="card-header">
                             <span>BTC/USD</span>
                             <span class="pair-change" style="color: var(--emerald-green);">+4.12%</span>
                         </div>
-                        <div class="pair-price">$81,678.50</div>
+                        <div class="pair-price" id="cardBtcPrice">$81,678.50</div>
                     </div>
                     <div class="price-card">
                         <div class="card-header">
                             <span>ETH/USD</span>
                             <span class="pair-change" style="color: var(--emerald-green);">+2.65%</span>
                         </div>
-                        <div class="pair-price">$3,520.10</div>
+                        <div class="pair-price" id="cardEthPrice">$3,520.10</div>
                     </div>
                     <div class="price-card">
                         <div class="card-header">
                             <span>SOL/USD</span>
                             <span class="pair-change" style="color: var(--candle-red);">-0.85%</span>
                         </div>
-                        <div class="pair-price">$189.45</div>
+                        <div class="pair-price" id="cardSolPrice">$189.45</div>
                     </div>
                     <div class="price-card">
                         <div class="card-header">
                             <span>NEX/USD</span>
                             <span class="pair-change" style="color: var(--emerald-green);">+18.40%</span>
                         </div>
-                        <div class="pair-price">$24.80</div>
+                        <div class="pair-price" id="cardNexPrice">$24.80</div>
                     </div>
                 </div>
             </div>
@@ -812,6 +813,45 @@
         }
         renderProStreamChart();
 
+        // LIVE SMOOTH MOVING PRICES FOR MARKETS (BTC, ETH, SOL, NEX)
+        let marketPrices = {
+            btc: 81678.50,
+            eth: 3520.10,
+            sol: 189.45,
+            nex: 24.80
+        };
+
+        function updateLiveMarketPrices() {
+            // Bahagyang galaw (smooth fluctuation)
+            marketPrices.btc += (Math.random() - 0.48) * 12;
+            marketPrices.eth += (Math.random() - 0.48) * 3;
+            marketPrices.sol += (Math.random() - 0.48) * 0.25;
+            marketPrices.nex += (Math.random() - 0.48) * 0.08;
+
+            let btcStr = '$' + marketPrices.btc.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            let ethStr = '$' + marketPrices.eth.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            let solStr = '$' + marketPrices.sol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            let nexStr = '$' + marketPrices.nex.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            // I-update sa Ticker Bar
+            document.getElementById('tickBtc').innerText = btcStr;
+            document.getElementById('tickEth').innerText = ethStr;
+            document.getElementById('tickNex').innerText = nexStr;
+            document.getElementById('tickSol').innerText = solStr;
+            if(document.getElementById('tickBtc2')) {
+                document.getElementById('tickBtc2').innerText = btcStr;
+                document.getElementById('tickEth2').innerText = ethStr;
+            }
+
+            // I-update sa Market Preview Cards sa kaliwa
+            document.getElementById('cardBtcPrice').innerText = btcStr;
+            document.getElementById('cardEthPrice').innerText = ethStr;
+            document.getElementById('cardSolPrice').innerText = solStr;
+            document.getElementById('cardNexPrice').innerText = nexStr;
+        }
+
+        setInterval(updateLiveMarketPrices, 1200); // Tumatakbo kada 1.2 segundo para smooth ang galaw
+
         // DYNAMIC VIEWERS (500 to 2800)
         let currentViewers = 1850;
         const viewerDisplay = document.getElementById('viewerCountDisplay');
@@ -830,67 +870,65 @@
         const foreignCodes = ["+1 212", "+1 415", "+44 79", "+49 151", "+81 90", "+971 50", "+61 41", "+33 61", "+34 60", "+65 91"];
         const pinoyCodes = ["+63 917", "+63 908", "+63 927", "+63 999"];
 
-        // MALAKING LISTAHAN NG ENGLISH AT PINONG CONVERSATIONS (HINDI PAULIT-ULIT / NO REPEAT POOL)
-        const masterChatPool = [
-            // English How / Legit Queries
-            { text: "How does this platform work? Is there a guide?", isQuestion: true },
-            { text: "Is this trading protocol fully legit and secure?", isQuestion: true },
-            { text: "New trader here, where should I start my position?", isQuestion: true },
-            { text: "Are the liquidity pools audited in real-time?", isQuestion: true },
-            { text: "Can anyone share the official Discord or Telegram link?", isQuestion: true },
-            { text: "How fast is the order execution during high volatility?", isQuestion: true },
-
-            // English Replies / Legit Affirmations
-            { text: "Yes 100% legit, I've been trading here for months without issues.", isReply: true },
-            { text: "Absolutely legit, the proof of reserves is verified on-chain.", isReply: true },
-            { text: "Send me a direct message and I'll walk you through the setup.", isReply: true },
-            { text: "Yes it's secure, withdrawals process in under two minutes.", isReply: true },
-            { text: "Drop a PM and I can share my strategy guide with you.", isReply: true },
-
-            // English General Trading & Market Discussions
-            "That massive bullish engulfing candle on BTC just broke all resistance!",
-            "Just took profit on my Ethereum long, incredible momentum today.",
-            "Nexora's order book depth is cleaner than most institutional terminals.",
-            "Watching the 4-hour RSI closely, looks like a healthy consolidation.",
-            "Sub-millisecond execution really saves you from bad slippage.",
-            "Anyone else riding the Solana wave right now? Absolute beast.",
-            "The risk-to-reward ratio on this setup is immaculate.",
-            "Target 3 hit perfectly! Locking in gains and letting a runner go.",
-            "Low latency infrastructure is the only way to survive high volatility.",
-            "Clean UI and buttery smooth charts, hats off to the developers.",
-            "Trading volume is surging across all major pairs on the 1M timeframe.",
-            "Market structure remains strong despite the recent macro dip.",
-            "My limit order filled with absolute precision, zero lag.",
-            "Bullish divergence forming on the lower timeframes, get ready.",
-            "Institutional liquidity provisioning is working flawlessly.",
-            "Checking order flow imbalance before placing my next trade.",
-            "Patience pays off in these choppy market conditions.",
-            "Diversifying my portfolio into layer-1 tokens today.",
-            "Upgraded my account tier yesterday, the perks are worth it.",
-            "Volatility is picking up nicely, perfect conditions for scalping.",
-
-            // Pinoy Community Mix (Konti lang para mas marami ang English)
-            { text: "Paano po ba sumali sa VIP signal group dito?", isQuestion: true },
-            { text: "Legit ba tong platform na to mga boss?", isQuestion: true },
-            { text: "Yes legit na legit dyan paps, subok na yan", isReply: true },
-            { text: "Pm mo ko boss, ituturo ko sayo kung pano mag-stake", isReply: true },
-            "solid ng flow ng market ngayon ah",
-            "pumasok na naman ang TP ko, ang lupet",
-            "ingat sa volatility guys, laging mag-tight stop loss",
-            "ayos talaga mag-trade dito sa Nexora platform",
-            "solid ng mga signals dito mga paps 🚀"
+        const englishPool = [
+            { text: "How does this platform work? Is there a beginner's guide?", isQuestion: true },
+            { text: "Is this institutional trading protocol fully secure and audited?", isQuestion: true },
+            { text: "New trader here, where should I place my initial limit orders?", isQuestion: true },
+            { text: "Are the liquidity pools verified in real-time on-chain?", isQuestion: true },
+            { text: "Can anyone drop the official documentation link?", isQuestion: true },
+            { text: "How fast is order execution during market spikes?", isQuestion: true },
+            { text: "That massive bullish engulfing candle on BTC just broke all resistance!", isReply: false },
+            { text: "Just took profit on my Ethereum long, incredible momentum today.", isReply: false },
+            { text: "Nexora's order book depth is cleaner than most institutional terminals.", isReply: false },
+            { text: "Watching the 4-hour RSI closely, looks like a healthy consolidation.", isReply: false },
+            { text: "Sub-millisecond execution really saves you from bad slippage.", isReply: false },
+            { text: "Anyone else riding the Solana wave right now? Absolute beast.", isReply: false },
+            { text: "The risk-to-reward ratio on this setup is immaculate.", isReply: false },
+            { text: "Target 3 hit perfectly! Locking in gains and letting a runner go.", isReply: false },
+            { text: "Low latency infrastructure is the only way to survive high volatility.", isReply: false },
+            { text: "Clean UI and buttery smooth charts, hats off to the developers.", isReply: false },
+            { text: "Trading volume is surging across all major pairs on the 1M timeframe.", isReply: false },
+            { text: "Market structure remains strong despite the recent macro dip.", isReply: false },
+            { text: "My limit order filled with absolute precision, zero lag.", isReply: false },
+            { text: "Bullish divergence forming on the lower timeframes, get ready.", isReply: false },
+            { text: "Institutional liquidity provisioning is working flawlessly.", isReply: false },
+            { text: "Checking order flow imbalance before placing my next trade.", isReply: false },
+            { text: "Patience pays off in these choppy market conditions.", isReply: false },
+            { text: "Diversifying my portfolio into layer-1 tokens today.", isReply: false },
+            { text: "Upgraded my account tier yesterday, the perks are worth it.", isReply: false }
         ];
 
-        // NO-REPEAT SHUFFLE SYSTEM
-        let availableChats = [...masterChatPool];
+        const tagalogPool = [
+            { text: "Legit ba tong platform na to mga boss?", isQuestion: true },
+            { text: "Paano po ba sumali sa VIP signal group dito?", isQuestion: true },
+            { text: "May GC ba para sa mga Pinoy traders dito?", isQuestion: true },
+            { text: "Yes legit na legit dyan paps, 1 year na ko gumagamit", isReply: false },
+            { text: "Pm mo ko boss, ituturo ko sayo kung pano mag-stake", isReply: false },
+            { text: "ayos talaga mag-trade dito sa Nexora platform", isReply: false },
+            { text: "solid ng mga signals dito mga paps 🚀", isReply: false }
+        ];
 
-        function getUniqueRandomChat() {
-            if (availableChats.length === 0) {
-                availableChats = [...masterChatPool]; // I-reset kapag nagamit na lahat para walang paulit-ulit agad
+        let availableEnglish = [...englishPool];
+        let availableTagalog = [...tagalogPool];
+
+        function getUniqueChat() {
+            let isTagalog = Math.random() < 0.15;
+
+            if (isTagalog) {
+                if (availableTagalog.length === 0) availableTagalog = [...tagalogPool];
+                let idx = Math.floor(Math.random() * availableTagalog.length);
+                let chosen = availableTagalog.splice(idx, 1)[0];
+                let code = pinoyCodes[Math.floor(Math.random() * pinoyCodes.length)];
+                let number = `${code}-***-${Math.floor(1000 + Math.random() * 9000)}`;
+                return { number, ...chosen };
+            } else {
+                if (availableEnglish.length === 0) availableEnglish = [...englishPool];
+                let idx = Math.floor(Math.random() * availableEnglish.length);
+                let chosen = availableEnglish.splice(idx, 1)[0];
+                let code = foreignCodes[Math.floor(Math.random() * foreignCodes.length)];
+                let number = `${code}-***-${Math.floor(1000 + Math.random() * 9000)}`;
+                return { number, ...chosen };
             }
-            let randomIndex = Math.floor(Math.random() * availableChats.length);
-            let chosen = availableChats.splice(randomIndex, 1)[0];
-            return chosen;
         }
 
         const chatStream = document.getElementById('chatStream');
@@ -912,43 +950,27 @@
             chatStream.scrollTop = chatStream.scrollHeight;
         }
 
-        // Paunang mga mensahe
         for (let i = 0; i < 5; i++) {
-            let isPinoy = Math.random() < 0.2; // 80% English, 20% Pinoy
-            let codes = isPinoy ? pinoyCodes : foreignCodes;
-            let code = codes[Math.floor(Math.random() * codes.length)];
-            let end = Math.floor(1000 + Math.random() * 9000);
-            let number = `${code}-***-${end}`;
-            let item = getUniqueRandomChat();
-            let text = typeof item === 'string' ? item : item.text;
-            appendMessage(number, text, false);
+            let chat = getUniqueChat();
+            appendMessage(chat.number, chat.text, false);
         }
 
-        // DYNAMIC CHAT LOOP WITH NO-REPEAT & AUTO REPLIES
         function scheduleNextMessage() {
-            let isPinoy = Math.random() < 0.2;
-            let codes = isPinoy ? pinoyCodes : foreignCodes;
-            let code = codes[Math.floor(Math.random() * codes.length)];
-            let end = Math.floor(1000 + Math.random() * 9000);
-            let number = `${code}-***-${end}`;
+            let chat = getUniqueChat();
+            appendMessage(chat.number, chat.text, false);
 
-            let item = getUniqueRandomChat();
-            let text = typeof item === 'string' ? item : item.text;
-
-            appendMessage(number, text, false);
-
-            // Kung ang lumabas ay tanong (how / legit ba), may magrereply ng English/Pinoy affirmation
-            if (typeof item === 'object' && item.isQuestion) {
+            if (chat.isQuestion) {
                 setTimeout(() => {
-                    let replyCode = foreignCodes[Math.floor(Math.random() * foreignCodes.length)];
-                    let replyEnd = Math.floor(1000 + Math.random() * 9000);
-                    let replyNumber = `${replyCode}-***-${replyEnd}`;
+                    let isPinoyReply = chat.number.startsWith("+63");
+                    let replyCode = isPinoyReply ? pinoyCodes[Math.floor(Math.random() * pinoyCodes.length)] : foreignCodes[Math.floor(Math.random() * foreignCodes.length)];
+                    let replyNumber = `${replyCode}-***-${Math.floor(1000 + Math.random() * 9000)}`;
                     
-                    let replies = [
+                    let replies = isPinoyReply ? [
+                        "Oo legit naman paps, mabilis wíthdrawal dyan",
+                        "Pm ka boss tuturuan kita sa staking pool"
+                    ] : [
                         "Yes 100% legit, withdrawals are processed instantly.",
-                        "Send me a message and I'll guide you through the terminal setup.",
-                        "Absolutely verified on-chain, you're in good hands.",
-                        "Yes trusted platform, been using it for over a year now."
+                        "Send me a message and I'll guide you through the terminal setup."
                     ];
                     let replyText = replies[Math.floor(Math.random() * replies.length)];
                     appendMessage(replyNumber, replyText, false);
@@ -966,7 +988,6 @@
 
         setTimeout(scheduleNextMessage, 1500);
 
-        // USER CUSTOM COMMENT (SEND)
         document.getElementById('chatForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
