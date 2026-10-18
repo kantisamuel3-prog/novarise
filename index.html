@@ -123,29 +123,28 @@
             text-decoration: none;
         }
 
+        /* Na-update ang logo shield para maging katulad ng account.html pero sakto pa rin ang sukat */
         .logo-shield {
             width: 42px;
             height: 42px;
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(59, 130, 246, 0.1));
-            border: 1px solid var(--neon-cyan);
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
-        }
-
-        .logo-shield svg {
-            width: 22px;
-            height: 22px;
-            filter: drop-shadow(0 0 6px var(--neon-cyan));
+            font-weight: 800;
+            font-size: 22px;
+            color: #000;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
         }
 
         .brand-text h1 {
             font-size: 20px;
             font-weight: 800;
             letter-spacing: 2px;
-            color: #fff;
+            background: linear-gradient(135deg, #fff, var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             line-height: 1;
         }
 
@@ -553,11 +552,7 @@
         <!-- Header -->
         <header>
             <a href="index.html" class="brand-logo">
-                <div class="logo-shield">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 20V4l12 16V4" stroke="#38bdf8"/>
-                    </svg>
-                </div>
+                <div class="logo-shield">N</div>
                 <div class="brand-text">
                     <h1>NEXORA</h1>
                     <span>TRADE . GROW . TOGETHER</span>
@@ -590,7 +585,7 @@
                     <a href="login.html" class="btn-secondary">ACCESS ACCOUNT</a>
                 </div>
 
-                <!-- Market Cards Preview (Live Smooth Moving Prices) -->
+                <!-- Market Cards Preview -->
                 <div class="market-preview-grid">
                     <div class="price-card">
                         <div class="card-header">
@@ -813,7 +808,7 @@
         }
         renderProStreamChart();
 
-        // LIVE SMOOTH MOVING PRICES FOR MARKETS (BTC, ETH, SOL, NEX)
+        // LIVE SMOOTH MOVING PRICES FOR MARKETS
         let marketPrices = {
             btc: 81678.50,
             eth: 3520.10,
@@ -822,7 +817,6 @@
         };
 
         function updateLiveMarketPrices() {
-            // Bahagyang galaw (smooth fluctuation)
             marketPrices.btc += (Math.random() - 0.48) * 12;
             marketPrices.eth += (Math.random() - 0.48) * 3;
             marketPrices.sol += (Math.random() - 0.48) * 0.25;
@@ -833,7 +827,6 @@
             let solStr = '$' + marketPrices.sol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             let nexStr = '$' + marketPrices.nex.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
-            // I-update sa Ticker Bar
             document.getElementById('tickBtc').innerText = btcStr;
             document.getElementById('tickEth').innerText = ethStr;
             document.getElementById('tickNex').innerText = nexStr;
@@ -843,14 +836,13 @@
                 document.getElementById('tickEth2').innerText = ethStr;
             }
 
-            // I-update sa Market Preview Cards sa kaliwa
             document.getElementById('cardBtcPrice').innerText = btcStr;
             document.getElementById('cardEthPrice').innerText = ethStr;
             document.getElementById('cardSolPrice').innerText = solStr;
             document.getElementById('cardNexPrice').innerText = nexStr;
         }
 
-        setInterval(updateLiveMarketPrices, 1200); // Tumatakbo kada 1.2 segundo para smooth ang galaw
+        setInterval(updateLiveMarketPrices, 1200);
 
         // DYNAMIC VIEWERS (500 to 2800)
         let currentViewers = 1850;
