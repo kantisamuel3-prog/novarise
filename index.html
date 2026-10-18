@@ -897,59 +897,75 @@
         }
         renderProStreamChart();
 
-        // INFINITE CONVERSATION THREAD SYSTEM (+63 = Tagalog, Others = English)
+        // STRICT RANDOM CHAT ENGINE (+63 = Tagalog only, Others = English/Foreign)
         const foreignCodes = ["+1 212", "+1 415", "+44 79", "+49 151", "+81 90", "+971 50", "+61 41", "+33 61", "+34 60", "+65 91"];
         const pinoyCodes = ["+63 917", "+63 908", "+63 927", "+63 999"];
 
-        // English Conversation Chains
-        const englishConversations = [
-            [
-                { speaker: "foreign", text: "Is anyone holding long positions on BTC right now?" },
-                { speaker: "foreign", text: "Yes, opened mine at 81,500. Looking for a push to 83k." },
-                { speaker: "foreign", text: "Same here, the 1M chart looks extremely bullish." },
-                { speaker: "foreign", text: "Nexora's execution speed is making this so smooth." }
-            ],
-            [
-                { speaker: "foreign", text: "What do you guys think about ETH support levels?" },
-                { speaker: "foreign", text: "Holding above 3.5k quite comfortably." },
-                { speaker: "foreign", text: "True, institutional buyers are stepping in heavily." }
-            ],
-            [
-                { speaker: "foreign", text: "Has anyone checked the proof-of-reserves audit today?" },
-                { speaker: "foreign", text: "Always 1:1 on-chain, checked it earlier. Very secure." },
-                { speaker: "foreign", text: "That's why I switched all my trading volume here." }
-            ]
+        const englishComments = [
+            "That breakout on BTC was super clean!",
+            "Just closed my long position with nice profits.",
+            "Nexora's liquidity routing is amazingly fast.",
+            "Watching that key resistance level closely right now.",
+            "Ethereum showing strong support above 3.5k.",
+            "Sub-millisecond trade execution is a total game changer.",
+            "Anyone else scalping the SOL/USD pair today?",
+            "Clean candles and reliable data feeds on this platform.",
+            "Target 2 reached! Locking in my gains safely.",
+            "Low latency is crucial for high volatility trading.",
+            "Loving the modern UI design of this terminal.",
+            "Volume is picking up nicely on the 1M chart.",
+            "Great market analysis and super smooth layout.",
+            "My limit order filled instantly with zero slippage.",
+            "Bullish momentum building up on the 15-minute timeframe.",
+            "Institutional liquidity pools look very stable.",
+            "Checking out the order book depth, looks healthy.",
+            "Expecting a quick retest before the next leg up.",
+            "Thanks for sharing this awesome trading code structure!" // Bihira lang lumitaw
         ];
 
-        // Tagalog Conversation Chains (Strictly for +63)
-        const tagalogConversations = [
-            [
-                { speaker: "pinoy", text: "mga paps, kumusta ang trade nyo ngayon?" },
-                { speaker: "pinoy", text: "ayos naman boss, hit ko na TP ko sa BTC kanina pa" },
-                { speaker: "pinoy", text: "solid talaga dito sa Nexora, walang lag kahit volatile" },
-                { speaker: "pinoy", text: "totoo yan, ang bilis mag-execute ng order" }
-            ],
-            [
-                { speaker: "pinoy", text: "may nag-try na ba sa inyo mag-long sa SOL?" },
-                { speaker: "pinoy", text: "ako paps, medyo naghihintay pa ako ng pullback" },
-                { speaker: "pinoy", text: "sabagay, maganda rin sumabay kapag breakout" }
-            ]
+        const tagalogComments = [
+            "solid ng flow ng market ngayon ah",
+            "pumasok na naman ang TP ko, ang lupet",
+            "ingat sa volatility guys, laging mag-tight stop loss",
+            "ayos talaga mag-trade dito sa Nexora platform",
+            "solid ng mga signals dito mga paps 🚀",
+            "grabe ang bilis ng execution dito sa atin",
+            "may naghihintay ba sa inyo ng dip sa BTC?",
+            "ayos to, walang lag kahit biglang pabulosok",
+            "Salamat sa trading code boss, laking tulong nito!", // Bihira lang lumitaw
+            "abangers muna ako sa susunod na candle close"
         ];
 
-        function getRandomNumber(isPinoy) {
+        const chatStream = document.getElementById('chatStream');
+        let lastEnglishIdx = -1;
+        let lastTagalogIdx = -1;
+
+        function getRandomComment(isPinoy) {
+            if (isPinoy) {
+                let idx;
+                do {
+                    idx = Math.floor(Math.random() * tagalogComments.length);
+                } while (idx === lastTagalogIdx);
+                lastTagalogIdx = idx;
+                return tagalogComments[idx];
+            } else {
+                let idx;
+                do {
+                    idx = Math.floor(Math.random() * englishComments.length);
+                } while (idx === lastEnglishIdx);
+                lastEnglishIdx = idx;
+                return englishComments[idx];
+            }
+        }
+
+        function createChatMessage() {
+            let isPinoy = Math.random() < 0.25; // 25% chance maging Pilipino (+63)
             let codes = isPinoy ? pinoyCodes : foreignCodes;
             let code = codes[Math.floor(Math.random() * codes.length)];
             let end = Math.floor(1000 + Math.random() * 9000);
-            return `${code}-***-${end}`;
-        }
+            let number = `${code}-***-${end}`;
+            let text = getRandomComment(isPinoy);
 
-        const chatStream = document.getElementById('chatStream');
-        
-        let activeChain = null;
-        let chainStep = 0;
-        let currentIsPinoy = false;
-
-        function appendMessage(number, text) {
             const div = document.createElement('div');
             div.className = 'chat-message';
             div.innerHTML = `<span class="chat-number">${number}:</span> <span class="chat-text">${text}</span>`;
@@ -957,32 +973,15 @@
             chatStream.scrollTop = chatStream.scrollHeight;
         }
 
-        // Simula ng usapan
-        function advanceConversation() {
-            if (!activeChain || chainStep >= activeChain.length) {
-                // Pumili ng bagong usapan (75% English, 25% Tagalog para sa +63)
-                currentIsPinoy = Math.random() < 0.25;
-                let pool = currentIsPinoy ? tagalogConversations : englishConversations;
-                activeChain = pool[Math.floor(Math.random() * pool.length)];
-                chainStep = 0;
-            }
-
-            let msgData = activeChain[chainStep];
-            let number = getRandomNumber(currentIsPinoy);
-            
-            appendMessage(number, msgData.text);
-            chainStep++;
-        }
-
-        // Mag-load ng paunang usapan
+        // Initial 4 random messages on load
         for (let i = 0; i < 4; i++) {
-            advanceConversation();
+            createChatMessage();
         }
 
-        // Tuluy-tuloy na pag-uusap nang walang katapusan
+        // Continuous random messages without repeating sequentially
         setInterval(() => {
-            advanceConversation();
-        }, 3600);
+            createChatMessage();
+        }, 3200);
 
         // User Custom Comment (You:)
         document.getElementById('chatForm').addEventListener('submit', function(e) {
