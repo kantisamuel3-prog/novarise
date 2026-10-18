@@ -306,7 +306,7 @@
             color: #fff;
         }
 
-        /* INTEGRATED DESKTOP/IPAD LIVE STREAM & CHAT WIDGET */
+        /* INTEGRATED LIVE STREAM & CHAT WIDGET */
         .live-stream-widget {
             background: var(--bg-surface);
             border: 1px solid var(--neon-cyan);
@@ -476,15 +476,13 @@
 
         /* MOBILE APP UI SIZE (Android & iPhone Portrait Screens) */
         @media (max-width: 768px) {
-            body {
-                background-color: var(--bg-deep);
-            }
+            body { background-color: var(--bg-deep); }
             .app-container {
-                max-width: 420px; /* Sukat ng karaniwang Android / iPhone screen */
+                max-width: 420px;
                 margin: 0 auto;
                 padding: 12px 12px 40px;
             }
-            .ticker-bar { display: none; } /* Itago muna para malinis sa mobile view */
+            .ticker-bar { display: none; }
             header {
                 padding: 12px 16px;
                 margin-bottom: 20px;
@@ -492,7 +490,7 @@
             }
             .brand-text h1 { font-size: 17px; }
             .main-layout {
-                grid-template-columns: 1fr; /* Isa-isa ang patayong ayos */
+                grid-template-columns: 1fr;
                 gap: 20px;
             }
             .hero-content {
@@ -526,11 +524,7 @@
             .price-card { padding: 12px; }
             .pair-price { font-size: 16px; }
 
-            /* Mobile App UI Live Stream & Chat Box */
-            .live-stream-widget {
-                border-radius: 14px;
-                box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2);
-            }
+            .live-stream-widget { border-radius: 14px; }
             .stream-canvas-box { height: 160px; }
             .chat-container { height: 150px; }
         }
@@ -543,7 +537,7 @@
 
     <div class="app-container">
         
-        <!-- Top Ticker Bar (Computer/iPad only) -->
+        <!-- Top Ticker Bar -->
         <div class="ticker-bar">
             <div class="ticker-track">
                 <div class="ticker-node"><span class="ticker-sym">BTC/USD</span><span class="ticker-val">$81,678.50</span><span class="ticker-up">+4.12%</span></div>
@@ -571,7 +565,7 @@
             <a href="login.html" class="btn-portal">PORTAL</a>
         </header>
 
-        <!-- Main Layout (Desktop/iPad Grid vs Mobile Stack) -->
+        <!-- Main Layout -->
         <div class="main-layout">
             
             <!-- Left Side: Hero Info & Market Cards -->
@@ -628,7 +622,7 @@
                 </div>
             </div>
 
-            <!-- Right Side: Live Stream Widget (Fully Integrated in Layout) -->
+            <!-- Right Side: Live Stream Widget -->
             <div class="live-stream-widget">
                 <div class="widget-top">
                     <div class="live-badge">
@@ -818,7 +812,7 @@
         }
         renderProStreamChart();
 
-        // DYNAMIC VIEWERS & SMART ORGANIC CHAT SYSTEM
+        // DYNAMIC VIEWERS & SHARED CHAT SYSTEM (LOCALSTORAGE SYNC)
         let currentViewers = 3420;
         const viewerDisplay = document.getElementById('viewerCountDisplay');
 
@@ -849,10 +843,7 @@
             "Great market analysis and super smooth layout.",
             "My limit order filled instantly with zero slippage.",
             "Bullish momentum building up on the 15-minute timeframe.",
-            "Institutional liquidity pools look very stable.",
-            "Checking out the order book depth, looks healthy.",
-            "Expecting a quick retest before the next leg up.",
-            "Thanks for sharing this awesome trading code structure!"
+            "Institutional liquidity pools look very stable."
         ];
 
         const tagalogComments = [
@@ -863,77 +854,105 @@
             "solid ng mga signals dito mga paps 🚀",
             "grabe ang bilis ng execution dito sa atin",
             "may naghihintay ba sa inyo ng dip sa BTC?",
-            "ayos to, walang lag kahit biglang pabulosok",
-            "Salamat sa trading code boss, laking tulong nito!",
-            "abangers muna ako sa susunod na candle close"
+            "ayos to, walang lag kahit biglang pabulosok"
         ];
 
         const chatStream = document.getElementById('chatStream');
-        let lastEnglishIdx = -1;
-        let lastTagalogIdx = -1;
 
-        function getRandomComment(isPinoy) {
-            if (isPinoy) {
-                let idx;
-                do {
-                    idx = Math.floor(Math.random() * tagalogComments.length);
-                } while (idx === lastTagalogIdx);
-                lastTagalogIdx = idx;
-                return tagalogComments[idx];
-            } else {
-                let idx;
-                do {
-                    idx = Math.floor(Math.random() * englishComments.length);
-                } while (idx === lastEnglishIdx);
-                lastEnglishIdx = idx;
-                return englishComments[idx];
-            }
+        // I-load ang mga saved chats mula sa localStorage (para magkita ng ibang user/tabs)
+        function getStoredChats() {
+            let chats = localStorage.getItem('nexora_live_chats');
+            return chats ? JSON.parse(chats) : [];
         }
 
-        function createChatMessage() {
+        function saveChatToStorage(number, text, isYou = false) {
+            let chats = getStoredChats();
+            chats.push({ number, text, isYou });
+            // Panatilihing hanggang 50 na lang para hindi bumagal
+            if (chats.length > 50) chats.shift();
+            localStorage.setItem('nexora_live_chats', JSON.stringify(chats));
+        }
+
+        function renderAllChats() {
+            chatStream.innerHTML = '';
+            let chats = getStoredChats();
+            
+            // Kung walang laman, maglagay ng default initial chats
+            if (chats.length === 0) {
+                addDefaultChats();
+                chats = getStoredChats();
+            }
+
+            chats.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'chat-message';
+                if (c.isYou) {
+                    div.innerHTML = `<span class="chat-number you">You:</span> <span class="chat-text">${c.text}</span>`;
+                } else {
+                    div.innerHTML = `<span class="chat-number">${c.number}:</span> <span class="chat-text">${c.text}</span>`;
+                }
+                chatStream.appendChild(div);
+            });
+            chatStream.scrollTop = chatStream.scrollHeight;
+        }
+
+        function addDefaultChats() {
+            saveChatToStorage("+63 917-***-2091", "solid ng flow ng market ngayon ah");
+            saveChatToStorage("+1 415-***-8921", "That breakout on BTC was super clean!");
+            saveChatToStorage("+44 7911-***-402", "Sub-millisecond trade execution is unbelievable!");
+        }
+
+        // Automatic sync kapag may nagbukas ng ibang tab o nag-comment ang iba
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'nexora_live_chats') {
+                renderAllChats();
+            }
+        });
+
+        renderAllChats();
+
+        // Virtual Member Auto-Comment Loop
+        function createRandomChatMessage() {
             let isPinoy = Math.random() < 0.25;
             let codes = isPinoy ? pinoyCodes : foreignCodes;
             let code = codes[Math.floor(Math.random() * codes.length)];
             let end = Math.floor(1000 + Math.random() * 9000);
             let number = `${code}-***-${end}`;
-            let text = getRandomComment(isPinoy);
+            let text = isPinoy ? tagalogComments[Math.floor(Math.random() * tagalogComments.length)] : englishComments[Math.floor(Math.random() * englishComments.length)];
 
-            const div = document.createElement('div');
-            div.className = 'chat-message';
-            div.innerHTML = `<span class="chat-number">${number}:</span> <span class="chat-text">${text}</span>`;
-            chatStream.appendChild(div);
-            chatStream.scrollTop = chatStream.scrollHeight;
-        }
-
-        for (let i = 0; i < 4; i++) {
-            createChatMessage();
+            saveChatToStorage(number, text, false);
+            renderAllChats();
         }
 
         function scheduleNextMessage() {
-            createChatMessage();
+            createRandomChatMessage();
             let ratio = (currentViewers - 1000) / (3420 - 1000);
             let delay = 9000 - (ratio * 7000);
-            
-            if (Math.random() < 0.2) {
-                delay += 4000; 
-            }
-
+            if (Math.random() < 0.2) delay += 4000;
             setTimeout(scheduleNextMessage, delay);
         }
 
         setTimeout(scheduleNextMessage, 3000);
 
+        // USER CUSTOM COMMENT (SEND) -> Lalabas sa iba at magse-sync
         document.getElementById('chatForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
             const text = input.value.trim();
             if (text) {
-                const div = document.createElement('div');
-                div.className = 'chat-message';
-                div.innerHTML = `<span class="chat-number you">You:</span> <span class="chat-text">${text}</span>`;
-                chatStream.appendChild(div);
-                chatStream.scrollTop = chatStream.scrollHeight;
+                // I-save bilang "You" sa sarili mong screen, at bilang virtual member/user sa ibang tab/window
+                saveChatToStorage("You", text, true);
+                renderAllChats();
                 input.value = '';
+
+                // Bonus: Pwede ring mag-reply ang isang virtual member pagkalipas ng ilang segundo sa sinabi mo para mas buhay!
+                setTimeout(() => {
+                    let replyText = text.toLowerCase().includes('salamat') || text.toLowerCase().includes('code') 
+                        ? "Walang anuman boss, enjoy trading!" 
+                        : "Laking tulong nga nyan paps!";
+                    saveChatToStorage("+63 908-***-5512", replyText, false);
+                    renderAllChats();
+                }, 2500);
             }
         });
     </script>
