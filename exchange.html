@@ -112,7 +112,8 @@
             .nexora-bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
         }
 
-        body > header, body > #chartContainer, body > div.px-3 {
+        /* CELLPHONE: Standard compact width */
+        body > header, body > #mainTradingWrapper, body > div.px-3 {
             width: 100%;
             max-width: 480px;
             margin-left: auto;
@@ -165,22 +166,30 @@
 
         ::-webkit-scrollbar { display: none; }
     
+        /* IPAD / TABLET (768px pataas): Lumalawak ang container at nagkakaroon ng side trading widgets */
         @media (min-width: 768px) {
-            .chart-box { height: 185px; }
-            body > header, body > #chartContainer, body > div.px-3 {
-                max-width: 720px;
+            body > header, body > #mainTradingWrapper, body > div.px-3 {
+                max-width: 768px;
             }
+            .chart-box { height: 240px; }
+            .tablet-side-panel { display: flex !important; }
         }
+
+        /* COMPUTER / LAPTOP (1024px pataas): Buong widescreen professional trading desktop layout */
         @media (min-width: 1024px) {
-            body > header, body > #chartContainer, body > div.px-3 {
-                max-width: 960px;
+            body > header, body > #mainTradingWrapper, body > div.px-3 {
+                max-width: 1240px;
             }
+            .chart-box { height: 380px; }
         }
+
+        /* CELLPHONE (Bumabalik sa original compact view kapag maliit ang screen) */
         @media (max-width: 767px) {
-            body > header, body > #chartContainer, body > div.px-3 { max-width: 100%; }
+            body > header, body > #mainTradingWrapper, body > div.px-3 { max-width: 100%; }
             .nexora-bottom-nav { width: 100vw !important; }
             .chart-box { height: 175px; }
             body { font-size: 12px; }
+            .tablet-side-panel { display: none !important; }
         }
 
         .exchange-logo-box {
@@ -340,7 +349,6 @@
                 </div>
             </div>
             <div class="flex items-center space-x-2">
-                <!-- Dagdag na bagong design element: 24h High/Low ticker indicator -->
                 <div class="hidden sm:flex flex-col text-[8px] font-mono text-gray-400 text-right">
                     <span>24H High: <strong class="text-white">$84,150.0</strong></span>
                     <span>24H Low: <strong class="text-white">$80,120.5</strong></span>
@@ -358,7 +366,6 @@
                 <button onclick="switchMode('options')" id="modeOptions" class="mode-btn">Options</button>
                 <button onclick="switchMode('bots')" id="modeBots" class="mode-btn">Bots</button>
             </div>
-            <!-- Dagdag na bagong design badge sa gilid ng modes -->
             <div class="hidden md:flex items-center space-x-1 text-[9px] font-mono text-cyan-400 bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-500/20">
                 <i class="fa-solid fa-shield-halved"></i>
                 <span>Institutional Node #4</span>
@@ -420,10 +427,52 @@
         </div>
     </header>
 
-    <!-- PROFESSIONAL CHART CONTAINER WITH MOUSE CROSSHAIR -->
-    <main id="chartContainer" class="chart-box shrink-0 border-b border-[#222222]">
-        <canvas id="nexoraCanvas"></canvas>
-    </main>
+    <!-- MAIN TRADING WRAPPER: Dito nakalagay ang Chart at ang Bagong Trading Design sa Gilid para sa Computer at iPad/Tablet -->
+    <div id="mainTradingWrapper" class="flex flex-col lg:flex-row gap-2 px-3 py-2 shrink-0">
+        <!-- CHART CONTAINER -->
+        <div id="chartContainer" class="chart-box flex-1 rounded-xl border border-[#222222] overflow-hidden shadow-xl">
+            <canvas id="nexoraCanvas"></canvas>
+        </div>
+
+        <!-- BAGONG TRADING DESIGN SA GILID (Makikita lamang sa Computer at iPad/Tablet) -->
+        <div class="tablet-side-panel hidden flex-col w-full lg:w-72 bg-[#171717]/90 border border-[#2e2e2e] rounded-xl p-2.5 font-mono text-[10px] justify-between shrink-0 shadow-lg space-y-2">
+            <div class="flex items-center justify-between border-b border-[#2e2e2e] pb-1.5">
+                <span class="text-cyan-400 font-bold"><i class="fa-solid fa-chart-line mr-1"></i> Market Depth & Flow</span>
+                <span class="text-[9px] text-emerald-400 bg-emerald-950/60 px-1.5 rounded border border-emerald-500/30">Live Node</span>
+            </div>
+            
+            <!-- Mini Order Book Spread Grid -->
+            <div class="space-y-1">
+                <div class="text-gray-400 font-bold text-[9px] flex justify-between"><span>Ask Price</span><span>Size</span></div>
+                <div id="sideAsksBox" class="space-y-0.5"></div>
+            </div>
+
+            <div class="bg-[#101010] p-1.5 rounded-lg border border-[#262626] text-center">
+                <div class="text-xs font-black text-emerald-400" id="sideMidPrice">82,026.8</div>
+                <div class="text-[8px] text-gray-400">24h Vol: <span class="text-white font-bold">482,910.45 BTC</span></div>
+            </div>
+
+            <div class="space-y-1">
+                <div id="sideBidsBox" class="space-y-0.5"></div>
+            </div>
+
+            <!-- Karagdagang Trading Widgets sa Gilid -->
+            <div class="pt-1.5 border-t border-[#2e2e2e] space-y-1.5">
+                <div class="flex justify-between items-center text-[9px]">
+                    <span class="text-gray-400">Liquidation Risk:</span>
+                    <span class="text-emerald-400 font-bold">Low (Protected)</span>
+                </div>
+                <div class="flex justify-between items-center text-[9px]">
+                    <span class="text-gray-400">Global Sentiment:</span>
+                    <span class="text-cyan-400 font-bold">Bullish (84%)</span>
+                </div>
+                <div class="w-full bg-[#111] h-1.5 rounded-full overflow-hidden flex border border-[#2e2e2e]">
+                    <div class="bg-cyan-400 w-[84%]"></div>
+                    <div class="bg-rose-500 w-[16%]"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- TRADING PANEL -->
     <div class="px-3 py-1.5 bg-[#061124]/55 flex-1 flex flex-col justify-between">
@@ -451,7 +500,7 @@
                         <input id="contractQty" aria-label="Contracts in BTC" type="number" min="0.001" max="100" step="0.001" value="0.01" class="w-24 bg-transparent text-white font-bold text-center outline-none">
                     </label>
 
-                    <!-- BAGONG DESIGN: Quick Leverage Selector Pills sa bakanteng espasyo -->
+                    <!-- Quick Leverage Selector Pills -->
                     <div class="flex items-center justify-between pt-0.5">
                         <span class="text-[9px] text-gray-400">Leverage:</span>
                         <div class="flex space-x-1">
@@ -999,7 +1048,7 @@
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
 
-        document.getElementById('chartContainer').style.display = (mode === 'options' || mode === 'bots') ? 'none' : 'block';
+        document.getElementById('mainTradingWrapper').style.display = (mode === 'options' || mode === 'bots') ? 'none' : 'flex';
 
         if(mode === 'spot') {
             document.getElementById('modeSpot').classList.add('active');
@@ -1202,6 +1251,7 @@
         if(document.getElementById('midPrice')) {
             document.getElementById('midPrice').innerText = basePrice.toFixed(1);
             document.getElementById('headerPrice').innerText = basePrice.toFixed(1);
+            if(document.getElementById('sideMidPrice')) document.getElementById('sideMidPrice').innerText = basePrice.toFixed(1);
         }
 
         if (pauseCounter > 0) {
@@ -1238,6 +1288,17 @@
         }
         if(document.getElementById('asksContainer')) document.getElementById('asksContainer').innerHTML = asksHTML;
 
+        // Side panel order book for PC and iPad
+        if(document.getElementById('sideAsksBox')) {
+            let sideAsks = '';
+            for(let i = 4; i >= 1; i--) {
+                let p = (basePrice + i * 0.25).toFixed(1);
+                let sz = (Math.random() * 0.3 + 0.01).toFixed(4);
+                sideAsks += `<div class="flex justify-between text-rose-500"><span>${p}</span><span class="text-white">${sz}</span></div>`;
+            }
+            document.getElementById('sideAsksBox').innerHTML = sideAsks;
+        }
+
         let bidsHTML = '';
         for(let i = 1; i <= 3; i++) {
             let p = (basePrice - i * 0.3).toFixed(1);
@@ -1245,6 +1306,16 @@
             bidsHTML += `<div class="flex justify-between text-emerald-500"><span>${p}</span><span>${sz}</span></div>`;
         }
         if(document.getElementById('bidsContainer')) document.getElementById('bidsContainer').innerHTML = bidsHTML;
+
+        if(document.getElementById('sideBidsBox')) {
+            let sideBids = '';
+            for(let i = 1; i <= 4; i++) {
+                let p = (basePrice - i * 0.25).toFixed(1);
+                let sz = (Math.random() * 0.3 + 0.01).toFixed(4);
+                sideBids += `<div class="flex justify-between text-emerald-500"><span>${p}</span><span class="text-white">${sz}</span></div>`;
+            }
+            document.getElementById('sideBidsBox').innerHTML = sideBids;
+        }
 
         if(document.getElementById('seeAllModal').style.display === 'flex') {
             renderMixedTraders();
@@ -1336,7 +1407,6 @@
         if (event.key === 'Escape') closeOrderHelp();
     });
 
-    // Quick leverage selector click interaction
     document.querySelectorAll('.leverage-pill').forEach(pill => {
         pill.addEventListener('click', function() {
             document.querySelectorAll('.leverage-pill').forEach(p => p.classList.remove('active'));
