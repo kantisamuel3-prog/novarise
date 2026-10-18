@@ -44,7 +44,8 @@
                     },
                     animation: {
                         'pulse-cyan': 'pulseCyan 3s ease-in-out infinite',
-                        'orbit': 'orbit 8s linear infinite',
+                        'orbit': 'orbit 10s linear infinite',
+                        'pulse-fast': 'pulseFast 1.5s ease-in-out infinite',
                     },
                     keyframes: {
                         pulseCyan: {
@@ -54,6 +55,10 @@
                         orbit: {
                             '0%': { transform: 'rotate(0deg)' },
                             '100%': { transform: 'rotate(360deg)' }
+                        },
+                        pulseFast: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+                            '50%': { transform: 'scale(1.35)', opacity: '0.6' }
                         }
                     }
                 }
@@ -340,7 +345,8 @@
                 <div class="flex flex-col">
                     <div class="flex items-center font-brand font-black text-sm tracking-wider">
                         <span class="text-chrome-3d">NEX</span>
-                        <span class="relative inline-flex items-center justify-center w-2.5 h-2.5 mx-0.5 border border-[#dfb248] rounded-full gold-ring-accent" style="border-radius: 9999px; border-width: 1.5px;">
+                        <!-- Inayos ang maliit na circle sa loob ng N para magkaroon ng pulsating animation katulad sa team.html -->
+                        <span class="relative inline-flex items-center justify-center w-2.5 h-2.5 mx-0.5 border border-[#dfb248] rounded-full gold-ring-accent animate-pulse-fast" style="border-radius: 9999px; border-width: 1.5px;">
                             <span style="background-color: #0f172a; width: 2.5px; height: 2.5px; border-radius: 9999px;"></span>
                         </span>
                         <span class="text-chrome-3d">RA</span>
@@ -427,21 +433,20 @@
         </div>
     </header>
 
-    <!-- MAIN TRADING WRAPPER: Dito nakalagay ang Chart at ang Bagong Trading Design sa Gilid para sa Computer at iPad/Tablet -->
+    <!-- MAIN TRADING WRAPPER: Chart at Side Trading Panel para sa Computer at iPad/Tablet -->
     <div id="mainTradingWrapper" class="flex flex-col lg:flex-row gap-2 px-3 py-2 shrink-0">
         <!-- CHART CONTAINER -->
         <div id="chartContainer" class="chart-box flex-1 rounded-xl border border-[#222222] overflow-hidden shadow-xl">
             <canvas id="nexoraCanvas"></canvas>
         </div>
 
-        <!-- BAGONG TRADING DESIGN SA GILID (Makikita lamang sa Computer at iPad/Tablet) -->
+        <!-- TRADING DESIGN SA GILID (Computer at iPad/Tablet) -->
         <div class="tablet-side-panel hidden flex-col w-full lg:w-72 bg-[#171717]/90 border border-[#2e2e2e] rounded-xl p-2.5 font-mono text-[10px] justify-between shrink-0 shadow-lg space-y-2">
             <div class="flex items-center justify-between border-b border-[#2e2e2e] pb-1.5">
                 <span class="text-cyan-400 font-bold"><i class="fa-solid fa-chart-line mr-1"></i> Market Depth & Flow</span>
                 <span class="text-[9px] text-emerald-400 bg-emerald-950/60 px-1.5 rounded border border-emerald-500/30">Live Node</span>
             </div>
             
-            <!-- Mini Order Book Spread Grid -->
             <div class="space-y-1">
                 <div class="text-gray-400 font-bold text-[9px] flex justify-between"><span>Ask Price</span><span>Size</span></div>
                 <div id="sideAsksBox" class="space-y-0.5"></div>
@@ -456,7 +461,6 @@
                 <div id="sideBidsBox" class="space-y-0.5"></div>
             </div>
 
-            <!-- Karagdagang Trading Widgets sa Gilid -->
             <div class="pt-1.5 border-t border-[#2e2e2e] space-y-1.5">
                 <div class="flex justify-between items-center text-[9px]">
                     <span class="text-gray-400">Liquidation Risk:</span>
@@ -1288,7 +1292,6 @@
         }
         if(document.getElementById('asksContainer')) document.getElementById('asksContainer').innerHTML = asksHTML;
 
-        // Side panel order book for PC and iPad
         if(document.getElementById('sideAsksBox')) {
             let sideAsks = '';
             for(let i = 4; i >= 1; i--) {
