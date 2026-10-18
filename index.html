@@ -1,745 +1,820 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXORA — Next-Generation Institutional Crypto Infrastructure</title>
-    <!-- Modern Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons for Trading Visuals -->
+    <title>Nexora - Next Generation Crypto Trading Infrastructure</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#040711',
+                            card: 'rgba(10, 16, 32, 0.75)',
+                            border: 'rgba(0, 242, 254, 0.18)',
+                            accent: '#00f2fe',
+                            emerald: '#10b981',
+                            rose: '#f43f5e',
+                            purple: '#7c3aed'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --bg-deep: #030712;
-            --card-bg: rgba(15, 23, 42, 0.75);
-            --card-border: rgba(56, 189, 248, 0.18);
-            --neon-cyan: #38bdf8;
-            --neon-blue: #3b82f6;
-            --green-trade: #10b981;
-            --red-trade: #ef4444;
-            --gold-accent: #f59e0b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
         body {
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-color: #040711;
+            color: #f3f4f6;
             overflow-x: hidden;
-            position: relative;
         }
 
-        /* Tech Background Grid Overlay */
-        .bg-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(4, 7, 17, 0.8);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 242, 254, 0.3);
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 242, 254, 0.6);
+        }
+
+        /* Glassmorphic Styles */
+        .glass-panel {
+            background: rgba(8, 14, 28, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 242, 254, 0.12);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(16, 24, 48, 0.6) 0%, rgba(8, 14, 28, 0.7) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 242, 254, 0.15);
+            box-shadow: 0 10px 30px -10px rgba(0, 242, 254, 0.1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.25);
+        }
+
+        /* Neon Glow Effects */
+        .neon-text-cyan {
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.6), 0 0 20px rgba(0, 242, 254, 0.3);
+        }
+        .neon-text-green {
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.6), 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+        .neon-border-cyan {
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+
+        /* Infinite Ticker Animation */
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+        .ticker-wrap {
             width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* Neon Ambient Spheres */
-        .glow-sphere-top {
-            position: fixed;
-            width: 700px;
-            height: 700px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, transparent 70%);
-            top: -250px;
-            left: 50%;
-            transform: translateX(-50%);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* Interactive Canvas Background */
-        #chartCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0.45;
-        }
-
-        .main-wrapper {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Top Live Ticker Tape Bar */
-        .ticker-bar {
-            background: rgba(3, 7, 18, 0.9);
-            border-bottom: 1px solid var(--card-border);
-            padding: 9px 0;
             overflow: hidden;
             white-space: nowrap;
-            backdrop-filter: blur(12px);
+        }
+        .ticker-move {
+            display: inline-block;
+            white-space: nowrap;
+            animation: ticker 35s linear infinite;
+        }
+        .ticker-move:hover {
+            animation-play-state: paused;
         }
 
-        .ticker-track {
-            display: inline-flex;
-            gap: 45px;
-            animation: scrollTicker 30s linear infinite;
-        }
-
-        .ticker-node {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-        }
-
-        .ticker-sym { font-weight: 700; color: #fff; }
-        .ticker-val { color: var(--text-muted); }
-        .ticker-up { color: var(--green-trade); font-weight: 700; }
-        .ticker-down { color: var(--red-trade); font-weight: 700; }
-
-        @keyframes scrollTicker {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* Navigation Bar */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 6%;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(3, 7, 18, 0.75);
-            backdrop-filter: blur(20px);
-        }
-
-        .brand-logo {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            text-decoration: none;
-        }
-
-        /* Holographic Futuristic Logo Shield */
-        .logo-shield {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(59, 130, 246, 0.05));
-            border: 1.5px solid var(--neon-cyan);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .brand-logo:hover .logo-shield {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.6);
-        }
-
-        .logo-shield svg {
-            width: 28px;
-            height: 28px;
-            filter: drop-shadow(0 0 8px var(--neon-cyan));
-        }
-
-        .brand-text h1 {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: #fff;
-            line-height: 1;
-        }
-
-        .brand-text span {
-            font-size: 9px;
-            letter-spacing: 2.5px;
-            color: var(--gold-accent);
-            font-weight: 700;
-        }
-
-        .btn-portal {
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            padding: 10px 24px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
-        }
-
-        .btn-portal:hover {
-            background: var(--neon-cyan);
-            color: #000;
-            box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
-            transform: translateY(-2px);
-        }
-
-        /* Layout Grid with Side Widgets */
-        .layout-container {
-            display: grid;
-            grid-template-columns: 280px 1fr 280px;
-            gap: 20px;
-            max-width: 1550px;
-            margin: 0 auto;
-            padding: 30px 20px;
-        }
-
-        /* Floating Sidebar Trading Cards */
-        .sidebar-widget {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 18px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            height: fit-content;
-        }
-
-        .widget-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 10px;
-        }
-
-        .widget-title i { color: var(--neon-cyan); }
-
-        /* Orderbook Rows */
-        .order-row {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            padding: 4px 6px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-
-        .order-row.sell { color: var(--red-trade); background: rgba(239, 68, 68, 0.08); }
-        .order-row.buy { color: var(--green-trade); background: rgba(16, 185, 129, 0.08); }
-
-        .price-flash-up {
-            animation: flashGreen 0.5s ease-out;
-        }
-        .price-flash-down {
-            animation: flashRed 0.5s ease-out;
-        }
-
+        /* Price Tick Flash Animations */
         @keyframes flashGreen {
-            0% { background-color: rgba(16, 185, 129, 0.4); color: #fff; }
+            0% { background-color: rgba(16, 185, 129, 0.4); color: #10b981; }
             100% { background-color: transparent; }
         }
-
         @keyframes flashRed {
-            0% { background-color: rgba(239, 68, 68, 0.4); color: #fff; }
+            0% { background-color: rgba(244, 63, 94, 0.4); color: #f43f5e; }
             100% { background-color: transparent; }
         }
+        .up-tick { animation: flashGreen 0.6s ease-out; }
+        .down-tick { animation: flashRed 0.6s ease-out; }
 
-        /* Central Hero Container */
-        .hero-center {
-            text-align: center;
-            padding: 30px 10px;
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
         }
 
-        /* Launch Badge */
-        .launch-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            padding: 8px 22px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        /* Holographic Logo Pulse */
+        @keyframes logoPulse {
+            0%, 100% { filter: drop-shadow(0 0 12px rgba(0, 242, 254, 0.8)); }
+            50% { filter: drop-shadow(0 0 24px rgba(124, 58, 237, 0.9)); }
         }
-
-        .pulse-indicator {
-            width: 8px;
-            height: 8px;
-            background-color: var(--green-trade);
-            border-radius: 50%;
-            box-shadow: 0 0 12px var(--green-trade);
-            animation: pulse 2s infinite;
-        }
-
-        .launch-date {
-            color: var(--neon-cyan);
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* Hero Typography */
-        .hero-title {
-            font-size: 56px;
-            font-weight: 800;
-            line-height: 1.15;
-            margin-bottom: 22px;
-            letter-spacing: -1.5px;
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #ffffff 10%, var(--neon-cyan) 60%, var(--neon-blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.3));
-        }
-
-        .hero-subtitle {
-            font-size: 18px;
-            color: var(--text-muted);
-            max-width: 680px;
-            margin: 0 auto 40px;
-            line-height: 1.65;
-            font-weight: 500;
-        }
-
-        .hero-actions {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 60px;
-        }
-
-        .btn-launch {
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
-            color: #000;
-            padding: 16px 38px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 15px;
-            letter-spacing: 0.5px;
-            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.35);
-            transition: all 0.3s ease;
-        }
-
-        .btn-launch:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(56, 189, 248, 0.55);
-        }
-
-        .btn-secondary {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            color: #fff;
-            padding: 16px 38px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--neon-cyan);
-            background: rgba(56, 189, 248, 0.08);
-        }
-
-        /* Institutional Legitimacy Card */
-        .legitimacy-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 40px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            position: relative;
-            text-align: left;
-            overflow: hidden;
-            margin-bottom: 40px;
-        }
-
-        .legitimacy-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--neon-cyan), var(--neon-blue));
-        }
-
-        .legitimacy-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .shield-icon-badge {
-            width: 42px;
-            height: 42px;
-            background: rgba(16, 185, 129, 0.12);
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--green-trade);
-            font-size: 18px;
-        }
-
-        .legitimacy-title {
-            font-size: 22px;
-            font-weight: 800;
-            color: #fff;
-        }
-
-        .legitimacy-text {
-            font-size: 15.5px;
-            color: var(--text-muted);
-            line-height: 1.75;
-            margin-bottom: 30px;
-        }
-
-        .proof-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 18px;
-        }
-
-        .proof-box {
-            background: rgba(3, 7, 18, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 18px;
-            border-radius: 12px;
-        }
-
-        .proof-box h4 {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--neon-cyan);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .proof-box p {
-            font-size: 12.5px;
-            color: var(--text-muted);
-            line-height: 1.45;
-            margin: 0;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(1.2); }
-        }
-
-        /* Responsive Breakpoints */
-        @media (max-width: 1200px) {
-            .layout-container {
-                grid-template-columns: 1fr;
-            }
-            .sidebar-widget {
-                display: none; /* Hide heavy sidebars on smaller screens */
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero-title { font-size: 36px; }
-            .hero-actions { flex-direction: column; }
-            .btn-launch, .btn-secondary { width: 100%; text-align: center; }
-            .legitimacy-card { padding: 25px; }
+        .hologram-logo {
+            animation: logoPulse 4s infinite ease-in-out;
         }
     </style>
 </head>
-<body>
+<body class="bg-[#040711] text-gray-100 min-h-screen relative flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
 
-    <div class="bg-grid"></div>
-    <div class="glow-sphere-top"></div>
-    
-    <!-- Dynamic Animated Chart Canvas -->
-    <canvas id="chartCanvas"></canvas>
+    <!-- CANVAS BACKGROUND ENGINE (DYNAMIC CANDLESTICK CHART & MARKET DATA) -->
+    <canvas id="candlestickCanvas" class="fixed top-0 left-0 w-full h-full z-0 pointer-events-none opacity-45"></canvas>
 
-    <div class="main-wrapper">
-        
-        <!-- Live Crypto Ticker Bar -->
-        <div class="ticker-bar">
-            <div class="ticker-track">
-                <div class="ticker-node"><span class="ticker-sym">BTC/USD</span><span class="ticker-val" id="tk-btc">$81,678.50</span><span class="ticker-up">+4.12%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">ETH/USD</span><span class="ticker-val" id="tk-eth">$3,520.10</span><span class="ticker-up">+2.65%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">NEX/USD</span><span class="ticker-val" id="tk-nex">$24.80</span><span class="ticker-up">+18.40%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">SOL/USD</span><span class="ticker-val" id="tk-sol">$189.45</span><span class="ticker-down">-0.85%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">BNB/USD</span><span class="ticker-val" id="tk-bnb">$720.15</span><span class="ticker-up">+1.15%</span></div>
-                <!-- Continuous Loop Duplicates -->
-                <div class="ticker-node"><span class="ticker-sym">BTC/USD</span><span class="ticker-val">$81,678.50</span><span class="ticker-up">+4.12%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">ETH/USD</span><span class="ticker-val">$3,520.10</span><span class="ticker-up">+2.65%</span></div>
-                <div class="ticker-node"><span class="ticker-sym">NEX/USD</span><span class="ticker-val">$24.80</span><span class="ticker-up">+18.40%</span></div>
+    <!-- TOP TICKER TAPE -->
+    <header class="relative z-20 border-b border-cyan-500/20 bg-black/60 backdrop-blur-md">
+        <div class="ticker-wrap py-2 text-xs font-mono">
+            <div id="tickerTape" class="ticker-move flex items-center space-x-8">
+                <!-- Ticker items dynamically injected via JS -->
             </div>
         </div>
 
-        <!-- Header -->
-        <header>
-            <a href="index.html" class="brand-logo">
-                <div class="logo-shield">
-                    <!-- Vector Glowing Holographic 'N' Logo -->
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 20V4l12 16V4" stroke="#38bdf8"/>
+        <!-- MAIN NAVBAR -->
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <!-- LOGO & BRANDING -->
+            <div class="flex items-center space-x-3 cursor-pointer">
+                <div class="relative flex items-center justify-center w-11 h-11">
+                    <svg class="w-10 h-10 hologram-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="50,5 90,25 90,75 50,95 10,75 10,25" stroke="#00f2fe" stroke-width="3" fill="rgba(0, 242, 254, 0.08)"/>
+                        <path d="M30 70 V30 L70 70 V30" stroke="url(#logoGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#00f2fe"/>
+                                <stop offset="50%" stop-color="#3b82f6"/>
+                                <stop offset="100%" stop-color="#10b981"/>
+                            </linearGradient>
+                        </defs>
                     </svg>
                 </div>
-                <div class="brand-text">
-                    <h1>NEXORA</h1>
-                    <span>TRADE . GROW . TOGETHER</span>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl font-black tracking-wider text-white">NEXORA</span>
+                        <span class="px-2 py-0.5 text-[10px] font-mono tracking-widest bg-cyan-500/20 text-cyan-300 rounded border border-cyan-500/40 uppercase">Pro</span>
+                    </div>
+                    <p class="text-[9px] font-mono text-cyan-400 tracking-widest uppercase">TRADE . GROW . TOGETHER</p>
                 </div>
-            </a>
-            <a href="login.html" class="btn-portal">TRADER PORTAL</a>
-        </header>
-
-        <!-- Main Layout with Dynamic Sidebars -->
-        <div class="layout-container">
-            
-            <!-- LEFT SIDEBAR WIDGET: Live Orderbook -->
-            <div class="sidebar-widget">
-                <div class="widget-title">
-                    <span>Live Order Book</span>
-                    <i class="fa-solid fa-list-check"></i>
-                </div>
-                <!-- Asks / Sells -->
-                <div class="order-row sell"><span>81,685.00</span><span id="vol-1">0.421 BTC</span></div>
-                <div class="order-row sell"><span>81,682.50</span><span id="vol-2">1.105 BTC</span></div>
-                <div class="order-row sell"><span>81,680.00</span><span id="vol-3">0.850 BTC</span></div>
-                
-                <!-- Spread Indicator -->
-                <div style="text-align: center; font-family: 'JetBrains Mono'; font-size: 14px; font-weight: 700; color: var(--neon-cyan); padding: 5px 0;">
-                    $81,678.50 <i class="fa-solid fa-arrow-trend-up"></i>
-                </div>
-
-                <!-- Bids / Buys -->
-                <div class="order-row buy"><span>81,676.00</span><span id="vol-4">2.410 BTC</span></div>
-                <div class="order-row buy"><span>81,674.50</span><span id="vol-5">0.620 BTC</span></div>
-                <div class="order-row buy"><span>81,671.00</span><span id="vol-6">3.150 BTC</span></div>
             </div>
 
-            <!-- CENTER HERO & CONTENT -->
-            <main class="hero-center">
+            <!-- CENTRAL LAUNCH BADGE -->
+            <div class="hidden lg:flex items-center space-x-2 px-3 py-1.5 rounded-full glass-panel border border-cyan-500/30">
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span class="text-xs font-mono text-gray-300">Official Platform Launch: <strong class="text-cyan-400">October 1, 2026</strong></span>
+            </div>
+
+            <!-- RIGHT NAVIGATION / CTA -->
+            <div class="flex items-center space-x-4">
+                <button class="hidden sm:inline-flex items-center text-xs font-mono text-gray-300 hover:text-cyan-400 transition-colors px-3 py-2">
+                    <i class="fa-solid font-mono fa-chart-line mr-1.5 text-cyan-400"></i> Markets
+                </button>
+                <button class="hidden sm:inline-flex items-center text-xs font-mono text-gray-300 hover:text-cyan-400 transition-colors px-3 py-2">
+                    <i class="fa-solid fa-shield-halved mr-1.5 text-cyan-400"></i> Security
+                </button>
+                <button class="relative group overflow-hidden rounded-lg p-px font-semibold text-xs transition-all duration-300 shadow-lg shadow-cyan-500/20">
+                    <span class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-600 to-emerald-500 transition-all duration-300 group-hover:opacity-90"></span>
+                    <span class="relative block px-5 py-2.5 rounded-lg bg-black/90 group-hover:bg-transparent transition-all duration-300 text-white font-mono uppercase tracking-wider">
+                        Start Trading <i class="fa-solid fa-arrow-right ml-1 text-cyan-400 group-hover:text-white transition-colors"></i>
+                    </span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN BODY GRID (SIDEBARS + HERO CONTENT) -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- LEFT SIDEBAR: LIVE ORDER BOOK STREAM -->
+        <aside class="hidden lg:block lg:col-span-3 glass-panel rounded-2xl p-4 border border-cyan-500/20 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-list-ol text-cyan-400 text-xs"></i>
+                    <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-gray-200">Order Book (BTC/USD)</h3>
+                </div>
+                <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">Live Stream</span>
+            </div>
+
+            <!-- Order Book Columns -->
+            <div class="grid grid-cols-3 text-[10px] font-mono text-gray-400 py-2 border-b border-gray-800/80">
+                <span>Price (USD)</span>
+                <span class="text-right">Size (BTC)</span>
+                <span class="text-right">Total</span>
+            </div>
+
+            <!-- ASKS (RED) -->
+            <div id="orderBookAsks" class="space-y-1 font-mono text-xs py-2 h-40 overflow-hidden flex flex-col justify-end">
+                <!-- Asks generated dynamically -->
+            </div>
+
+            <!-- SPREAD / CURRENT PRICE INDICATOR -->
+            <div id="currentPriceDisplay" class="my-2 py-2 px-3 rounded glass-card flex items-center justify-between border border-cyan-500/30">
+                <span id="liveBtcPrice" class="text-lg font-mono font-bold text-emerald-400">$68,420.50</span>
+                <span id="liveBtcChange" class="text-xs font-mono font-semibold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded">+4.82%</span>
+            </div>
+
+            <!-- BIDS (GREEN) -->
+            <div id="orderBookBids" class="space-y-1 font-mono text-xs py-2 h-40 overflow-hidden">
+                <!-- Bids generated dynamically -->
+            </div>
+
+            <!-- VISUAL DEPTH CHART BAR -->
+            <div class="mt-3 pt-3 border-t border-gray-800">
+                <div class="flex justify-between text-[10px] font-mono text-gray-400 mb-1">
+                    <span class="text-emerald-400">Bids 58.4%</span>
+                    <span class="text-rose-400">Asks 41.6%</span>
+                </div>
+                <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden flex">
+                    <div id="bidDepthBar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 58.4%"></div>
+                    <div id="askDepthBar" class="bg-rose-500 h-full transition-all duration-300" style="width: 41.6%"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER HERO & LEGITIMACY CONTENT -->
+        <section class="lg:col-span-6 space-y-6 flex flex-col justify-center">
+            
+            <!-- FLOATING BADGE -->
+            <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 text-xs font-mono self-start shadow-lg">
+                <i class="fa-solid fa-bolt text-cyan-400"></i>
+                <span>Quantum-Engineered Matching Architecture</span>
+            </div>
+
+            <!-- MAIN HEADINGS -->
+            <div class="space-y-3">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                    The Next Generation of <br>
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400 neon-text-cyan">
+                        Intelligent Crypto Infrastructure
+                    </span>
+                </h1>
+                <p class="text-sm sm:text-base text-gray-300 leading-relaxed font-light max-w-2xl">
+                    Experience dynamic execution with real-time liquidity depth, AI-driven algorithmic routing, and cryptographic transparency tailored for institutional & retail traders alike.
+                </p>
+            </div>
+
+            <!-- MANDATORY LEGITIMACY CARD -->
+            <div class="glass-card rounded-2xl p-6 relative overflow-hidden border border-cyan-500/30 shadow-2xl">
+                <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 
-                <!-- Official Launch Badge -->
-                <div class="launch-badge">
-                    <div class="pulse-indicator"></div>
-                    Official Platform Launch: <span class="launch-date">&nbsp;October 1, 2026</span>
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="p-2.5 bg-cyan-500/10 rounded-xl border border-cyan-500/30 text-cyan-400">
+                        <i class="fa-solid fa-building-columns text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-mono font-bold text-cyan-300 uppercase tracking-wider">Institutional Protocol Standard</h2>
+                        <p class="text-xs text-gray-400">Audited Cryptographic Asset Integrity</p>
+                    </div>
                 </div>
 
-                <h1 class="hero-title">
-                    The Next Generation of<br>
-                    <span class="gradient-text">Crypto Trading Infrastructure</span>
-                </h1>
-
-                <p class="hero-subtitle">
-                    Access ultra-low latency execution, automated liquidity routing, and institutional smart trading signals on a globally secure infrastructure.
+                <p class="text-sm sm:text-base text-gray-200 leading-relaxed font-normal mb-6">
+                    Nexora is a trading platform engineered to deliver institutional-grade execution, sub-millisecond liquidity routing, and transparent crypto asset management.
                 </p>
 
-                <div class="hero-actions">
-                    <a href="dashboard.html" class="btn-launch">LAUNCH TERMINAL</a>
-                    <a href="login.html" class="btn-secondary">ACCESS ACCOUNT</a>
-                </div>
-
-                <!-- Institutional Legitimacy Section -->
-                <section class="legitimacy-card">
-                    <div class="legitimacy-header">
-                        <div class="shield-icon-badge">
-                            <i class="fa-solid fa-shield-halved"></i>
+                <!-- FEATURE POINTS -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-cyan-500/20">
+                    <div class="glass-panel p-3 rounded-xl border border-cyan-500/20 flex flex-col justify-between">
+                        <div class="flex items-center space-x-2 text-emerald-400 mb-1">
+                            <i class="fa-solid fa-shield-check text-xs"></i>
+                            <span class="text-xs font-mono font-bold">1:1 Reserves</span>
                         </div>
-                        <h2 class="legitimacy-title">Institutional Grade Trust & Compliance</h2>
+                        <p class="text-[11px] text-gray-300">1:1 Asset Reserve Ratio backed by real-time audit logs.</p>
                     </div>
 
-                    <p class="legitimacy-text">
-                        Nexora is a trading platform designed specifically for institutional and retail traders who require speed, security, and full asset transparency. Engineered with sub-millisecond liquidity routing and cold-storage custody protocols, Nexora guarantees seamless market access and 1:1 verified asset reserves at all times.
-                    </p>
-
-                    <div class="proof-grid">
-                        <div class="proof-box">
-                            <h4><i class="fa-solid fa-vault"></i> 1:1 Proof of Reserves</h4>
-                            <p>All user balances are fully backed 1:1 on-chain with continuous cryptographic auditability.</p>
+                    <div class="glass-panel p-3 rounded-xl border border-cyan-500/20 flex flex-col justify-between">
+                        <div class="flex items-center space-x-2 text-cyan-400 mb-1">
+                            <i class="fa-solid fa-lock text-xs"></i>
+                            <span class="text-xs font-mono font-bold">AES-256</span>
                         </div>
-                        <div class="proof-box">
-                            <h4><i class="fa-solid fa-bolt"></i> &lt;1.2ms Execution</h4>
-                            <p>Ultra-low latency trade matching engine designed to eliminate execution slippage.</p>
-                        </div>
-                        <div class="proof-box">
-                            <h4><i class="fa-solid fa-lock"></i> Bank-Grade Security</h4>
-                            <p>Protected by AES-256 multi-signature vault security protocols and automated risk mitigation.</p>
-                        </div>
+                        <p class="text-[11px] text-gray-300">AES-256 Military Encryption with multi-sig cold storage.</p>
                     </div>
-                </section>
 
-            </main>
-
-            <!-- RIGHT SIDEBAR WIDGET: Market Depth Stats -->
-            <div class="sidebar-widget">
-                <div class="widget-title">
-                    <span>Live Market Stats</span>
-                    <i class="fa-solid fa-chart-line"></i>
-                </div>
-                
-                <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px;">
-                    <div style="display:flex; justify-shadow:space-between; margin-bottom: 10px; color: var(--text-muted);">
-                        <span>24h High:</span> <span style="color:#fff; margin-left:auto;">$82,450.00</span>
-                    </div>
-                    <div style="display:flex; justify-shadow:space-between; margin-bottom: 10px; color: var(--text-muted);">
-                        <span>24h Low:</span> <span style="color:#fff; margin-left:auto;">$79,120.00</span>
-                    </div>
-                    <div style="display:flex; justify-shadow:space-between; margin-bottom: 10px; color: var(--text-muted);">
-                        <span>24h Vol:</span> <span style="color:var(--neon-cyan); margin-left:auto;" id="stat-vol">$2.84B</span>
-                    </div>
-                    <div style="display:flex; justify-shadow:space-between; color: var(--text-muted);">
-                        <span>Network Latency:</span> <span style="color:var(--green-trade); margin-left:auto;" id="stat-ping">0.8 ms</span>
+                    <div class="glass-panel p-3 rounded-xl border border-cyan-500/20 flex flex-col justify-between">
+                        <div class="flex items-center space-x-2 text-purple-400 mb-1">
+                            <i class="fa-solid fa-link text-xs"></i>
+                            <span class="text-xs font-mono font-bold">Proof of Reserve</span>
+                        </div>
+                        <p class="text-[11px] text-gray-300">Real-Time Blockchain Merkle Tree Proof of Reserve.</p>
                     </div>
                 </div>
-
-                <div class="widget-title" style="margin-top: 10px;">
-                    <span>Recent Trades</span>
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                </div>
-
-                <div class="order-row buy"><span>81,678.50</span><span id="rt-1">0.05 BTC</span></div>
-                <div class="order-row sell"><span>81,677.10</span><span id="rt-2">0.32 BTC</span></div>
-                <div class="order-row buy"><span>81,678.50</span><span id="rt-3">1.12 BTC</span></div>
             </div>
 
+            <!-- ACTION BUTTONS & METRICS -->
+            <div class="flex flex-col sm:flex-row items-center gap-4 pt-2">
+                <button class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-emerald-500 text-white font-mono font-bold text-sm tracking-wider uppercase hover:shadow-[0_0_30px_rgba(0,242,254,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-rocket"></i>
+                    <span>Launch Terminal Now</span>
+                </button>
+                <button class="w-full sm:w-auto px-8 py-4 rounded-xl glass-panel text-gray-200 hover:text-white font-mono text-sm tracking-wider uppercase border border-cyan-500/30 hover:border-cyan-400 transition-all duration-300 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-book-open text-cyan-400"></i>
+                    <span>Read Whitepaper</span>
+                </button>
+            </div>
+
+            <!-- METRICS MINI BANNER -->
+            <div class="grid grid-cols-3 gap-3 pt-4 border-t border-gray-800/80 text-center font-mono">
+                <div>
+                    <div class="text-xs text-gray-400">24h Trading Vol</div>
+                    <div class="text-base sm:text-lg font-bold text-cyan-300">$4.18B+</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400">Avg Execution Speed</div>
+                    <div class="text-base sm:text-lg font-bold text-emerald-400">&lt; 0.45ms</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400">Active Markets</div>
+                    <div class="text-base sm:text-lg font-bold text-purple-400">280+ Pairs</div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT SIDEBAR: REAL-TIME ASSET TICKER CARDS WITH CANDLESTICK PREVIEWS -->
+        <aside class="hidden lg:block lg:col-span-3 space-y-3">
+            <div class="flex items-center justify-between px-1 mb-2">
+                <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-gray-300 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-simple text-cyan-400"></i> Live Asset Tickers
+                </h3>
+                <span class="text-[10px] font-mono text-cyan-400 animate-pulse">● Dynamic Ticks</span>
+            </div>
+
+            <!-- CARDS CONTAINER (DYNAMICALLY POPULATED & UPDATED) -->
+            <div id="assetCardsContainer" class="space-y-3">
+                <!-- BTC Card, ETH Card, SOL Card, NEX Card, XRP Card dynamically added -->
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- FOOTER STATUS BAR -->
+    <footer class="relative z-20 border-t border-cyan-500/20 bg-black/80 backdrop-blur-md py-3 px-4 sm:px-8 text-xs font-mono text-gray-400">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-4">
+                <span class="flex items-center text-emerald-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-2 animate-ping"></span>
+                    Matching Engine: Operational
+                </span>
+                <span class="hidden sm:inline text-gray-600">|</span>
+                <span class="hidden sm:inline">Latency: <strong class="text-gray-200">0.38ms</strong></span>
+            </div>
+            <div class="flex items-center space-x-6 text-[11px]">
+                <a href="#" class="hover:text-cyan-400 transition-colors">API Docs</a>
+                <a href="#" class="hover:text-cyan-400 transition-colors">Proof of Reserves</a>
+                <a href="#" class="hover:text-cyan-400 transition-colors">Terms of Service</a>
+                <span class="text-gray-500">© 2026 NEXORA Protocol</span>
+            </div>
         </div>
+    </footer>
 
-    </div>
-
-    <!-- Live Animated Background Canvas Script + Fluctuating Ticker JavaScript -->
+    <!-- JAVASCRIPT ENGINE (CANVAS CANDLESTICKS + DYNAMIC MARKET DATA) -->
     <script>
-        /* --- 1. Dynamic Chart Wave & Candlestick Canvas Engine --- */
-        const canvas = document.getElementById('chartCanvas');
+        // ==========================================
+        // 1. DYNAMIC ASSET & MARKET DATA STATE
+        // ==========================================
+        const assets = [
+            { id: 'btc', name: 'Bitcoin', symbol: 'BTC/USD', price: 68420.50, change: 4.82, high: 69100, low: 67200, history: [] },
+            { id: 'eth', name: 'Ethereum', symbol: 'ETH/USD', price: 3540.25, change: 3.15, high: 3610, low: 3480, history: [] },
+            { id: 'sol', name: 'Solana', symbol: 'SOL/USD', price: 184.60, change: 8.94, high: 189, low: 172, history: [] },
+            { id: 'nex', name: 'Nexora', symbol: 'NEX/USD', price: 14.85, change: 18.40, high: 15.50, low: 12.10, history: [] },
+            { id: 'xrp', name: 'Ripple', symbol: 'XRP/USD', price: 0.6420, change: -1.12, high: 0.66, low: 0.62, history: [] }
+        ];
+
+        // Seed price histories for micro-charts
+        assets.forEach(asset => {
+            let base = asset.price;
+            for(let i=0; i<20; i++) {
+                let open = base + (Math.random() - 0.48) * (base * 0.008);
+                let close = open + (Math.random() - 0.48) * (base * 0.008);
+                let high = Math.max(open, close) + Math.random() * (base * 0.004);
+                let low = Math.min(open, close) - Math.random() * (base * 0.004);
+                asset.history.push({ open, close, high, low });
+                base = close;
+            }
+        });
+
+        // ==========================================
+        // 2. CANVAS CANDLESTICK BACKGROUND ENGINE
+        // ==========================================
+        const canvas = document.getElementById('candlestickCanvas');
         const ctx = canvas.getContext('2d');
 
+        let width, height;
+        let candles = [];
+        const candleWidth = 14;
+        const candleGap = 6;
+        let chartOffset = 0;
+
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initCandles();
         }
+
+        function initCandles() {
+            candles = [];
+            const count = Math.ceil(width / (candleWidth + candleGap)) + 10;
+            let currentPrice = 65000;
+
+            for (let i = 0; i < count; i++) {
+                let volatility = (Math.random() * 200 + 50);
+                let open = currentPrice;
+                let close = open + (Math.random() - 0.48) * volatility * 2;
+                let high = Math.max(open, close) + Math.random() * volatility;
+                let low = Math.min(open, close) - Math.random() * volatility;
+                
+                candles.push({ open, high, low, close });
+                currentPrice = close;
+            }
+        }
+
+        function updateBackgroundCandles() {
+            // Live tick simulation on the newest candle
+            if (candles.length > 0) {
+                let lastCandle = candles[candles.length - 1];
+                let tickDelta = (Math.random() - 0.49) * 45;
+                lastCandle.close += tickDelta;
+                if (lastCandle.close > lastCandle.high) lastCandle.high = lastCandle.close;
+                if (lastCandle.close < lastCandle.low) lastCandle.low = lastCandle.close;
+
+                // Slowly push new candles over time
+                if (Math.random() < 0.08) {
+                    candles.shift();
+                    let open = lastCandle.close;
+                    let close = open + (Math.random() - 0.48) * 150;
+                    candles.push({
+                        open: open,
+                        high: Math.max(open, close) + Math.random() * 80,
+                        low: Math.min(open, close) - Math.random() * 80,
+                        close: close
+                    });
+                }
+            }
+        }
+
+        function drawBackgroundChart() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw Background Cyber Grid Lines
+            ctx.strokeStyle = 'rgba(0, 242, 254, 0.04)';
+            ctx.lineWidth = 1;
+            const gridSize = 60;
+            for (let x = 0; x < width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            if (candles.length === 0) return;
+
+            // Calculate min & max price across visible candles
+            let minPrice = Infinity;
+            let maxPrice = -Infinity;
+            candles.forEach(c => {
+                if (c.low < minPrice) minPrice = c.low;
+                if (c.high > maxPrice) maxPrice = c.high;
+            });
+
+            const padding = height * 0.15;
+            const drawHeight = height - padding * 2;
+
+            function getY(price) {
+                return height - padding - ((price - minPrice) / (maxPrice - minPrice || 1)) * drawHeight;
+            }
+
+            // Draw Volume Bars at bottom
+            candles.forEach((c, index) => {
+                const x = index * (candleWidth + candleGap);
+                const isBull = c.close >= c.open;
+                const volHeight = Math.abs(c.close - c.open) * 0.35 + 10;
+                
+                ctx.fillStyle = isBull ? 'rgba(16, 185, 129, 0.12)' : 'rgba(244, 63, 94, 0.12)';
+                ctx.fillRect(x, height - volHeight, candleWidth, volHeight);
+            });
+
+            // Draw Candlesticks (Wicks and Bodies)
+            candles.forEach((c, index) => {
+                const x = index * (candleWidth + candleGap) + candleWidth / 2;
+                const yOpen = getY(c.open);
+                const yClose = getY(c.close);
+                const yHigh = getY(c.high);
+                const yLow = getY(c.low);
+
+                const isBull = c.close >= c.open;
+                const candleColor = isBull ? '#10b981' : '#f43f5e';
+                const shadowGlow = isBull ? 'rgba(16, 185, 129, 0.4)' : 'rgba(244, 63, 94, 0.4)';
+
+                // Draw Wick
+                ctx.strokeStyle = candleColor;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(x, yHigh);
+                ctx.lineTo(x, yLow);
+                ctx.stroke();
+
+                // Draw Body
+                const bodyTop = Math.min(yOpen, yClose);
+                const bodyHeight = Math.max(Math.abs(yClose - yOpen), 2);
+
+                ctx.shadowColor = shadowGlow;
+                ctx.shadowBlur = 8;
+                ctx.fillStyle = candleColor;
+                ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+                ctx.shadowBlur = 0; // reset
+            });
+
+            // Draw Live Horizontal Price Marker Line
+            if (candles.length > 0) {
+                const last = candles[candles.length - 1];
+                const lastY = getY(last.close);
+
+                ctx.strokeStyle = last.close >= last.open ? '#10b981' : '#f43f5e';
+                ctx.setLineDash([4, 4]);
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, lastY);
+                ctx.lineTo(width, lastY);
+                ctx.stroke();
+                ctx.setLineDash([]); // Reset line dash
+            }
+        }
+
+        function renderLoop() {
+            updateBackgroundCandles();
+            drawBackgroundChart();
+            requestAnimationFrame(renderLoop);
+        }
+
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
+        requestAnimationFrame(renderLoop);
 
-        let chartPoints = [];
-        const pointCount = 45;
+        // ==========================================
+        // 3. RIGHT SIDEBAR: TICKER CARDS RENDERER
+        // ==========================================
+        function renderAssetCards() {
+            const container = document.getElementById('assetCardsContainer');
+            container.innerHTML = '';
 
-        for (let i = 0; i < pointCount; i++) {
-            chartPoints.push({
-                x: (canvas.width / pointCount) * i,
-                y: canvas.height / 2 + Math.sin(i * 0.35) * 90 + (Math.random() - 0.5) * 40,
-                speedY: (Math.random() - 0.5) * 1.4
+            assets.forEach(asset => {
+                const isPositive = asset.change >= 0;
+                const colorClass = isPositive ? 'text-emerald-400' : 'text-rose-400';
+                const bgTag = isPositive ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-rose-500/10 border-rose-500/30';
+
+                const card = document.createElement('div');
+                card.className = 'glass-card p-3 rounded-xl border border-cyan-500/20 transition-all duration-300 hover:scale-[1.02] cursor-pointer';
+                card.id = `card-${asset.id}`;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-mono font-bold text-sm text-white">${asset.symbol}</span>
+                            <span class="text-[10px] font-mono text-gray-400">${asset.name}</span>
+                        </div>
+                        <span id="change-${asset.id}" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${bgTag} ${colorClass}">
+                            ${isPositive ? '+' : ''}${asset.change.toFixed(2)}%
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span id="price-${asset.id}" class="text-base font-mono font-extrabold ${colorClass}">
+                            $${asset.price.toLocaleString(undefined, { minimumFractionDigits: asset.price < 1 ? 4 : 2 })}
+                        </span>
+                        <!-- SVG MICRO CANDLESTICK CHART -->
+                        <svg id="chart-${asset.id}" class="w-24 h-7 overflow-visible"></svg>
+                    </div>
+                `;
+
+                container.appendChild(card);
+                renderMicroCandlesticks(asset);
             });
         }
 
-        function drawAnimatedTradingBg() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function renderMicroCandlesticks(asset) {
+            const svg = document.getElementById(`chart-${asset.id}`);
+            if (!svg) return;
+            svg.innerHTML = '';
 
-            // Render Dynamic Smooth Wave Chart Line
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
-            ctx.lineWidth = 2.5;
+            const data = asset.history;
+            const svgWidth = 96;
+            const svgHeight = 28;
+            const candleW = 3;
+            const gap = 1.5;
 
-            for (let i = 0; i < chartPoints.length; i++) {
-                chartPoints[i].y += chartPoints[i].speedY;
+            let min = Math.min(...data.map(d => d.low));
+            let max = Math.max(...data.map(d => d.high));
+            const range = max - min || 1;
 
-                // Bounce points within vertical bounds
-                if (chartPoints[i].y < canvas.height * 0.25 || chartPoints[i].y > canvas.height * 0.75) {
-                    chartPoints[i].speedY *= -1;
-                }
+            data.forEach((d, i) => {
+                const x = i * (candleW + gap) + 2;
+                const yHigh = svgHeight - ((d.high - min) / range) * svgHeight;
+                const yLow = svgHeight - ((d.low - min) / range) * svgHeight;
+                const yOpen = svgHeight - ((d.open - min) / range) * svgHeight;
+                const yClose = svgHeight - ((d.close - min) / range) * svgHeight;
 
-                if (i === 0) {
-                    ctx.moveTo(chartPoints[i].x, chartPoints[i].y);
-                } else {
-                    ctx.lineTo(chartPoints[i].x, chartPoints[i].y);
-                }
-            }
-            ctx.stroke();
+                const isBull = d.close >= d.open;
+                const color = isBull ? '#10b981' : '#f43f5e';
 
-            // Render Glowing Price Nodes and Candlesticks
-            for (let i = 0; i < chartPoints.length; i += 2) {
-                // Glow Dot
-                ctx.beginPath();
-                ctx.arc(chartPoints[i].x, chartPoints[i].y, 3.5, 0, Math.PI * 2);
-                ctx.fillStyle = '#38bdf8';
-                ctx.shadowColor = '#38bdf8';
-                ctx.shadowBlur = 10;
-                ctx.fill();
-                ctx.shadowBlur = 0;
+                // Wick
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x + candleW/2);
+                line.setAttribute('y1', yHigh);
+                line.setAttribute('x2', x + candleW/2);
+                line.setAttribute('y2', yLow);
+                line.setAttribute('stroke', color);
+                line.setAttribute('stroke-width', '1');
+                svg.appendChild(line);
 
-                // Mock Background Candlesticks
-                if (i % 4 === 0) {
-                    const candleHeight = 20 + Math.random() * 30;
-                    const isGreen = Math.random() > 0.45;
-                    ctx.fillStyle = isGreen ? 'rgba(16, 185, 129, 0.25)' : 'rgba(239, 68, 68, 0.25)';
-                    ctx.fillRect(chartPoints[i].x - 4, chartPoints[i].y - candleHeight / 2, 8, candleHeight);
-                }
-            }
-
-            requestAnimationFrame(drawAnimatedTradingBg);
+                // Body
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', x);
+                rect.setAttribute('y', Math.min(yOpen, yClose));
+                rect.setAttribute('width', candleW);
+                rect.setAttribute('height', Math.max(Math.abs(yClose - yOpen), 1));
+                rect.setAttribute('fill', color);
+                svg.appendChild(rect);
+            });
         }
 
-        drawAnimatedTradingBg();
+        // ==========================================
+        // 4. LIVE ORDER BOOK SIMULATOR
+        // ==========================================
+        function initOrderBook() {
+            updateOrderBook();
+            setInterval(updateOrderBook, 700);
+        }
 
-        /* --- 2. Live Numbers Fluctuating Up/Down JavaScript --- */
-        let baseBtc = 81678.50;
-        let baseEth = 3520.10;
+        function updateOrderBook() {
+            const asksContainer = document.getElementById('orderBookAsks');
+            const bidsContainer = document.getElementById('orderBookBids');
+            if (!asksContainer || !bidsContainer) return;
 
-        setInterval(() => {
-            // Fluctuate BTC
-            const btcDelta = (Math.random() - 0.48) * 12;
-            baseBtc += btcDelta;
-            const btcElem = document.getElementById('tk-btc');
-            if (btcElem) {
-                btcElem.innerText = '$' + baseBtc.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                btcElem.className = 'ticker-val ' + (btcDelta >= 0 ? 'price-flash-up' : 'price-flash-down');
+            const btcAsset = assets.find(a => a.id === 'btc');
+            const basePrice = btcAsset.price;
+
+            let asksHTML = '';
+            let bidsHTML = '';
+
+            // Generate 6 Asks (Red)
+            for (let i = 5; i >= 1; i--) {
+                let p = (basePrice + i * 2.5 + Math.random() * 1.5).toFixed(2);
+                let qty = (Math.random() * 0.85 + 0.05).toFixed(4);
+                let total = (p * qty / 1000).toFixed(2) + 'K';
+                asksHTML += `
+                    <div class="grid grid-cols-3 text-right hover:bg-rose-500/10 px-1 rounded transition-colors">
+                        <span class="text-rose-400 text-left font-semibold">${p}</span>
+                        <span class="text-gray-300">${qty}</span>
+                        <span class="text-gray-500">${total}</span>
+                    </div>`;
             }
 
-            // Fluctuate Orderbook Volumes
-            for (let i = 1; i <= 6; i++) {
-                const volElem = document.getElementById(`vol-${i}`);
-                if (volElem && Math.random() > 0.5) {
-                    const newVol = (Math.random() * 3.5).toFixed(3);
-                    volElem.innerText = `${newVol} BTC`;
+            // Generate 6 Bids (Green)
+            for (let i = 1; i <= 5; i++) {
+                let p = (basePrice - i * 2.5 - Math.random() * 1.5).toFixed(2);
+                let qty = (Math.random() * 0.95 + 0.08).toFixed(4);
+                let total = (p * qty / 1000).toFixed(2) + 'K';
+                bidsHTML += `
+                    <div class="grid grid-cols-3 text-right hover:bg-emerald-500/10 px-1 rounded transition-colors">
+                        <span class="text-emerald-400 text-left font-semibold">${p}</span>
+                        <span class="text-gray-300">${qty}</span>
+                        <span class="text-gray-500">${total}</span>
+                    </div>`;
+            }
+
+            asksContainer.innerHTML = asksHTML;
+            bidsContainer.innerHTML = bidsHTML;
+        }
+
+        // ==========================================
+        // 5. LIVE PRICE TICK SIMULATOR
+        // ==========================================
+        function startLivePriceUpdates() {
+            setInterval(() => {
+                // Pick a random asset to tick
+                const asset = assets[Math.floor(Math.random() * assets.length)];
+                const delta = (Math.random() - 0.49) * (asset.price * 0.003);
+                asset.price += delta;
+                asset.change += (delta / asset.price) * 10;
+
+                // Push to mini history
+                const last = asset.history[asset.history.length - 1];
+                last.close = asset.price;
+                if (asset.price > last.high) last.high = asset.price;
+                if (asset.price < last.low) last.low = asset.price;
+
+                // Shift history periodically
+                if (Math.random() < 0.3) {
+                    asset.history.shift();
+                    asset.history.push({
+                        open: asset.price,
+                        close: asset.price,
+                        high: asset.price,
+                        low: asset.price
+                    });
                 }
-            }
 
-            // Fluctuate Ping/Latency
-            const pingElem = document.getElementById('stat-ping');
-            if (pingElem) {
-                pingElem.innerText = (0.7 + Math.random() * 0.4).toFixed(1) + ' ms';
-            }
-        }, 1200);
+                // Update UI Elements
+                const priceEl = document.getElementById(`price-${asset.id}`);
+                const changeEl = document.getElementById(`change-${asset.id}`);
+
+                if (priceEl) {
+                    priceEl.innerText = `$${asset.price.toLocaleString(undefined, { minimumFractionDigits: asset.price < 1 ? 4 : 2 })}`;
+                    priceEl.className = `text-base font-mono font-extrabold ${delta >= 0 ? 'text-emerald-400 up-tick' : 'text-rose-400 down-tick'}`;
+                }
+
+                if (changeEl) {
+                    const isPos = asset.change >= 0;
+                    changeEl.innerText = `${isPos ? '+' : ''}${asset.change.toFixed(2)}%`;
+                    changeEl.className = `text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${isPos ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-rose-500/10 border-rose-500/30 text-rose-400'}`;
+                }
+
+                // If BTC updated, reflect on order book hero display
+                if (asset.id === 'btc') {
+                    const liveBtc = document.getElementById('liveBtcPrice');
+                    const liveBtcChange = document.getElementById('liveBtcChange');
+                    if (liveBtc) liveBtc.innerText = `$${asset.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                    if (liveBtcChange) {
+                        const isPos = asset.change >= 0;
+                        liveBtcChange.innerText = `${isPos ? '+' : ''}${asset.change.toFixed(2)}%`;
+                        liveBtcChange.className = `text-xs font-mono font-semibold px-2 py-0.5 rounded ${isPos ? 'text-emerald-400 bg-emerald-500/20' : 'text-rose-400 bg-rose-500/20'}`;
+                    }
+                }
+
+                // Re-render SVG Micro Chart
+                renderMicroCandlesticks(asset);
+
+                // Update Top Ticker Tape
+                renderTickerTape();
+
+            }, 800);
+        }
+
+        // ==========================================
+        // 6. INFINITE TOP TICKER TAPE RENDERER
+        // ==========================================
+        function renderTickerTape() {
+            const tape = document.getElementById('tickerTape');
+            if (!tape) return;
+
+            let html = '';
+            // Duplicate array twice to facilitate smooth infinite seamless looping
+            const items = [...assets, ...assets, ...assets];
+
+            items.forEach(a => {
+                const isPos = a.change >= 0;
+                html += `
+                    <div class="inline-flex items-center space-x-2 border-r border-gray-800 pr-6">
+                        <span class="font-bold text-gray-200">${a.symbol}:</span>
+                        <span class="text-gray-100">$${a.price.toLocaleString(undefined, { minimumFractionDigits: a.price < 1 ? 3 : 2 })}</span>
+                        <span class="${isPos ? 'text-emerald-400' : 'text-rose-400'} text-[11px]">
+                            <i class="fa-solid fa-caret-${isPos ? 'up' : 'down'}"></i>
+                            ${Math.abs(a.change).toFixed(2)}%
+                        </span>
+                    </div>
+                `;
+            });
+
+            tape.innerHTML = html;
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            renderAssetCards();
+            renderTickerTape();
+            initOrderBook();
+            startLivePriceUpdates();
+        });
     </script>
 </body>
 </html>
