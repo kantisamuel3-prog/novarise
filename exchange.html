@@ -112,7 +112,8 @@
             .nexora-bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
         }
 
-        body > header, body > #chartContainer, body > div.px-3 {
+        /* Responsive container: Full widescreen sa computer, compact sa cellphone */
+        body > header, body > #mainTradingGrid, body > div.px-3 {
             width: 100%;
             max-width: 480px;
             margin-left: auto;
@@ -123,7 +124,7 @@
         .chart-box {
             position: relative;
             width: 100%;
-            height: 185px;
+            height: 220px;
             background: rgba(3, 11, 23, 0.24);
             cursor: crosshair;
         }
@@ -165,21 +166,23 @@
 
         ::-webkit-scrollbar { display: none; }
     
+        /* Widescreen Desktop / Tablet Optimization Layout */
         @media (min-width: 768px) {
-            .chart-box { height: 185px; }
-            body > header, body > #chartContainer, body > div.px-3 {
-                max-width: 720px;
+            body > header, body > #mainTradingGrid, body > div.px-3 {
+                max-width: 740px;
             }
+            .chart-box { height: 260px; }
         }
         @media (min-width: 1024px) {
-            body > header, body > #chartContainer, body > div.px-3 {
-                max-width: 960px;
+            body > header, body > #mainTradingGrid, body > div.px-3 {
+                max-width: 1080px;
             }
+            .chart-box { height: 340px; }
         }
         @media (max-width: 767px) {
-            body > header, body > #chartContainer, body > div.px-3 { max-width: 100%; }
+            body > header, body > #mainTradingGrid, body > div.px-3 { max-width: 100%; }
             .nexora-bottom-nav { width: 100vw !important; }
-            .chart-box { height: 175px; }
+            .chart-box { height: 185px; }
             body { font-size: 12px; }
         }
 
@@ -208,7 +211,6 @@
             background: radial-gradient(circle, #ffe380 0%, #d4af37 60%, #996515 100%);
             box-shadow: 0 0 6px rgba(212, 175, 55, 0.8), inset 0 0 2px rgba(255, 255, 255, 0.8);
         }
-        
         .leverage-pill {
             background: #1e293b;
             border: 1px solid rgba(0, 242, 254, 0.2);
@@ -339,8 +341,7 @@
                     <span class="text-[7px] text-[#dfb248] font-mono tracking-widest uppercase font-bold">TRADE . GROW . TOGETHER</span>
                 </div>
             </div>
-            <div class="flex items-center space-x-2">
-                <!-- Dagdag na bagong design element: 24h High/Low ticker indicator -->
+            <div class="flex items-center space-x-3">
                 <div class="hidden sm:flex flex-col text-[8px] font-mono text-gray-400 text-right">
                     <span>24H High: <strong class="text-white">$84,150.0</strong></span>
                     <span>24H Low: <strong class="text-white">$80,120.5</strong></span>
@@ -358,7 +359,6 @@
                 <button onclick="switchMode('options')" id="modeOptions" class="mode-btn">Options</button>
                 <button onclick="switchMode('bots')" id="modeBots" class="mode-btn">Bots</button>
             </div>
-            <!-- Dagdag na bagong design badge sa gilid ng modes -->
             <div class="hidden md:flex items-center space-x-1 text-[9px] font-mono text-cyan-400 bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-500/20">
                 <i class="fa-solid fa-shield-halved"></i>
                 <span>Institutional Node #4</span>
@@ -366,14 +366,14 @@
         </div>
 
         <!-- PAIR & TICKER INFO -->
-        <div class="flex items-center justify-between mt-2.5 bg-[#171717] px-2.5 py-1.5 rounded-xl border border-[#262626]">
+        <div class="flex items-center justify-between mt-2.5 bg-[#171717] px-3 py-2 rounded-xl border border-[#262626]">
             <div class="flex items-center space-x-2">
-                <span id="pairTitle" class="text-white font-black text-base tracking-wide font-mono">BTCUSDT Perp</span>
-                <span class="bg-[#242424] text-cyan-400 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border border-cyan-500/30">10x</span>
+                <span id="pairTitle" class="text-white font-black text-base md:text-lg tracking-wide font-mono">BTCUSDT Perp</span>
+                <span class="bg-[#242424] text-cyan-400 text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-cyan-500/30">10x</span>
                 <i class="fa-solid fa-chevron-down text-gray-400 text-[10px]"></i>
             </div>
             <div class="text-right font-mono">
-                <div id="headerPrice" class="text-sm font-black text-emerald-400">82,026.8</div>
+                <div id="headerPrice" class="text-sm md:text-base font-black text-emerald-400">82,026.8</div>
                 <div class="text-[9px] text-emerald-500 flex items-center justify-end space-x-1">
                     <i class="fa-solid fa-arrow-trend-up text-[8px]"></i>
                     <span>+1,196.8 (+1.48%)</span>
@@ -420,10 +420,27 @@
         </div>
     </header>
 
-    <!-- PROFESSIONAL CHART CONTAINER WITH MOUSE CROSSHAIR -->
-    <main id="chartContainer" class="chart-box shrink-0 border-b border-[#222222]">
-        <canvas id="nexoraCanvas"></canvas>
-    </main>
+    <!-- MAIN TRADING CONTAINER (Responsive Grid para sa Desktop, Tablet, at Cellphone) -->
+    <div id="mainTradingGrid" class="flex flex-col lg:grid lg:grid-cols-12 gap-2 px-3 py-2 shrink-0">
+        <!-- CHART AREA (Mas malaki sa computer / widescreen) -->
+        <div id="chartContainer" class="chart-box lg:col-span-8 rounded-xl border border-[#222222] overflow-hidden shadow-xl">
+            <canvas id="nexoraCanvas"></canvas>
+        </div>
+
+        <!-- DESKTOP ORDERBOOK SIDEBAR WIDGET (Lilitaw sa tabi ng chart kapag computer/tablet ang gamit) -->
+        <div class="hidden lg:flex lg:col-span-4 bg-[#1a1a1a]/80 border border-[#2e2e2e] rounded-xl p-2.5 font-mono text-[10px] flex-col justify-between">
+            <div class="text-white font-bold text-xs pb-1 mb-1 border-b border-[#2e2e2e] flex justify-between items-center">
+                <span>Live Order Book Depth</span>
+                <span class="text-cyan-400 text-[9px]">BTCUSDT</span>
+            </div>
+            <div class="space-y-0.5" id="desktopAsksContainer"></div>
+            <div class="py-1.5 my-1 bg-[#121212] border-y border-[#2e2e2e] text-center">
+                <div class="text-sm font-black text-emerald-400" id="desktopMidPrice">82,026.8</div>
+                <div class="text-[8px] text-gray-400">Spread: <span class="text-cyan-300">0.12 USDT</span></div>
+            </div>
+            <div class="space-y-0.5" id="desktopBidsContainer"></div>
+        </div>
+    </div>
 
     <!-- TRADING PANEL -->
     <div class="px-3 py-1.5 bg-[#061124]/55 flex-1 flex flex-col justify-between">
@@ -431,8 +448,8 @@
         <!-- PANEL 1: FUTURES & SPOT TRADING -->
         <div id="panelTrade" class="mode-panel active">
             <div class="grid grid-cols-2 gap-2 mb-2 font-mono">
-                <button onclick="setSide('open')" id="sideOpen" class="py-1.5 rounded-lg bg-[#00b074] text-slate-950 font-black text-xs uppercase tracking-wider text-center shadow-lg">Open Long</button>
-                <button onclick="setSide('close')" id="sideClose" class="py-1.5 rounded-lg bg-[#222222] text-gray-400 font-bold text-xs uppercase tracking-wider text-center">Close Short</button>
+                <button onclick="setSide('open')" id="sideOpen" class="py-2 rounded-lg bg-[#00b074] text-slate-950 font-black text-xs uppercase tracking-wider text-center shadow-lg">Open Long</button>
+                <button onclick="setSide('close')" id="sideClose" class="py-2 rounded-lg bg-[#222222] text-gray-400 font-bold text-xs uppercase tracking-wider text-center">Close Short</button>
             </div>
 
             <div class="grid grid-cols-12 gap-2">
@@ -451,7 +468,7 @@
                         <input id="contractQty" aria-label="Contracts in BTC" type="number" min="0.001" max="100" step="0.001" value="0.01" class="w-24 bg-transparent text-white font-bold text-center outline-none">
                     </label>
 
-                    <!-- BAGONG DESIGN: Quick Leverage Selector Pills sa bakanteng espasyo -->
+                    <!-- Quick Leverage Selector Pills -->
                     <div class="flex items-center justify-between pt-0.5">
                         <span class="text-[9px] text-gray-400">Leverage:</span>
                         <div class="flex space-x-1">
@@ -467,12 +484,12 @@
                         <div class="flex justify-between"><span>Est. Margin Fee</span><span class="text-cyan-400 font-bold">5.00 USDT</span></div>
                     </div>
 
-                    <button onclick="executeAction()" id="actionBtn" class="w-full py-2 rounded-xl bg-[#00b074] hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all text-center font-mono">
+                    <button onclick="executeAction()" id="actionBtn" class="w-full py-2.5 rounded-xl bg-[#00b074] hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all text-center font-mono">
                         Open Long BTC
                     </button>
                 </div>
 
-                <!-- ORDERBOOK FEED -->
+                <!-- ORDERBOOK FEED (Mobile & Tablet) -->
                 <div class="col-span-5 font-mono text-[10px] flex flex-col justify-between pl-1">
                     <div>
                         <div class="flex justify-between text-gray-500 font-bold mb-1 pb-0.5 border-b border-[#2e2e2e]">
@@ -999,7 +1016,7 @@
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
 
-        document.getElementById('chartContainer').style.display = (mode === 'options' || mode === 'bots') ? 'none' : 'block';
+        document.getElementById('mainTradingGrid').style.display = (mode === 'options' || mode === 'bots') ? 'none' : 'flex';
 
         if(mode === 'spot') {
             document.getElementById('modeSpot').classList.add('active');
@@ -1024,14 +1041,14 @@
         currentSide = side;
         try { sessionStorage.setItem('nexora_exchange_side', side); } catch (_) {}
         if(side === 'open') {
-            document.getElementById('sideOpen').className = "py-1.5 rounded-lg bg-[#00b074] text-slate-950 font-black text-xs uppercase tracking-wider text-center shadow-lg";
-            document.getElementById('sideClose').className = "py-1.5 rounded-lg bg-[#222222] text-gray-400 font-bold text-xs uppercase tracking-wider text-center";
-            document.getElementById('actionBtn').className = "w-full py-2 rounded-xl bg-[#00b074] hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all text-center font-mono";
+            document.getElementById('sideOpen').className = "py-2 rounded-lg bg-[#00b074] text-slate-950 font-black text-xs uppercase tracking-wider text-center shadow-lg";
+            document.getElementById('sideClose').className = "py-2 rounded-lg bg-[#222222] text-gray-400 font-bold text-xs uppercase tracking-wider text-center";
+            document.getElementById('actionBtn').className = "w-full py-2.5 rounded-xl bg-[#00b074] hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all text-center font-mono";
             document.getElementById('actionBtn').innerText = "Open Long BTC";
         } else {
-            document.getElementById('sideClose').className = "py-1.5 rounded-lg bg-[#ef4444] text-white font-black text-xs uppercase tracking-wider text-center shadow-lg";
-            document.getElementById('sideOpen').className = "py-1.5 rounded-lg bg-[#222222] text-gray-400 font-bold text-xs uppercase tracking-wider text-center";
-            document.getElementById('actionBtn').className = "w-full py-2 rounded-xl bg-[#ef4444] hover:bg-rose-500 text-white font-black text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all text-center font-mono";
+            document.getElementById('sideClose').className = "py-2 rounded-lg bg-[#ef4444] text-white font-black text-xs uppercase tracking-wider text-center shadow-lg";
+            document.getElementById('sideOpen').className = "py-2 rounded-lg bg-[#222222] text-gray-400 font-bold text-xs uppercase tracking-wider text-center";
+            document.getElementById('actionBtn').className = "w-full py-2.5 rounded-xl bg-[#ef4444] hover:bg-rose-500 text-white font-black text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all text-center font-mono";
             document.getElementById('actionBtn').innerText = "Close Short BTC";
         }
     }
@@ -1202,6 +1219,7 @@
         if(document.getElementById('midPrice')) {
             document.getElementById('midPrice').innerText = basePrice.toFixed(1);
             document.getElementById('headerPrice').innerText = basePrice.toFixed(1);
+            if(document.getElementById('desktopMidPrice')) document.getElementById('desktopMidPrice').innerText = basePrice.toFixed(1);
         }
 
         if (pauseCounter > 0) {
@@ -1237,6 +1255,15 @@
             asksHTML += `<div class="flex justify-between text-rose-500"><span>${p}</span><span>${sz}</span></div>`;
         }
         if(document.getElementById('asksContainer')) document.getElementById('asksContainer').innerHTML = asksHTML;
+        if(document.getElementById('desktopAsksContainer')) {
+            let deskAsks = '';
+            for(let i = 6; i >= 1; i--) {
+                let p = (basePrice + i * 0.25).toFixed(1);
+                let sz = (Math.random() * 0.4 + 0.02).toFixed(4);
+                deskAsks += `<div class="flex justify-between text-rose-500 py-0.5"><span>${p}</span><span class="text-white">${sz}</span></div>`;
+            }
+            document.getElementById('desktopAsksContainer').innerHTML = deskAsks;
+        }
 
         let bidsHTML = '';
         for(let i = 1; i <= 3; i++) {
@@ -1245,6 +1272,15 @@
             bidsHTML += `<div class="flex justify-between text-emerald-500"><span>${p}</span><span>${sz}</span></div>`;
         }
         if(document.getElementById('bidsContainer')) document.getElementById('bidsContainer').innerHTML = bidsHTML;
+        if(document.getElementById('desktopBidsContainer')) {
+            let deskBids = '';
+            for(let i = 1; i <= 6; i++) {
+                let p = (basePrice - i * 0.25).toFixed(1);
+                let sz = (Math.random() * 0.4 + 0.02).toFixed(4);
+                deskBids += `<div class="flex justify-between text-emerald-500 py-0.5"><span>${p}</span><span class="text-white">${sz}</span></div>`;
+            }
+            document.getElementById('desktopBidsContainer').innerHTML = deskBids;
+        }
 
         if(document.getElementById('seeAllModal').style.display === 'flex') {
             renderMixedTraders();
@@ -1336,7 +1372,6 @@
         if (event.key === 'Escape') closeOrderHelp();
     });
 
-    // Quick leverage selector click interaction
     document.querySelectorAll('.leverage-pill').forEach(pill => {
         pill.addEventListener('click', function() {
             document.querySelectorAll('.leverage-pill').forEach(p => p.classList.remove('active'));
