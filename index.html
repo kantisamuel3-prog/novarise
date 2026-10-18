@@ -812,7 +812,7 @@
         }
         renderProStreamChart();
 
-        // DYNAMIC VIEWERS & SHARED CHAT SYSTEM (LOCALSTORAGE SYNC)
+        // DYNAMIC VIEWERS & REAL-TIME DIRECT CHAT SYSTEM
         let currentViewers = 3420;
         const viewerDisplay = document.getElementById('viewerCountDisplay');
 
@@ -859,60 +859,31 @@
 
         const chatStream = document.getElementById('chatStream');
 
-        // I-load ang mga saved chats mula sa localStorage (para magkita ng ibang user/tabs)
-        function getStoredChats() {
-            let chats = localStorage.getItem('nexora_live_chats');
-            return chats ? JSON.parse(chats) : [];
-        }
-
-        function saveChatToStorage(number, text, isYou = false) {
-            let chats = getStoredChats();
-            chats.push({ number, text, isYou });
-            // Panatilihing hanggang 50 na lang para hindi bumagal
-            if (chats.length > 50) chats.shift();
-            localStorage.setItem('nexora_live_chats', JSON.stringify(chats));
-        }
-
-        function renderAllChats() {
-            chatStream.innerHTML = '';
-            let chats = getStoredChats();
-            
-            // Kung walang laman, maglagay ng default initial chats
-            if (chats.length === 0) {
-                addDefaultChats();
-                chats = getStoredChats();
+        function appendMessage(number, text, isYou = false) {
+            const div = document.createElement('div');
+            div.className = 'chat-message';
+            if (isYou) {
+                div.innerHTML = `<span class="chat-number you">You:</span> <span class="chat-text">${text}</span>`;
+            } else {
+                div.innerHTML = `<span class="chat-number">${number}:</span> <span class="chat-text">${text}</span>`;
             }
-
-            chats.forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'chat-message';
-                if (c.isYou) {
-                    div.innerHTML = `<span class="chat-number you">You:</span> <span class="chat-text">${c.text}</span>`;
-                } else {
-                    div.innerHTML = `<span class="chat-number">${c.number}:</span> <span class="chat-text">${c.text}</span>`;
-                }
-                chatStream.appendChild(div);
-            });
+            chatStream.appendChild(div);
             chatStream.scrollTop = chatStream.scrollHeight;
         }
 
-        function addDefaultChats() {
-            saveChatToStorage("+63 917-***-2091", "solid ng flow ng market ngayon ah");
-            saveChatToStorage("+1 415-***-8921", "That breakout on BTC was super clean!");
-            saveChatToStorage("+44 7911-***-402", "Sub-millisecond trade execution is unbelievable!");
+        // Mag-load ng ilang paunang komento
+        for (let i = 0; i < 4; i++) {
+            let isPinoy = Math.random() < 0.25;
+            let codes = isPinoy ? pinoyCodes : foreignCodes;
+            let code = codes[Math.floor(Math.random() * codes.length)];
+            let end = Math.floor(1000 + Math.random() * 9000);
+            let number = `${code}-***-${end}`;
+            let text = isPinoy ? tagalogComments[Math.floor(Math.random() * tagalogComments.length)] : englishComments[Math.floor(Math.random() * englishComments.length)];
+            appendMessage(number, text, false);
         }
 
-        // Automatic sync kapag may nagbukas ng ibang tab o nag-comment ang iba
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'nexora_live_chats') {
-                renderAllChats();
-            }
-        });
-
-        renderAllChats();
-
-        // Virtual Member Auto-Comment Loop
-        function createRandomChatMessage() {
+        // Virtual Members Auto-Comment Loop
+        function scheduleNextMessage() {
             let isPinoy = Math.random() < 0.25;
             let codes = isPinoy ? pinoyCodes : foreignCodes;
             let code = codes[Math.floor(Math.random() * codes.length)];
@@ -920,12 +891,8 @@
             let number = `${code}-***-${end}`;
             let text = isPinoy ? tagalogComments[Math.floor(Math.random() * tagalogComments.length)] : englishComments[Math.floor(Math.random() * englishComments.length)];
 
-            saveChatToStorage(number, text, false);
-            renderAllChats();
-        }
+            appendMessage(number, text, false);
 
-        function scheduleNextMessage() {
-            createRandomChatMessage();
             let ratio = (currentViewers - 1000) / (3420 - 1000);
             let delay = 9000 - (ratio * 7000);
             if (Math.random() < 0.2) delay += 4000;
@@ -934,25 +901,23 @@
 
         setTimeout(scheduleNextMessage, 3000);
 
-        // USER CUSTOM COMMENT (SEND) -> Lalabas sa iba at magse-sync
+        // DIREKTANG LALABAS ANG COMMENT MO SA SCREEN PAGKA-SEND
         document.getElementById('chatForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
             const text = input.value.trim();
             if (text) {
-                // I-save bilang "You" sa sarili mong screen, at bilang virtual member/user sa ibang tab/window
-                saveChatToStorage("You", text, true);
-                renderAllChats();
+                // I-print agad ang iyong comment sa pinakailalim ng chat
+                appendMessage("You", text, true);
                 input.value = '';
 
-                // Bonus: Pwede ring mag-reply ang isang virtual member pagkalipas ng ilang segundo sa sinabi mo para mas buhay!
+                // May sasagot na virtual member pagkalipas ng 2 segundo para lalong maging buhay
                 setTimeout(() => {
                     let replyText = text.toLowerCase().includes('salamat') || text.toLowerCase().includes('code') 
                         ? "Walang anuman boss, enjoy trading!" 
                         : "Laking tulong nga nyan paps!";
-                    saveChatToStorage("+63 908-***-5512", replyText, false);
-                    renderAllChats();
-                }, 2500);
+                    appendMessage("+63 908-***-5512", replyText, false);
+                }, 2000);
             }
         });
     </script>
