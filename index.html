@@ -3,68 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXORA — Next Generation Financial Trading Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <title>NEXORA — Professional Crypto & Financial Trading Infrastructure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #050b14;
-            --card-bg: rgba(13, 22, 38, 0.7);
-            --card-border: rgba(0, 229, 255, 0.2);
+            --bg-main: #06090e;
+            --card-bg: rgba(13, 20, 32, 0.65);
+            --card-border: rgba(0, 229, 255, 0.15);
             --neon-cyan: #00e5ff;
-            --neon-blue: #0088ff;
+            --neon-blue: #0066ff;
             --gold-accent: #f5b300;
-            --text-light: #e0f2fe;
-            --text-dim: #64748b;
+            --green-trade: #00e676;
+            --red-trade: #ff1744;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            background-color: var(--bg-main);
+            color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 50% 30%, rgba(0, 229, 255, 0.08) 0%, transparent 60%),
-                linear-gradient(to bottom, rgba(5, 11, 20, 0.8), rgba(5, 11, 20, 0.95));
+            position: relative;
         }
 
-        /* Top Crypto Ticker Bar */
-        .ticker-bar {
-            background: rgba(3, 8, 16, 0.9);
-            border-bottom: 1px solid rgba(0, 229, 255, 0.15);
-            padding: 8px 5%;
-            display: flex;
-            gap: 25px;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            overflow-x: auto;
+        /* Animated Trading Canvas Background */
+        #chartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Live Trading Ticker Tape */
+        .ticker-wrapper {
+            background: rgba(3, 7, 13, 0.9);
+            border-bottom: 1px solid var(--card-border);
+            padding: 10px 0;
+            overflow: hidden;
             white-space: nowrap;
+            backdrop-filter: blur(8px);
+        }
+
+        .ticker-content {
+            display: inline-flex;
+            gap: 40px;
+            animation: tickerMove 30s linear infinite;
         }
 
         .ticker-item {
             display: flex;
-            gap: 8px;
             align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
         }
 
-        .ticker-name { color: var(--neon-cyan); }
-        .ticker-up { color: #10b981; }
+        .symbol { font-weight: 700; color: #fff; }
+        .price { font-weight: 600; color: var(--text-secondary); }
+        .change-up { color: var(--green-trade); font-weight: 700; }
+        .change-down { color: var(--red-trade); font-weight: 700; }
 
-        /* Header / Navbar */
+        @keyframes tickerMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Navigation Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 8%;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
+            background: rgba(6, 9, 14, 0.7);
+            backdrop-filter: blur(15px);
         }
 
         .brand-logo {
@@ -74,265 +103,372 @@
             text-decoration: none;
         }
 
-        .logo-icon-glow {
-            width: 42px;
-            height: 42px;
+        .logo-box {
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
-            border-radius: 50%;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Orbitron', sans-serif;
             font-weight: 900;
-            font-size: 22px;
+            font-size: 20px;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        .brand-text h1 {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .brand-text span {
+            font-size: 9px;
+            letter-spacing: 2.5px;
+            color: var(--gold-accent);
+            font-weight: 700;
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-portal {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 10px 22px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-portal:hover {
+            background: var(--neon-cyan);
             color: #000;
             box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
         }
 
-        .brand-text h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: #fff;
-        }
-
-        .brand-text span {
-            font-size: 10px;
-            letter-spacing: 3px;
-            color: var(--gold-accent);
-            display: block;
-            margin-top: -2px;
-            font-weight: 700;
-        }
-
-        .btn-glow {
-            background: transparent;
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            padding: 10px 24px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 13px;
-            letter-spacing: 1px;
-            transition: 0.3s;
-            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
-        }
-
-        .btn-glow:hover {
-            background: var(--neon-cyan);
-            color: #000;
-            box-shadow: 0 0 25px rgba(0, 229, 255, 0.8);
-        }
-
         /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 70px 20px 40px;
-            max-width: 950px;
+        .hero-container {
+            max-width: 1100px;
             margin: 0 auto;
+            padding: 90px 20px 60px;
+            text-align: center;
         }
 
-        .badge-tag {
-            display: inline-block;
-            border: 1px solid var(--gold-accent);
-            color: var(--gold-accent);
-            padding: 5px 18px;
-            border-radius: 20px;
+        .live-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 230, 118, 0.08);
+            border: 1px solid rgba(0, 230, 118, 0.25);
+            padding: 6px 18px;
+            border-radius: 30px;
             font-size: 12px;
-            letter-spacing: 2px;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 25px;
-            background: rgba(245, 179, 0, 0.05);
-        }
-
-        .hero h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 52px;
-            font-weight: 900;
-            line-height: 1.15;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
-        }
-
-        .hero h1 .highlight {
-            color: var(--neon-cyan);
-            text-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
-        }
-
-        .hero p {
-            font-size: 18px;
-            color: var(--text-dim);
-            max-width: 650px;
-            margin: 0 auto 40px;
-            line-height: 1.5;
             font-weight: 600;
+            color: var(--green-trade);
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease;
         }
 
-        .cta-buttons {
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--green-trade);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--green-trade);
+            animation: blink 1.5s infinite;
+        }
+
+        .hero-title {
+            font-size: 58px;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 25px;
+            letter-spacing: -1px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #fff 30%, var(--neon-cyan) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 45px;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .hero-cta {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-bottom: 60px;
+            margin-bottom: 80px;
+            animation: fadeInUp 1s ease 0.6s both;
         }
 
-        .btn-main {
+        .btn-launch {
             background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
             color: #000;
-            padding: 15px 35px;
-            border-radius: 30px;
+            padding: 16px 36px;
+            border-radius: 8px;
             text-decoration: none;
-            font-family: 'Orbitron', sans-serif;
             font-weight: 800;
             font-size: 14px;
             letter-spacing: 1px;
-            box-shadow: 0 0 25px rgba(0, 229, 255, 0.4);
-            transition: 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
         }
 
-        .btn-main:hover {
+        .btn-launch:hover {
             transform: translateY(-3px);
-            box-shadow: 0 0 35px rgba(0, 229, 255, 0.8);
+            box-shadow: 0 15px 40px rgba(0, 229, 255, 0.5);
         }
 
-        .btn-outline {
-            background: rgba(13, 22, 38, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+        .btn-secondary {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             color: #fff;
-            padding: 15px 35px;
-            border-radius: 30px;
+            padding: 16px 36px;
+            border-radius: 8px;
             text-decoration: none;
-            font-family: 'Orbitron', sans-serif;
             font-weight: 700;
             font-size: 14px;
-            letter-spacing: 1px;
-            transition: 0.3s;
+            transition: background 0.3s, border-color 0.3s;
         }
 
-        .btn-outline:hover {
+        .btn-secondary:hover {
+            background: rgba(0, 229, 255, 0.1);
             border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
         }
 
-        /* Stats Cards */
-        .stats-container {
+        /* Institutional Dashboard Stats Grid */
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             max-width: 1100px;
-            margin: 0 auto 80px;
+            margin: 0 auto 100px;
             padding: 0 20px;
         }
 
         .stat-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 25px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: 0.3s;
+            text-align: left;
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
         }
 
         .stat-card:hover {
-            border-color: var(--neon-cyan);
             transform: translateY(-50%);
+            border-color: var(--neon-cyan);
         }
 
-        .stat-number {
-            font-family: 'Orbitron', sans-serif;
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
             font-size: 32px;
-            font-weight: 800;
+            font-weight: 700;
             color: #fff;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
-        .stat-title {
-            color: var(--gold-accent);
-            font-size: 14px;
-            letter-spacing: 1.5px;
-            font-weight: 700;
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Animations */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
+            100% { box-shadow: 0 0 30px rgba(0, 229, 255, 0.8); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 36px; }
-            .cta-buttons { flex-direction: column; }
-            .btn-main, .btn-outline { width: 100%; text-align: center; }
+            .hero-title { font-size: 36px; }
+            .hero-cta { flex-direction: column; }
+            .btn-launch, .btn-secondary { width: 100%; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Crypto Ticker Bar -->
-    <div class="ticker-bar">
-        <div class="ticker-item">
-            <span class="ticker-name">NEXORA TAPE:</span>
-        </div>
-        <div class="ticker-item">
-            <span>BTC/USD</span>
-            <span class="ticker-up">$81,678.00 (+4.12%)</span>
-        </div>
-        <div class="ticker-item">
-            <span>ETH/USD</span>
-            <span class="ticker-up">$3,520.80 (+2.65%)</span>
-        </div>
-        <div class="ticker-item">
-            <span>NEX/USD</span>
-            <span class="ticker-up">$18.95 (+18.40%)</span>
-        </div>
-    </div>
+    <!-- Animated Canvas Background -->
+    <canvas id="chartCanvas"></canvas>
 
-    <!-- Header Navigation -->
-    <header>
-        <a href="index.html" class="brand-logo">
-            <div class="logo-icon-glow">N</div>
-            <div class="brand-text">
-                <h1>NEXORA</h1>
-                <span>TRADE . GROW . TOGETHER</span>
+    <div class="content-layer">
+        
+        <!-- Live Ticker -->
+        <div class="ticker-wrapper">
+            <div class="ticker-content">
+                <div class="ticker-item"><span class="symbol">BTC/USD</span><span class="price">$81,678.50</span><span class="change-up">+4.12%</span></div>
+                <div class="ticker-item"><span class="symbol">ETH/USD</span><span class="price">$3,520.10</span><span class="change-up">+2.65%</span></div>
+                <div class="ticker-item"><span class="symbol">SOL/USD</span><span class="price">$189.45</span><span class="change-down">-1.05%</span></div>
+                <div class="ticker-item"><span class="symbol">NEX/USD</span><span class="price">$24.80</span><span class="change-up">+14.20%</span></div>
+                <div class="ticker-item"><span class="symbol">BNB/USD</span><span class="price">$720.15</span><span class="change-up">+0.88%</span></div>
+                <!-- Duplicate for Smooth Infinite Scroll Loop -->
+                <div class="ticker-item"><span class="symbol">BTC/USD</span><span class="price">$81,678.50</span><span class="change-up">+4.12%</span></div>
+                <div class="ticker-item"><span class="symbol">ETH/USD</span><span class="price">$3,520.10</span><span class="change-up">+2.65%</span></div>
+                <div class="ticker-item"><span class="symbol">SOL/USD</span><span class="price">$189.45</span><span class="change-down">-1.05%</span></div>
+                <div class="ticker-item"><span class="symbol">NEX/USD</span><span class="price">$24.80</span><span class="change-up">+14.20%</span></div>
             </div>
-        </a>
-        <a href="login.html" class="btn-glow">SIGN IN</a>
-    </header>
+        </div>
 
-    <!-- Main Hero Section -->
-    <section class="hero">
-        <div class="badge-tag">Official Nexora Trading Ecosystem</div>
-        
-        <h1>THE FUTURE OF<br><span class="highlight">INTELLIGENT TRADING</span></h1>
-        
-        <p>Experience high-speed execution, advanced real-time analytics, and automated smart signals built for professional investors.</p>
-        
-        <div class="cta-buttons">
-            <a href="dashboard.html" class="btn-main">LAUNCH DASHBOARD</a>
-            <a href="login.html" class="btn-outline">CREATE ACCOUNT</a>
-        </div>
-    </section>
+        <!-- Header -->
+        <header>
+            <a href="index.html" class="brand-logo">
+                <div class="logo-box">N</div>
+                <div class="brand-text">
+                    <h1>NEXORA</h1>
+                    <span>TRADE . GROW . TOGETHER</span>
+                </div>
+            </a>
+            <div class="nav-buttons">
+                <a href="login.html" class="btn-portal">TRADER PORTAL</a>
+            </div>
+        </header>
 
-    <!-- Live Platform Stats -->
-    <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-number">24,800+</div>
-            <div class="stat-title">Active Traders</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">$2.4B+</div>
-            <div class="stat-title">Trading Volume</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">99.9%</div>
-            <div class="stat-title">System Uptime</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">140+</div>
-            <div class="stat-title">Supported Countries</div>
-        </div>
+        <!-- Main Hero Section -->
+        <main class="hero-container">
+            <div class="live-status">
+                <div class="pulse-dot"></div>
+                SYSTEM ONLINE — REAL-TIME NODE EXECUTION ACTIVE
+            </div>
+
+            <h1 class="hero-title">
+                Institutional Grade<br>
+                <span class="text-gradient">Financial Infrastructure</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                Access ultra-low latency execution, automated liquidity management, and high-frequency trading signals on the world's most reliable network.
+            </p>
+
+            <div class="hero-cta">
+                <a href="dashboard.html" class="btn-launch">LAUNCH TERMINAL</a>
+                <a href="login.html" class="btn-secondary">ACCESS ACCOUNT</a>
+            </div>
+        </main>
+
+        <!-- Stats Section -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">$2.8B+</div>
+                <div class="stat-label">24H Trading Volume</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">&lt; 1.2ms</div>
+                <div class="stat-label">Execution Latency</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">99.99%</div>
+                <div class="stat-label">System Uptime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">140+</div>
+                <div class="stat-label">Global Nodes</div>
+            </div>
+        </section>
+
     </div>
 
+    <!-- Live Trading Chart Line Animation Engine -->
+    <script>
+        const canvas = document.getElementById('chartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let points = [];
+        const maxPoints = 50;
+
+        for (let i = 0; i < maxPoints; i++) {
+            points.push({
+                x: (canvas.width / maxPoints) * i,
+                y: canvas.height / 2 + Math.sin(i * 0.3) * 100 + (Math.random() - 0.5) * 50,
+                speedY: (Math.random() - 0.5) * 1.5
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
+            ctx.lineWidth = 2;
+
+            for (let i = 0; i < points.length; i++) {
+                points[i].y += points[i].speedY;
+
+                if (points[i].y < canvas.height / 3 || points[i].y > (canvas.height / 3) * 2) {
+                    points[i].speedY *= -1;
+                }
+
+                if (i === 0) {
+                    ctx.moveTo(points[i].x, points[i].y);
+                } else {
+                    ctx.lineTo(points[i].x, points[i].y);
+                }
+            }
+            ctx.stroke();
+
+            // Render Glow Nodes
+            for (let i = 0; i < points.length; i += 3) {
+                ctx.beginPath();
+                ctx.arc(points[i].x, points[i].y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#00e5ff';
+                ctx.shadowColor = '#00e5ff';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
 </body>
 </html>
