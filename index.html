@@ -622,7 +622,7 @@
             </h1>
 
             <p class="hero-desc">
-                Engineered for serious investors. Nexora combines ultra-low latency execution, enterprise liquidity routing, and real-time smart signals under one unified platform.
+                Nexora is a trading platform engineered to uphold institutional security standards. Operating with transparent liquidity pools and end-to-end cryptographic encryption, Nexora ensures that all market transactions, signals, and assets are backed by real-time blockchain validation.
             </p>
 
             <div class="hero-actions">
@@ -715,9 +715,9 @@
 
         <!-- Dynamic Live Comments Container -->
         <div class="chat-container" id="chatStream">
-            <div class="chat-message"><span class="chat-number">+1 415-***-8921:</span> Thanks for sharing this incredible trading code!</div>
-            <div class="chat-message"><span class="chat-number">+44 7911-***-402:</span> Sub-millisecond execution is unbelievable.</div>
-            <div class="chat-message"><span class="chat-number">+63 917-***-2091:</span> Salamat sa trading code boss, laking tulong nito!</div>
+            <div class="chat-message"><span class="chat-number">+1 415-***-8921:</span> Bullish momentum building up on the 15-minute timeframe.</div>
+            <div class="chat-message"><span class="chat-number">+44 7911-***-402:</span> Sub-millisecond execution is unbelievable!</div>
+            <div class="chat-message"><span class="chat-number">+63 917-***-2091:</span> solid ng mga signals dito mga paps 🚀</div>
         </div>
 
         <!-- Chat Input Form -->
@@ -892,26 +892,35 @@
         }
         renderProStreamChart();
 
-        // RANDOM NON-REPEATING MULTILINGUAL & TRADING CODE COMMENTS
+        // DIVERSE RANDOM MULTILINGUAL COMMENTS (MOSTLY ENGLISH TRADING CHAT)
         const countryCodes = ["+1 212", "+1 415", "+44 79", "+49 151", "+63 917", "+63 908", "+81 90", "+971 50", "+61 41", "+33 61", "+34 60", "+65 91", "+44 207", "+1 310"];
         
-        const randomComments = [
-            "Thanks for sharing this incredible trading code!",
-            "Salamat sa trading code, sobrang linis ng implementation.",
-            "Much appreciated for the clean trading code and layout.",
-            "Shoutout sa tagagawa nito, salamat sa trading code!",
-            "Awesome architecture! Thank you for the trading code.",
-            "Super clean interface, thanks for providing the trading code.",
-            "Galing ng setup na to, salamat po sa trading code.",
-            "Incredible execution speed on this platform.",
-            "BTC looking extremely bullish on the 1-hour chart.",
-            "Salamat sa libreng trading code, napakaganda!",
-            "Thanks for the trading code, very professional look.",
-            "Amazing liquidity flow and chart response.",
-            "Grabe ang smooth nitong platform na to, salamat sa trading code.",
-            "Clean candles, great signals, thanks for the trading code!",
-            "Sub-millisecond latency is real. Impressive performance.",
-            "Thanks a lot for the trading code, perfectly executed."
+        const liveComments = [
+            // English Market & Trading Comments (Majority)
+            "That breakout on BTC was super clean!",
+            "Just closed my long position with nice profits.",
+            "Nexora's liquidity routing is amazingly fast.",
+            "Watching that key resistance level closely.",
+            "Ethereum showing strong support above 3.5k.",
+            "Sub-millisecond trade execution is a game changer.",
+            "Anyone else trading the SOL/USD pair right now?",
+            "Clean candles and reliable data feeds.",
+            "Target 2 reached! Locking in gains.",
+            "Low latency is crucial for high volatility scalping.",
+            "Loving the UI design of this trading terminal.",
+            "Volume is picking up nicely on the 1M chart.",
+            "Great analysis and smooth stream layout.",
+            "My limit order filled instantly without slippage.",
+            
+            // Pinoy / Taglish Comments (Occasional)
+            "solid ng flow ng market ngayon ah",
+            "pumasok na naman ang TP ko, ang lupet",
+            "ingat sa volatility guys, tight stop loss",
+            "ayos talaga mag-trade dito sa Nexora",
+            
+            // Rare Trading Code Appreciation (Very Few)
+            "Thanks for sharing this awesome trading code structure!",
+            "Super clean implementation of the charts, thanks for the code."
         ];
 
         function generateUniquePhone() {
@@ -927,11 +936,11 @@
             let phone = generateUniquePhone();
             let idx;
             do {
-                idx = Math.floor(Math.random() * randomComments.length);
+                idx = Math.floor(Math.random() * liveComments.length);
             } while (idx === lastCommentIdx);
             lastCommentIdx = idx;
 
-            let text = randomComments[idx];
+            let text = liveComments[idx];
             
             const div = document.createElement('div');
             div.className = 'chat-message';
@@ -939,7 +948,7 @@
             
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
-        }, 3400);
+        }, 3200);
 
         // USER CUSTOM COMMENT (ONLY "You:")
         document.getElementById('chatForm').addEventListener('submit', function(e) {
