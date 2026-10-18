@@ -45,7 +45,7 @@
                     animation: {
                         'pulse-cyan': 'pulseCyan 3s ease-in-out infinite',
                         'orbit': 'orbit 10s linear infinite',
-                        'pulse-fast': 'pulseFast 1.5s ease-in-out infinite',
+                        'spin-slow': 'spin 6s linear infinite',
                     },
                     keyframes: {
                         pulseCyan: {
@@ -55,10 +55,6 @@
                         orbit: {
                             '0%': { transform: 'rotate(0deg)' },
                             '100%': { transform: 'rotate(360deg)' }
-                        },
-                        pulseFast: {
-                            '0%, 100%': { transform: 'scale(1)', opacity: '1' },
-                            '50%': { transform: 'scale(1.35)', opacity: '0.6' }
                         }
                     }
                 }
@@ -171,7 +167,7 @@
 
         ::-webkit-scrollbar { display: none; }
     
-        /* IPAD / TABLET (768px pataas): Lumalawak ang container at nagkakaroon ng side trading widgets */
+        /* IPAD / TABLET (768px pataas) */
         @media (min-width: 768px) {
             body > header, body > #mainTradingWrapper, body > div.px-3 {
                 max-width: 768px;
@@ -180,7 +176,7 @@
             .tablet-side-panel { display: flex !important; }
         }
 
-        /* COMPUTER / LAPTOP (1024px pataas): Buong widescreen professional trading desktop layout */
+        /* COMPUTER / LAPTOP (1024px pataas) */
         @media (min-width: 1024px) {
             body > header, body > #mainTradingWrapper, body > div.px-3 {
                 max-width: 1240px;
@@ -188,7 +184,7 @@
             .chart-box { height: 380px; }
         }
 
-        /* CELLPHONE (Bumabalik sa original compact view kapag maliit ang screen) */
+        /* CELLPHONE */
         @media (max-width: 767px) {
             body > header, body > #mainTradingWrapper, body > div.px-3 { max-width: 100%; }
             .nexora-bottom-nav { width: 100vw !important; }
@@ -345,9 +341,9 @@
                 <div class="flex flex-col">
                     <div class="flex items-center font-brand font-black text-sm tracking-wider">
                         <span class="text-chrome-3d">NEX</span>
-                        <!-- Inayos ang maliit na circle sa loob ng N para magkaroon ng pulsating animation katulad sa team.html -->
-                        <span class="relative inline-flex items-center justify-center w-2.5 h-2.5 mx-0.5 border border-[#dfb248] rounded-full gold-ring-accent animate-pulse-fast" style="border-radius: 9999px; border-width: 1.5px;">
-                            <span style="background-color: #0f172a; width: 2.5px; height: 2.5px; border-radius: 9999px;"></span>
+                        <!-- Pinagalaw at pinaikot ang mismong circle sa loob ng N katulad sa team.html -->
+                        <span class="relative inline-flex items-center justify-center w-4 h-4 mx-0.5 border border-[#dfb248] rounded-full gold-ring-accent animate-spin-slow" style="border-radius: 9999px; border-width: 1.5px;">
+                            <span style="background-color: #0f172a; width: 2.5px; height: 2.5px; border-radius: 9999px; position: absolute; top: 2px;"></span>
                         </span>
                         <span class="text-chrome-3d">RA</span>
                     </div>
