@@ -505,6 +505,7 @@
         }
 
         .chat-number.you {
+            font-family: 'Plus Jakarta Sans', sans-serif;
             color: var(--gold-accent);
         }
 
@@ -558,7 +559,7 @@
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 768px) {
@@ -626,7 +627,7 @@
 
             <div class="hero-actions">
                 <a href="dashboard.html" class="btn-launch">LAUNCH TERMINAL</a>
-                <a href="login.html" class="btn-secondary">ACCESS ACCOUNT</a>
+                <a href="login.html" class="btn-login">ACCESS ACCOUNT</a>
             </div>
         </section>
 
@@ -714,9 +715,9 @@
 
         <!-- Dynamic Live Comments Container -->
         <div class="chat-container" id="chatStream">
-            <div class="chat-message"><span class="chat-number">+1 415-***-8921:</span> Institutional resistance holding well on 1M chart</div>
-            <div class="chat-message"><span class="chat-number">+44 7911-***-402:</span> Nexora platform order execution is sub-millisecond</div>
-            <div class="chat-message"><span class="chat-number">+63 917-***-2091:</span> panalo tong live signal nila, hit TP3 agad!</div>
+            <div class="chat-message"><span class="chat-number">+1 415-***-8921:</span> Huge thanks for sharing this amazing trading code!</div>
+            <div class="chat-message"><span class="chat-number">+44 7911-***-402:</span> Sub-millisecond execution is unbelievable.</div>
+            <div class="chat-message"><span class="chat-number">+63 917-***-2091:</span> Salamat sa trading code boss, laking tulong nito!</div>
         </div>
 
         <!-- Chat Input Form -->
@@ -830,7 +831,6 @@
         function renderProStreamChart() {
             sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
 
-            // Draw Professional Price Grid
             sCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
             sCtx.lineWidth = 1;
             for (let y = 30; y < sCanvas.height - 20; y += 30) {
@@ -840,7 +840,6 @@
                 sCtx.stroke();
             }
 
-            // Real-time Tick Physics
             tickCounter++;
             if (tickCounter % 30 === 0) {
                 sCandles.shift();
@@ -853,30 +852,25 @@
                 let volume = Math.random() * 35 + 10;
                 sCandles.push({ open, close, high, low, volume });
 
-                // Update UI Price Tag
                 document.getElementById('streamLivePrice').innerText = '$' + close.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             }
 
-            // Calculate Dynamic Scale Range
             let minP = Math.min(...sCandles.map(c => c.low));
             let maxP = Math.max(...sCandles.map(c => c.high));
             let range = maxP - minP || 1;
 
-            // Render Realistic Candlesticks + Volume Bars
             for (let i = 0; i < sCandles.length; i++) {
                 let c = sCandles[i];
                 let isGreen = c.close >= c.open;
                 let color = isGreen ? '#10b981' : '#ef4444';
 
-                let x = i * (sBarWidth + sBarGap) + 10;
+                let x = i * (sBarWidth + sBarBarGap || sBarWidth + sBarGap) + 10;
                 
-                // Scale Y-coordinates to Canvas Height (leaving room for Volume Bars)
                 let yHigh = sCanvas.height - 35 - ((c.high - minP) / range) * (sCanvas.height - 60);
                 let yLow = sCanvas.height - 35 - ((c.low - minP) / range) * (sCanvas.height - 60);
                 let yOpen = sCanvas.height - 35 - ((c.open - minP) / range) * (sCanvas.height - 60);
                 let yClose = sCanvas.height - 35 - ((c.close - minP) / range) * (sCanvas.height - 60);
 
-                // High/Low Wicks
                 sCtx.beginPath();
                 sCtx.strokeStyle = color;
                 sCtx.lineWidth = 1;
@@ -884,13 +878,11 @@
                 sCtx.lineTo(x + sBarWidth / 2, yLow);
                 sCtx.stroke();
 
-                // Candle Body
                 sCtx.fillStyle = color;
                 let bodyTop = Math.min(yOpen, yClose);
                 let bodyH = Math.max(Math.abs(yClose - yOpen), 2);
                 sCtx.fillRect(x, bodyTop, sBarWidth, bodyH);
 
-                // Bottom Volume Bar
                 let volH = (c.volume / 45) * 20;
                 sCtx.fillStyle = isGreen ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
                 sCtx.fillRect(x, sCanvas.height - volH, sBarWidth, volH);
@@ -900,58 +892,48 @@
         }
         renderProStreamChart();
 
-        // INFINITE DIVERSE INTERNATIONAL CHAT GENERATOR
-        const countryCodes = ["+1 212", "+1 415", "+44 79", "+49 151", "+63 917", "+63 908", "+81 90", "+971 50", "+61 41", "+33 61", "+34 60", "+65 91"];
+        // RANDOM NON-REPEATING MULTILINGUAL & TRADING CODE COMMENTS
+        const countryCodes = ["+1 212", "+1 415", "+44 79", "+49 151", "+63 917", "+63 908", "+81 90", "+971 50", "+61 41", "+33 61", "+34 60", "+65 91", "+44 207", "+1 310"];
         
-        const englishComments = [
-            "Order execution speed is sub-millisecond 🔥",
-            "BTC breaking out past resistance level!",
-            "Locked in +$1,400 profit on this wave",
-            "Nexora liquidity pool is really deep",
-            "Target 2 hit effortlessly!",
-            "Clean risk-reward ratio on this setup",
-            "Zero slippage on my entry, nice",
-            "Key support zone holding very strong",
-            "Smart AI signal accuracy is impressive today"
-        ];
-
-        const pinoyComments = [
-            "solid talaga nitong Nexora signal 🔥",
-            "pumasok agad buy order ko, walang delay!",
-            "sarap nitong breakout, hit TP2 agad",
-            "ganda ng platform nyo, napakabilis mag execute"
-        ];
-
-        const otherLangComments = [
-            "Super schnelle Ausführung! 🇩🇪",
-            "Breakout très propre! 🇫🇷",
-            "ブレイクアウト確実ですね (Breakout confirmed) 🇯🇵",
-            "Excelente plataforma de trading 🇪🇸"
+        const randomComments = [
+            "Thanks for sharing this incredible trading code!",
+            "Salamat sa trading code, sobrang linis ng implementation.",
+            "Much appreciated for the clean trading code and layout.",
+            "Shoutout sa tagagawa nito, salamat sa trading code!",
+            "Awesome architecture! Thank you for the trading code.",
+            "Super clean interface, thanks for providing the trading code.",
+            "Galing ng setup na to, salamat po sa trading code.",
+            "Incredible execution speed on this platform.",
+            "BTC looking extremely bullish on the 1-hour chart.",
+            "Salamat sa libreng trading code, napakaganda!",
+            "Thanks for the trading code, very professional look.",
+            "Amazing liquidity flow and chart response.",
+            "Grabe ang smooth nitong platform na to, salamat sa trading code.",
+            "Clean candles, great signals, thanks for the trading code!",
+            "Sub-millisecond latency is real. Impressive performance.",
+            "Thanks a lot for the trading code, perfectly executed."
         ];
 
         function generateUniquePhone() {
             let code = countryCodes[Math.floor(Math.random() * countryCodes.length)];
-            let mid = Math.floor(100 + Math.random() * 900);
             let end = Math.floor(1000 + Math.random() * 9000);
             return `${code}-***-${end}`;
         }
 
-        function getWeightedComment() {
-            let rand = Math.random();
-            if (rand < 0.70) {
-                return englishComments[Math.floor(Math.random() * englishComments.length)];
-            } else if (rand < 0.88) {
-                return pinoyComments[Math.floor(Math.random() * pinoyComments.length)];
-            } else {
-                return otherLangComments[Math.floor(Math.random() * otherLangComments.length)];
-            }
-        }
-
         const chatBox = document.getElementById('chatStream');
+        let lastCommentIdx = -1;
 
         setInterval(() => {
-            const phone = generateUniquePhone();
-            const text = getWeightedComment();
+            let phone = generateUniquePhone();
+            
+            // Siguraduhing hindi magkasunod ang parehong komento para hindi paulit-ulit
+            let idx;
+            do {
+                idx = Math.floor(Math.random() * randomComments.length);
+            } while (idx === lastCommentIdx);
+            lastCommentIdx = idx;
+
+            let text = randomComments[idx];
             
             const div = document.createElement('div');
             div.className = 'chat-message';
@@ -959,9 +941,9 @@
             
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
-        }, 3200);
+        }, 3400);
 
-        // USER CUSTOM COMMENT
+        // USER CUSTOM COMMENT (ONLY "You:")
         document.getElementById('chatForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
@@ -969,7 +951,7 @@
             if (text) {
                 const div = document.createElement('div');
                 div.className = 'chat-message';
-                div.innerHTML = `<span class="chat-number you">+63 999-***-YOU:</span> <span class="chat-text">${text}</span>`;
+                div.innerHTML = `<span class="chat-number you">You:</span> <span class="chat-text">${text}</span>`;
                 chatBox.appendChild(div);
                 chatBox.scrollTop = chatBox.scrollHeight;
                 input.value = '';
