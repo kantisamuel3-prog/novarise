@@ -644,7 +644,7 @@
             </p>
 
             <div class="hero-actions">
-                <a href="dashboard.html" class="btn-launch">LAUNCH TERMINAL</a>
+                <a href="login.html" class="btn-launch">LAUNCH TERMINAL</a>
                 <a href="login.html" class="btn-secondary">ACCESS ACCOUNT</a>
             </div>
         </section>
@@ -733,7 +733,7 @@
         <div class="chat-container" id="chatStream"></div>
 
         <form class="chat-input-box" id="chatForm">
-            <input type="text" id="userInput" placeholder="Add a comment" required>
+            <input type="text" id="userInput" placeholder="Mag-type ng mensahe..." required>
             <button type="submit">SEND</button>
         </form>
     </div>
@@ -901,9 +901,8 @@
         let currentViewers = 3420;
         const viewerDisplay = document.getElementById('viewerCountDisplay');
 
-        // Unti-unting pagbawas at pagdagdag ng viewers sa pagitan ng 1,000 at 3,420 (mahina lang ang galaw)
         setInterval(() => {
-            let change = Math.floor(Math.random() * 25) - 12; // -12 hanggang +12 viewers lang kada galaw
+            let change = Math.floor(Math.random() * 25) - 12;
             currentViewers += change;
             if (currentViewers > 3420) currentViewers = 3420;
             if (currentViewers < 1000) currentViewers = 1000;
@@ -985,22 +984,15 @@
             chatStream.scrollTop = chatStream.scrollHeight;
         }
 
-        // Initial messages
         for (let i = 0; i < 4; i++) {
             createChatMessage();
         }
 
-        // ORGANIC DYNAMIC CHAT LOOP (Bumibilis kapag marami viewers, bumabagal/humihinto kapag kaunti)
         function scheduleNextMessage() {
             createChatMessage();
-
-            // Kalkulahin ang bilis batay sa kasalukuyang bilang ng viewers
-            // Kapag mataas ang viewers (malapit sa 3420), mabilis (mga 2 segundo)
-            // Kapag mababa ang viewers (malapit sa 1000), mabagal o parang nag-i-stop (aabot ng 6 hanggang 9 segundo)
-            let ratio = (currentViewers - 1000) / (3420 - 1000); // 0 hanggang 1
-            let delay = 9000 - (ratio * 7000); // Mula 9 seconds pababa hanggang 2 seconds
+            let ratio = (currentViewers - 1000) / (3420 - 1000);
+            let delay = 9000 - (ratio * 7000);
             
-            // Minsan may random pause para mas maging natural na parang nag-aabang ang mga tao
             if (Math.random() < 0.2) {
                 delay += 4000; 
             }
@@ -1008,10 +1000,8 @@
             setTimeout(scheduleNextMessage, delay);
         }
 
-        // Simulan ang organic loop
         setTimeout(scheduleNextMessage, 3000);
 
-        // User Custom Comment (You:)
         document.getElementById('chatForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
