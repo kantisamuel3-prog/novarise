@@ -629,7 +629,7 @@
                         <div class="live-dot"></div>
                         LIVE SESSION
                     </div>
-                    <span class="viewer-count" id="viewerCountDisplay">👁️ 3,420 watching</span>
+                    <span class="viewer-count" id="viewerCountDisplay">👁️ 1,850 watching</span>
                 </div>
                 
                 <div class="stream-canvas-box">
@@ -812,17 +812,20 @@
         }
         renderProStreamChart();
 
-        // DYNAMIC VIEWERS & REAL-TIME DIRECT CHAT SYSTEM
-        let currentViewers = 3420;
+        // DYNAMIC VIEWERS (500 to 2800, rapid +/- 3 to 10 increments/decrements)
+        let currentViewers = 1850;
         const viewerDisplay = document.getElementById('viewerCountDisplay');
 
         setInterval(() => {
-            let change = Math.floor(Math.random() * 25) - 12;
-            currentViewers += change;
-            if (currentViewers > 3420) currentViewers = 3420;
-            if (currentViewers < 1000) currentViewers = 1000;
+            let delta = Math.floor(Math.random() * 8) + 3; // Mula 3 hanggang 10
+            let sign = Math.random() < 0.5 ? -1 : 1;
+            currentViewers += (delta * sign);
+
+            if (currentViewers > 2800) currentViewers = 2800;
+            if (currentViewers < 500) currentViewers = 500;
+
             viewerDisplay.innerText = `👁️ ${currentViewers.toLocaleString()} watching`;
-        }, 3000);
+        }, 1500);
 
         const foreignCodes = ["+1 212", "+1 415", "+44 79", "+49 151", "+81 90", "+971 50", "+61 41", "+33 61", "+34 60", "+65 91"];
         const pinoyCodes = ["+63 917", "+63 908", "+63 927", "+63 999"];
@@ -868,11 +871,17 @@
                 div.innerHTML = `<span class="chat-number">${number}:</span> <span class="chat-text">${text}</span>`;
             }
             chatStream.appendChild(div);
+
+            // Panatilihing hanggang 40 na mensahe lang para mabilis matabunan at hindi bumagal ang browser
+            if (chatStream.children.length > 40) {
+                chatStream.removeChild(chatStream.firstChild);
+            }
+
             chatStream.scrollTop = chatStream.scrollHeight;
         }
 
-        // Mag-load ng ilang paunang komento
-        for (let i = 0; i < 4; i++) {
+        // Paunang mga mensahe
+        for (let i = 0; i < 5; i++) {
             let isPinoy = Math.random() < 0.25;
             let codes = isPinoy ? pinoyCodes : foreignCodes;
             let code = codes[Math.floor(Math.random() * codes.length)];
@@ -882,7 +891,7 @@
             appendMessage(number, text, false);
         }
 
-        // Virtual Members Auto-Comment Loop
+        // FAST DYNAMIC CHAT LOOP (Mabilis kapag mataas viewers, bumabaggal/tumitigil kapag mababa sa 500-800)
         function scheduleNextMessage() {
             let isPinoy = Math.random() < 0.25;
             let codes = isPinoy ? pinoyCodes : foreignCodes;
@@ -893,31 +902,34 @@
 
             appendMessage(number, text, false);
 
-            let ratio = (currentViewers - 1000) / (3420 - 1000);
-            let delay = 9000 - (ratio * 7000);
-            if (Math.random() < 0.2) delay += 4000;
+            // Kalkulahin ang bilis batay sa viewers (500 hanggang 2800)
+            let ratio = (currentViewers - 500) / (2800 - 500); // 0 hanggang 1
+            // Kapag marami (~2800), napakabilis (mga 600ms - 1.5s). Kapag kaunti (~500), babagal o hihinto (aabot 5s - 8s)
+            let delay = 6000 - (ratio * 5200);
+            if (currentViewers < 700 && Math.random() < 0.4) {
+                delay += 4000; // Extra tahimik kapag kaunti na lang ang nanonood
+            }
+
             setTimeout(scheduleNextMessage, delay);
         }
 
-        setTimeout(scheduleNextMessage, 3000);
+        setTimeout(scheduleNextMessage, 1500);
 
-        // DIREKTANG LALABAS ANG COMMENT MO SA SCREEN PAGKA-SEND
+        // DIREKTANG LALABAS ANG COMMENT MO SA SCREEN
         document.getElementById('chatForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
             const text = input.value.trim();
             if (text) {
-                // I-print agad ang iyong comment sa pinakailalim ng chat
                 appendMessage("You", text, true);
                 input.value = '';
 
-                // May sasagot na virtual member pagkalipas ng 2 segundo para lalong maging buhay
                 setTimeout(() => {
                     let replyText = text.toLowerCase().includes('salamat') || text.toLowerCase().includes('code') 
                         ? "Walang anuman boss, enjoy trading!" 
                         : "Laking tulong nga nyan paps!";
                     appendMessage("+63 908-***-5512", replyText, false);
-                }, 2000);
+                }, 1500);
             }
         });
     </script>
