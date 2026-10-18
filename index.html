@@ -383,7 +383,7 @@
             line-height: 1.4;
         }
 
-        /* FLOATING INTERACTIVE LIVE STREAM & CHAT WIDGET */
+        /* FLOATING INTERACTIVE LIVE STREAM VIDEO & CHAT WIDGET */
         .live-stream-widget {
             position: fixed;
             bottom: 20px;
@@ -393,7 +393,7 @@
             border: 1px solid var(--neon-cyan);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.35);
             z-index: 1000;
             backdrop-filter: blur(15px);
         }
@@ -434,24 +434,48 @@
             font-weight: 600;
         }
 
-        /* Video Container */
+        /* Live Video Screen Frame */
         .video-box {
             width: 100%;
-            height: 160px;
+            height: 170px;
             background: #000;
             position: relative;
+            overflow: hidden;
         }
 
-        .video-box iframe {
+        .video-box video {
             width: 100%;
             height: 100%;
-            border: none;
-            pointer-events: none; /* Keeps background video smooth */
+            object-fit: cover;
+        }
+
+        /* Live Trader Overlay Tag */
+        .trader-overlay-tag {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(3, 7, 18, 0.85);
+            border: 1px solid var(--card-border);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(5px);
+            z-index: 5;
+        }
+
+        .trader-overlay-tag span {
+            color: var(--candle-green);
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         /* Live Chat Box */
         .chat-container {
-            height: 140px;
+            height: 130px;
             background: rgba(3, 7, 18, 0.85);
             padding: 10px;
             overflow-y: auto;
@@ -537,7 +561,7 @@
             .hero-actions { flex-direction: column; }
             .btn-launch, .btn-secondary { width: 100%; text-align: center; }
             .live-stream-widget { width: 280px; bottom: 10px; right: 10px; }
-            .video-box { height: 130px; }
+            .video-box { height: 140px; }
             .chat-container { height: 110px; }
         }
     </style>
@@ -671,24 +695,29 @@
                 <div class="live-dot"></div>
                 LIVE SESSION
             </div>
-            <span class="viewer-count">👁️ 1,420 watching</span>
+            <span class="viewer-count">👁️ 1,840 watching</span>
         </div>
         
-        <!-- Live Video Frame -->
+        <!-- Live Video Screen Frame (Real Trading Video Feed) -->
         <div class="video-box">
-            <iframe src="https://www.youtube.com/embed/26XmB4qJ3c8?autoplay=1&mute=1&controls=0&loop=1&playlist=26XmB4qJ3c8" allow="autoplay"></iframe>
+            <video autoplay loop muted playsinline>
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-financial-data-charts-on-a-computer-screen-41589-large.mp4" type="video/mp4">
+            </video>
+            <div class="trader-overlay-tag">
+                Alex (Head Trader) <span>BUY BTC @ $81,650</span>
+            </div>
         </div>
 
         <!-- Live Comments Container -->
         <div class="chat-container" id="chatStream">
-            <div class="chat-message"><span class="chat-user">Alex_Trader:</span> BTC looking very strong here 🔥</div>
-            <div class="chat-message"><span class="chat-user">Crypto_Sam:</span> Nexora signals hitting 98% accuracy today!</div>
+            <div class="chat-message"><span class="chat-user">Alex_Trader:</span> BTC looking very strong on Nexora charts 🔥</div>
+            <div class="chat-message"><span class="chat-user">Crypto_Sam:</span> Nexora signal accuracy is insane today!</div>
             <div class="chat-message"><span class="chat-user">Marco_P:</span> Just opened ETH Long 🚀</div>
         </div>
 
         <!-- Comment Input Form -->
         <form class="chat-input-box" id="chatForm">
-            <input type="text" id="userInput" placeholder="Say something in live chat..." required>
+            <input type="text" id="userInput" placeholder="Type a comment..." required>
             <button type="submit">SEND</button>
         </form>
     </div>
@@ -770,7 +799,7 @@
         // Simulated Automatic Audience Chat Stream
         const simulatedComments = [
             { user: "David_H", text: "Is this live session recording saved?" },
-            { user: "Elena_R", text: "Nexora platform speed is top notch ✨" },
+            { user: "Elena_R", text: "Nexora execution speed is top notch ✨" },
             { user: "Crypto_Node", text: "Buy order filled @ $81,670!" },
             { user: "Viktor_K", text: "Let's go 🚀🚀" }
         ];
