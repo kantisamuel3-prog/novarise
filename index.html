@@ -43,7 +43,7 @@
             height: 100%;
             z-index: 1;
             pointer-events: none;
-            opacity: 0.35;
+            opacity: 0.25;
         }
 
         .bg-overlay {
@@ -383,12 +383,12 @@
             line-height: 1.4;
         }
 
-        /* FLOATING LIVE STREAM TRADING CANVAS & CHAT WIDGET */
+        /* FLOATING PROFESSIONAL LIVE STREAM WIDGET */
         .live-stream-widget {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 340px;
+            width: 350px;
             background: rgba(11, 17, 32, 0.95);
             border: 1px solid var(--neon-cyan);
             border-radius: 16px;
@@ -434,10 +434,10 @@
             font-weight: 600;
         }
 
-        /* Real Canvas Trading Frame inside Stream */
+        /* Realistic Stream Chart Canvas Container */
         .stream-canvas-box {
             width: 100%;
-            height: 175px;
+            height: 185px;
             background: #060913;
             position: relative;
         }
@@ -463,21 +463,23 @@
 
         .pair-label {
             color: #fff;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 3px 6px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 3px 8px;
             border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .live-price-tag {
             color: var(--candle-green);
-            background: rgba(0, 0, 0, 0.6);
-            padding: 3px 6px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 3px 8px;
             border-radius: 4px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         /* Live Chat Box */
         .chat-container {
-            height: 135px;
+            height: 140px;
             background: rgba(3, 7, 18, 0.88);
             padding: 10px;
             overflow-y: auto;
@@ -691,17 +693,17 @@
 
     </div>
 
-    <!-- FLOATING LIVE TRADING CANVAS & CHAT WIDGET -->
+    <!-- FLOATING PROFESSIONAL LIVE STREAM WIDGET -->
     <div class="live-stream-widget">
         <div class="widget-top">
             <div class="live-badge">
                 <div class="live-dot"></div>
-                LIVE STREAM
+                LIVE SESSION
             </div>
-            <span class="viewer-count">👁️ 2,140 watching</span>
+            <span class="viewer-count">👁️ 3,420 watching</span>
         </div>
         
-        <!-- Live Stream Canvas Frame -->
+        <!-- Stream Canvas Screen -->
         <div class="stream-canvas-box">
             <canvas id="streamCandleCanvas"></canvas>
             <div class="stream-overlay-info">
@@ -710,14 +712,14 @@
             </div>
         </div>
 
-        <!-- Live Comments Stream -->
+        <!-- Dynamic Live Comments Container -->
         <div class="chat-container" id="chatStream">
-            <div class="chat-message"><span class="chat-number">+1 415-***-8921:</span> Big resistance breakdown on BTC! 🚀</div>
-            <div class="chat-message"><span class="chat-number">+44 7911-***-402:</span> Nexora execution speed is insane</div>
-            <div class="chat-message"><span class="chat-number">+63 917-***-2091:</span> solid ng signal guys, pumasok din ba buy nyo?</div>
+            <div class="chat-message"><span class="chat-number">+1 415-***-8921:</span> Institutional resistance holding well on 1M chart</div>
+            <div class="chat-message"><span class="chat-number">+44 7911-***-402:</span> Nexora platform order execution is sub-millisecond</div>
+            <div class="chat-message"><span class="chat-number">+63 917-***-2091:</span> panalo tong live signal nila, hit TP3 agad!</div>
         </div>
 
-        <!-- User Chat Form -->
+        <!-- Chat Input Form -->
         <form class="chat-input-box" id="chatForm">
             <input type="text" id="userInput" placeholder="Type a comment..." required>
             <button type="submit">SEND</button>
@@ -796,7 +798,7 @@
         }
         drawSmoothCandles();
 
-        // REAL TRADING CANVAS INSIDE STREAM WIDGET
+        // HIGH-REALISM TRADING STREAM CANDLESTICK ENGINE
         const sCanvas = document.getElementById('streamCandleCanvas');
         const sCtx = sCanvas.getContext('2d');
 
@@ -806,107 +808,160 @@
         }
         fitStreamCanvas();
 
-        let streamCandles = [];
-        const sCandleWidth = 8;
-        const sGap = 5;
-        const sCount = 28;
+        let sCandles = [];
+        const sBarWidth = 7;
+        const sBarGap = 4;
+        const maxBars = 32;
 
-        let sPrice = sCanvas.height / 2;
-        for (let i = 0; i < sCount; i++) {
-            let change = (Math.random() - 0.49) * 18;
-            let open = sPrice;
-            let close = open + change;
-            let high = Math.min(open, close) - Math.random() * 10;
-            let low = Math.max(open, close) + Math.random() * 10;
-            streamCandles.push({ open, close, high, low });
-            sPrice = close;
+        let lastVal = 81650;
+        for (let i = 0; i < maxBars; i++) {
+            let delta = (Math.random() - 0.48) * 22;
+            let open = lastVal;
+            let close = open + delta;
+            let high = Math.max(open, close) + Math.random() * 12;
+            let low = Math.min(open, close) - Math.random() * 12;
+            let volume = Math.random() * 30 + 10;
+            sCandles.push({ open, close, high, low, volume });
+            lastVal = close;
         }
 
-        let sOffset = 0;
-        let baseBtcPrice = 81678.50;
+        let tickCounter = 0;
 
-        function animateStreamCandles() {
+        function renderProStreamChart() {
             sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
 
-            // Draw background trading grid
-            sCtx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+            // Draw Professional Price Grid
+            sCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
             sCtx.lineWidth = 1;
-            for (let y = 0; y < sCanvas.height; y += 25) {
+            for (let y = 30; y < sCanvas.height - 20; y += 30) {
                 sCtx.beginPath();
                 sCtx.moveTo(0, y);
                 sCtx.lineTo(sCanvas.width, y);
                 sCtx.stroke();
             }
 
-            sOffset += 0.5;
-            if (sOffset >= sCandleWidth + sGap) {
-                sOffset = 0;
-                streamCandles.shift();
-                let lastClose = streamCandles[streamCandles.length - 1].close;
-                let change = (Math.random() - 0.48) * 18;
-                let open = lastClose;
-                let close = open + change;
-                let high = Math.min(open, close) - Math.random() * 10;
-                let low = Math.max(open, close) + Math.random() * 10;
-                streamCandles.push({ open, close, high, low });
+            // Real-time Tick Physics
+            tickCounter++;
+            if (tickCounter % 30 === 0) {
+                sCandles.shift();
+                let prevClose = sCandles[sCandles.length - 1].close;
+                let delta = (Math.random() - 0.47) * 20;
+                let open = prevClose;
+                let close = open + delta;
+                let high = Math.max(open, close) + Math.random() * 10;
+                let low = Math.min(open, close) - Math.random() * 10;
+                let volume = Math.random() * 35 + 10;
+                sCandles.push({ open, close, high, low, volume });
 
-                // Update live price overlay tag
-                baseBtcPrice += (Math.random() - 0.48) * 12;
-                document.getElementById('streamLivePrice').innerText = '$' + baseBtcPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                // Update UI Price Tag
+                document.getElementById('streamLivePrice').innerText = '$' + close.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             }
 
-            for (let i = 0; i < streamCandles.length; i++) {
-                let x = i * (sCandleWidth + sGap) - sOffset;
-                let c = streamCandles[i];
-                let isGreen = c.close <= c.open;
+            // Calculate Dynamic Scale Range
+            let minP = Math.min(...sCandles.map(c => c.low));
+            let maxP = Math.max(...sCandles.map(c => c.high));
+            let range = maxP - minP || 1;
+
+            // Render Realistic Candlesticks + Volume Bars
+            for (let i = 0; i < sCandles.length; i++) {
+                let c = sCandles[i];
+                let isGreen = c.close >= c.open;
                 let color = isGreen ? '#10b981' : '#ef4444';
 
-                // Wick
+                let x = i * (sBarWidth + sBarGap) + 10;
+                
+                // Scale Y-coordinates to Canvas Height (leaving room for Volume Bars)
+                let yHigh = sCanvas.height - 35 - ((c.high - minP) / range) * (sCanvas.height - 60);
+                let yLow = sCanvas.height - 35 - ((c.low - minP) / range) * (sCanvas.height - 60);
+                let yOpen = sCanvas.height - 35 - ((c.open - minP) / range) * (sCanvas.height - 60);
+                let yClose = sCanvas.height - 35 - ((c.close - minP) / range) * (sCanvas.height - 60);
+
+                // High/Low Wicks
                 sCtx.beginPath();
                 sCtx.strokeStyle = color;
-                sCtx.lineWidth = 1.2;
-                sCtx.moveTo(x + sCandleWidth / 2, c.high);
-                sCtx.lineTo(x + sCandleWidth / 2, c.low);
+                sCtx.lineWidth = 1;
+                sCtx.moveTo(x + sBarWidth / 2, yHigh);
+                sCtx.lineTo(x + sBarWidth / 2, yLow);
                 sCtx.stroke();
 
-                // Body
+                // Candle Body
                 sCtx.fillStyle = color;
-                let bodyY = Math.min(c.open, c.close);
-                let bodyHeight = Math.max(Math.abs(c.close - c.open), 2);
-                sCtx.fillRect(x, bodyY, sCandleWidth, bodyHeight);
+                let bodyTop = Math.min(yOpen, yClose);
+                let bodyH = Math.max(Math.abs(yClose - yOpen), 2);
+                sCtx.fillRect(x, bodyTop, sBarWidth, bodyH);
+
+                // Bottom Volume Bar
+                let volH = (c.volume / 45) * 20;
+                sCtx.fillStyle = isGreen ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+                sCtx.fillRect(x, sCanvas.height - volH, sBarWidth, volH);
             }
 
-            requestAnimationFrame(animateStreamCandles);
+            requestAnimationFrame(renderProStreamChart);
         }
-        animateStreamCandles();
+        renderProStreamChart();
 
-        // DYNAMIC INTERNATIONAL DIVERSE CHAT STREAM (Numbers & Multilingual)
-        const chatFeed = [
-            { num: "+1 212-***-4910", text: "Target 1 reached! Locked in profits." },
-            { num: "+49 151-***-9821", text: "Guten Tag, long position opened @ 81.6k" },
-            { num: "+63 908-***-1142", text: "lupet nitong live stream, tuloy tuloy ang profit" },
-            { num: "+33 612-***-3091", text: "Nexora infrastructure is super smooth 🇫🇷" },
-            { num: "+1 650-***-8823", text: "Order filled instantly. Zero slippage." },
-            { num: "+81 90-***-4412", text: "ブレイクアウト確実ですね (Breakout confirmed)" },
-            { num: "+63 927-***-7789", text: "mabilis mag-execute ng trades dito, ganda!" },
-            { num: "+61 411-***-9021", text: "Aussie traders active! Bullish momentum." },
-            { num: "+971 50-***-3310", text: "Strong support holding at this level." }
+        // INFINITE DIVERSE INTERNATIONAL CHAT GENERATOR
+        const countryCodes = ["+1 212", "+1 415", "+44 79", "+49 151", "+63 917", "+63 908", "+81 90", "+971 50", "+61 41", "+33 61", "+34 60", "+65 91"];
+        
+        const englishComments = [
+            "Order execution speed is sub-millisecond 🔥",
+            "BTC breaking out past resistance level!",
+            "Locked in +$1,400 profit on this wave",
+            "Nexora liquidity pool is really deep",
+            "Target 2 hit effortlessly!",
+            "Clean risk-reward ratio on this setup",
+            "Zero slippage on my entry, nice",
+            "Key support zone holding very strong",
+            "Smart AI signal accuracy is impressive today"
         ];
 
-        let chatIdx = 0;
+        const pinoyComments = [
+            "solid talaga nitong Nexora signal 🔥",
+            "pumasok agad buy order ko, walang delay!",
+            "sarap nitong breakout, hit TP2 agad",
+            "ganda ng platform nyo, napakabilis mag execute"
+        ];
+
+        const otherLangComments = [
+            "Super schnelle Ausführung! 🇩🇪",
+            "Breakout très propre! 🇫🇷",
+            "ブレイクアウト確実ですね (Breakout confirmed) 🇯🇵",
+            "Excelente plataforma de trading 🇪🇸"
+        ];
+
+        function generateUniquePhone() {
+            let code = countryCodes[Math.floor(Math.random() * countryCodes.length)];
+            let mid = Math.floor(100 + Math.random() * 900);
+            let end = Math.floor(1000 + Math.random() * 9000);
+            return `${code}-***-${end}`;
+        }
+
+        function getWeightedComment() {
+            let rand = Math.random();
+            if (rand < 0.70) {
+                return englishComments[Math.floor(Math.random() * englishComments.length)];
+            } else if (rand < 0.88) {
+                return pinoyComments[Math.floor(Math.random() * pinoyComments.length)];
+            } else {
+                return otherLangComments[Math.floor(Math.random() * otherLangComments.length)];
+            }
+        }
+
         const chatBox = document.getElementById('chatStream');
 
         setInterval(() => {
-            const msg = chatFeed[chatIdx];
+            const phone = generateUniquePhone();
+            const text = getWeightedComment();
+            
             const div = document.createElement('div');
             div.className = 'chat-message';
-            div.innerHTML = `<span class="chat-number">${msg.num}:</span> <span class="chat-text">${msg.text}</span>`;
+            div.innerHTML = `<span class="chat-number">${phone}:</span> <span class="chat-text">${text}</span>`;
+            
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
-            chatIdx = (chatIdx + 1) % chatFeed.length;
-        }, 3800);
+        }, 3200);
 
-        // USER CUSTOM COMMENT FORM
+        // USER CUSTOM COMMENT
         document.getElementById('chatForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
