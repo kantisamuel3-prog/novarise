@@ -715,9 +715,7 @@
 
         <!-- Dynamic Live Comments Container -->
         <div class="chat-container" id="chatStream">
-            <div class="chat-message"><span class="chat-number">+1 415-***-8921:</span> Bullish momentum building up on the 15-minute timeframe.</div>
-            <div class="chat-message"><span class="chat-number">+44 7911-***-402:</span> Sub-millisecond execution is unbelievable!</div>
-            <div class="chat-message"><span class="chat-number">+63 917-***-2091:</span> solid ng mga signals dito mga paps 🚀</div>
+            <!-- Naka-dynamic generation na ito, mag-iiba kada reload -->
         </div>
 
         <!-- Chat Input Form -->
@@ -892,11 +890,11 @@
         }
         renderProStreamChart();
 
-        // DIVERSE RANDOM MULTILINGUAL COMMENTS (MOSTLY ENGLISH TRADING CHAT)
+        // RANDOM NON-REPEATING MULTILINGUAL & TRADING COMMENTS
         const countryCodes = ["+1 212", "+1 415", "+44 79", "+49 151", "+63 917", "+63 908", "+81 90", "+971 50", "+61 41", "+33 61", "+34 60", "+65 91", "+44 207", "+1 310"];
         
         const liveComments = [
-            // English Market & Trading Comments (Majority)
+            // English Market & Trading Comments (Pinakamarami)
             "That breakout on BTC was super clean!",
             "Just closed my long position with nice profits.",
             "Nexora's liquidity routing is amazingly fast.",
@@ -911,14 +909,17 @@
             "Volume is picking up nicely on the 1M chart.",
             "Great analysis and smooth stream layout.",
             "My limit order filled instantly without slippage.",
+            "Bullish momentum building up on the 15-minute timeframe.",
+            "Institutional liquidity pools are holding steady.",
             
-            // Pinoy / Taglish Comments (Occasional)
+            // Pinoy / Taglish Comments (Minsan)
             "solid ng flow ng market ngayon ah",
             "pumasok na naman ang TP ko, ang lupet",
             "ingat sa volatility guys, tight stop loss",
             "ayos talaga mag-trade dito sa Nexora",
+            "solid ng mga signals dito mga paps 🚀",
             
-            // Rare Trading Code Appreciation (Very Few)
+            // Trading Code Appreciation (Bihira / Minsan lang)
             "Thanks for sharing this awesome trading code structure!",
             "Super clean implementation of the charts, thanks for the code."
         ];
@@ -930,17 +931,36 @@
         }
 
         const chatBox = document.getElementById('chatStream');
-        let lastCommentIdx = -1;
 
+        // I-shuffle o paghaluin ang array tuwing mag-re-reload para magbago ang simula ng comments
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        let shuffledComments = shuffleArray(liveComments);
+        let initialDisplayCount = 3;
+        
+        // Mag-load ng initial comments na iba-iba kada reload
+        for (let i = 0; i < initialDisplayCount; i++) {
+            let phone = generateUniquePhone();
+            let text = shuffledComments[i];
+            const div = document.createElement('div');
+            div.className = 'chat-message';
+            div.innerHTML = `<span class="chat-number">${phone}:</span> <span class="chat-text">${text}</span>`;
+            chatBox.appendChild(div);
+        }
+
+        let commentIndex = initialDisplayCount;
+
+        // Patuloy na magdagdag ng random comments habang tumatakbo ang live stream
         setInterval(() => {
             let phone = generateUniquePhone();
-            let idx;
-            do {
-                idx = Math.floor(Math.random() * liveComments.length);
-            } while (idx === lastCommentIdx);
-            lastCommentIdx = idx;
-
-            let text = liveComments[idx];
+            let text = shuffledComments[commentIndex % shuffledComments.length];
             
             const div = document.createElement('div');
             div.className = 'chat-message';
@@ -948,7 +968,13 @@
             
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
-        }, 3200);
+            commentIndex++;
+
+            // Kung umabot na sa dulo, i-reshuffle ulit para laging bago at hindi paulit-ulit
+            if (commentIndex % shuffledComments.length === 0) {
+                shuffledComments = shuffleArray(liveComments);
+            }
+        }, 3400);
 
         // USER CUSTOM COMMENT (ONLY "You:")
         document.getElementById('chatForm').addEventListener('submit', function(e) {
