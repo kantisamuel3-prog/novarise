@@ -119,22 +119,22 @@
         .brand-logo {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             text-decoration: none;
         }
 
-        /* Eksaktong Logo na may umiilaw na pabilog na animation at N sa loob gaya sa login screen */
-        .header-logo-box {
+        /* Exchange-style rotating logo and text styles */
+        .exchange-logo-box {
             position: relative;
-            width: 44px;
-            height: 44px;
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
             animation: pulseCyan 3s ease-in-out infinite;
         }
 
-        .header-logo-ring {
+        .exchange-logo-ring {
             position: absolute;
             inset: 0;
             border-radius: 50%;
@@ -148,19 +148,8 @@
         }
 
         @keyframes pulseCyan {
-            0%, 100% { filter: drop-shadow(0 0 8px rgba(56,189,248,0.4)); }
-            50% { filter: drop-shadow(0 0 18px rgba(56,189,248,0.9)); }
-        }
-
-        .brand-text h1 {
-            font-size: 18px;
-            font-weight: 900;
-            font-family: 'Montserrat', sans-serif;
-            letter-spacing: 2px;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            color: #fff;
+            0%, 100% { filter: drop-shadow(0 0 12px rgba(0,242,254,0.4)); }
+            50% { filter: drop-shadow(0 0 25px rgba(0,242,254,0.8)) drop-shadow(0 0 45px rgba(0,242,254,0.3)); }
         }
 
         .text-chrome-3d {
@@ -174,14 +163,13 @@
             box-shadow: 0 0 6px rgba(212, 175, 55, 0.8), inset 0 0 2px rgba(255, 255, 255, 0.8);
         }
 
-        .brand-text span {
-            font-size: 7px;
-            letter-spacing: 2px;
-            color: var(--gold-accent);
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-            display: block;
-            margin-top: 2px;
+        @keyframes spinSlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .animate-spin-slow {
+            animation: spinSlow 6s linear infinite;
         }
 
         .btn-portal {
@@ -517,7 +505,6 @@
                 margin-bottom: 20px;
                 border-radius: 12px;
             }
-            .brand-text h1 { font-size: 15px; }
             .main-layout {
                 grid-template-columns: 1fr;
                 gap: 20px;
@@ -581,23 +568,23 @@
         <!-- Header -->
         <header>
             <a href="index.html" class="brand-logo">
-                <div class="header-logo-box">
-                    <div class="header-logo-ring"></div>
-                    <svg class="w-7 h-7 drop-shadow-[0_0_10px_rgba(0,242,254,0.9)] relative z-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 28px; height: 28px;">
+                <div class="exchange-logo-box">
+                    <div class="exchange-logo-ring"></div>
+                    <svg class="w-6 h-6 drop-shadow-[0_0_10px_rgba(0,242,254,0.9)] relative z-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
                         <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
                         <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
                         <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
                     </svg>
                 </div>
-                <div class="brand-text">
-                    <h1>
+                <div class="flex flex-col">
+                    <div class="flex items-center font-brand font-black text-sm tracking-wider" style="font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 14px;">
                         <span class="text-chrome-3d">NEX</span>
-                        <span class="relative inline-flex items-center justify-center w-3 h-3 mx-0.5 border border-nexora-gold rounded-full gold-ring-accent" style="border-radius: 9999px; border-width: 1.5px; border-color: #dfb248;">
-                            <span style="background-color: #0f172a; width: 3px; height: 3px; border-radius: 9999px;"></span>
+                        <span class="relative inline-flex items-center justify-center w-4 h-4 mx-0.5 border border-[#dfb248] rounded-full gold-ring-accent animate-spin-slow" style="border-radius: 9999px; border-width: 1.5px; width: 14px; height: 14px;">
+                            <span style="background-color: #0f172a; width: 2.5px; height: 2.5px; border-radius: 9999px; position: absolute;"></span>
                         </span>
                         <span class="text-chrome-3d">RA</span>
-                    </h1>
-                    <span>TRADE . GROW . TOGETHER</span>
+                    </div>
+                    <span style="font-size: 7px; color: #dfb248; font-family: 'JetBrains Mono', monospace; tracking-widest; uppercase; font-weight: 700;">TRADE . GROW . TOGETHER</span>
                 </div>
             </a>
             <a href="login.html" class="btn-portal">PORTAL</a>
