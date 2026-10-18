@@ -643,7 +643,7 @@
                 <div class="chat-container" id="chatStream"></div>
 
                 <form class="chat-input-box" id="chatForm">
-                    <input type="text" id="userInput" placeholder="Mensahe..." required>
+                    <input type="text" id="userInput" placeholder="Message..." required>
                     <button type="submit">SEND</button>
                 </form>
             </div>
@@ -812,12 +812,12 @@
         }
         renderProStreamChart();
 
-        // DYNAMIC VIEWERS (500 to 2800, rapid +/- 3 to 10 increments/decrements)
+        // DYNAMIC VIEWERS (500 to 2800)
         let currentViewers = 1850;
         const viewerDisplay = document.getElementById('viewerCountDisplay');
 
         setInterval(() => {
-            let delta = Math.floor(Math.random() * 8) + 3; // Mula 3 hanggang 10
+            let delta = Math.floor(Math.random() * 8) + 3;
             let sign = Math.random() < 0.5 ? -1 : 1;
             currentViewers += (delta * sign);
 
@@ -830,35 +830,68 @@
         const foreignCodes = ["+1 212", "+1 415", "+44 79", "+49 151", "+81 90", "+971 50", "+61 41", "+33 61", "+34 60", "+65 91"];
         const pinoyCodes = ["+63 917", "+63 908", "+63 927", "+63 999"];
 
-        const englishComments = [
-            "That breakout on BTC was super clean!",
-            "Just closed my long position with nice profits.",
-            "Nexora's liquidity routing is amazingly fast.",
-            "Watching that key resistance level closely right now.",
-            "Ethereum showing strong support above 3.5k.",
-            "Sub-millisecond trade execution is a total game changer.",
-            "Anyone else scalping the SOL/USD pair today?",
-            "Clean candles and reliable data feeds on this platform.",
-            "Target 2 reached! Locking in my gains safely.",
-            "Low latency is crucial for high volatility trading.",
-            "Loving the modern UI design of this terminal.",
-            "Volume is picking up nicely on the 1M chart.",
-            "Great market analysis and super smooth layout.",
-            "My limit order filled instantly with zero slippage.",
-            "Bullish momentum building up on the 15-minute timeframe.",
-            "Institutional liquidity pools look very stable."
-        ];
+        // MALAKING LISTAHAN NG ENGLISH AT PINONG CONVERSATIONS (HINDI PAULIT-ULIT / NO REPEAT POOL)
+        const masterChatPool = [
+            // English How / Legit Queries
+            { text: "How does this platform work? Is there a guide?", isQuestion: true },
+            { text: "Is this trading protocol fully legit and secure?", isQuestion: true },
+            { text: "New trader here, where should I start my position?", isQuestion: true },
+            { text: "Are the liquidity pools audited in real-time?", isQuestion: true },
+            { text: "Can anyone share the official Discord or Telegram link?", isQuestion: true },
+            { text: "How fast is the order execution during high volatility?", isQuestion: true },
 
-        const tagalogComments = [
+            // English Replies / Legit Affirmations
+            { text: "Yes 100% legit, I've been trading here for months without issues.", isReply: true },
+            { text: "Absolutely legit, the proof of reserves is verified on-chain.", isReply: true },
+            { text: "Send me a direct message and I'll walk you through the setup.", isReply: true },
+            { text: "Yes it's secure, withdrawals process in under two minutes.", isReply: true },
+            { text: "Drop a PM and I can share my strategy guide with you.", isReply: true },
+
+            // English General Trading & Market Discussions
+            "That massive bullish engulfing candle on BTC just broke all resistance!",
+            "Just took profit on my Ethereum long, incredible momentum today.",
+            "Nexora's order book depth is cleaner than most institutional terminals.",
+            "Watching the 4-hour RSI closely, looks like a healthy consolidation.",
+            "Sub-millisecond execution really saves you from bad slippage.",
+            "Anyone else riding the Solana wave right now? Absolute beast.",
+            "The risk-to-reward ratio on this setup is immaculate.",
+            "Target 3 hit perfectly! Locking in gains and letting a runner go.",
+            "Low latency infrastructure is the only way to survive high volatility.",
+            "Clean UI and buttery smooth charts, hats off to the developers.",
+            "Trading volume is surging across all major pairs on the 1M timeframe.",
+            "Market structure remains strong despite the recent macro dip.",
+            "My limit order filled with absolute precision, zero lag.",
+            "Bullish divergence forming on the lower timeframes, get ready.",
+            "Institutional liquidity provisioning is working flawlessly.",
+            "Checking order flow imbalance before placing my next trade.",
+            "Patience pays off in these choppy market conditions.",
+            "Diversifying my portfolio into layer-1 tokens today.",
+            "Upgraded my account tier yesterday, the perks are worth it.",
+            "Volatility is picking up nicely, perfect conditions for scalping.",
+
+            // Pinoy Community Mix (Konti lang para mas marami ang English)
+            { text: "Paano po ba sumali sa VIP signal group dito?", isQuestion: true },
+            { text: "Legit ba tong platform na to mga boss?", isQuestion: true },
+            { text: "Yes legit na legit dyan paps, subok na yan", isReply: true },
+            { text: "Pm mo ko boss, ituturo ko sayo kung pano mag-stake", isReply: true },
             "solid ng flow ng market ngayon ah",
             "pumasok na naman ang TP ko, ang lupet",
             "ingat sa volatility guys, laging mag-tight stop loss",
             "ayos talaga mag-trade dito sa Nexora platform",
-            "solid ng mga signals dito mga paps 🚀",
-            "grabe ang bilis ng execution dito sa atin",
-            "may naghihintay ba sa inyo ng dip sa BTC?",
-            "ayos to, walang lag kahit biglang pabulosok"
+            "solid ng mga signals dito mga paps 🚀"
         ];
+
+        // NO-REPEAT SHUFFLE SYSTEM
+        let availableChats = [...masterChatPool];
+
+        function getUniqueRandomChat() {
+            if (availableChats.length === 0) {
+                availableChats = [...masterChatPool]; // I-reset kapag nagamit na lahat para walang paulit-ulit agad
+            }
+            let randomIndex = Math.floor(Math.random() * availableChats.length);
+            let chosen = availableChats.splice(randomIndex, 1)[0];
+            return chosen;
+        }
 
         const chatStream = document.getElementById('chatStream');
 
@@ -872,7 +905,6 @@
             }
             chatStream.appendChild(div);
 
-            // Panatilihing hanggang 40 na mensahe lang para mabilis matabunan at hindi bumagal ang browser
             if (chatStream.children.length > 40) {
                 chatStream.removeChild(chatStream.firstChild);
             }
@@ -882,32 +914,51 @@
 
         // Paunang mga mensahe
         for (let i = 0; i < 5; i++) {
-            let isPinoy = Math.random() < 0.25;
+            let isPinoy = Math.random() < 0.2; // 80% English, 20% Pinoy
             let codes = isPinoy ? pinoyCodes : foreignCodes;
             let code = codes[Math.floor(Math.random() * codes.length)];
             let end = Math.floor(1000 + Math.random() * 9000);
             let number = `${code}-***-${end}`;
-            let text = isPinoy ? tagalogComments[Math.floor(Math.random() * tagalogComments.length)] : englishComments[Math.floor(Math.random() * englishComments.length)];
+            let item = getUniqueRandomChat();
+            let text = typeof item === 'string' ? item : item.text;
             appendMessage(number, text, false);
         }
 
-        // FAST DYNAMIC CHAT LOOP (Mabilis kapag mataas viewers, bumabaggal/tumitigil kapag mababa sa 500-800)
+        // DYNAMIC CHAT LOOP WITH NO-REPEAT & AUTO REPLIES
         function scheduleNextMessage() {
-            let isPinoy = Math.random() < 0.25;
+            let isPinoy = Math.random() < 0.2;
             let codes = isPinoy ? pinoyCodes : foreignCodes;
             let code = codes[Math.floor(Math.random() * codes.length)];
             let end = Math.floor(1000 + Math.random() * 9000);
             let number = `${code}-***-${end}`;
-            let text = isPinoy ? tagalogComments[Math.floor(Math.random() * tagalogComments.length)] : englishComments[Math.floor(Math.random() * englishComments.length)];
+
+            let item = getUniqueRandomChat();
+            let text = typeof item === 'string' ? item : item.text;
 
             appendMessage(number, text, false);
 
-            // Kalkulahin ang bilis batay sa viewers (500 hanggang 2800)
-            let ratio = (currentViewers - 500) / (2800 - 500); // 0 hanggang 1
-            // Kapag marami (~2800), napakabilis (mga 600ms - 1.5s). Kapag kaunti (~500), babagal o hihinto (aabot 5s - 8s)
-            let delay = 6000 - (ratio * 5200);
+            // Kung ang lumabas ay tanong (how / legit ba), may magrereply ng English/Pinoy affirmation
+            if (typeof item === 'object' && item.isQuestion) {
+                setTimeout(() => {
+                    let replyCode = foreignCodes[Math.floor(Math.random() * foreignCodes.length)];
+                    let replyEnd = Math.floor(1000 + Math.random() * 9000);
+                    let replyNumber = `${replyCode}-***-${replyEnd}`;
+                    
+                    let replies = [
+                        "Yes 100% legit, withdrawals are processed instantly.",
+                        "Send me a message and I'll guide you through the terminal setup.",
+                        "Absolutely verified on-chain, you're in good hands.",
+                        "Yes trusted platform, been using it for over a year now."
+                    ];
+                    let replyText = replies[Math.floor(Math.random() * replies.length)];
+                    appendMessage(replyNumber, replyText, false);
+                }, 1800);
+            }
+
+            let ratio = (currentViewers - 500) / (2800 - 500);
+            let delay = 5500 - (ratio * 4500);
             if (currentViewers < 700 && Math.random() < 0.4) {
-                delay += 4000; // Extra tahimik kapag kaunti na lang ang nanonood
+                delay += 4000;
             }
 
             setTimeout(scheduleNextMessage, delay);
@@ -915,7 +966,7 @@
 
         setTimeout(scheduleNextMessage, 1500);
 
-        // DIREKTANG LALABAS ANG COMMENT MO SA SCREEN
+        // USER CUSTOM COMMENT (SEND)
         document.getElementById('chatForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const input = document.getElementById('userInput');
@@ -925,10 +976,15 @@
                 input.value = '';
 
                 setTimeout(() => {
-                    let replyText = text.toLowerCase().includes('salamat') || text.toLowerCase().includes('code') 
-                        ? "Walang anuman boss, enjoy trading!" 
-                        : "Laking tulong nga nyan paps!";
-                    appendMessage("+63 908-***-5512", replyText, false);
+                    let botReplies = [
+                        "Totally agree with you on that point!",
+                        "Spot on analysis, good execution.",
+                        "Welcome aboard! Let's secure these profits together.",
+                        "Couldn't have said it better myself."
+                    ];
+                    let botReply = botReplies[Math.floor(Math.random() * botReplies.length)];
+                    let botCode = foreignCodes[Math.floor(Math.random() * foreignCodes.length)];
+                    appendMessage(`${botCode}-***-${Math.floor(1000 + Math.random() * 9000)}`, botReply, false);
                 }, 1500);
             }
         });
