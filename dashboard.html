@@ -975,37 +975,42 @@ canvas#liveChart {
   let legacyBalanceUnsubscribe = null;
   let newBalanceUnsubscribe = null;
 
-  document.addEventListener("DOMContentLoaded", async () => {
-  const userUid = localStorage.getItem("nexora_user_uid");
-  
-  if (!userUid) {
-    window.location.href = "login.html";
-    return;
-  }
+  document.addEventListener("DOMContentLoaded", () => {
+    // Hintayin muna ang Firebase Auth state para hindi basta-basta maputol sa mobile
+    auth.onAuthStateChanged(async (user) => {
+      const userUid = localStorage.getItem("nexora_user_uid");
+      
+      if (!user && !userUid) {
+        window.location.href = "login.html";
+        return;
+      }
 
-  try {
-    const userDocRef = db.collection("Users").doc(userUid);
-    const userDoc = await userDocRef.get();
+      const activeUid = user ? user.uid : userUid;
 
-    if (!userDoc.exists) {
-      window.location.href = "login.html";
-      return;
-    }
+      try {
+        const userDocRef = db.collection("Users").doc(activeUid);
+        const userDoc = await userDocRef.get();
 
-    const data = userDoc.data() || {};
-    currentUser = { uid: userUid, email: data.email || data.phone };
+        if (!userDoc.exists) {
+          window.location.href = "login.html";
+          return;
+        }
 
-    const userEmailEl = document.getElementById("userEmail");
-    if (userEmailEl) {
-      userEmailEl.innerText = data.email || data.phone || "User Connected";
-    }
+        const data = userDoc.data() || {};
+        currentUser = { uid: activeUid, email: data.email || data.phone };
 
-    loadUserDataFromFirestore(userUid);
-  } catch (error) {
-    console.error("Dashboard auth error:", error);
-    window.location.href = "login.html";
-  }
-});
+        const userEmailEl = document.getElementById("userEmail");
+        if (userEmailEl) {
+          userEmailEl.innerText = data.email || data.phone || "User Connected";
+        }
+
+        loadUserDataFromFirestore(activeUid);
+      } catch (error) {
+        console.error("Dashboard auth error:", error);
+        // Huwag agad mag-redirect sa login kung may panandaliang internet glitch sa mobile
+      }
+    });
+  });
 
   function safeNumber(value, fallback = 0) {
     const n = Number(value);
