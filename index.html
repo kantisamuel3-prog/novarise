@@ -291,6 +291,25 @@
 
         .btn-secondary:hover { border-color: var(--neon-cyan); }
 
+        .btn-download {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #10b981;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download:hover {
+            background: #10b981;
+            color: #000;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+        }
+
         /* Market Cards Grid */
         .market-preview-grid {
             display: grid;
@@ -531,7 +550,7 @@
                 gap: 12px;
                 margin-bottom: 30px;
             }
-            .btn-launch, .btn-secondary {
+            .btn-launch, .btn-secondary, .btn-download {
                 width: 100%;
                 text-align: center;
                 padding: 12px 20px;
@@ -615,12 +634,11 @@
                 </p>
 
                 <!-- Main Action Buttons -->
-<!-- Main Action Buttons -->
-<div style="display: flex; gap: 16px; margin-bottom: 45px; align-items: center; flex-wrap: wrap;">
-    <a href="./terminal.html" class="btn-launch" style="display: inline-block;">LAUNCH TERMINAL</a>
-    <a href="./login.html" class="btn-secondary" style="display: inline-block;">ACCESS ACCOUNT</a>
-    <button id="installBtn" class="btn-download" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 14px 30px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer;">DOWNLOAD APP</button>
-</div>
+                <div style="display: flex; gap: 16px; margin-bottom: 45px; align-items: center; flex-wrap: wrap;">
+                    <a href="./terminal.html" class="btn-launch" style="display: inline-block;">LAUNCH TERMINAL</a>
+                    <a href="./login.html" class="btn-secondary" style="display: inline-block;">ACCESS ACCOUNT</a>
+                    <a href="nexora.apk" download="nexora.apk" class="btn-download">DOWNLOAD APP</a>
+                </div>
 
                 <!-- Market Cards Preview -->
                 <div class="market-preview-grid">
@@ -1052,55 +1070,19 @@
                 }, 1500);
             }
         });
+
+        // SERVICE WORKER REGISTRATION
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => {
+                        console.log('Service Worker registered successfully with scope:', reg.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
     </script>
-
-    <!-- PWA INSTALL SCRIPT -->
-    <!-- PWA AUTOMATIC INSTALL SCRIPT -->
-<script>
-    let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
-
-    // Palaging ipakita ang Download App button sa lahat ng screen
-    if (installBtn) {
-        installBtn.style.display = 'inline-block';
-    }
-
-    // Abangan ang install prompt event mula sa Android Chrome / PC
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-    });
-
-    // Kapag pinindot ang DOWNLOAD APP button
-    if (installBtn) {
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                // Lalabas ang opisyal na OS Pop-up
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('In-install ng user ang NEXORA App');
-                }
-                deferredPrompt = null;
-            } else {
-                // Gabay para sa iOS/iPhone (dahil bawal ang auto-prompt sa Apple Safari)
-                alert("Para i-install ang NEXORA sa iyong iPhone/iPad:\n\n1. I-tap ang SHARE button sa Safari (parihaba na may arrow pataas).\n2. Piliin ang 'Add to Home Screen'.");
-            }
-        });
-    }
-
-    // 4. I-register ang Service Worker para kumpleto ang PWA features
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then((reg) => {
-                    console.log('Service Worker registered successfully with scope:', reg.scope);
-                })
-                .catch((error) => {
-                    console.log('Service Worker registration failed:', error);
-                });
-        });
-    }
-</script>
 </body>
 </html>
