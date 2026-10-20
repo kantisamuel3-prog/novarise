@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEXORA — Next-Generation Institutional Crypto Infrastructure</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
     <meta name="theme-color" content="#030b17">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -613,14 +615,11 @@
                 </p>
 
                 <!-- Main Action Buttons -->
-<div class="action-buttons">
-    <a href="./terminal.html" class="btn btn-primary">LAUNCH TERMINAL</a>
-    <a href="./login.html" class="btn btn-secondary">ACCESS ACCOUNT</a>
-    
-    <!-- DOWNLOAD APP BUTTON (May ID na installBtn) -->
-    <button id="installBtn" class="btn btn-download" style="display: none;">
-        DOWNLOAD APP
-    </button>
+<!-- Main Action Buttons -->
+<div style="display: flex; gap: 16px; margin-bottom: 45px; align-items: center; flex-wrap: wrap;">
+    <a href="./terminal.html" class="btn-launch" style="display: inline-block;">LAUNCH TERMINAL</a>
+    <a href="./login.html" class="btn-secondary" style="display: inline-block;">ACCESS ACCOUNT</a>
+    <button id="installBtn" class="btn-download" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 14px 30px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer;">DOWNLOAD APP</button>
 </div>
 
                 <!-- Market Cards Preview -->
@@ -1057,33 +1056,30 @@
 
     <!-- PWA INSTALL SCRIPT -->
     <script>
-  let deferredPrompt;
-  const installBtn = document.getElementById('installBtn');
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
 
-  // Kapag handa na ang browser para i-install ang PWA
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    // Ipakita ang Download App button sa homepage
-    if (installBtn) {
-      installBtn.style.display = 'block';
-    }
-  });
-
-  // Kapag pinindot ng user ang DOWNLOAD APP button
-  if (installBtn) {
-    installBtn.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          console.log('User accepted the install prompt');
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBtn) {
+            installBtn.style.display = 'inline-block';
         }
-        deferredPrompt = null;
-        installBtn.style.display = 'none';
-      }
     });
-  }
+
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                }
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            }
+        });
+    }
 </script>
 </body>
 </html>
