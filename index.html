@@ -1055,35 +1055,36 @@
     </script>
 
     <!-- PWA INSTALL SCRIPT -->
-    <script>
+    <!-- PWA AUTOMATIC INSTALL SCRIPT -->
+<script>
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
 
-    // 1. Palaging ipakita ang Download App button sa lahat ng device (Laptop at Cellphone)
+    // Palaging ipakita ang Download App button sa lahat ng screen
     if (installBtn) {
         installBtn.style.display = 'inline-block';
     }
 
-    // 2. Makinig sa install prompt para sa PC at Android
+    // Abangan ang install prompt event mula sa Android Chrome / PC
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
     });
 
-    // 3. Kapag pinindot ang button
+    // Kapag pinindot ang DOWNLOAD APP button
     if (installBtn) {
         installBtn.addEventListener('click', async () => {
             if (deferredPrompt) {
-                // Kung may prompt (PC / Android)
+                // Lalabas ang opisyal na OS Pop-up
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
+                    console.log('In-install ng user ang NEXORA App');
                 }
                 deferredPrompt = null;
             } else {
-                // Kung nasa iPhone/iOS o walang prompt na lumabas
-                alert("Para i-install ang app sa iyong Phone:\n\n• Sa Android: I-tap ang tatlong tuldok sa taas ng browser at piliin ang 'Install app' o 'Add to Home screen'.\n• Sa iPhone (Safari): I-tap ang Share button sa ibaba at piliin ang 'Add to Home Screen'.");
+                // Gabay para sa iOS/iPhone (dahil bawal ang auto-prompt sa Apple Safari)
+                alert("Para i-install ang NEXORA sa iyong iPhone/iPad:\n\n1. I-tap ang SHARE button sa Safari (parihaba na may arrow pataas).\n2. Piliin ang 'Add to Home Screen'.");
             }
         });
     }
