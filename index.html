@@ -1059,24 +1059,31 @@
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
 
+    // 1. Palaging ipakita ang Download App button sa lahat ng device (Laptop at Cellphone)
+    if (installBtn) {
+        installBtn.style.display = 'inline-block';
+    }
+
+    // 2. Makinig sa install prompt para sa PC at Android
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        if (installBtn) {
-            installBtn.style.display = 'inline-block';
-        }
     });
 
+    // 3. Kapag pinindot ang button
     if (installBtn) {
         installBtn.addEventListener('click', async () => {
             if (deferredPrompt) {
+                // Kung may prompt (PC / Android)
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
                     console.log('User accepted the install prompt');
                 }
                 deferredPrompt = null;
-                installBtn.style.display = 'none';
+            } else {
+                // Kung nasa iPhone/iOS o walang prompt na lumabas
+                alert("Para i-install ang app sa iyong Phone:\n\n• Sa Android: I-tap ang tatlong tuldok sa taas ng browser at piliin ang 'Install app' o 'Add to Home screen'.\n• Sa iPhone (Safari): I-tap ang Share button sa ibaba at piliin ang 'Add to Home Screen'.");
             }
         });
     }
