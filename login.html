@@ -483,6 +483,17 @@
         const loginBtn = document.getElementById('loginBtn');
         const loginForm = document.getElementById('loginForm');
 
+        const savedPhone = localStorage.getItem("nexora_phone");
+        const savedPassword = localStorage.getItem("nexora_password");
+        const savedRemember = localStorage.getItem("nexora_remember") === "true";
+        const rememberMeEl = document.getElementById('rememberMe');
+
+    if (savedRemember && savedPhone) {
+        if (phoneInput) phoneInput.value = savedPhone;
+        if (passwordInput) passwordInput.value = savedPassword;
+        if (rememberMeEl) rememberMeEl.checked = true;
+    }
+
         if (togglePasswordBtn && passwordInput) {
             togglePasswordBtn.addEventListener('click', function() {
                 const isPassword = passwordInput.getAttribute('type') === 'password';
@@ -693,6 +704,18 @@
                     showMessage('Please enter phone number and password.', true);
                     return;
                 }
+
+                // --- ILAGAY ITO PARA MA-SAVE ANG REMEMBER ME ---
+            const rememberMeCheckbox = document.getElementById('rememberMe');
+            if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+                localStorage.setItem("nexora_phone", phoneInput ? phoneInput.value : "");
+                localStorage.setItem("nexora_password", passwordInput ? passwordInput.value : "");
+                localStorage.setItem("nexora_remember", "true");
+            } else {
+                localStorage.removeItem("nexora_phone");
+                localStorage.removeItem("nexora_password");
+                localStorage.setItem("nexora_remember", "false");
+            }
 
                 loginBtn.disabled = true;
                 loginBtn.innerHTML = '<span>AUTHENTICATING...</span>';
