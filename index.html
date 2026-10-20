@@ -257,6 +257,7 @@
             display: flex;
             gap: 16px;
             margin-bottom: 45px;
+            align-items: center;
         }
 
         .btn-launch {
@@ -283,6 +284,7 @@
             font-weight: 700;
             font-size: 14px;
             transition: border-color 0.3s;
+            cursor: pointer;
         }
 
         .btn-secondary:hover { border-color: var(--neon-cyan); }
@@ -610,10 +612,16 @@
                     Institutional-grade security standards with transparent liquidity pools and end-to-end cryptographic blockchain validation.
                 </p>
 
-                <div class="hero-actions">
-                    <a href="login.html" class="btn-launch">LAUNCH TERMINAL</a>
-                    <a href="login.html" class="btn-secondary">ACCESS ACCOUNT</a>
-                </div>
+                <!-- Main Action Buttons -->
+<div class="action-buttons">
+    <a href="./terminal.html" class="btn btn-primary">LAUNCH TERMINAL</a>
+    <a href="./login.html" class="btn btn-secondary">ACCESS ACCOUNT</a>
+    
+    <!-- DOWNLOAD APP BUTTON (May ID na installBtn) -->
+    <button id="installBtn" class="btn btn-download" style="display: none;">
+        DOWNLOAD APP
+    </button>
+</div>
 
                 <!-- Market Cards Preview -->
                 <div class="market-preview-grid">
@@ -1046,5 +1054,36 @@
             }
         });
     </script>
+
+    <!-- PWA INSTALL SCRIPT -->
+    <script>
+  let deferredPrompt;
+  const installBtn = document.getElementById('installBtn');
+
+  // Kapag handa na ang browser para i-install ang PWA
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Ipakita ang Download App button sa homepage
+    if (installBtn) {
+      installBtn.style.display = 'block';
+    }
+  });
+
+  // Kapag pinindot ng user ang DOWNLOAD APP button
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        }
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+      }
+    });
+  }
+</script>
 </body>
 </html>
