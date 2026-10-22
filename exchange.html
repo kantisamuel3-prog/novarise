@@ -1478,12 +1478,12 @@
     if (!bgCanvas) return;
     const bgCtx = bgCanvas.getContext('2d');
     let bgCandles = [];
-    cconst candleWidth = 6, spacing = 10;
+    cconst candleWidth = 8, spacing = 12;
     function resizeAccountBackground() {
         bgCanvas.width = window.innerWidth;
         bgCanvas.height = window.innerHeight;
         bgCandles = [];
-        const count = Math.ceil(bgCanvas.width / spacing) + 20;
+        const count = Math.ceil(bgCanvas.width / spacing) + 50;
         let price = bgCanvas.height * 0.55;
         for (let i = 0; i < count; i++) {
             const open = price;
