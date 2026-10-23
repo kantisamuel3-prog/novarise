@@ -1137,7 +1137,7 @@
 
 
                 // -------------------------------------------------
-                // PHONE VALIDATION (International & Country-Specific)
+                // PHONE VALIDATION (Strict International Check)
                 // -------------------------------------------------
 
                 if (!phone || !/^\d+$/.test(phone)) {
@@ -1147,7 +1147,7 @@
                     return;
                 }
 
-                // Espesyal na validation para sa Pilipinas (Dapat magsimula sa 9 at tamang haba na 10 digits)
+                // 1. Pilipinas: Hayaan ang 10 digits na nagsisimula sa 9 (walang 0 sa unahan)
                 if (phoneDetails.country === 'ph') {
                     if (phone.startsWith('0')) {
                         showMessage("For the Philippines, please enter your mobile number starting with 9 without the leading 0.");
@@ -1161,13 +1161,14 @@
                         registerBtn.innerHTML = `<span>REGISTER NOW</span> <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>`;
                         return;
                     }
-                } else {
-                    // Para sa IBANG BANSA: Gamitin ang built-in validation ng intl-tel-input
+                } 
+                // 2. IBANG BANSA: Kailangan ay totoong valid number base sa intl-tel-input (bawal ang gawa-gawa lang)
+                else {
                     if (iti && typeof iti.isValidNumber === "function") {
                         if (!iti.isValidNumber()) {
                             const selectedCountryData = iti.getSelectedCountryData();
                             const countryName = selectedCountryData ? selectedCountryData.name : "the selected country";
-                            showMessage(`The phone number entered is not valid for ${countryName}. Please check your number.`);
+                            showMessage(`The phone number entered is not valid for ${countryName}. Please enter a real, working phone number.`);
                             registerBtn.disabled = false;
                             registerBtn.innerHTML = `<span>REGISTER NOW</span> <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>`;
                             return;
