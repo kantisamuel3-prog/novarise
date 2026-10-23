@@ -1147,24 +1147,32 @@
                     return;
                 }
 
-                // Gamitin ang built-in validation ng intl-tel-input para masuri kung wasto ang numero para sa napiling bansa
-                if (iti && typeof iti.isValidNumber === "function") {
-                    if (!iti.isValidNumber()) {
-                        const selectedCountryData = iti.getSelectedCountryData();
-                        const countryName = selectedCountryData ? selectedCountryData.name : "the selected country";
-                        showMessage(`The phone number entered is not valid for ${countryName}. Please check your number.`);
+                // Espesyal na validation para sa Pilipinas (Dapat magsimula sa 9 at tamang haba na 10 digits)
+                if (phoneDetails.country === 'ph') {
+                    if (phone.startsWith('0')) {
+                        showMessage("For the Philippines, please enter your mobile number starting with 9 without the leading 0.");
                         registerBtn.disabled = false;
                         registerBtn.innerHTML = `<span>REGISTER NOW</span> <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>`;
                         return;
                     }
-                }
-
-                // Tiyak na pananggalang para sa Pilipinas (sakaling may pilit maglagay ng 0 sa unahan)
-                if (phoneDetails.country === 'ph' && phone.startsWith('0')) {
-                    showMessage("For the Philippines, please enter your mobile number starting with 9.");
-                    registerBtn.disabled = false;
-                    registerBtn.innerHTML = `<span>REGISTER NOW</span> <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>`;
-                    return;
+                    if (phone.length !== 10 || !phone.startsWith('9')) {
+                        showMessage("Please enter a valid 10-digit Philippine mobile number starting with 9 (e.g. 9874625487).");
+                        registerBtn.disabled = false;
+                        registerBtn.innerHTML = `<span>REGISTER NOW</span> <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>`;
+                        return;
+                    }
+                } else {
+                    // Para sa IBANG BANSA: Gamitin ang built-in validation ng intl-tel-input
+                    if (iti && typeof iti.isValidNumber === "function") {
+                        if (!iti.isValidNumber()) {
+                            const selectedCountryData = iti.getSelectedCountryData();
+                            const countryName = selectedCountryData ? selectedCountryData.name : "the selected country";
+                            showMessage(`The phone number entered is not valid for ${countryName}. Please check your number.`);
+                            registerBtn.disabled = false;
+                            registerBtn.innerHTML = `<span>REGISTER NOW</span> <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>`;
+                            return;
+                        }
+                    }
                 }
 
 
