@@ -1137,7 +1137,7 @@
 
 
                 // -------------------------------------------------
-                // PHONE VALIDATION (Strict International Check)
+                // PHONE VALIDATION (Reliable Length & Country Check)
                 // -------------------------------------------------
 
                 if (!phone || !/^\d+$/.test(phone)) {
@@ -1147,7 +1147,7 @@
                     return;
                 }
 
-                // 1. Pilipinas: Hayaan ang 10 digits na nagsisimula sa 9 (walang 0 sa unahan)
+                // 1. Pilipinas: 10 digits nagsisimula sa 9
                 if (phoneDetails.country === 'ph') {
                     if (phone.startsWith('0')) {
                         showMessage("For the Philippines, please enter your mobile number starting with 9 without the leading 0.");
@@ -1156,23 +1156,30 @@
                         return;
                     }
                     if (phone.length !== 10 || !phone.startsWith('9')) {
-                        showMessage("Please enter a valid 10-digit Philippine mobile number starting with 9 (e.g. 9874625487).");
+                        showMessage("Please enter a valid 10-digit Philippine mobile number starting with 9.");
                         registerBtn.disabled = false;
                         registerBtn.innerHTML = `<span>REGISTER NOW</span> <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>`;
                         return;
                     }
                 } 
-                // 2. IBANG BANSA: Kailangan ay totoong valid number base sa intl-tel-input (bawal ang gawa-gawa lang)
+                // 2. United States: 10 digits
+                else if (phoneDetails.country === 'us') {
+                    if (phone.length !== 10) {
+                        showMessage("For the United States, please enter a valid 10-digit phone number.");
+                        registerBtn.disabled = false;
+                        registerBtn.innerHTML = `<span>REGISTER NOW</span> <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>`;
+                        return;
+                    }
+                }
+                // 3. Ibang bansa: Kailangan ay hindi bababa sa 7 digits at hindi hihigit sa 12 digits
                 else {
-                    if (iti && typeof iti.isValidNumber === "function") {
-                        if (!iti.isValidNumber()) {
-                            const selectedCountryData = iti.getSelectedCountryData();
-                            const countryName = selectedCountryData ? selectedCountryData.name : "the selected country";
-                            showMessage(`The phone number entered is not valid for ${countryName}. Please enter a real, working phone number.`);
-                            registerBtn.disabled = false;
-                            registerBtn.innerHTML = `<span>REGISTER NOW</span> <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>`;
-                            return;
-                        }
+                    if (phone.length < 7 || phone.length > 12) {
+                        const selectedCountryData = iti.getSelectedCountryData();
+                        const countryName = selectedCountryData ? selectedCountryData.name : "the selected country";
+                        showMessage(`Please enter a valid phone number length for ${countryName}.`);
+                        registerBtn.disabled = false;
+                        registerBtn.innerHTML = `<span>REGISTER NOW</span> <i class="fa-solid fa-arrow-right text-nexora-cyan"></i>`;
+                        return;
                     }
                 }
 
