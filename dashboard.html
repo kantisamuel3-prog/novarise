@@ -1374,10 +1374,10 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
-  // Animation state para sa Heartbeat Pulse Ring at Floating PnL Popups
+  // Animation state para sa Heartbeat Pulse Ring at Trail Markers
   let pulseRadius = 4;
   let pulseOpacity = 0.8;
-  let floatingPopups = []; // Para sa lumulutang na positive/negative numbers sa gitna
+  let trailMarkers = []; // Imbak para sa mga maiiwan na numero sa mismong punto ng graph
 
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
@@ -1464,7 +1464,7 @@ canvas#liveChart {
     ctx.fillText("T-35s", 2, chartHeight + 10);
     ctx.fillText("Live", chartWidth - 20, chartHeight + 10);
 
-    // Orihinal na Line Graph Logic
+    // Line Graph Logic
     ctx.beginPath();
     const step = chartWidth / (chartPoints.length - 1);
 
@@ -1531,38 +1531,23 @@ canvas#liveChart {
     ctx.fill();
     ctx.restore();
 
-    // --- BAGONG FEATURE: FLOATING PNL ANIMATED NUMBERS SA GITNA ---
-    if (isTradingRunning && Math.random() > 0.4) {
-      const pnlVal = (Math.random() * 12 - 5).toFixed(2);
-      const isPositive = Number(pnlVal) >= 0;
-      floatingPopups.push({
-        x: chartWidth / 2 + (Math.random() * 40 - 20),
-        y: chartHeight / 2 + (Math.random() * 20 - 10),
-        text: (isPositive ? "+$" : "-$") + Math.abs(pnlVal),
-        alpha: 1.0,
-        vy: -0.6, // Umuusad pataas nang bahagya
-        color: isPositive ? "#10b981" : "#ef4444"
-      });
-    }
-
-    // I-render at i-animate ang mga lumulutang na numero
+    // --- ENHANCEMENT: TRAIL MARKERS (MAIIWAN SA MISMONG PUNTO NG LINYA) ---
+    // Pag-render ng mga naiwan na numero sa mismong punto
     ctx.save();
-    for (let i = floatingPopups.length - 1; i >= 0; i--) {
-      let p = floatingPopups[i];
-      p.y += p.vy;
-      p.alpha -= 0.03; // Unti-unting naglalaho
+    for (let i = trailMarkers.length - 1; i >= 0; i--) {
+      let m = trailMarkers[i];
+      m.x -= step * 0.08; // Dahan-dahang sumasabay sa paggalaw ng graph pakaliwa
+      m.alpha -= 0.015;   // Unti-unting naglalaho nang napakahalinhinan
 
-      if (p.alpha <= 0) {
-        floatingPopups.splice(i, 1);
+      if (m.alpha <= 0 || m.x < 0) {
+        trailMarkers.splice(i, 1);
         continue;
       }
 
-      ctx.font = "bold 10px monospace";
-      ctx.fillStyle = p.color;
-      ctx.shadowColor = p.color;
-      ctx.shadowBlur = 6;
-      ctx.globalAlpha = Math.max(0, p.alpha);
-      ctx.fillText(p.text, p.x, p.y);
+      ctx.font = "bold 7.5px monospace";
+      ctx.fillStyle = m.color;
+      ctx.globalAlpha = Math.max(0, m.alpha);
+      ctx.fillText(m.text, m.x - 10, m.y - 6);
     }
     ctx.restore();
 
@@ -1595,6 +1580,26 @@ canvas#liveChart {
 
     chartTimer = setInterval(() => {
       let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
+      
+      // Kapag malaki ang galaw habang nagta-trade, maiiwan ang marker sa eksaktong x, y ng punto
+      if (isTradingRunning && Math.abs(change) > 8) {
+        const chartWidth = canvas.width - 85;
+        const chartHeight = canvas.height - 14;
+        const chartPoints = pricePoints.slice(-visibleCount);
+        const minPrice = Math.min(...chartPoints) - 10;
+        const maxPrice = Math.max(...chartPoints) + 10;
+        const y = chartHeight - ((currentPrice - minPrice) / (maxPrice - minPrice)) * chartHeight;
+
+        const isPositive = change >= 0;
+        trailMarkers.push({
+          x: chartWidth,
+          y: y,
+          text: (isPositive ? "+" : "") + change.toFixed(1),
+          alpha: 0.9,
+          color: isPositive ? "#10b981" : "#ef4444"
+        });
+      }
+
       currentPrice += change;
       pricePoints.shift();
       pricePoints.push(currentPrice);
