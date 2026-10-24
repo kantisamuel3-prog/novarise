@@ -1377,7 +1377,7 @@ canvas#liveChart {
   // Animation state para sa Heartbeat Pulse Ring at Peak/Dip Markers
   let pulseRadius = 4;
   let pulseOpacity = 0.8;
-  let peakMarkers = []; // Para sa mga numerong lalabas lang sa matatarik na tuktok (v o ^)
+  let peakMarkers = []; // Para sa mga positive/negative peak/dip markers sa matatarik na bahagi
 
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
@@ -1539,9 +1539,9 @@ canvas#liveChart {
       
       // Smooth fade in / fade out animation
       if (m.age < 15) {
-        m.alpha = Math.min(1.0, m.alpha + 0.1); // Mabilis na paglitaw (fade in)
+        m.alpha = Math.min(1.0, m.alpha + 0.1); 
       } else {
-        m.alpha -= 0.025; // Unti-unting pagkawala (fade out)
+        m.alpha -= 0.025; 
       }
       m.age++;
 
@@ -1555,7 +1555,8 @@ canvas#liveChart {
       ctx.globalAlpha = Math.max(0, m.alpha);
       ctx.shadowColor = m.color;
       ctx.shadowBlur = 6;
-      // Mag-render ng maliit na arrow/sign (^ o v) kasama ang numero sa mismong tuktok
+      
+      // Pag-render ng arrow pataas (▲) kung positive o pababa (▼) kung negative sa mismong tuktok
       ctx.fillText(m.text, m.x - 10, m.y + (m.isPeak ? -8 : 14));
     }
     ctx.restore();
@@ -1590,7 +1591,7 @@ canvas#liveChart {
     chartTimer = setInterval(() => {
       let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
 
-      // Lilitaw LAMANG kapag grabe o malaki ang taas/baba (matarik na paggalaw o peak/dip)
+      // Lilitaw LAMANG kapag grabe o malaki ang pagtaas o pagbaba (minsan lang, hindi nag-a-spam)
       if (isTradingRunning && Math.abs(change) > 18) {
         const chartWidth = canvas.width - 85;
         const chartHeight = canvas.height - 14;
