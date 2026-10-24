@@ -590,6 +590,10 @@ canvas#liveChart {
   background:#00d4ff;
   box-shadow:0 0 7px rgba(0,212,255,.8);
 }
+.gold-ring-accent {
+  background: radial-gradient(circle, #ffe380 0%, #d4af37 60%, #996515 100%);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.8), inset 0 0 4px rgba(255, 255, 255, 0.8);
+}  
 
 </style>
 </head>
@@ -612,22 +616,24 @@ canvas#liveChart {
 
 <header>
   <div class="logo">
-<div class="logo-icon">
-  <svg viewBox="0 0 100 100" fill="none"
-       xmlns="http://www.w3.org/2000/svg"
-       aria-label="Nexora logo">
-    <polygon points="18,15 36,10 36,90 18,85"
-             fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
-    <polygon points="36,10 82,75 82,90 64,90 18,25 18,15"
-             fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
-    <polygon points="64,10 82,15 82,85 64,90"
-             fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
+<div class="relative w-9 h-9 flex items-center justify-center shrink-0">
+  <div class="absolute inset-0 rounded-full border border-dashed border-nexora-cyan/50 animate-orbit"></div>
+  <svg class="w-6 h-6 drop-shadow-[0_0_8px_rgba(0,242,254,0.9)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="18,15 36,10 36,90 18,85" fill="#0284c7" stroke="#00f2fe" stroke-width="0.8" />
+    <polygon points="36,10 82,75 82,90 64,90 18,25 18,15" fill="#1d4ed8" stroke="#00f2fe" stroke-width="0.8" />
+    <polygon points="64,10 82,15 82,85 64,90" fill="#0369a1" stroke="#00f2fe" stroke-width="0.8" />
   </svg>
 </div>
-    <div class="logo-copy">
-      <strong>NEXORA</strong>
-      <small>Live Trading Engine</small>
-    </div>
+    <div class="logo-copy" style="margin-left: 4px;">
+  <div style="display: flex; align-items: center; gap: 2px;">
+    <strong style="font-family: Montserrat, sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; color: #fff;">NEX</strong>
+    <span class="gold-ring-accent" style="display: inline-flex; width: 13px; height: 13px; border-radius: 50%; align-items: center; justify-content: center; border: 1px solid #dfb248;">
+      <span style="width: 4px; height: 4px; border-radius: 50%; background: #0f172a;"></span>
+    </span>
+    <strong style="font-family: Montserrat, sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; color: #fff;">RA</strong>
+  </div>
+  <small style="font-family: monospace; font-size: 7px; color: #dfb248; letter-spacing: 0.15em; text-transform: uppercase;">TRADE. GROW. TOGETHER</small>
+</div>
   </div>
   <button id="logoutButton" onclick="handleLogout()">Logout</button>
 </header>
