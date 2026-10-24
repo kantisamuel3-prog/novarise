@@ -1430,7 +1430,7 @@ canvas#liveChart {
 
   function drawChart() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const rightPadding = 65; // Dagdag espasyo para sa candlestick icon at badge sa dulo
+    const rightPadding = 75; // Sapat na espasyo para sa mga pinalibot na candlestick at badge sa dulo
     const bottomPadding = 14; 
     const chartWidth = canvas.width - rightPadding;
     const chartHeight = canvas.height - bottomPadding;
@@ -1499,25 +1499,36 @@ canvas#liveChart {
     ctx.fillStyle = gradient;
     ctx.fill();
 
-    // --- MINI CANDLESTICK & ANIMATED NUMBER BADGE SA DULO NG LINYA ---
+    // --- DALAWANG KULAY-PUTING CANDLESTICK NA PUMAPALIBOT SA DULO ---
     
-    // 1. Maliit na Candlestick sa dulo (May wick at katawan na sumasabay sa taas/baba)
-    const wickTop = Math.min(lastY, prevY) - 6;
-    const wickBottom = Math.max(lastY, prevY) + 6;
-    
-    ctx.strokeStyle = chartColor;
-    ctx.lineWidth = 1.5;
+    // 1. Kaliwang Puti na Candlestick (Marker)
+    const leftX = lastX - 12;
+    const leftY = prevY;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(lastX, wickTop);
-    ctx.lineTo(lastX, wickBottom);
+    ctx.moveTo(leftX, leftY - 8);
+    ctx.lineTo(leftX, leftY + 8);
     ctx.stroke();
 
-    ctx.fillStyle = chartColor;
-    const candleBodyTop = Math.min(lastY, prevY);
-    const candleBodyHeight = Math.max(Math.abs(lastY - prevY), 4);
-    ctx.fillRect(lastX - 3, candleBodyTop, 6, candleBodyHeight);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+    ctx.fillRect(leftX - 2.5, leftY - 4, 5, 8);
 
-    // 2. Animated Price Badge Pill sa tabi ng candlestick
+    // 2. Kanan/Dulong Puti na Candlestick (Marker) - Sumasabay sa galaw ng dulo
+    const rightX = lastX + 4;
+    const rightY = lastY;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(rightX, rightY - 8);
+    ctx.lineTo(rightX, rightY + 8);
+    ctx.stroke();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(rightX - 2.5, rightY - 4, 5, 8);
+
+
+    // --- ANIMATED PRICE BADGE SA TABI NG MGA ITO ---
     const latestPrice = chartPoints[chartPoints.length - 1];
     const priceText = `$${latestPrice.toFixed(2)}`;
     ctx.font = "bold 9px monospace";
@@ -1525,7 +1536,7 @@ canvas#liveChart {
     const badgePadding = 4;
     const badgeWidth = textWidth + badgePadding * 2;
     const badgeHeight = 14;
-    const badgeX = lastX + 6;
+    const badgeX = rightX + 8;
     const badgeY = Math.max(badgeHeight / 2, Math.min(chartHeight - badgeHeight / 2, lastY - badgeHeight / 2));
 
     ctx.fillStyle = isUp ? "rgba(16, 185, 129, 0.9)" : "rgba(239, 68, 68, 0.9)";
