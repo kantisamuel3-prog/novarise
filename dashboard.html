@@ -1430,7 +1430,7 @@ canvas#liveChart {
 
   function drawChart() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const rightPadding = 55; // Siniguradong may sapat na espasyo para sa Price Tag animation
+    const rightPadding = 65; // Dagdag espasyo para sa candlestick icon at badge sa dulo
     const bottomPadding = 14; 
     const chartWidth = canvas.width - rightPadding;
     const chartHeight = canvas.height - bottomPadding;
@@ -1465,6 +1465,7 @@ canvas#liveChart {
 
     let lastX = 0;
     let lastY = 0;
+    let prevY = 0;
 
     for (let i = 0; i < chartPoints.length; i++) {
       const x = i * step;
@@ -1475,6 +1476,9 @@ canvas#liveChart {
       if (i === chartPoints.length - 1) {
         lastX = x;
         lastY = y;
+      }
+      if (i === chartPoints.length - 2) {
+        prevY = y;
       }
     }
 
@@ -1495,19 +1499,26 @@ canvas#liveChart {
     ctx.fillStyle = gradient;
     ctx.fill();
 
-    // --- BAGONG ANIMATED PRICE TAG & LIVE NUMBER ON GRAPH ---
-    const latestPrice = chartPoints[chartPoints.length - 1];
-
-    // Pulsing Glowing Dot sa Tip ng Linya
+    // --- MINI CANDLESTICK & ANIMATED NUMBER BADGE SA DULO NG LINYA ---
+    
+    // 1. Maliit na Candlestick sa dulo (May wick at katawan na sumasabay sa taas/baba)
+    const wickTop = Math.min(lastY, prevY) - 6;
+    const wickBottom = Math.max(lastY, prevY) + 6;
+    
+    ctx.strokeStyle = chartColor;
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
-    ctx.fillStyle = chartColor;
-    ctx.shadowColor = chartColor;
-    ctx.shadowBlur = 10;
-    ctx.fill();
-    ctx.shadowBlur = 0; // Reset shadow
+    ctx.moveTo(lastX, wickTop);
+    ctx.lineTo(lastX, wickBottom);
+    ctx.stroke();
 
-    // Animated Price Pill Background
+    ctx.fillStyle = chartColor;
+    const candleBodyTop = Math.min(lastY, prevY);
+    const candleBodyHeight = Math.max(Math.abs(lastY - prevY), 4);
+    ctx.fillRect(lastX - 3, candleBodyTop, 6, candleBodyHeight);
+
+    // 2. Animated Price Badge Pill sa tabi ng candlestick
+    const latestPrice = chartPoints[chartPoints.length - 1];
     const priceText = `$${latestPrice.toFixed(2)}`;
     ctx.font = "bold 9px monospace";
     const textWidth = ctx.measureText(priceText).width;
@@ -1517,13 +1528,11 @@ canvas#liveChart {
     const badgeX = lastX + 6;
     const badgeY = Math.max(badgeHeight / 2, Math.min(chartHeight - badgeHeight / 2, lastY - badgeHeight / 2));
 
-    // Draw Price Badge Pill
     ctx.fillStyle = isUp ? "rgba(16, 185, 129, 0.9)" : "rgba(239, 68, 68, 0.9)";
     ctx.beginPath();
     ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 4);
     ctx.fill();
 
-    // Live Animated Price Text sa loob ng Badge
     ctx.fillStyle = "#ffffff";
     ctx.fillText(priceText, badgeX + badgePadding, badgeY + 10);
   }
