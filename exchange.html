@@ -20,34 +20,47 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
     <script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    nexora: {
-                        navy: '#0a1628',
-                        deep: '#040814',
-                        card: '#0d1d35',
-                        cyan: '#00f2fe',
-                        blue: '#1890ff',
-                        gold: '#dfb248',
-                        goldGlow: '#ffd700',
-                        accent: '#00e676'
-                    }
-                },
-                animation: {
-                    'orbit': 'orbit 10s linear infinite'
-                },
-                keyframes: {
-                    orbit: {
-                        '0%': { transform: 'rotate(0deg)' },
-                        '100%': { transform: 'rotate(360deg)' }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        brand: ['Montserrat', 'sans-serif']
+                    },
+                    colors: {
+                        nexora: {
+                            bg: '#121212',
+                            card: '#1a1a1a',
+                            panel: '#242424',
+                            border: '#2e2e2e',
+                            green: '#00b074',
+                            red: '#ef4444',
+                            blue: '#3b82f6',
+                            yellow: '#eab308',
+                            purple: '#a855f7',
+                            cyan: '#00f2fe'
+                        }
+                    },
+                    animation: {
+                        'pulse-cyan': 'pulseCyan 3s ease-in-out infinite',
+                        'orbit': 'orbit 10s linear infinite',
+                        'spin-slow': 'spin 6s linear infinite',
+                    },
+                    keyframes: {
+                        pulseCyan: {
+                            '0%, 100%': { filter: 'drop-shadow(0 0 12px rgba(0,242,254,0.4))' },
+                            '50%': { filter: 'drop-shadow(0 0 25px rgba(0,242,254,0.8)) drop-shadow(0 0 45px rgba(0,242,254,0.3))' }
+                        },
+                        orbit: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        }
                     }
                 }
             }
         }
-    }
-</script>
+    </script>
 
     <style>
         body {
