@@ -1374,10 +1374,10 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
-  // Animation state para sa Heartbeat Pulse Ring at Sakto-lang ang Bilis na Flying Numbers
+  // Animation state para sa Heartbeat Pulse Ring at Trail Markers
   let pulseRadius = 4;
   let pulseOpacity = 0.8;
-  let flyingNumbers = [];
+  let trailMarkers = []; // Imbak para sa mga maiiwan na numero sa mismong punto ng graph
 
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
@@ -1531,31 +1531,23 @@ canvas#liveChart {
     ctx.fill();
     ctx.restore();
 
-    // --- SAKTO LANG ANG BILIS NG PAGLIPAD PATUNGO SA DULO ---
+    // --- ENHANCEMENT: TRAIL MARKERS (MAIIWAN SA MISMONG PUNTO NG LINYA) ---
+    // Pag-render ng mga naiwan na numero sa mismong punto
     ctx.save();
-    for (let i = flyingNumbers.length - 1; i >= 0; i--) {
-      let item = flyingNumbers[i];
+    for (let i = trailMarkers.length - 1; i >= 0; i--) {
+      let m = trailMarkers[i];
+      m.x -= step * 0.08; // Dahan-dahang sumasabay sa paggalaw ng graph pakaliwa
+      m.alpha -= 0.015;   // Unti-unting naglalaho nang napakahalinhinan
 
-      // Pinalitan ng 0.08 para maging mas smooth, banayad, at sakto lang ang bilis
-      item.x += (lastX - item.x) * 0.08;
-      item.y += (lastY - item.y) * 0.08;
-
-      const distToTip = Math.hypot(lastX - item.x, lastY - item.y);
-      if (distToTip < 20) {
-        item.alpha -= 0.035; // Dahan-dahang pagka-fade habang lumalapit sa dulo
-      }
-
-      if (item.alpha <= 0) {
-        flyingNumbers.splice(i, 1);
+      if (m.alpha <= 0 || m.x < 0) {
+        trailMarkers.splice(i, 1);
         continue;
       }
 
-      ctx.font = "bold 8px monospace";
-      ctx.fillStyle = item.color;
-      ctx.globalAlpha = Math.max(0, item.alpha);
-      ctx.shadowColor = item.color;
-      ctx.shadowBlur = 4;
-      ctx.fillText(item.text, item.x - 8, item.y - 6);
+      ctx.font = "bold 7.5px monospace";
+      ctx.fillStyle = m.color;
+      ctx.globalAlpha = Math.max(0, m.alpha);
+      ctx.fillText(m.text, m.x - 10, m.y - 6);
     }
     ctx.restore();
 
@@ -1588,17 +1580,22 @@ canvas#liveChart {
 
     chartTimer = setInterval(() => {
       let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
-
-      if (isTradingRunning && Math.abs(change) > 5) {
+      
+      // Kapag malaki ang galaw habang nagta-trade, maiiwan ang marker sa eksaktong x, y ng punto
+      if (isTradingRunning && Math.abs(change) > 8) {
         const chartWidth = canvas.width - 85;
         const chartHeight = canvas.height - 14;
-        const isPositive = change >= 0;
+        const chartPoints = pricePoints.slice(-visibleCount);
+        const minPrice = Math.min(...chartPoints) - 10;
+        const maxPrice = Math.max(...chartPoints) + 10;
+        const y = chartHeight - ((currentPrice - minPrice) / (maxPrice - minPrice)) * chartHeight;
 
-        flyingNumbers.push({
-          x: chartWidth * (0.3 + Math.random() * 0.4),
-          y: chartHeight * (0.3 + Math.random() * 0.4),
+        const isPositive = change >= 0;
+        trailMarkers.push({
+          x: chartWidth,
+          y: y,
           text: (isPositive ? "+" : "") + change.toFixed(1),
-          alpha: 1.0,
+          alpha: 0.9,
           color: isPositive ? "#10b981" : "#ef4444"
         });
       }
