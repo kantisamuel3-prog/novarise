@@ -1374,9 +1374,6 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
-  // Imbak para sa interpolated price animation sa bawat frame
-  let displayedPrice = 96420;
-
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
 
@@ -1433,17 +1430,16 @@ canvas#liveChart {
 
   function drawChart() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const rightPadding = 50; 
+    const rightPadding = 55; // Siniguradong may sapat na espasyo para sa Price Tag animation
     const bottomPadding = 14; 
     const chartWidth = canvas.width - rightPadding;
     const chartHeight = canvas.height - bottomPadding;
     const chartPoints = pricePoints.slice(-visibleCount);
 
-    const minPrice = Math.min(...chartPoints) - 15;
-    const maxPrice = Math.max(...chartPoints) + 15;
-    const priceRange = maxPrice - minPrice || 1;
+    const minPrice = Math.min(...chartPoints) - 10;
+    const maxPrice = Math.max(...chartPoints) + 10;
 
-    // Grid lines at animated numbers sa gilid
+    // Grid lines
     ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
     ctx.fillStyle = "#64748b";
     ctx.font = "8px monospace";
@@ -1456,64 +1452,80 @@ canvas#liveChart {
       ctx.lineTo(chartWidth, y);
       ctx.stroke();
 
-      const priceVal = maxPrice - (priceRange / 4) * i;
+      const priceVal = maxPrice - ((maxPrice - minPrice) / 4) * i;
       ctx.fillText(`$${priceVal.toFixed(0)}`, chartWidth + 3, y + 3);
     }
 
     ctx.fillText("T-35s", 2, chartHeight + 10);
     ctx.fillText("Live", chartWidth - 20, chartHeight + 10);
 
-    // Pag-guhit ng Candlesticks sa halip na simpleng linya lamang
-    const candleWidth = Math.max(2, (chartWidth / chartPoints.length) - 4);
-    const step = chartWidth / chartPoints.length;
-
-    for (let i = 0; i < chartPoints.length; i++) {
-      const x = i * step + step / 2;
-      const val = chartPoints[i];
-      
-      // Kunin ang prev point para malaman kung pataas o pababa ang kandila
-      const prevVal = i > 0 ? chartPoints[i - 1] : val;
-      const isUp = val >= prevVal;
-      const color = isUp ? "#10b981" : "#ef4444";
-
-      // Bumuo ng makatotohanang high/low wicks batay sa galaw ng presyo
-      const openY = chartHeight - ((prevVal - minPrice) / priceRange) * chartHeight;
-      const closeY = chartHeight - ((val - minPrice) / priceRange) * chartHeight;
-      const highY = Math.min(openY, closeY) - Math.abs(val - prevVal) * 0.3 - 2;
-      const lowY = Math.max(openY, closeY) + Math.abs(val - prevVal) * 0.3 + 2;
-
-      // Guhit ng wick (tulis sa taas at baba)
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x, highY);
-      ctx.lineTo(x, lowY);
-      ctx.stroke();
-
-      // Guhit ng katawan ng candlestick
-      ctx.fillStyle = color;
-      const bodyTop = Math.min(openY, closeY);
-      const bodyHeight = Math.max(Math.abs(closeY - openY), 2);
-      ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
-    }
-
-    // Subtileng gradient fill sa ilalim para sa dagdag na ganda
-    const lastIsUp = chartPoints[chartPoints.length - 1] >= chartPoints[chartPoints.length - 2];
+    // Orihinal na Line Graph Logic
     ctx.beginPath();
+    const step = chartWidth / (chartPoints.length - 1);
+
+    let lastX = 0;
+    let lastY = 0;
+
     for (let i = 0; i < chartPoints.length; i++) {
-      const x = i * step + step / 2;
-      const y = chartHeight - ((chartPoints[i] - minPrice) / priceRange) * chartHeight;
+      const x = i * step;
+      const y = chartHeight - ((chartPoints[i] - minPrice) / (maxPrice - minPrice)) * chartHeight;
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
+
+      if (i === chartPoints.length - 1) {
+        lastX = x;
+        lastY = y;
+      }
     }
+
+    const isUp = chartPoints[chartPoints.length - 1] >= chartPoints[chartPoints.length - 2];
+    const chartColor = isUp ? "#10b981" : "#ef4444";
+
+    ctx.strokeStyle = chartColor;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Orihinal na Gradient Fill sa ilalim
     ctx.lineTo(chartWidth, chartHeight);
     ctx.lineTo(0, chartHeight);
     ctx.closePath();
     const gradient = ctx.createLinearGradient(0, 0, 0, chartHeight);
-    gradient.addColorStop(0, lastIsUp ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)");
+    gradient.addColorStop(0, isUp ? "rgba(16, 185, 129, 0.25)" : "rgba(239, 68, 68, 0.25)");
     gradient.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = gradient;
     ctx.fill();
+
+    // --- BAGONG ANIMATED PRICE TAG & LIVE NUMBER ON GRAPH ---
+    const latestPrice = chartPoints[chartPoints.length - 1];
+
+    // Pulsing Glowing Dot sa Tip ng Linya
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+    ctx.fillStyle = chartColor;
+    ctx.shadowColor = chartColor;
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.shadowBlur = 0; // Reset shadow
+
+    // Animated Price Pill Background
+    const priceText = `$${latestPrice.toFixed(2)}`;
+    ctx.font = "bold 9px monospace";
+    const textWidth = ctx.measureText(priceText).width;
+    const badgePadding = 4;
+    const badgeWidth = textWidth + badgePadding * 2;
+    const badgeHeight = 14;
+    const badgeX = lastX + 6;
+    const badgeY = Math.max(badgeHeight / 2, Math.min(chartHeight - badgeHeight / 2, lastY - badgeHeight / 2));
+
+    // Draw Price Badge Pill
+    ctx.fillStyle = isUp ? "rgba(16, 185, 129, 0.9)" : "rgba(239, 68, 68, 0.9)";
+    ctx.beginPath();
+    ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 4);
+    ctx.fill();
+
+    // Live Animated Price Text sa loob ng Badge
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(priceText, badgeX + badgePadding, badgeY + 10);
   }
 
   let chartTimer = null;
