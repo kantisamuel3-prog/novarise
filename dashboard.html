@@ -1374,11 +1374,11 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
-  // Animation state para sa Heartbeat Pulse Ring at Minsan-lang-lumabas na Markers
+  // Animation state para sa Heartbeat Pulse Ring at Balanced Markers
   let pulseRadius = 4;
   let pulseOpacity = 0.8;
   let peakMarkers = []; 
-  let markerCooldown = 0; // Pigil sa mabilis na pagdikit-dikit ng mga numero
+  let markerCooldown = 0; 
 
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
@@ -1532,10 +1532,9 @@ canvas#liveChart {
     ctx.fill();
     ctx.restore();
 
-    // Bawasan ang cooldown habang tumatakbo ang oras
     if (markerCooldown > 0) markerCooldown--;
 
-    // --- PEAK/DIP MARKERS (BIHIRANG LUMABAS PARA HINDI MAGKAKADIKIT) ---
+    // --- PEAK/DIP MARKERS (TAMANG DALAS - HINDI MADAMI, PERO MERON) ---
     ctx.save();
     for (let i = peakMarkers.length - 1; i >= 0; i--) {
       let m = peakMarkers[i];
@@ -1593,8 +1592,8 @@ canvas#liveChart {
     chartTimer = setInterval(() => {
       let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
 
-      // NAKA-COOLDOWN AT MALAKING THRESHOLD: Bihira lang lumabas para malinis tingnan at hindi magkadikit
-      if (isTradingRunning && Math.abs(change) > 25 && markerCooldown === 0) {
+      // BINABAAN ANG THRESHOLD SA 14 PARA MAS MADALING LUMITAW PERO MAY COOLDOWN PA RIN PARA HINDI MAGDAMI
+      if (isTradingRunning && Math.abs(change) > 14 && markerCooldown === 0) {
         const chartWidth = canvas.width - 85;
         const chartHeight = canvas.height - 14;
         const chartPoints = pricePoints.slice(-visibleCount);
@@ -1613,7 +1612,7 @@ canvas#liveChart {
           color: isPositive ? "#10b981" : "#ef4444"
         });
 
-        markerCooldown = 8; // Maghihintay muna ng 8 ticks bago makapaglabas ulit ng bagong numero
+        markerCooldown = 5; // Mas maikling cooldown para masundan paminsan-minsan ng bago
       }
 
       currentPrice += change;
