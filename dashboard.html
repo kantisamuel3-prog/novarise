@@ -1374,10 +1374,10 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
-  // Animation state para sa Heartbeat Pulse Ring at Fast Flying Numbers
+  // Animation state para sa Heartbeat Pulse Ring at Sakto-lang ang Bilis na Flying Numbers
   let pulseRadius = 4;
   let pulseOpacity = 0.8;
-  let flyingNumbers = []; // Imbak para sa mabilis na pumupunta sa dulo
+  let flyingNumbers = [];
 
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
@@ -1531,19 +1531,18 @@ canvas#liveChart {
     ctx.fill();
     ctx.restore();
 
-    // --- ENHANCEMENT: MABILIS NA PUPUNTA SA DULO BAGO MAG-FADE ---
+    // --- SAKTO LANG ANG BILIS NG PAGLIPAD PATUNGO SA DULO ---
     ctx.save();
     for (let i = flyingNumbers.length - 1; i >= 0; i--) {
       let item = flyingNumbers[i];
 
-      // Mabilis na pag-galaw patungo sa lastX at lastY (dulo)
-      item.x += (lastX - item.x) * 0.22;
-      item.y += (lastY - item.y) * 0.22;
+      // Pinalitan ng 0.08 para maging mas smooth, banayad, at sakto lang ang bilis
+      item.x += (lastX - item.x) * 0.08;
+      item.y += (lastY - item.y) * 0.08;
 
-      // Kapag malapit na sa dulo (tip ng graph), magsisimulang mag-fade out nang mabilis
       const distToTip = Math.hypot(lastX - item.x, lastY - item.y);
-      if (distToTip < 15) {
-        item.alpha -= 0.08;
+      if (distToTip < 20) {
+        item.alpha -= 0.035; // Dahan-dahang pagka-fade habang lumalapit sa dulo
       }
 
       if (item.alpha <= 0) {
@@ -1590,14 +1589,13 @@ canvas#liveChart {
     chartTimer = setInterval(() => {
       let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
 
-      // Kapag tumatakbo ang trade, gagawa ng mabilis na numero na papunta sa dulo
       if (isTradingRunning && Math.abs(change) > 5) {
         const chartWidth = canvas.width - 85;
         const chartHeight = canvas.height - 14;
         const isPositive = change >= 0;
 
         flyingNumbers.push({
-          x: chartWidth * (0.4 + Math.random() * 0.3), // Manggagaling sa gitna-papuntang-kanan
+          x: chartWidth * (0.3 + Math.random() * 0.4),
           y: chartHeight * (0.3 + Math.random() * 0.4),
           text: (isPositive ? "+" : "") + change.toFixed(1),
           alpha: 1.0,
