@@ -1374,11 +1374,11 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
-  // Animation state para sa Heartbeat Pulse Ring at Balanced Markers
+  // Animation state para sa Heartbeat Pulse Ring at Minsan-lang-lumabas na Markers
   let pulseRadius = 4;
   let pulseOpacity = 0.8;
   let peakMarkers = []; 
-  let markerCooldown = 0; 
+  let markerCooldown = 0; // Haba ng pagitan bago muling lumabas ang susunod na marker
 
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
@@ -1532,9 +1532,10 @@ canvas#liveChart {
     ctx.fill();
     ctx.restore();
 
+    // Bawasan ang cooldown timer sa bawat takbo ng draw
     if (markerCooldown > 0) markerCooldown--;
 
-    // --- PEAK/DIP MARKERS (TAMANG DALAS - HINDI MADAMI, PERO MERON) ---
+    // --- PEAK/DIP MARKERS (TALAGANG MINSAN LANG LUMABAS PARA WALang SIKSIKAN) ---
     ctx.save();
     for (let i = peakMarkers.length - 1; i >= 0; i--) {
       let m = peakMarkers[i];
@@ -1543,7 +1544,7 @@ canvas#liveChart {
       if (m.age < 15) {
         m.alpha = Math.min(1.0, m.alpha + 0.1); 
       } else {
-        m.alpha -= 0.025; 
+        m.alpha -= 0.02; // Mas banayad at dahan-dahang paglaho
       }
       m.age++;
 
@@ -1592,8 +1593,9 @@ canvas#liveChart {
     chartTimer = setInterval(() => {
       let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
 
-      // BINABAAN ANG THRESHOLD SA 14 PARA MAS MADALING LUMITAW PERO MAY COOLDOWN PA RIN PARA HINDI MAGDAMI
-      if (isTradingRunning && Math.abs(change) > 14 && markerCooldown === 0) {
+      // MAHIGPIT NA KONDISYON: Kailangan ay medyo malaki ang paggalaw (absolute change > 18) 
+      // AT tapos na ang cooldown bago makapagpakita ng bagong marker (positive o negative)
+      if (isTradingRunning && Math.abs(change) > 18 && markerCooldown === 0) {
         const chartWidth = canvas.width - 85;
         const chartHeight = canvas.height - 14;
         const chartPoints = pricePoints.slice(-visibleCount);
@@ -1612,7 +1614,7 @@ canvas#liveChart {
           color: isPositive ? "#10b981" : "#ef4444"
         });
 
-        markerCooldown = 5; // Mas maikling cooldown para masundan paminsan-minsan ng bago
+        markerCooldown = 12; // Mas mahabang pahinga (cooldown) para sigurado na malayong-malayo at hindi magkakadikit ang mga ito
       }
 
       currentPrice += change;
