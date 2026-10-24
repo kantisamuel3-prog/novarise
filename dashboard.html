@@ -1430,7 +1430,7 @@ canvas#liveChart {
 
   function drawChart() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const rightPadding = 75; // Sapat na espasyo para sa mga pinalibot na candlestick at badge
+    const rightPadding = 55; // Siniguradong may sapat na espasyo para sa Price Tag animation
     const bottomPadding = 14; 
     const chartWidth = canvas.width - rightPadding;
     const chartHeight = canvas.height - bottomPadding;
@@ -1465,7 +1465,6 @@ canvas#liveChart {
 
     let lastX = 0;
     let lastY = 0;
-    let prevY = 0;
 
     for (let i = 0; i < chartPoints.length; i++) {
       const x = i * step;
@@ -1476,9 +1475,6 @@ canvas#liveChart {
       if (i === chartPoints.length - 1) {
         lastX = x;
         lastY = y;
-      }
-      if (i === chartPoints.length - 2) {
-        prevY = y;
       }
     }
 
@@ -1499,51 +1495,35 @@ canvas#liveChart {
     ctx.fillStyle = gradient;
     ctx.fill();
 
-    // --- DALAWANG KULAY-PUTING CANDLESTICK NA LUMILIBOT/KUMAKAPOT SA DULO ---
-    
-    // 1. Unang Puti na Candlestick (Sa kaliwa ng dulo)
-    const leftX = lastX - 14;
-    const leftY = prevY;
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(leftX, leftY - 10);
-    ctx.lineTo(leftX, leftY + 10);
-    ctx.stroke();
-
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(leftX - 3, leftY - 5, 6, 10);
-
-    // 2. Pangalawang Puti na Candlestick (Sa kanan/mismong dulo)
-    const rightX = lastX;
-    const rightY = lastY;
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(rightX, rightY - 10);
-    ctx.lineTo(rightX, rightY + 10);
-    ctx.stroke();
-
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(rightX - 3, rightY - 5, 6, 10);
-
-
-    // --- ANIMATED PRICE BADGE SA TABI NG MGA ITO ---
+    // --- BAGONG ANIMATED PRICE TAG & LIVE NUMBER ON GRAPH ---
     const latestPrice = chartPoints[chartPoints.length - 1];
+
+    // Pulsing Glowing Dot sa Tip ng Linya
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+    ctx.fillStyle = chartColor;
+    ctx.shadowColor = chartColor;
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.shadowBlur = 0; // Reset shadow
+
+    // Animated Price Pill Background
     const priceText = `$${latestPrice.toFixed(2)}`;
     ctx.font = "bold 9px monospace";
     const textWidth = ctx.measureText(priceText).width;
     const badgePadding = 4;
     const badgeWidth = textWidth + badgePadding * 2;
     const badgeHeight = 14;
-    const badgeX = rightX + 8;
+    const badgeX = lastX + 6;
     const badgeY = Math.max(badgeHeight / 2, Math.min(chartHeight - badgeHeight / 2, lastY - badgeHeight / 2));
 
+    // Draw Price Badge Pill
     ctx.fillStyle = isUp ? "rgba(16, 185, 129, 0.9)" : "rgba(239, 68, 68, 0.9)";
     ctx.beginPath();
     ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 4);
     ctx.fill();
 
+    // Live Animated Price Text sa loob ng Badge
     ctx.fillStyle = "#ffffff";
     ctx.fillText(priceText, badgeX + badgePadding, badgeY + 10);
   }
