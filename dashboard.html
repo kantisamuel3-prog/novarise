@@ -1374,10 +1374,10 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
-  // Animation state para sa Heartbeat Pulse Ring at Trail Markers
+  // Animation state para sa Heartbeat Pulse Ring at Peak/Dip Markers
   let pulseRadius = 4;
   let pulseOpacity = 0.8;
-  let trailMarkers = []; // Imbak para sa mga maiiwan na numero sa mismong punto ng graph
+  let peakMarkers = []; // Para sa mga numerong lalabas lang sa matatarik na tuktok (v o ^)
 
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
@@ -1531,23 +1531,32 @@ canvas#liveChart {
     ctx.fill();
     ctx.restore();
 
-    // --- ENHANCEMENT: TRAIL MARKERS (MAIIWAN SA MISMONG PUNTO NG LINYA) ---
-    // Pag-render ng mga naiwan na numero sa mismong punto
+    // --- PEAK/DIP MARKERS (^ o v TUKTOK NG CANDLESTICK/GRAPH) ---
     ctx.save();
-    for (let i = trailMarkers.length - 1; i >= 0; i--) {
-      let m = trailMarkers[i];
-      m.x -= step * 0.08; // Dahan-dahang sumasabay sa paggalaw ng graph pakaliwa
-      m.alpha -= 0.015;   // Unti-unting naglalaho nang napakahalinhinan
+    for (let i = peakMarkers.length - 1; i >= 0; i--) {
+      let m = peakMarkers[i];
+      m.x -= step * 0.08; // Sumasabay sa paggalaw ng graph pakaliwa
+      
+      // Smooth fade in / fade out animation
+      if (m.age < 15) {
+        m.alpha = Math.min(1.0, m.alpha + 0.1); // Mabilis na paglitaw (fade in)
+      } else {
+        m.alpha -= 0.025; // Unti-unting pagkawala (fade out)
+      }
+      m.age++;
 
       if (m.alpha <= 0 || m.x < 0) {
-        trailMarkers.splice(i, 1);
+        peakMarkers.splice(i, 1);
         continue;
       }
 
-      ctx.font = "bold 7.5px monospace";
+      ctx.font = "bold 8.5px monospace";
       ctx.fillStyle = m.color;
       ctx.globalAlpha = Math.max(0, m.alpha);
-      ctx.fillText(m.text, m.x - 10, m.y - 6);
+      ctx.shadowColor = m.color;
+      ctx.shadowBlur = 6;
+      // Mag-render ng maliit na arrow/sign (^ o v) kasama ang numero sa mismong tuktok
+      ctx.fillText(m.text, m.x - 10, m.y + (m.isPeak ? -8 : 14));
     }
     ctx.restore();
 
@@ -1580,9 +1589,9 @@ canvas#liveChart {
 
     chartTimer = setInterval(() => {
       let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
-      
-      // Kapag malaki ang galaw habang nagta-trade, maiiwan ang marker sa eksaktong x, y ng punto
-      if (isTradingRunning && Math.abs(change) > 8) {
+
+      // Lilitaw LAMANG kapag grabe o malaki ang taas/baba (matarik na paggalaw o peak/dip)
+      if (isTradingRunning && Math.abs(change) > 18) {
         const chartWidth = canvas.width - 85;
         const chartHeight = canvas.height - 14;
         const chartPoints = pricePoints.slice(-visibleCount);
@@ -1591,11 +1600,13 @@ canvas#liveChart {
         const y = chartHeight - ((currentPrice - minPrice) / (maxPrice - minPrice)) * chartHeight;
 
         const isPositive = change >= 0;
-        trailMarkers.push({
+        peakMarkers.push({
           x: chartWidth,
           y: y,
-          text: (isPositive ? "+" : "") + change.toFixed(1),
-          alpha: 0.9,
+          text: (isPositive ? "▲ +" : "▼ ") + change.toFixed(1),
+          alpha: 0.0,
+          age: 0,
+          isPeak: isPositive,
           color: isPositive ? "#10b981" : "#ef4444"
         });
       }
