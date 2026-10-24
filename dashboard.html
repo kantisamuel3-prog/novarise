@@ -1374,9 +1374,10 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
-  // Animation state para sa Heartbeat Pulse Ring
+  // Animation state para sa Heartbeat Pulse Ring at Floating PnL Popups
   let pulseRadius = 4;
   let pulseOpacity = 0.8;
+  let floatingPopups = []; // Para sa lumulutang na positive/negative numbers sa gitna
 
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
@@ -1434,7 +1435,7 @@ canvas#liveChart {
 
   function drawChart() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const rightPadding = 85; // Sapat na espasyo para sa Price + Percent Tag
+    const rightPadding = 85; 
     const bottomPadding = 14; 
     const chartWidth = canvas.width - rightPadding;
     const chartHeight = canvas.height - bottomPadding;
@@ -1488,7 +1489,7 @@ canvas#liveChart {
     const isUp = latestPrice >= prevPrice;
     const chartColor = isUp ? "#10b981" : "#ef4444";
 
-    // 3. ENHANCEMENT: NEON GLOW TRAIL
+    // Neon Glow Trail
     ctx.save();
     ctx.strokeStyle = chartColor;
     ctx.lineWidth = 2;
@@ -1497,7 +1498,7 @@ canvas#liveChart {
     ctx.stroke();
     ctx.restore();
 
-    // Orihinal na Gradient Fill sa ilalim
+    // Gradient Fill sa ilalim
     ctx.lineTo(chartWidth, chartHeight);
     ctx.lineTo(0, chartHeight);
     ctx.closePath();
@@ -1507,7 +1508,7 @@ canvas#liveChart {
     ctx.fillStyle = gradient;
     ctx.fill();
 
-    // 1. ENHANCEMENT: HEARTBEAT / PULSE RING EFFECT
+    // Heartbeat / Pulse Ring Effect sa dulo
     pulseRadius += 0.3;
     pulseOpacity -= 0.025;
     if (pulseRadius > 14) {
@@ -1522,7 +1523,6 @@ canvas#liveChart {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Solid glowing core dot
     ctx.beginPath();
     ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
     ctx.fillStyle = chartColor;
@@ -1531,7 +1531,42 @@ canvas#liveChart {
     ctx.fill();
     ctx.restore();
 
-    // 2. ENHANCEMENT: MINI PERCENTAGE CHANGE BADGE (+0.15%)
+    // --- BAGONG FEATURE: FLOATING PNL ANIMATED NUMBERS SA GITNA ---
+    if (isTradingRunning && Math.random() > 0.4) {
+      const pnlVal = (Math.random() * 12 - 5).toFixed(2);
+      const isPositive = Number(pnlVal) >= 0;
+      floatingPopups.push({
+        x: chartWidth / 2 + (Math.random() * 40 - 20),
+        y: chartHeight / 2 + (Math.random() * 20 - 10),
+        text: (isPositive ? "+$" : "-$") + Math.abs(pnlVal),
+        alpha: 1.0,
+        vy: -0.6, // Umuusad pataas nang bahagya
+        color: isPositive ? "#10b981" : "#ef4444"
+      });
+    }
+
+    // I-render at i-animate ang mga lumulutang na numero
+    ctx.save();
+    for (let i = floatingPopups.length - 1; i >= 0; i--) {
+      let p = floatingPopups[i];
+      p.y += p.vy;
+      p.alpha -= 0.03; // Unti-unting naglalaho
+
+      if (p.alpha <= 0) {
+        floatingPopups.splice(i, 1);
+        continue;
+      }
+
+      ctx.font = "bold 10px monospace";
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 6;
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.fillText(p.text, p.x, p.y);
+    }
+    ctx.restore();
+
+    // Mini Percentage Change Badge sa dulo
     const pctChange = ((latestPrice - prevPrice) / prevPrice) * 100;
     const pctSign = pctChange >= 0 ? "+" : "";
     const priceText = `$${latestPrice.toFixed(2)} (${pctSign}${pctChange.toFixed(2)}%)`;
@@ -1544,13 +1579,11 @@ canvas#liveChart {
     const badgeX = lastX + 8;
     const badgeY = Math.max(badgeHeight / 2, Math.min(chartHeight - badgeHeight / 2, lastY - badgeHeight / 2));
 
-    // Draw Price + Percent Badge Pill
     ctx.fillStyle = isUp ? "rgba(16, 185, 129, 0.95)" : "rgba(239, 68, 68, 0.95)";
     ctx.beginPath();
     ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 4);
     ctx.fill();
 
-    // Text sa loob ng Badge
     ctx.fillStyle = "#ffffff";
     ctx.fillText(priceText, badgeX + badgePadding, badgeY + 11);
   }
@@ -1576,6 +1609,7 @@ canvas#liveChart {
   }
 
   runLiveChart();
+    
   function simulateLiveAssetPrices() {
     const rows = document.querySelectorAll('#liveTickerTable > div');
     rows.forEach(row => {
