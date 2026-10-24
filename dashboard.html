@@ -1374,10 +1374,10 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
-  // Animation state para sa Heartbeat Pulse Ring at Peak/Dip Markers
+  // Animation state para sa Heartbeat Pulse Ring at Balanced Peak/Dip Markers
   let pulseRadius = 4;
   let pulseOpacity = 0.8;
-  let peakMarkers = []; // Para sa mga positive/negative peak/dip markers sa matatarik na bahagi
+  let peakMarkers = []; 
 
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
@@ -1535,9 +1535,8 @@ canvas#liveChart {
     ctx.save();
     for (let i = peakMarkers.length - 1; i >= 0; i--) {
       let m = peakMarkers[i];
-      m.x -= step * 0.08; // Sumasabay sa paggalaw ng graph pakaliwa
+      m.x -= step * 0.08; 
       
-      // Smooth fade in / fade out animation
       if (m.age < 15) {
         m.alpha = Math.min(1.0, m.alpha + 0.1); 
       } else {
@@ -1556,7 +1555,6 @@ canvas#liveChart {
       ctx.shadowColor = m.color;
       ctx.shadowBlur = 6;
       
-      // Pag-render ng arrow pataas (▲) kung positive o pababa (▼) kung negative sa mismong tuktok
       ctx.fillText(m.text, m.x - 10, m.y + (m.isPeak ? -8 : 14));
     }
     ctx.restore();
@@ -1591,8 +1589,8 @@ canvas#liveChart {
     chartTimer = setInterval(() => {
       let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
 
-      // Lilitaw LAMANG kapag grabe o malaki ang pagtaas o pagbaba (minsan lang, hindi nag-a-spam)
-      if (isTradingRunning && Math.abs(change) > 18) {
+      // BALANSE NA NGAYON: Lilitaw lamang kapag malaki ang pagtaas (lampas +15) O malaki ang pagbaba (mas mababa sa -15)
+      if (isTradingRunning && Math.abs(change) > 15) {
         const chartWidth = canvas.width - 85;
         const chartHeight = canvas.height - 14;
         const chartPoints = pricePoints.slice(-visibleCount);
@@ -1600,7 +1598,7 @@ canvas#liveChart {
         const maxPrice = Math.max(...chartPoints) + 10;
         const y = chartHeight - ((currentPrice - minPrice) / (maxPrice - minPrice)) * chartHeight;
 
-        const isPositive = change >= 0;
+        const isPositive = change > 0;
         peakMarkers.push({
           x: chartWidth,
           y: y,
