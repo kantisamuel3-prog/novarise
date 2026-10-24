@@ -1374,11 +1374,12 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
-  // Animation state para sa Heartbeat Pulse Ring at Minsan-lang-lumabas na Markers
+  // Animation state para sa Heartbeat Pulse Ring at Alternating Markers
   let pulseRadius = 4;
   let pulseOpacity = 0.8;
   let peakMarkers = []; 
-  let markerCooldown = 0; // Haba ng pagitan bago muling lumabas ang susunod na marker
+  let markerCooldown = 0; 
+  let nextExpectedType = 'positive'; // Para salit-salitan (positive sunod ay negative, atbp.)
 
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
@@ -1532,10 +1533,10 @@ canvas#liveChart {
     ctx.fill();
     ctx.restore();
 
-    // Bawasan ang cooldown timer sa bawat takbo ng draw
+    // Bawasan ang cooldown timer bawat frame
     if (markerCooldown > 0) markerCooldown--;
 
-    // --- PEAK/DIP MARKERS (TALAGANG MINSAN LANG LUMABAS PARA WALang SIKSIKAN) ---
+    // --- PEAK/DIP MARKERS (SALIT-SALITAN AT MAY TAMANG ORAS) ---
     ctx.save();
     for (let i = peakMarkers.length - 1; i >= 0; i--) {
       let m = peakMarkers[i];
@@ -1544,7 +1545,7 @@ canvas#liveChart {
       if (m.age < 15) {
         m.alpha = Math.min(1.0, m.alpha + 0.1); 
       } else {
-        m.alpha -= 0.02; // Mas banayad at dahan-dahang paglaho
+        m.alpha -= 0.02; 
       }
       m.age++;
 
@@ -1593,28 +1594,23 @@ canvas#liveChart {
     chartTimer = setInterval(() => {
       let change = isTradingRunning ? (Math.random() - 0.45) * 40 : (Math.random() - 0.48) * 4;  
 
-      // MAHIGPIT NA KONDISYON: Kailangan ay medyo malaki ang paggalaw (absolute change > 18) 
-      // AT tapos na ang cooldown bago makapagpakita ng bagong marker (positive o negative)
-      if (isTradingRunning && Math.abs(change) > 18 && markerCooldown === 0) {
-        const chartWidth = canvas.width - 85;
-        const chartHeight = canvas.height - 14;
-        const chartPoints = pricePoints.slice(-visibleCount);
-        const minPrice = Math.min(...chartPoints) - 10;
-        const maxPrice = Math.max(...chartPoints) + 10;
-        const y = chartHeight - ((currentPrice - minPrice) / (maxPrice - minPrice)) * chartHeight;
-
-        const isPositive = change > 0;
-        peakMarkers.push({
-          x: chartWidth,
-          y: y,
-          text: (isPositive ? "▲ +" : "▼ ") + change.toFixed(1),
-          alpha: 0.0,
-          age: 0,
-          isPeak: isPositive,
-          color: isPositive ? "#10b981" : "#ef4444"
-        });
-
-        markerCooldown = 12; // Mas mahabang pahinga (cooldown) para sigurado na malayong-malayo at hindi magkakadikit ang mga ito
+      // SALIT-SALITANG LOGIC: 
+      // Kailangan tapos na ang cooldown, at eksaktong tutugma sa inaasahang uri (positive o negative)
+      if (isTradingRunning && markerCooldown === 0) {
+        const isPositiveChange = change > 0;
+        
+        // Kung ang susunod na lalabas ay dapat POSITIVE, at positive nga ang nangyari (at malaki-laki)
+        if (nextExpectedType === 'positive' && change > 12) {
+          triggerMarker(change, true);
+          nextExpectedType = 'negative'; // Sunod na hahanapin ay negative
+          markerCooldown = 10;          // Hihintay muna ng ilang segundo/ticks
+        } 
+        // Kung ang susunod na lalabas ay dapat NEGATIVE, at negative nga ang nangyari
+        else if (nextExpectedType === 'negative' && change < -12) {
+          triggerMarker(change, false);
+          nextExpectedType = 'positive'; // Sunod na hahanapin ay positive ulit
+          markerCooldown = 10;          // Hihintay muna ng ilang segundo/ticks
+        }
       }
 
       currentPrice += change;
@@ -1628,6 +1624,25 @@ canvas#liveChart {
       }
       drawChart();
     }, speedInterval);
+  }
+
+  function triggerMarker(changeVal, isPositive) {
+    const chartWidth = canvas.width - 85;
+    const chartHeight = canvas.height - 14;
+    const chartPoints = pricePoints.slice(-visibleCount);
+    const minPrice = Math.min(...chartPoints) - 10;
+    const maxPrice = Math.max(...chartPoints) + 10;
+    const y = chartHeight - ((currentPrice - minPrice) / (maxPrice - minPrice)) * chartHeight;
+
+    peakMarkers.push({
+      x: chartWidth,
+      y: y,
+      text: (isPositive ? "▲ +" : "▼ ") + changeVal.toFixed(1),
+      alpha: 0.0,
+      age: 0,
+      isPeak: isPositive,
+      color: isPositive ? "#10b981" : "#ef4444"
+    });
   }
 
   runLiveChart();
