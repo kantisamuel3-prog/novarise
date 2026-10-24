@@ -1374,6 +1374,10 @@ canvas#liveChart {
   // Zoom: 8 = pinakamalapit, 35 = pinakamalawak
   let visibleCount = 35;
 
+  // Animation state para sa Heartbeat Pulse Ring
+  let pulseRadius = 4;
+  let pulseOpacity = 0.8;
+
   canvas.addEventListener('wheel', function(event) {
     event.preventDefault();
 
@@ -1430,7 +1434,7 @@ canvas#liveChart {
 
   function drawChart() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const rightPadding = 55; // Siniguradong may sapat na espasyo para sa Price Tag animation
+    const rightPadding = 85; // Sapat na espasyo para sa Price + Percent Tag
     const bottomPadding = 14; 
     const chartWidth = canvas.width - rightPadding;
     const chartHeight = canvas.height - bottomPadding;
@@ -1478,12 +1482,20 @@ canvas#liveChart {
       }
     }
 
-    const isUp = chartPoints[chartPoints.length - 1] >= chartPoints[chartPoints.length - 2];
+    const firstPrice = chartPoints[0];
+    const latestPrice = chartPoints[chartPoints.length - 1];
+    const prevPrice = chartPoints[chartPoints.length - 2] || firstPrice;
+    const isUp = latestPrice >= prevPrice;
     const chartColor = isUp ? "#10b981" : "#ef4444";
 
+    // 3. ENHANCEMENT: NEON GLOW TRAIL
+    ctx.save();
     ctx.strokeStyle = chartColor;
     ctx.lineWidth = 2;
+    ctx.shadowColor = chartColor;
+    ctx.shadowBlur = 8;
     ctx.stroke();
+    ctx.restore();
 
     // Orihinal na Gradient Fill sa ilalim
     ctx.lineTo(chartWidth, chartHeight);
@@ -1495,37 +1507,52 @@ canvas#liveChart {
     ctx.fillStyle = gradient;
     ctx.fill();
 
-    // --- BAGONG ANIMATED PRICE TAG & LIVE NUMBER ON GRAPH ---
-    const latestPrice = chartPoints[chartPoints.length - 1];
+    // 1. ENHANCEMENT: HEARTBEAT / PULSE RING EFFECT
+    pulseRadius += 0.3;
+    pulseOpacity -= 0.025;
+    if (pulseRadius > 14) {
+      pulseRadius = 4;
+      pulseOpacity = 0.8;
+    }
 
-    // Pulsing Glowing Dot sa Tip ng Linya
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, pulseRadius, 0, Math.PI * 2);
+    ctx.strokeStyle = isUp ? `rgba(16, 185, 129, ${Math.max(0, pulseOpacity)})` : `rgba(239, 68, 68, ${Math.max(0, pulseOpacity)})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Solid glowing core dot
     ctx.beginPath();
     ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
     ctx.fillStyle = chartColor;
     ctx.shadowColor = chartColor;
-    ctx.shadowBlur = 10;
+    ctx.shadowBlur = 12;
     ctx.fill();
-    ctx.shadowBlur = 0; // Reset shadow
+    ctx.restore();
 
-    // Animated Price Pill Background
-    const priceText = `$${latestPrice.toFixed(2)}`;
-    ctx.font = "bold 9px monospace";
+    // 2. ENHANCEMENT: MINI PERCENTAGE CHANGE BADGE (+0.15%)
+    const pctChange = ((latestPrice - prevPrice) / prevPrice) * 100;
+    const pctSign = pctChange >= 0 ? "+" : "";
+    const priceText = `$${latestPrice.toFixed(2)} (${pctSign}${pctChange.toFixed(2)}%)`;
+
+    ctx.font = "bold 8.5px monospace";
     const textWidth = ctx.measureText(priceText).width;
-    const badgePadding = 4;
+    const badgePadding = 5;
     const badgeWidth = textWidth + badgePadding * 2;
-    const badgeHeight = 14;
-    const badgeX = lastX + 6;
+    const badgeHeight = 15;
+    const badgeX = lastX + 8;
     const badgeY = Math.max(badgeHeight / 2, Math.min(chartHeight - badgeHeight / 2, lastY - badgeHeight / 2));
 
-    // Draw Price Badge Pill
-    ctx.fillStyle = isUp ? "rgba(16, 185, 129, 0.9)" : "rgba(239, 68, 68, 0.9)";
+    // Draw Price + Percent Badge Pill
+    ctx.fillStyle = isUp ? "rgba(16, 185, 129, 0.95)" : "rgba(239, 68, 68, 0.95)";
     ctx.beginPath();
     ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 4);
     ctx.fill();
 
-    // Live Animated Price Text sa loob ng Badge
+    // Text sa loob ng Badge
     ctx.fillStyle = "#ffffff";
-    ctx.fillText(priceText, badgeX + badgePadding, badgeY + 10);
+    ctx.fillText(priceText, badgeX + badgePadding, badgeY + 11);
   }
 
   let chartTimer = null;
@@ -1549,7 +1576,6 @@ canvas#liveChart {
   }
 
   runLiveChart();
-
   function simulateLiveAssetPrices() {
     const rows = document.querySelectorAll('#liveTickerTable > div');
     rows.forEach(row => {
