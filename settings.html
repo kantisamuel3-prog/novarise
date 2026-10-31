@@ -552,7 +552,13 @@
                     return;
                 }
 
-                // I-update ang password sa Firestore database
+                // 1. I-update din ang password sa Firebase Authentication para hindi mag-error sa susunod na login
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                    await currentUser.updatePassword(newPass);
+                }
+
+                // 2. I-update ang password sa Firestore database
                 await userRef.update({
                     password: newPass
                 });
