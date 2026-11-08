@@ -146,7 +146,7 @@
     </section>
 
     <section class="rounded-2xl border border-nexora-cyan/25 bg-nexora-card/90 p-4 mb-4 shadow-xl">
-      <h2 class="text-xs font-black tracking-[.16em] text-gray-300 font-mono mb-3">SEND USDT ($160 Minimum)</h2>
+      <h2 class="text-xs font-black tracking-[.16em] text-gray-300 font-mono mb-3">SEND USDT ($270 Minimum)</h2>
       <div class="flex flex-col items-center rounded-xl border border-white/10 bg-[#030b17] p-4">
         <div id="qrPlaceholder" class="w-44 h-44 bg-white rounded-xl p-3 flex items-center justify-center text-center text-slate-700">
           <div><i class="fa-solid fa-qrcode text-5xl mb-2"></i><p class="text-[10px] font-semibold">Wallet QR will appear here once configured</p></div>
@@ -393,7 +393,7 @@
 
       if (!currentUid || !db) { status.textContent = "Hindi pa handa ang account connection. I-refresh o mag-login muli."; return; }
       if (!wallet().address) { status.textContent = "Hindi pa naka-configure ang receiving wallet para sa network na ito."; return; }
-      if (!Number.isFinite(amount) || amount < 160) { status.textContent = "The minimum deposit is $160 USD."; return; }
+      if (!Number.isFinite(amount) || amount < 270) { status.textContent = "The minimum deposit is $270 USD."; return; }
       if (txid.length < 20) { status.textContent = "Please check the transaction hash/TXID."; return; }
       if (!file) { status.textContent = "Mag-upload muna ng payment proof image bago mag-submit for review."; return; }
       if (!["image/png","image/jpeg","image/webp"].includes(file.type)) { status.textContent = "PNG, JPG, o WEBP image lang ang puwede."; return; }
